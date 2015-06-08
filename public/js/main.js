@@ -19,7 +19,7 @@ require.config({
         less: './libs/less.min',
         templates: '../templates', // templates dir not error
         text: './libs/text',
-        common: 'common',
+        common: 'common'
     },
     shim: {
         'ajaxForm': ['jQuery'],
