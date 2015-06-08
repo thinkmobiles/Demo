@@ -17,11 +17,10 @@ var logWriter = require('../helpers/logWriter')();
 var mailer = require('../helpers/mailer');
 
 var SessionHandler = require('./sessions');
-var DeviceHander = require('./devices');
 
 var UserHandler = function (db) {
     var session = new SessionHandler(db);
-    var deviceHandler = new DeviceHander(db);
+
 
     var userSchema = mongoose.Schemas['User'];
     var UserModel = db.model('User', userSchema);
