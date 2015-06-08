@@ -5,20 +5,15 @@ var fs = require("fs");
 var logWriter = require('../helpers/logWriter')();
 var SessionHandler = require('../handlers/sessions');
 var UserHandler = require('../handlers/users');
-var DeviceHandler = require('../handlers/devices');
 var TariffPlanHandler = require('../handlers/tariffPlan');
 
 module.exports = function (app, db) {
     var session = new SessionHandler();
     var userHandler = new UserHandler(db);
-    var deviceHandler = new DeviceHandler(db);
     var tariffPlanHandler = new TariffPlanHandler(db);
     var devicesRouter;
     var stripePlansRouter;
 
-    // --- setup cron jobs ---
-    deviceHandler.setupJobForCheckExpirationDates();
-    deviceHandler.setupJobForNotifications();
     // -----------------------
 
     app.use(function (req, res, next) {
@@ -50,8 +45,6 @@ module.exports = function (app, db) {
     app.get('/tariffPlans', session.authenticatedUser, tariffPlanHandler.getTariffPans);
     app.put('/renewal', tariffPlanHandler.renewal);
 
-    devicesRouter = require('./devices')(db);
-    app.use('/devices', devicesRouter);
 
     stripePlansRouter = require('./stripePlans')(db);
     app.use('/stripe/plans', stripePlansRouter);

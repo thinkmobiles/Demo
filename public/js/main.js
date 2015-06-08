@@ -11,21 +11,19 @@ var App = {
 
 require.config({
     paths: {
-        jQuery: './libs/jquery-2.1.0.min.map',
-        costCounter: './libs/costCounter',
-        Underscore: './libs/underscore-min.map.1.6.0',
-        Bootstrap: './libs/bootstrap.min',
-        Backbone: './libs/backbone-min.map.1.1.2',
-        less: './libs/less.min',
+        jQuery: './libs/jquery/dist/jquery.min',
+        Underscore: './libs/underscore/underscore-min',
+        Backbone: './libs/backbone/backbone-min',
+        less: './libs/less/dist/less.min',
         templates: '../templates', // templates dir not error
-        text: './libs/text',
+        text: './libs/text/text',
         common: 'common'
     },
     shim: {
         'ajaxForm': ['jQuery'],
         'Bootstrap': ['jQuery'],
         'Backbone': ['Underscore', 'jQuery'],
-        'app': ['Backbone', 'less', 'Bootstrap', 'costCounter']
+        'app': ['Backbone', 'less']
     }
 });
 

@@ -1,7 +1,7 @@
 'use strict';
 
 var MailerModule = function () {
-    var _ = require('./../public/js/libs/underscore-min.map.1.6.0.js');
+    var _ = require('./../public/js/libs/underscore/underscore-min.js');
     var nodemailer = require("nodemailer");
     var fs = require('fs');
     var FROM = "Minder <" + 'info@minderweb.com' + ">";

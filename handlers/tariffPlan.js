@@ -8,11 +8,9 @@ var _ = require('lodash');
 
 var STATUSES = require('../constants/deviceStatuses');
 var badRequests = require('../helpers/badRequests');
-var DeviceHandler = require('../handlers/devices');
 var stripeModule = require('../helpers/stripe');
 
 var TariffPlanHandler = function (db) {
-    var deviceHandler = new DeviceHandler(db);
     var self = this;
 
     var tariffPlanSchema = mongoose.Schemas['TariffPlan'];
@@ -24,7 +22,6 @@ var TariffPlanHandler = function (db) {
     var deviceSchema = mongoose.Schemas['Device'];
     var DeviceModel = db.model('Device', deviceSchema);
 
-    var calculateTariff = require('../public/js/libs/costCounter');
 
     function renewEnabled(userModel, token, callback) {
         var stripeId = '';
