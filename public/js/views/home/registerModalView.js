@@ -1,19 +1,43 @@
 define([
-    'text!templates/home/registerModalTemplate.html'
-], function ( modalTemplate) {
+    'text!templates/home/registerModalTemplate.html',
+	 "models/userModel"
+], function ( modalTemplate, UserModel) {
 
     var View;
 	
     View = Backbone.View.extend({
 		el:"#wrapper",
         events: {
-            "click .newViewer":"newViewer"
+            "click .newViewer":"newViewer",
+			"click .continue":"register"
         },
 
 
         initialize: function () {
             this.render();
         },
+
+		register: function(){
+			var userModel = new UserModel();
+			userModel.save({
+				email : this.$el.find("#email").val(),
+				firstName : this.$el.find("#fname").val(),
+				lastName : this.$el.find("#lname").val(),
+				phone : this.$el.find("#phone").val(),
+				organization : this.$el.find("#organization").val(),
+				title : this.$el.find("#title").val(),
+				comments : this.$el.find("#comments").val(),
+            },
+							   {
+								   wait: true,
+								   success: function (model, response) {
+									   alert("OK!")
+								   },
+								   error: function (model, xhr) {
+    								   self.errorNotification(xhr);
+								   }
+							   });
+		},
 
         newViewer:function(){
 			this.dialog.remove();
