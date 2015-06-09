@@ -37,18 +37,8 @@ var UserHandler = function (db) {
     function validateSignUp(userData, callback) { //used for signUpMobile, signUpWeb;
         var errMessage;
 
-        if (!userData || !userData.email || !userData.pass || !userData.firstName || !userData.lastName) {
+        if (!userData || !userData.email || !userData.firstName || !userData.lastName) {
             return callback(badRequests.NotEnParams({reqParams: ['email', 'pass', 'firstName', 'lastName']}));
-        }
-
-        if (userData.pass.length < CONSTANTS.PASS_MIN_LENGTH) {
-            errMessage = 'Password cannot contain less than ' + CONSTANTS.PASS_MIN_LENGTH + ' symbols';
-            return callback(badRequests.InvalidValue({message: errMessage}));
-        }
-
-        if (userData.pass.length > CONSTANTS.PASS_MAX_LENGTH) {
-            errMessage = 'Password cannot contain more than ' + CONSTANTS.PASS_MAX_LENGTH + ' symbols';
-            return callback(badRequests.InvalidValue({message: errMessage}));
         }
 
         if (userData.firstName.length > CONSTANTS.USERNAME_MAX_LENGTH) {
@@ -132,65 +122,20 @@ var UserHandler = function (db) {
 
     function createUser(userData, callback) {
 
-        async.waterfall([
-
-            //get base plan:
-            function (cb) {
-                var criteria = {
-                    name: CONSTANTS.DEFAULT_TARIFF_NAME
-                };
-                var fields = '_id';
-
-                TariffPlan.findOne(criteria, fields, function (err, plan) {
-                    if (err) {
-                        cb(err);
-                    } else if (!plan) {
-                        cb(badRequests.NotFound({message: 'TariffPlanModel was not found'}));
-                    } else {
-                        cb(null, plan);
-                    }
-                });
-            },
-
-            //create user:
-            function (basePlanModel, cb) {
-                var encryptedPass;
-                var minderId;
-                var confirmToken;
-                var newUser;
-
-                encryptedPass = getEncryptedPass(userData.pass);
-                minderId = tokenGenerator.generate(CONSTANTS.MINDER_ID_LENGTH);
-                confirmToken = tokenGenerator.generate();
-
-                userData.minderId = minderId;
-                userData.confirmToken = confirmToken;
-                userData.pass = encryptedPass;
-
-                newUser = new UserModel(userData);
-                newUser.billings.currentPlan = basePlanModel._id;
-
+        //create user:
+        var newUser = new UserModel(userData);
                 newUser.save(function (err, result) {
                     if (err) {
-                        return cb(err);
+                        if (callback && (typeof callback === 'function')) {
+                            callback(err);
+                        }
+                    } else {
+                        if (callback && (typeof callback === 'function')) {
+                            callback(null, result);
+                        }
                     }
-                    cb(null, result);
                 });
-            }
-
-        ], function (err, userModel) {
-            if (err) {
-                if (callback && (typeof callback === 'function')) {
-                    callback(err);
-                }
-            } else {
-                if (callback && (typeof callback === 'function')) {
-                    callback(null, userModel);
-                }
-            }
-        });
-
-    };
+            };
 
     function updateUserProfile(userId, options, callback) {
         var update = options;
@@ -324,32 +269,6 @@ var UserHandler = function (db) {
 
         async.series([
 
-            //check captcha:
-            function (cb) {
-                var captchaOptions;
-
-                if (!options.captchaChallenge || !options.captchaResponse) {
-                    return cb();
-                }
-
-                captchaOptions = {
-                    captchaChallenge: options.captchaChallenge,
-                    captchaResponse: options.captchaResponse,
-                    ip: req.ip
-                };
-
-                checkCaptcha(captchaOptions, function (err) {
-                    if (err) {
-                        return cb(err);
-                    }
-
-                    delete options.captchaChallenge;
-                    delete options.captchaResponse;
-
-                    cb();
-                });
-            },
-
             //validation:
             function (cb) {
                 validateSignUp(options, function (err) {
@@ -371,19 +290,14 @@ var UserHandler = function (db) {
                 });
             }
 
-        ], function (err, result) {
-            var user = result[2];
-
-            if (err) {
+        ], function (err) {
+           if (err) {
                 return next(err);
             }
-
-            mailer.emailConfirmation(user);
 
             res.status(201).send({
                 success: 'success signUp',
                 message: 'Thank you for registering with Minder. Please check your email and verify account',
-                minderId: user.minderId
             });
         });
     };

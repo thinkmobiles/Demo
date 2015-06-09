@@ -18,7 +18,6 @@ module.exports = (function () {
 
     var userSchema = mongoose.Schema({
         email: {type: String, required: true, unique: true},
-        pass: {type: String},
         confirmToken: {type: String},
         firstName: {type: String, minlength: NAME_MIN_LENGTH, maxlength: NAME_MAX_LENGTH},
         lastName: {type: String, minlength: NAME_MIN_LENGTH, maxlength: NAME_MAX_LENGTH},
