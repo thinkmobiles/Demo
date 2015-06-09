@@ -13,6 +13,7 @@ define([
 
         routes: {
             "login"                     :  "login",
+            "home"                     :  "home",
             "main(/page/:page)"         :  "main",
             "forgotPassword"            :  "forgotPassword",
             "signUp"                    :  "signUp",
@@ -29,11 +30,14 @@ define([
         },
 
         needAuthorize: [
-            "main",
+
             "billingInfo",
             "device",
             "devices",
-            "profile"
+            "profile",
+            'main'
+
+
         ],
 
         redirectWhenAuthorize: [
@@ -41,7 +45,8 @@ define([
             'signUp',
             'forgotPassword',
             'resetPassword',
-            'confirm'
+            'confirm',
+            "home"
         ],
 
         initialize: function () {
@@ -61,7 +66,7 @@ define([
                     }
                 });
                 if (WrongRout) {
-                    return Backbone.history.navigate("login", {trigger: true});
+                    return Backbone.history.navigate("home", {trigger: true});
                 }
             } else {
                 // access not authorized views
@@ -71,7 +76,7 @@ define([
                     }
                 });
                 if (WrongRout) {
-                    return Backbone.history.navigate("main", {trigger: true});
+                    return Backbone.history.navigate("home", {trigger: true});
                 }
             }
 
@@ -117,7 +122,7 @@ define([
             });
         },
         any: function () {
-            this.loadWrapperView('main');
+            this.loadWrapperView('home');
         },
         login: function () {
             this.loadWrapperView('login');
@@ -133,6 +138,9 @@ define([
         },
         contactUs: function () {
             this.loadWrapperView('contactUs');
+        },
+        home: function () {
+            this.loadWrapperView('home');
         },
         profile: function () {
             this.loadWrapperView('profile');

@@ -12,6 +12,7 @@ var App = {
 require.config({
     paths: {
         jQuery: './libs/jquery/dist/jquery.min',
+        jQueryUI: './libs/jqueryui/jquery-ui.min',
         Underscore: './libs/underscore/underscore-min',
         Backbone: './libs/backbone/backbone-min',
         less: './libs/less/dist/less.min',
@@ -23,7 +24,8 @@ require.config({
         'ajaxForm': ['jQuery'],
         'Bootstrap': ['jQuery'],
         'Backbone': ['Underscore', 'jQuery'],
-        'app': ['Backbone', 'less']
+        'jQueryUI':['jQuery'],
+        'app': ['Backbone', 'less','jQueryUI']
     }
 });
 
