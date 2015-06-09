@@ -51,6 +51,10 @@ define([
 
         initialize: function () {
             new TopMenuView();
+			$(document).on("click", ".ui-dialog-titlebar-close", function (e) {
+				$(".ui-dialog").remove();
+            });
+			
         },
 
         // load and create view if is exist

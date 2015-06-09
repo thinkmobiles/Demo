@@ -21,16 +21,7 @@ define([
 
         showModal:function(){
 			var modalView  =new ModalView();
-            /*var formString = _.template(modalTemplate)({
-
-            });
-            $(formString).dialog({
-                closeOnEscape: false,
-                dialogClass: "edit-dialog",
-                width: 425
-            });
-*/
-        },
+		},
 
 
         // render template (once! because google maps)
