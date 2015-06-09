@@ -1,7 +1,7 @@
 define([
     'text!templates/home/HomeTemplate.html',
-    'text!templates/home/modalTemplate.html'
-], function (HomeTemplate, modalTemplate) {
+	'views/home/modalView'
+], function (HomeTemplate, ModalView) {
 
     var View;
 
@@ -20,7 +20,8 @@ define([
         },
 
         showModal:function(){
-            var formString = _.template(modalTemplate)({
+			var modalView  =new ModalView();
+            /*var formString = _.template(modalTemplate)({
 
             });
             $(formString).dialog({
@@ -28,6 +29,7 @@ define([
                 dialogClass: "edit-dialog",
                 width: 425
             });
+*/
         },
 
 
