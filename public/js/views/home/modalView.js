@@ -13,12 +13,16 @@ define([
 
 
         initialize: function () {
+			this.modal = null;
             this.render();
         },
 
         newViewer:function(){
 			this.dialog.remove();
-			var modalView  =new ModalView();
+			if(this.modal){
+				this.modal.undelegateEvents();
+			}
+			this.modal =new ModalView();
         },
 
 
