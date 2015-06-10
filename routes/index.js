@@ -26,6 +26,7 @@ module.exports = function (app, db) {
         res.sendfile('index.html');
     });
 
+    app.post('/addCompany', userHandler.addCompany);
     app.get('/isAuth', session.isAuthenticatedUser);
     app.post('/signUp', userHandler.signUp);
     app.get('/redirect', userHandler.redirect);

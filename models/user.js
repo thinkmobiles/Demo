@@ -12,7 +12,6 @@ module.exports = (function () {
     var ORGANIZATION_MAX_LENGTH = CONSTANTS. ORGANIZATION_MAX_LENGTH;
     var COMMENTS_MAX_LENGTH = CONSTANTS. COMMENTS_MAX_LENGTH;
 
-
     var mongoose = require('mongoose');
     var ObjectId = mongoose.Schema.Types.ObjectId;
 

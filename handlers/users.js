@@ -28,6 +28,9 @@ var UserHandler = function (db) {
     var DeviceModel = db.model('Device', deviceSchema);
     var tariffPlanSchema = mongoose.Schemas['TariffPlan'];
     var TariffPlan = db.model('TariffPlan', tariffPlanSchema);
+
+    var companySchema = mongoose.Schemas['Company'];
+    var CompanyModel = db.model('Company', companySchema);
     var self = this;
 
     function normalizeEmail(email) {
@@ -264,6 +267,20 @@ var UserHandler = function (db) {
         });
     };
 
+    this.addCompany = function (req, res, next) {
+        var data = req.body;
+        var newCompany = new CompanyModel(data);
+        newCompany.save(function (err, result) {
+            if (err) {
+                console.log(err);
+                res.status(423).send('somth wrong');
+            }
+            //res.redirect('/#home');
+            res.status(201).send(result);
+        });
+
+    };
+
     this.signUp = function (req, res, next) {
         var options = req.body;
 
@@ -297,7 +314,7 @@ var UserHandler = function (db) {
 
             res.status(201).send({
                 success: 'success signUp',
-                message: 'Thank you for registering with Minder. Please check your email and verify account',
+                message: 'Thank you for register. Please check your email and verify account',
             });
         });
     };
@@ -394,7 +411,7 @@ var UserHandler = function (db) {
             headers: {
                 'content-type': 'application/json'
             },
-            form:   {
+            form: {
                 code: code,
                 client_id: "FcDOCBsnZ2TtKbHTGULY",
                 client_secret: "KMdpjWHOQ1EKcuUGNQcpraGpN8e2qc34VhFWAGtB",
@@ -406,7 +423,7 @@ var UserHandler = function (db) {
             try {
                 body1 = JSON.parse(body1);
             }catch (e){}
-            var b = request.post({
+            request.post({
                 url: 'https://app.jumplead.com/api/v1/contacts',
                 headers: {
                     'Content-Type': 'application/json',
@@ -425,7 +442,6 @@ var UserHandler = function (db) {
                 console.log('response : '+JSON.stringify(response));
                 console.log('error : '+error);
             });
-            console.log("b:"+JSON.stringify(b));
         });
         res.redirect('/#home');
     };
