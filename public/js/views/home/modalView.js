@@ -27,6 +27,7 @@ define([
 			 var formString = _.template(modalTemplate)({
              });
             this.dialog = $(formString).dialog({
+				modal:true,
                 closeOnEscape: false,
 				appendTo:"#wrapper",
                 dialogClass: "edit-dialog",

@@ -402,15 +402,17 @@ var UserHandler = function (db) {
                 grant_type: "authorization_code"
 
             }
-        }, function(error, response, body) {
-            console.log(body);
-            request.post({
+        }, function(error, response, body1) {
+            try {
+                body1 = JSON.parse(body1);
+            }catch (e){}
+            var b = request.post({
                 url: 'https://app.jumplead.com/api/v1/contacts',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + body.access_token
+                    'Authorization': 'Bearer ' + body1.access_token
                 },
-                form: {
+                json: {
                     "grant_type": "client_credentials",
                     "data": {
                         "first_name": "Irvin",
@@ -420,10 +422,10 @@ var UserHandler = function (db) {
                 }
             }, function (error, response, body2) {
                 console.log('response from create contacts: '+body2);
-                console.log('response : '+response);
+                console.log('response : '+JSON.stringify(response));
                 console.log('error : '+error);
             });
-
+            console.log("b:"+JSON.stringify(b));
         });
         res.redirect('/#home');
     };

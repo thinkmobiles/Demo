@@ -7,7 +7,6 @@ define([
 
     View = Backbone.View.extend({
         className: "mainPage",
-        isNew: true,
 
         events: {
             "click .showModal":"showModal"
@@ -24,7 +23,6 @@ define([
 		},
 
 
-        // render template (once! because google maps)
         render: function () {
             this.$el.html(_.template(HomeTemplate));
             return this;
