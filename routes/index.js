@@ -6,6 +6,7 @@ var logWriter = require('../helpers/logWriter')();
 var SessionHandler = require('../handlers/sessions');
 var UserHandler = require('../handlers/users');
 var TariffPlanHandler = require('../handlers/tariffPlan');
+var multipart = require( 'connect-multiparty' )();
 
 module.exports = function (app, db) {
     var session = new SessionHandler();
@@ -28,6 +29,7 @@ module.exports = function (app, db) {
 
     app.get('/isAuth', session.isAuthenticatedUser);
     app.post('/signUp', userHandler.signUp);
+    app.post('/upload', multipart, userHandler.upload);
     app.get('/redirect', userHandler.redirect);
     app.post('/signIn', userHandler.signIn);
     app.post('/signOut', session.kill);

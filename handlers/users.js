@@ -18,6 +18,11 @@ var mailer = require('../helpers/mailer');
 
 var SessionHandler = require('./sessions');
 
+var LocalFs = require( './fileStorage/localFs' )();
+var localFs = new LocalFs();
+var path = require('path');
+var fs = require('fs');
+
 var UserHandler = function (db) {
     var session = new SessionHandler(db);
 
@@ -312,6 +317,16 @@ var UserHandler = function (db) {
         } else {
             return next(badRequests.NotEnParams({}));
         }
+    };
+    this.upload = function (req, res, next) {
+        fs.readFile(req.files.image.path, function (err, data) {
+            localFs.postFile("video",req.files.image.originalFilename,data,function(err){
+                console.log(err);
+                res.status(200).send({success: 'success confirmed'});
+            });
+        });
+
+
     };
 
     this.confirmEmail = function (req, res, next) {

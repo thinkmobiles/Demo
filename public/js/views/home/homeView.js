@@ -14,12 +14,15 @@ define([
 
 
         initialize: function () {
-
+			this.modal = null;
             this.render();
         },
 
         showModal:function(){
-			var modalView  =new ModalView();
+			if(this.modal){
+				this.modal.undelegateEvents();
+			}
+			this.modal =new ModalView();
 		},
 
 
