@@ -11,7 +11,6 @@ module.exports = function (app, db) {
     var session = new SessionHandler();
     var userHandler = new UserHandler(db);
     var tariffPlanHandler = new TariffPlanHandler(db);
-    var devicesRouter;
     var stripePlansRouter;
 
     // -----------------------
@@ -29,6 +28,7 @@ module.exports = function (app, db) {
 
     app.get('/isAuth', session.isAuthenticatedUser);
     app.post('/signUp', userHandler.signUp);
+    app.get('/redirect', userHandler.redirect);
     app.post('/signIn', userHandler.signIn);
     app.post('/signOut', session.kill);
     app.get('/now', session.authenticatedUser, function (req, res, next) {

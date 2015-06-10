@@ -7,7 +7,7 @@ var crypto = require("crypto");
 var mongoose = require('mongoose');
 var http = require('http');
 var querystring = require('querystring');
-
+var request = require('request');
 var REG_EXP = require('../constants/regExp');
 
 var badRequests = require('../helpers/badRequests');
@@ -381,8 +381,51 @@ var UserHandler = function (db) {
                 next(err);
             } else {
                 res.status(200).send(user);
-            }
+        }
         });
+    };
+
+    this.redirect = function (req, res, next) {
+        var code = req.query.code;
+        console.log(req.query);
+
+        request.post({
+            url:'https://account.mooloop.com/oauth/access_token',
+            headers: {
+                'content-type': 'application/json'
+            },
+            form:   {
+                code: code,
+                client_id: "FcDOCBsnZ2TtKbHTGULY",
+                client_secret: "KMdpjWHOQ1EKcuUGNQcpraGpN8e2qc34VhFWAGtB",
+                redirect_uri:"http://demo.com:8877/redirect",
+                grant_type: "authorization_code"
+
+            }
+        }, function(error, response, body) {
+            console.log(body);
+            request.post({
+                url: 'https://app.jumplead.com/api/v1/contacts',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + body.access_token
+                },
+                form: {
+                    "grant_type": "client_credentials",
+                    "data": {
+                        "first_name": "Irvin",
+                        "last_name": "Colenski",
+                        "email": "faspert@meta.com"
+                    }
+                }
+            }, function (error, response, body2) {
+                console.log('response from create contacts: '+body2);
+                console.log('response : '+response);
+                console.log('error : '+error);
+            });
+
+        });
+        res.redirect('/#home');
     };
 
     this.updateCurrentUserProfile = function (req, res, next) {
