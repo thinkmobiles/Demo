@@ -1,3 +1,30 @@
+@font-face {
+    font-family: "LatoRegular";
+    src: url("../fonts/Lato-Regular.eot");
+    src: url("../fonts/Lato-Regular.eot?#iefix")format("embedded-opentype"),
+    url("../fonts/Lato-Regular.woff") format("woff"),
+    url("../fonts/Lato-Regular.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+@font-face {
+    font-family: "LatoSemiBold";
+    src: url("../fonts/Lato-Semibold.eot");
+    src: url("../fonts/Lato-Semibold.eot?#iefix")format("embedded-opentype"),
+    url("../fonts/Lato-Semibold.woff") format("woff"),
+    url("../fonts/Lato-Semibold.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+@font-face {
+    font-family: "LatoLight";
+    src: url("../fonts/Lato-Light.eot");
+    src: url("../fonts/Lato-Light.eot?#iefix")format("embedded-opentype"),
+    url("../fonts/Lato-Light.woff") format("woff"),
+    url("../fonts/Lato-Light.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
 .mp{
 	margin: 0;
 	padding: 0;
@@ -19,6 +46,7 @@
 }
 html,body{
 	.mp;
+    font-family: "LatoRegular";
 }
 
 .topMenu{
@@ -31,8 +59,9 @@ html,body{
 		#logo{
 			.lh(120px);
 			float:left;
-			font-size:30px;
+			font-size:36px;
 			color:white;
+			text-decoration:none;
 			span{
 				color:#44cbff;
 			}
@@ -44,6 +73,7 @@ html,body{
 			li{
 				float:left;
 				a{
+					font-size:18px;
 					text-decoration:none;
 					line-height:120px;
 					padding:10px 20px;
@@ -66,8 +96,19 @@ html,body{
 	}
 }
 .homePage{
+	padding-top:160px;
+	width:570px;
 	h1{
 		.mp;
+		font-size:54px;
+		color:#333333;
+		font-weight:normal;
+	}
+	span{
+		display:block;
+		font-size:24px;
+		color:white;
+		padding:40px 0 40px 0;
 	}
 	.blue{
 		.lh(50px);
@@ -81,6 +122,7 @@ html,body{
 		font-size:20px;
 		float:left;
 		margin-right:20px;
+		cursor:pointer;
 	}
 	.opacity{
 		.lh(50px);
@@ -96,6 +138,60 @@ html,body{
 		float:left;
 	}
 }
+
+.whatIs{
+	.inner{
+		width:1070px;
+		margin:0 auto;
+		.i("ipad.png");
+		background-position:100% 80px;
+		h2{
+			text-align:center;
+			font-family: "LatoSemiBold";
+			font-size:34px;
+		}
+		.line{
+			width:60px;
+			border-top:2px solid #b3b3b3;
+			margin:0 auto;
+			margin-bottom:60px;
+		}
+	.blue{
+		.lh(50px);
+		width:285px;
+		display:block;
+		text-align:center;
+		background-color:#66d4ff;
+		border-radius:5px;
+		color:white;
+		border:none;
+		font-size:20px;
+		float:left;
+		margin-right:20px;
+		cursor:pointer;
+		margin-top: 50px;
+		margin-bottom: 100px;
+	}
+		.left{
+			width:400px;
+			h4{
+				font-family: "LatoSemiBold";
+				font-size:26px;
+				margin-bottom:0px;
+			}
+			span{
+				font-family: "LatoRegular";
+				font-size:18px;
+				color:#646566;
+				line-height:27px;
+			}
+		}
+		.right{
+			float:right;
+		}
+	}
+}
+
 .ui-dialog{
 	.ui-widget-header{
 		background:none;
@@ -125,4 +221,61 @@ html,body{
 	.i("bg.jpg");
 	margin-top:-120px;
 	padding-top:120px;
+	height:722px;
+}
+.logo{
+	.lh(120px);
+	font-size:36px;
+	color:white;
+	text-decoration:none;
+	span{
+		color:#44cbff;
+	}
+}
+footer{
+  background-color: #414243;
+  height:580px;
+  position:relative;
+  .inner{
+	  width:1070px;
+	  margin:0 auto;
+	  >div{
+		  float:left;
+		  width:33.33%;
+		  color:white;
+		  h3{
+			  margin-top:95px;
+			  font-size:26px;
+			  margin-bottom:45px;
+		  }
+		  h2.logo{
+			  .mp;
+			  margin-top:95px;
+			  margin-bottom:37px;
+			  .lh(39px)
+		  }
+		  ul{
+			  .mp;
+			  list-style:none;
+			  
+			  li{
+				  a{
+					  color:white;
+					  text-decoration:none;
+				  }
+			  }
+		  }
+	  }
+  }
+  .bottom{
+	  .lh(100px);
+	  text-align:center;
+	  color:#808080;
+	  font-size:18px;
+	  position:absolute;
+	  left:0px;
+	  bottom:0px;
+	  width:100%;
+	  background-color:rgba(0,0,0,0.2);
+  }
 }
