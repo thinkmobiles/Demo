@@ -25,6 +25,24 @@
     font-style: normal;
     font-weight: normal;
 }
+@font-face {
+    font-family: "LatoItalic";	
+    src: url("../fonts/Lato-Italic.eot");
+    src: url("../fonts/Lato-Italic.eot?#iefix")format("embedded-opentype"),
+    url("../fonts/Lato-Italic.woff") format("woff"),
+    url("../fonts/Lato-Italic.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+@font-face {
+    font-family: "LatoMedium";
+    src: url("../fonts/Lato-Medium.eot");
+    src: url("../fonts/Lato-Medium.eot?#iefix")format("embedded-opentype"),
+    url("../fonts/Lato-Medium.woff") format("woff"),
+    url("../fonts/Lato-Medium.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
 .mp{
 	margin: 0;
 	padding: 0;
@@ -143,9 +161,8 @@ html,body{
 	.inner{
 		width:1070px;
 		margin:0 auto;
-		.i("ipad.png");
-		background-position:100% 80px;
 		h2{
+			margin-top:90px;
 			text-align:center;
 			font-family: "LatoSemiBold";
 			font-size:34px;
@@ -169,10 +186,12 @@ html,body{
 		float:left;
 		margin-right:20px;
 		cursor:pointer;
-		margin-top: 50px;
+		margin-top: 31px;
 		margin-bottom: 100px;
 	}
 		.left{
+			position:relative;
+	
 			width:400px;
 			h4{
 				font-family: "LatoSemiBold";
@@ -185,6 +204,11 @@ html,body{
 				color:#646566;
 				line-height:27px;
 			}
+			img{
+				position:absolute;
+				right:-710px;
+				top:0px;
+			}
 		}
 		.right{
 			float:right;
@@ -192,6 +216,62 @@ html,body{
 	}
 }
 
+
+.whatSay{
+	border-top:1px solid silver;
+	.inner{
+		width:1070px;
+		margin:0 auto;
+		text-align:center;
+		h2{
+			margin-top:100px;
+			text-align:center;
+			font-family: "LatoSemiBold";
+			font-size:34px;
+		}
+		.line{
+			.i("line.png");
+			width:180px;
+			height:16px;
+			margin:0 auto;
+			margin-bottom:38px;
+			
+		}
+		em{
+			font-family: "LatoItalic";			
+			font-size:24px;
+			color:#646566;
+		}
+		>span{
+			color:#969799;
+			font-size:16px;
+			span{
+				font-family: "LatoMedium";	
+				color:#44cbff;
+			}
+		}
+		.arrows{
+			height:32px;
+			width:80px;
+			margin:0 auto;
+			margin-top:45px;
+			margin-bottom:110px;
+			.arrow-left{
+				.i("arrow-left.png");
+				width:32px;
+				height:32px;
+				float:left;
+			}
+			.arrow-right{
+				.i("arrow-right.png");
+				width:32px;
+				height:32px;
+				float:right;
+			}
+
+		}
+	}
+}
 .ui-dialog{
 	.ui-widget-header{
 		background:none;
