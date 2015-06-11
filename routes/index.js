@@ -28,9 +28,9 @@ module.exports = function (app, db) {
     });
 
     app.post('/addCompany', userHandler.addCompany);
+    app.post('/upload', multipart, userHandler.upload);
     app.get('/isAuth', session.isAuthenticatedUser);
     app.post('/signUp', userHandler.signUp);
-    app.post('/upload', multipart, userHandler.upload);
     app.get('/redirect', userHandler.redirect);
     app.post('/signIn', userHandler.signIn);
     app.post('/signOut', session.kill);

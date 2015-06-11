@@ -8,7 +8,7 @@ module.exports = function () {
         var self = this;
         var defaultOptions = {};
 
-        var defaultPublicDir = 'public';
+        var defaultPublicDir = 'public/video';
         var defaultFileDir = process.env.FOLDER_NAME || 'uploads';
 
         this.getFileUrl = function (folderName, fileName, options, callback) {
@@ -22,7 +22,7 @@ module.exports = function () {
             if (callback) {
                 callback(null, fileUrl);
             }
-        }
+        };
 
         function getFilePath(folderName, fileName) {
             var folder = folderName || defaultFileDir;
@@ -49,7 +49,7 @@ module.exports = function () {
                     }
                 });
             }
-        }
+        };
 
         //used from mkdirp //copied from https://www.reasoncoresecurity.com/index.js-aac43011740bff785368c2a80bc05dacab5e1dd2.aspx
         function makeDir(p, opts, f, made) {

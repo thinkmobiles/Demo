@@ -272,19 +272,7 @@ var UserHandler = function (db) {
         });
     };
 
-    this.addCompany = function (req, res, next) {
-        var data = req.body;
-        var newCompany = new CompanyModel(data);
-        newCompany.save(function (err, result) {
-            if (err) {
-                console.log(err);
-                res.status(423).send('somth wrong');
-            }
-            //res.redirect('/#home');
-            res.status(201).send(result);
-        });
 
-    };
 
     this.signUp = function (req, res, next) {
         var options = req.body;
@@ -319,7 +307,7 @@ var UserHandler = function (db) {
 
             res.status(201).send({
                 success: 'success signUp',
-                message: 'Thank you for register. Please check your email and verify account',
+                message: 'Thank you for register. Please check your email and verify account'
             });
         });
     };
@@ -335,16 +323,57 @@ var UserHandler = function (db) {
             return next(badRequests.NotEnParams({}));
         }
     };
-    this.upload = function (req, res, next) {
-        fs.readFile(req.files.image.path, function (err, data) {
-            localFs.postFile("video",req.files.image.originalFilename,data,function(err){
+
+    this.addCompany = function (req, res, next) {
+        var data = req.body;
+        var newCompany = new CompanyModel(data);
+        newCompany.save(function (err, result) {
+            if (err) {
                 console.log(err);
-                res.status(200).send({success: 'success confirmed'});
-            });
+                res.status(423).send('somth wrong');
+            }
+            //res.redirect('/#home');
+            res.status(201).send(result);
         });
 
+    };
+
+    this.upload = function (req, res, next) {
+       var data = req.body;
+        //console.log(data.countQuestion);
+        //console.log(JSON.stringify(req.files["image1"]));
+    var insObj = {
+        name: data.name,
+        contactMeInfo: data.contactMeInfo,
+        mainVideoDescription: data.mainVideoDescription
+        };
+
+        var newCompany = new CompanyModel(insObj);
+        newCompany.save(function (err, result) {
+            if (err) {
+                console.log(err);
+                next(err);
+            }
+            for(var i = data.countQuestion; i>0; i--){
+                var name = "image" + i;
+                console.log('name  '+ name+ '\n path  '+ req.files[name].path);
+                fs.readFile(req.files[name].path, function (err, data) {
+                    //console.log(data);
+                    localFs.postFile(result._id.toString()/*"video"*/, req.files[name].originalFilename, data,function(err){
+                        if(err) console.log(err);
+                    });
+                });
+            }
+        });
+        /*fs.readFile(req.files.image.path, function (err, data) {
+            localFs.postFile("video",req.files.image.originalFilename,data,function(err){
+               if(err) console.log(err);
+            });*/
+
+        res.status(200).send({success: 'success confirmed'});
 
     };
+
 
     this.confirmEmail = function (req, res, next) {
         var confirmToken = req.params.confirmToken;

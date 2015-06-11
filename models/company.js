@@ -4,23 +4,26 @@ module.exports = (function () {
     var mongoose = require('mongoose');
     var ObjectId = mongoose.Schema.Types.ObjectId;
 
-    var videoSchema= new mongoose.Schema({
-        uri: {type: String, required: true},
-        question: {type: String, required: true},
-        pdf: {
-            name: {type: String, required: true},
-            uri: {type: String, required: true}
-        }
+    var surveySchems= new mongoose.Schema({
+        question: {type: String},
+
+        videoName: {type: String},
+        videoUri: {type: String},
+
+        pdfName: {type: String},
+        pdfUri: {type: String}
     },{versionKey: false, _id: false});
 
     var companySchema = mongoose.Schema({
-        name: {type: String, required: true, unique: true},
+        name: {type: String/*, required: true, unique: true*/},
         logoUri: {type: String},
-        mainVideo: {
-            uri: { type: String},
-            description: {type: String}
-        },
-        additionalVideo: [videoSchema],
+        contactMeInfo: {type: String},
+
+        mainVideoName: {type: String},
+        mainVideoDescription: {type: String},
+        mainVideoUri: { type: String},
+
+        survey: [surveySchems],
         createdAt: {type: Date, default: Date.now},
         updatedAt: {type: Date, default: Date.now}
     }, {collection: 'Companies'});
