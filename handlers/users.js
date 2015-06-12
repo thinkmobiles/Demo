@@ -132,18 +132,18 @@ var UserHandler = function (db) {
 
         //create user:
         var newUser = new UserModel(userData);
-                newUser.save(function (err, result) {
-                    if (err) {
-                        if (callback && (typeof callback === 'function')) {
-                            callback(err);
-                        }
-                    } else {
-                        if (callback && (typeof callback === 'function')) {
-                            callback(null, result);
-                        }
-                    }
-                });
-            };
+        newUser.save(function (err, result) {
+            if (err) {
+                if (callback && (typeof callback === 'function')) {
+                    callback(err);
+                }
+            } else {
+                if (callback && (typeof callback === 'function')) {
+                    callback(null, result);
+                }
+            }
+        });
+    };
 
     function updateUserProfile(userId, options, callback) {
         var update = options;
@@ -273,7 +273,6 @@ var UserHandler = function (db) {
     };
 
 
-
     this.signUp = function (req, res, next) {
         var options = req.body;
 
@@ -301,7 +300,7 @@ var UserHandler = function (db) {
             }
 
         ], function (err) {
-           if (err) {
+            if (err) {
                 return next(err);
             }
 
@@ -337,41 +336,172 @@ var UserHandler = function (db) {
         });
 
     };
+    this.testUpload = function (req, res, next) {
+        var data = req.body;
+        var files = req.files;
+        var sep = path.sep;
 
+        async.series([
+            function (cb) {
+                if (!files.file1)cb(err);
+                var arr = [];
+                if (!files.file1.length) {
+                    arr[0] = files.file1;
+                }
+                else {
+                    arr = files.file1;
+                }
+
+                var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString() + sep + 'survey' + sep + 'pdf';
+                async.each(arr, function (file, callback) {
+
+                    upFile(url, file, function (err, pdfUri) {
+                        if (err) callback(err);
+                        CompanyModel.findByIdAndUpdate(result._id, {$addToSet: {survey: {pdfUri: pdfUri}}}, function (err, company) {
+                            if (err) callback(err);
+                            callback(null)
+                        });
+                    });
+                }, function (err) {
+                    if (err) {
+                        cb(err);
+                    }
+                    cb();
+                });
+                //end pdf------------------------------------------------------------------------------------
+            }], function (err) {
+
+            if (err) return next(err);
+            res.status(201).send({
+                success: 'success signUp',
+                message: 'Thank you for register. Please check your email and verify account'
+            });
+        });
+
+    };
+
+    function upFile(target, file, callback) {
+        fs.readFile(file.path, function (err, data) {
+            localFs.setFile(target, file.originalFilename, data, function (err) {
+                if (err)return callback(err);
+                var uri = path.join(target, file.originalFilename);
+                return callback(null, uri);
+            });
+        });
+    };
+
+    function saveMainVideo(id, files, callback) {
+        var sep = path.sep;
+        var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString();
+
+        upFile(url, files['video'], function (err, mainVideoUri) {
+            if (err)return callback(err);
+
+            var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString();
+            upFile(url, files['logo'], function (err, logoUri) {
+                if (err) return callback(err);
+
+                CompanyModel.findByIdAndUpdate(id, {$set: {mainVideoUri: mainVideoUri, logoUri: logoUri}},
+                    function (err, company) {
+                        if (err) return callback(err);
+                        callback(null);
+                    });
+            });
+        });
+    };
+
+    function saveSurveyVideo(id, files, data, callback) {
+        var sep = path.sep;
+        var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString() + sep + 'survey';
+        upFile(url, files.['video1'], function (err, videoUri) {
+            if (err) callback(err);
+            var insSurvey = {
+                question: data.question,
+                videoUri: videoUri
+            };
+            CompanyModel.findByIdAndUpdate(id, {$addToSet: {survey: insSurvey}}, function (err, company) {
+                if (err) callback(err);
+                callback(null)
+            });
+        });
+    };
+
+    function saveSurveyFiles(id, files, data, cb) {
+        var sep = path.sep;
+        if (!files.file1)cb(err);
+        var arr = [];
+        if (!files.file1.length) {
+            arr[0] = files.file1;
+        }
+        else {
+            arr = files.file1;
+        }
+        var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString() + sep + 'survey' + sep + 'pdf';
+        async.each(arr, function (file, callback) {
+
+            upFile(url, file, function (err, pdfUri) {
+                if (err) callback(err);
+                CompanyModel.findOneAndUpdate({
+                    "_id": id,
+                    "survey.question": data.question
+                }, {$addToSet: {"survey.$.pdfUri": pdfUri}}, function (err, company) {
+                    if (err) return callback(err);
+                    callback(null)
+                });
+            });
+        }, function (err) {
+            if (err) {
+                return cb(err);
+            }
+            cb();
+        });
+    };
+    //========================================================
+    function saveSurvey(count, id, files, data, cb) {
+        saveSurveyVideo(id, files, data, callback);
+
+    };
+    //========================================================
     this.upload = function (req, res, next) {
-       var data = req.body;
-        //console.log(data.countQuestion);
-        //console.log(JSON.stringify(req.files["image1"]));
-    var insObj = {
-        name: data.name,
-        contactMeInfo: data.contactMeInfo,
-        mainVideoDescription: data.mainVideoDescription
+        var data = req.body;
+        var files = req.files;
+
+        var insObj = {
+            name: data.name,
+            contactMeInfo: data.contact,
+            mainVideoDescription: data.desc
         };
 
         var newCompany = new CompanyModel(insObj);
         newCompany.save(function (err, result) {
-            if (err) {
-                console.log(err);
-                next(err);
-            }
-            for(var i = data.countQuestion; i>0; i--){
-                var name = "image" + i;
-                console.log('name  '+ name+ '\n path  '+ req.files[name].path);
-                fs.readFile(req.files[name].path, function (err, data) {
-                    //console.log(data);
-                    localFs.postFile(result._id.toString()/*"video"*/, req.files[name].originalFilename, data,function(err){
-                        if(err) console.log(err);
-                    });
-                });
-            }
+            if (err) next(err);
+            var id = result._id;
+
+           async.series([
+               function (cb) {
+                   saveMainVideo(id, files, cb);
+               },
+
+           //video
+               function (cb) {
+                   saveSurveyVideo(id, files, data, cb);
+               },
+
+            //pdf files
+               function (cb) {
+                   saveSurveyFiles(id, files, data, cb);
+
+               }], function (err) {
+
+               if (err) return next(err);
+               res.status(201).send({
+                   success: 'success signUp',
+                   message: 'Thank you for register. Please check your email and verify account'
+               });
+           });
+
         });
-        /*fs.readFile(req.files.image.path, function (err, data) {
-            localFs.postFile("video",req.files.image.originalFilename,data,function(err){
-               if(err) console.log(err);
-            });*/
-
-        res.status(200).send({success: 'success confirmed'});
-
+        localFs.defaultPublicDir = 'public';
     };
 
 

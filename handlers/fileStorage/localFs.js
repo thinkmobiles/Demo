@@ -8,7 +8,10 @@ module.exports = function () {
         var self = this;
         var defaultOptions = {};
 
-        var defaultPublicDir = 'public/video';
+        
+
+         this.defaultPublicDir = 'public';
+
         var defaultFileDir = process.env.FOLDER_NAME || 'uploads';
 
         this.getFileUrl = function (folderName, fileName, options, callback) {
@@ -26,29 +29,50 @@ module.exports = function () {
 
         function getFilePath(folderName, fileName) {
             var folder = folderName || defaultFileDir;
-            return path.join(defaultPublicDir, folder, fileName);
+            return path.join(this.defaultPublicDir, folder, fileName);
         }
 
         this.postFile = function (folderName, fileName, options, callback) {
-
-            var targetPath = path.join(defaultPublicDir, folderName);
-            var filePath = path.join(defaultPublicDir, folderName, fileName);
-
-            if (fs.existsSync(targetPath)) {
-                writeFile(filePath, options, callback);
-            } else {
-                makeDir(targetPath, function (err) {
-                    if (err) {
-                        if (callback) {
-                            callback(err);
+            var targetPath = path.join(this.defaultPublicDir, folderName);
+            var filePath = path.join(this.defaultPublicDir, folderName, fileName);
+            fs.exists(targetPath, function (exists) {
+                if (exists) {
+                    writeFile(filePath, options, callback);
+                } else {
+                    makeDir(targetPath, function (err) {
+                        if (err) {
+                            if (callback) {
+                                callback(err);
+                            } else {
+                                console.error('Make dir error ' + err.message);
+                            }
                         } else {
-                            console.error('Make dir error ' + err.message);
+                            writeFile(filePath, options, callback);
                         }
-                    } else {
-                        writeFile(filePath, options, callback);
-                    }
-                });
-            }
+                    });
+                }
+            });
+        };
+        this.setFile = function (targetPath, fileName, data, callback) {
+            var filePath = path.join(targetPath, fileName);
+            fs.exists(targetPath, function (exists) {
+                if (exists) {
+                    writeFile(filePath, data, callback);
+                } else {
+                    makeDir(targetPath, function (err) {
+                        if (err) {
+                            if (callback) {
+                                callback(err);
+                            } else {
+                                console.error('Make dir error ' + err.message);
+                            }
+                        } else {
+                            writeFile(filePath, data, callback);
+                        }
+                    });
+                }
+            });
+
         };
 
         //used from mkdirp //copied from https://www.reasoncoresecurity.com/index.js-aac43011740bff785368c2a80bc05dacab5e1dd2.aspx
@@ -130,7 +154,7 @@ module.exports = function () {
                 callback = arguments[arguments.length - 1];
             }
 
-            var imagePath = path.join(defaultPublicDir, folderName, fileName);
+            var imagePath = path.join(this.defaultPublicDir, folderName, fileName);
 
             fs.unlink(imagePath, function (err) {
                 if (callback) {
