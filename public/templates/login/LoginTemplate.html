@@ -1,8 +1,8 @@
 <div class="login">
   <div class="inner">
 	<form action="/upload" enctype="multipart/form-data" method="post">
-	  <input name="countQuestion" value="1" type="hidden"/>
-		
+	  <input name="countQuestion" value="1" type="hidden" class="countQuestion"/>
+	  
 	  <h2>STEP1: CHOOSE YOUR MAIN VIDEO</h2>
 	  <div class="left">
 		<span>Please enter brief description:</span><br/>
@@ -33,45 +33,51 @@
 	  <span>Potential leads will be asked to indicate their level of interest in a topic. Levels of interest include: Not Important, Somewhat Important and Very Important</span>
 	  <div class="clear">
       </div>
-	  <div class="left">
-		<span>Please enter brief description:</span>
-		<textarea  name="question1"></textarea>
-	  </div>
-	  <div class="right">
-		<span>Upload video from computer:</span>
-		<div class="uploadContainer file">
-          <div class="left">
-			<input type="text" placeholder="Drop file here" readonly="readonly"/>
-          </div>
-          <div class="right">
-          </div>
-		  <input type="file" name="video1"/><br/>
-        </div><br/>
-		<span>Or paste a link:</span>
-		<div class="uploadContainer link">
-          <div class="left">
-			<input type="text" name="video1"/>
-          </div>
-          <div class="right">
-          </div>
-        </div>
-	  </div>
-	  <div class="clear">
-      </div>
-	  <div class="left">
-		<span>Upload related PDF’s (You can choose more than one file): </span>
-		<div class="uploadContainer file long">
-          <div class="left">
-			<input type="text" placeholder="Or drop file here" readonly="readonly"/>
-          </div>
-          <div class="right">
-          </div>
-		  <input type="file" name="file1" multiple/><br/>
-        </div>
-	  </div>
-	  <div class="right">
-		<span>&nbsp;</span><br/>
-		<button class="question">ADD QUESTION</button>
+	  <div class="collapseQuestions"></div>
+	  
+	  <div class="videoContainer">
+		<div class="videoElement">
+		  <div class="left">
+			<span>Please enter brief description:</span>
+			<textarea  name="question1" class="questionText"></textarea>
+		  </div>
+		  <div class="right">
+			<span>Upload video from computer:</span>
+			<div class="uploadContainer file">
+			  <div class="left">
+				<input type="text" placeholder="Drop file here" readonly="readonly"/>
+			  </div>
+			  <div class="right">
+			  </div>
+			  <input type="file" name="video1"/><br/>
+			</div><br/>
+			<span>Or paste a link:</span>
+			<div class="uploadContainer link">
+			  <div class="left">
+				<input type="text" name="video1"/>
+			  </div>
+			  <div class="right">
+			  </div>
+			</div>
+		  </div>
+		  <div class="clear">
+		  </div>
+		  <div class="left">
+			<span>Upload related PDF’s (You can choose more than one file): </span>
+			<div class="uploadContainer file long">
+			  <div class="left">
+				<input type="text" placeholder="Or drop file here" readonly="readonly"/>
+			  </div>
+			  <div class="right">
+			  </div>
+			  <input type="file" name="file1" multiple/><br/>
+			</div>
+		  </div>
+		  <div class="right">
+			<span>&nbsp;</span><br/>
+			<button class="question">ADD QUESTION</button>
+		  </div>
+		</div>
 	  </div>
 	  <div class="clear">
       </div>

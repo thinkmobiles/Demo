@@ -1,8 +1,10 @@
 define([
     'text!templates/login/LoginTemplate.html',
+    'text!templates/login/collapseQuestion.html',
+    'text!templates/login/videoElement.html',
     'custom',
     'validation'
-], function (LoginTemplate, Custom, validation) {
+], function (LoginTemplate, CollapseQuestion, VideoElement, Custom, validation) {
 
     var View;
     View = Backbone.View.extend({
@@ -12,13 +14,15 @@ define([
 
             // keep data actual
             this.listenTo(this.stateModel, 'change', this.render);
-
+			this.countQuestion = 0;
+			
             this.render();
         },
 
         events: {
             "submit #loginForm": "login",
             "click .decline": "decline",
+            "click .question": "question",
             "click .login-button": "login",
             "click .uploadContainer.file": "browse",
             "change .uploadContainer.file input[type='file']": "changeFile",
@@ -45,6 +49,22 @@ define([
 
 		clickOnFile:function(e){
 			e.stopPropagation();
+	
+		},
+
+		question:function(e){
+			var self = this;
+			e.preventDefault();
+			this.countQuestion++;
+			
+			$(this.$el).find(".collapseQuestions").append(_.template(CollapseQuestion)({
+				question:$(e.target).closest(".videoElement").find(".questionText").val(),
+				video:self.getFiles($(e.target).closest(".videoElement").find(".right .uploadContainer input[type='file']").get(0).files),
+				pdf:self.getFiles($(e.target).closest(".videoElement").find(".left input[type='file']").get(0).files),
+			}));
+			$(this.$el).find(".countQuestion").val(this.countQuestion);
+			$(e.target).closest(".videoElement").hide();
+			$(this.$el).find(".videoContainer").append(_.template(VideoElement)());
 		},
 
 		decline: function(e){
@@ -56,13 +76,17 @@ define([
 			$(e.target).closest(".uploadContainer").find("input[type='file']").click();
 		},
 
-		changeFile:function(e){
-			console.log($(e.target).get(0).files);
+		getFiles:function(files){
 			var s = "";
-			for (var i=0;i<$(e.target).get(0).files.length;i++){
-				s += $(e.target).get(0).files[0].name+" "
+			for (var i=0;i<files.length;i++){
+				s += files[0].name+" "
 			}
-			$(e.target).closest(".uploadContainer").find("input[type='text']").val(s);
+			return s;
+		},
+
+		changeFile:function(e){
+			var self = this;
+			$(e.target).closest(".uploadContainer").find("input[type='text']").val(self.getFiles($(e.target).get(0).files));
 		},
 		
         afterUpend: function () {

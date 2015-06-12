@@ -498,8 +498,8 @@ footer{
 				border:none;
 				outline:none;
 				margin-left:3px;
-				padding:0 17px 0 14px
-				
+				padding:0 17px 0 14px;
+				outline-offset: 0px;
 			}
 		}
 		.right{
@@ -516,6 +516,12 @@ footer{
 		}
 		&.long{
 			width:488px;
+			.left{
+				width:447px;
+				input{
+					width:413px;
+				}
+			}
 		}
 		&.withlogo{
 			width:300px;
@@ -556,6 +562,15 @@ footer{
 			float:left;
 			margin-right:20px;
 			cursor:pointer;
+		}
+	}
+	.collapseQuestion{
+		border:1px solid #dbdbdb;
+		border-radius:5px;
+		padding:0 15px;
+		margin-bottom:10px;
+		h2{
+			margin:10px 0;
 		}
 	}
 }
