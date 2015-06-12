@@ -10,9 +10,22 @@
 	  </div>
 	  <div class="right">
 		<span>Upload video from computer:</span>
-		<input type="file" name="video"/><br/>
+        <div class="uploadContainer file">
+          <div class="left">
+			<input type="text" placeholder="Drop file here" readonly="readonly"/>
+          </div>
+          <div class="right">
+          </div>
+		  <input type="file" name="video"/>
+        </div><br/>
 		<span>Or paste a link:</span>
-		<input type="text" name="video"/>
+		<div class="uploadContainer link">
+          <div class="left">
+			<input type="text" name="video"/>
+          </div>
+          <div class="right">
+          </div>
+        </div>
 	  </div>
       <div class="clear">
       </div>
@@ -26,18 +39,39 @@
 	  </div>
 	  <div class="right">
 		<span>Upload video from computer:</span>
-		<input type="file" name="video1"/><br/>
+		<div class="uploadContainer file">
+          <div class="left">
+			<input type="text" placeholder="Drop file here" readonly="readonly"/>
+          </div>
+          <div class="right">
+          </div>
+		  <input type="file" name="video1"/><br/>
+        </div><br/>
 		<span>Or paste a link:</span>
-		<input type="text" name="video1"/>
+		<div class="uploadContainer link">
+          <div class="left">
+			<input type="text" name="video1"/>
+          </div>
+          <div class="right">
+          </div>
+        </div>
 	  </div>
 	  <div class="clear">
       </div>
 	  <div class="left">
 		<span>Upload related PDF’s (You can choose more than one file): </span>
-		<input type="file" name="file1" multiple/>
+		<div class="uploadContainer file long">
+          <div class="left">
+			<input type="text" placeholder="Or drop file here" readonly="readonly"/>
+          </div>
+          <div class="right">
+          </div>
+		  <input type="file" name="file1" multiple/><br/>
+        </div>
 	  </div>
 	  <div class="right">
-		<button>ADD QUESTION</button>
+		<span>&nbsp;</span><br/>
+		<button class="question">ADD QUESTION</button>
 	  </div>
 	  <div class="clear">
       </div>
@@ -47,7 +81,15 @@
       </div>
 	  <div class="left">
 		<span>Upload your logo from computer:</span><br/>
-		<input type="file" name="logo"/><br/>
+		<div class="uploadContainer file withlogo">
+          <div class="left">
+			<input type="text" placeholder="Or drop file here" readonly="readonly"/>
+          </div>
+          <div class="right">
+          </div>
+		  <input type="file" name="logo" multiple/>
+        </div>
+		<br/>
 	  </div>
 	  <div class="clear">
       </div>
@@ -58,7 +100,10 @@
 	  <textarea  name="contact" class="contact"></textarea>
 	  <div class="clear">
       </div>
-	  <button>DECLINE</button><input type="submit" value="SAVE"/>
+      <div class="buttons">
+		<button class="decline">DECLINE</button><input type="submit" value="SAVE" class="save"/>
+      </div>
+
 	</form>
   </div>
 

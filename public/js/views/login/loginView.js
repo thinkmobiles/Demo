@@ -18,7 +18,11 @@ define([
 
         events: {
             "submit #loginForm": "login",
-            "click .login-button": "login"
+            "click .decline": "decline",
+            "click .login-button": "login",
+            "click .uploadContainer.file": "browse",
+            "change .uploadContainer.file input[type='file']": "changeFile",
+            "click .uploadContainer.file input[type='file']": "clickOnFile"
         },
 
         //reset the data
@@ -39,6 +43,28 @@ define([
             }
         },
 
+		clickOnFile:function(e){
+			e.stopPropagation();
+		},
+
+		decline: function(e){
+			e.preventDefault();
+			window.location="/#home";
+		},
+
+		browse: function(e){
+			$(e.target).closest(".uploadContainer").find("input[type='file']").click();
+		},
+
+		changeFile:function(e){
+			console.log($(e.target).get(0).files);
+			var s = "";
+			for (var i=0;i<$(e.target).get(0).files.length;i++){
+				s += $(e.target).get(0).files[0].name+" "
+			}
+			$(e.target).closest(".uploadContainer").find("input[type='text']").val(s);
+		},
+		
         afterUpend: function () {
             //update page when reopened
             this.setDefaultData();
