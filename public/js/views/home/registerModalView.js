@@ -26,7 +26,7 @@ define([
 				phone : this.$el.find("#phone").val(),
 				organization : this.$el.find("#organization").val(),
 				title : this.$el.find("#title").val(),
-				comments : this.$el.find("#comments").val(),
+				comments : this.$el.find("#comments").val()
             },
 							   {
 								   wait: true,
