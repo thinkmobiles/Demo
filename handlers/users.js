@@ -383,7 +383,9 @@ var UserHandler = function (db) {
     function upFile(target, file, callback) {
         fs.readFile(file.path, function (err, data) {
             localFs.setFile(target, file.originalFilename, data, function (err) {
-                if (err)return callback(err);
+                if (err){
+                    return callback(err);
+                }
                 var uri = path.join(target, file.originalFilename);
                 return callback(null, uri);
             });
@@ -395,57 +397,79 @@ var UserHandler = function (db) {
         var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString();
 
         upFile(url, files['video'], function (err, mainVideoUri) {
-            if (err)return callback(err);
+            if (err){
+                return callback(err);
+            }
 
             var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString();
             upFile(url, files['logo'], function (err, logoUri) {
-                if (err) return callback(err);
+                if (err) {
+                    return callback(err);
+                }
 
                 CompanyModel.findByIdAndUpdate(id, {$set: {mainVideoUri: mainVideoUri, logoUri: logoUri}},
                     function (err, company) {
-                        if (err) return callback(err);
+                        if (err) {
+                            return callback(err);
+                        }
                         callback(null);
                     });
             });
         });
     };
 
-    function saveSurveyVideo(id, files, data, callback) {
+    function saveSurveyVideo(num, id, files, data, callback) {
+        var question = 'question'+num;
+        var name = 'video'+num;
         var sep = path.sep;
-        var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString() + sep + 'survey';
-        upFile(url, files.['video1'], function (err, videoUri) {
-            if (err) callback(err);
+        var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString() + sep + 'survey'+num;
+
+        upFile(url, files[name], function (err, videoUri) {
+            if (err) {
+                callback(err);
+            }
             var insSurvey = {
-                question: data.question,
+                question: data[question],
                 videoUri: videoUri
             };
             CompanyModel.findByIdAndUpdate(id, {$addToSet: {survey: insSurvey}}, function (err, company) {
-                if (err) callback(err);
+                if (err) {
+                    callback(err);
+                }
                 callback(null)
             });
         });
     };
 
-    function saveSurveyFiles(id, files, data, cb) {
+    function saveSurveyFiles(num, id, files, data, cb) {
+        var question = 'question'+num;
+        var name = 'file'+num;
         var sep = path.sep;
-        if (!files.file1)cb(err);
         var arr = [];
-        if (!files.file1.length) {
-            arr[0] = files.file1;
+
+        if (!files[name]){
+            cb(err);
+        }
+        if (!files[name].length) {
+            arr.push(files[name]);
         }
         else {
-            arr = files.file1;
+            arr = files[name];
         }
-        var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString() + sep + 'survey' + sep + 'pdf';
+        var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString() + sep + 'survey'+num + sep + 'pdf';
         async.each(arr, function (file, callback) {
 
             upFile(url, file, function (err, pdfUri) {
-                if (err) callback(err);
+                if (err) {
+                    callback(err);
+                }
                 CompanyModel.findOneAndUpdate({
                     "_id": id,
-                    "survey.question": data.question
+                    "survey.question": data[question]
                 }, {$addToSet: {"survey.$.pdfUri": pdfUri}}, function (err, company) {
-                    if (err) return callback(err);
+                    if (err) {
+                        return callback(err);
+                    }
                     callback(null)
                 });
             });
@@ -456,15 +480,13 @@ var UserHandler = function (db) {
             cb();
         });
     };
-    //========================================================
-    function saveSurvey(count, id, files, data, cb) {
-        saveSurveyVideo(id, files, data, callback);
 
-    };
+
     //========================================================
     this.upload = function (req, res, next) {
         var data = req.body;
         var files = req.files;
+        
 
         var insObj = {
             name: data.name,
@@ -474,26 +496,24 @@ var UserHandler = function (db) {
 
         var newCompany = new CompanyModel(insObj);
         newCompany.save(function (err, result) {
-            if (err) next(err);
+            if (err){
+                next(err);
+            }
             var id = result._id;
 
            async.series([
                function (cb) {
                    saveMainVideo(id, files, cb);
                },
-
-           //video
                function (cb) {
-                   saveSurveyVideo(id, files, data, cb);
-               },
-
-            //pdf files
-               function (cb) {
-                   saveSurveyFiles(id, files, data, cb);
-
+                   for(var i=data.countQuestion; i>0; i--){
+                       async.applyEachSeries([saveSurveyVideo, saveSurveyFiles ],i, id, files, data, cb);
+                   }
                }], function (err) {
+               if (err) {
+                   return next(err);
+               }
 
-               if (err) return next(err);
                res.status(201).send({
                    success: 'success signUp',
                    message: 'Thank you for register. Please check your email and verify account'
