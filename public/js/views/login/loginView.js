@@ -64,7 +64,7 @@ define([
 			}));
 			$(this.$el).find(".countQuestion").val(this.countQuestion);
 			$(e.target).closest(".videoElement").hide();
-			$(this.$el).find(".videoContainer").append(_.template(VideoElement)());
+			$(this.$el).find(".videoContainer").append(_.template(VideoElement)({index:this.countQuestion+1}));
 		},
 
 		decline: function(e){

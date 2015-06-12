@@ -1,7 +1,7 @@
 <div class="videoElement">
   <div class="left">
 	<span>Please enter brief description:</span>
-	<textarea  name="question1" class="questionText"></textarea>
+	<textarea  name="question<%=index%>" class="questionText"></textarea>
   </div>
   <div class="right">
 	<span>Upload video from computer:</span>
@@ -11,12 +11,12 @@
 	  </div>
 	  <div class="right">
 	  </div>
-	  <input type="file" name="video1"/><br/>
+	  <input type="file" name="video<%=index%>"/><br/>
 	</div><br/>
 	<span>Or paste a link:</span>
 	<div class="uploadContainer link">
 	  <div class="left">
-		<input type="text" name="video1"/>
+		<input type="text" name="video<%=index%>"/>
 	  </div>
 	  <div class="right">
 	  </div>
@@ -32,7 +32,7 @@
 	  </div>
 	  <div class="right">
 	  </div>
-	  <input type="file" name="file1" multiple/><br/>
+	  <input type="file" name="file<%=index%>" multiple/><br/>
 	</div>
   </div>
   <div class="right">
