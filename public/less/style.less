@@ -443,10 +443,12 @@ footer{
 		font-family: "LatoSemiBold";
 		font-size:18px;
 		color:#333333;
+		margin-top:60px;
 	}
 	span{
 		color:#a0a2a3;
 		font-size:14px;
+		line-height: 30px;
 	}
 	.left{
 		width:482px;
@@ -456,15 +458,154 @@ footer{
 			height:143px;
 			width:482px;
 			resize:none;
+			border:1px solid #dbdbdb;
 		}
 	}
 	.right{
 		width:260px;
 		float:right;
+		.question{
+			.lh(50px);
+			width:261px;
+			display:block;
+			text-align:center;
+			background-color:#44cbff;
+			border-radius:5px;
+			color:white;
+			border:none;
+			font-size:20px;
+			float:left;
+			margin-right:20px;
+			cursor:pointer;
+		}
 	}
 	.contact{
 		width:100%;
 		height:145px;
 	}
+	.uploadContainer{
+		width:259px;
+		height:48px;
+		border:1px solid #dbdbdb;
+		border-radius:5px;
+		.left{
+			width:218px;
+			height:48px;
+			input{
+				width:184px;
+				height:45px;
+				line-height:50px;
+				border:none;
+				outline:none;
+				margin-left:3px;
+				padding:0 17px 0 14px
+				
+			}
+		}
+		.right{
+			.i("folder.png");
+			background-position:50% 50%;
+			width:40px;
+			height:48px;
+			border-left:1px solid #dbdbdb;
+		}
+		&.link{
+			.right{
+				.i("link.png");	
+			}	
+		}
+		&.long{
+			width:488px;
+		}
+		&.withlogo{
+			width:300px;
+		}
+	}
+	input[type="file"]{
+		display:none;
+	}
+	.buttons{
+		margin-top:50px;
+		width:430px;
+		margin:50px auto 0 auto;
+		.decline{
+			.lh(50px);
+			width:180px;
+			display:block;
+			text-align:center;
+			background-color:#eb6b56;
+			border-radius:5px;
+			color:white;
+			border:none;
+			font-size:15px;
+			float:left;
+			margin-right:50px;
+			cursor:pointer;
+		}
 
+		.save{
+			.lh(50px);
+			width:180px;
+			display:block;
+			text-align:center;
+			background-color:#5be371;
+			border-radius:5px;
+			color:white;
+			border:none;
+			font-size:15px;
+			float:left;
+			margin-right:20px;
+			cursor:pointer;
+		}
+	}
+}
+
+.register{
+	padding-left: 38px !important;
+
+	h3{
+		color:#333333;
+		font-family: "LatoSemiBold";
+		font-size:21px;
+		color:#333333;
+		margin-top:-10px;
+	}
+	input{
+		position:relative;
+		width:264px;
+		height:46px;
+		margin-bottom:24px;
+		padding:0 17px;
+		font-size:14px;
+		outline:none;
+		&:after{
+			content:'*';
+			color:#e85044;
+			font-size:18px;
+		}
+	}
+	textarea{
+		width:264px;
+		padding:0 17px;
+		font-size:14px;
+		resize: none;
+		height: 197px;
+		outline:none;
+		line-height: 44px;
+	}
+	.continue{
+		.lh(50px);
+		width:180px;
+		display:block;
+		text-align:center;
+		background-color:#44cbff;
+		border-radius:5px;
+		color:white;
+		border:none;
+		font-size:20px;
+		float:right;
+		margin-right:20px;
+		cursor:pointer;
+		margin-bottom:40px;
+	}
 }
