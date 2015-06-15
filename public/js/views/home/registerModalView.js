@@ -8,7 +8,7 @@ define([
     View = Backbone.View.extend({
 		el:"#wrapper",
         events: {
-            "click .newViewer":"newViewer",
+            "click .ui-dialog-titlebar-close":"closeDialog",
 			"click .continue":"register"
         },
 
@@ -39,8 +39,11 @@ define([
 							   });
 		},
 
-        newViewer:function(){
-			this.dialog.remove();
+        closeDialog:function(e){
+            e.preventDefault();
+            $(".register-dialog").remove();
+            $(".watch-dialog").show();
+            $(".watchDemo").show();
         },
 
 
@@ -52,7 +55,7 @@ define([
 				modal:true,
                 closeOnEscape: false,
 				appendTo:"#wrapper",
-                dialogClass: "edit-dialog",
+                dialogClass: "register-dialog",
                 width: 700
             });
             return this;
