@@ -27,12 +27,14 @@ var UserHandler = function (db) {
     var session = new SessionHandler(db);
 
 
-    var userSchema = mongoose.Schemas['User'];
-    var UserModel = db.model('User', userSchema);
+    var prospectSchema = mongoose.Schemas['Prospect'];
+    var ProspectModel = db.model('Prospect', prospectSchema);
     var deviceSchema = mongoose.Schemas['Device'];
     var DeviceModel = db.model('Device', deviceSchema);
     var tariffPlanSchema = mongoose.Schemas['TariffPlan'];
     var TariffPlan = db.model('TariffPlan', tariffPlanSchema);
+    var trackSchema = mongoose.Schemas['Track'];
+    var TrackModel = db.model('Track', trackSchema);
 
     var companySchema = mongoose.Schemas['Company'];
     var CompanyModel = db.model('Company', companySchema);
@@ -65,7 +67,7 @@ var UserHandler = function (db) {
 
         userData.email = normalizeEmail(userData.email);
 
-        UserModel.findOne({email: userData.email}, function (err, user) {
+        ProspectModel.findOne({email: userData.email}, function (err, user) {
             if (err) {
                 callback(err);
             } else if (user) {
@@ -131,7 +133,7 @@ var UserHandler = function (db) {
     function createUser(userData, callback) {
 
         //create user:
-        var newUser = new UserModel(userData);
+        var newUser = new ProspectModel(userData);
         newUser.save(function (err, result) {
             if (err) {
                 if (callback && (typeof callback === 'function')) {
@@ -151,7 +153,7 @@ var UserHandler = function (db) {
             _id: userId
         };
 
-        UserModel.findOneAndUpdate(criteria, update, function (err, user) {
+        ProspectModel.findOneAndUpdate(criteria, update, function (err, user) {
             if (err) {
                 if (callback && (typeof callback === 'function')) {
                     callback(err);
@@ -189,7 +191,7 @@ var UserHandler = function (db) {
             pass: false
         };
 
-        UserModel.findOne(query, fields, function (err, user) {
+        ProspectModel.findOne(query, fields, function (err, user) {
             var sessionParams;
 
             if (err) {
@@ -221,7 +223,7 @@ var UserHandler = function (db) {
             return next(badRequests.NotEnParams({reqParams: ['minderId', 'deviceId']}));
         }
 
-        UserModel.findOne({
+        ProspectModel.findOne({
             minderId: options.minderId
         }, function (err, user) {
 
@@ -323,59 +325,16 @@ var UserHandler = function (db) {
         }
     };
 
-    this.addCompany = function (req, res, next) {
-        var data = req.body;
-        var newCompany = new CompanyModel(data);
-        newCompany.save(function (err, result) {
+    this.track = function (req, res, next) {
+            var data = req.body;
+            var newTrack = new TrackModel(data);
+        newTrack.save(function (err, result) {
             if (err) {
                 console.log(err);
                 res.status(423).send('somth wrong');
             }
             //res.redirect('/#home');
             res.status(201).send(result);
-        });
-
-    };
-    this.testUpload = function (req, res, next) {
-        var data = req.body;
-        var files = req.files;
-        var sep = path.sep;
-
-        async.series([
-            function (cb) {
-                if (!files.file1)cb(err);
-                var arr = [];
-                if (!files.file1.length) {
-                    arr[0] = files.file1;
-                }
-                else {
-                    arr = files.file1;
-                }
-
-                var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString() + sep + 'survey' + sep + 'pdf';
-                async.each(arr, function (file, callback) {
-
-                    upFile(url, file, function (err, pdfUri) {
-                        if (err) callback(err);
-                        CompanyModel.findByIdAndUpdate(result._id, {$addToSet: {survey: {pdfUri: pdfUri}}}, function (err, company) {
-                            if (err) callback(err);
-                            callback(null)
-                        });
-                    });
-                }, function (err) {
-                    if (err) {
-                        cb(err);
-                    }
-                    cb();
-                });
-                //end pdf------------------------------------------------------------------------------------
-            }], function (err) {
-
-            if (err) return next(err);
-            res.status(201).send({
-                success: 'success signUp',
-                message: 'Thank you for register. Please check your email and verify account'
-            });
         });
 
     };
@@ -391,38 +350,76 @@ var UserHandler = function (db) {
             });
         });
     };
+        function validation (data, callback){
+            var files = data.files;
+            var body = data.body;
+            var formatsVideo = '.mp4 .WebM .Ogg';
+            var formatsImage = '.jpg .bmp .png .ico';
+            var mainVideoExt = (files['video'].originalFilename.split('.')).pop().toLowerCase();
 
-    function saveMainVideo(id, files, callback) {
-        var sep = path.sep;
-        var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString();
+            if(!body.contact || !body.desc) return callback(new Error('Not  completed fields'));
+            if(!files['video'] && body['video']) return callback(new Error('Main video is not found'));
+            if(!body.countQuestion) return callback(new Error('Question  is not found'));
+            if (!!files['video'] && formatsVideo.indexOf(mainVideoExt) == -1) return callback( new Error('Main video format is not support'));
 
-        upFile(url, files['video'], function (err, mainVideoUri) {
-            if (err){
-                return callback(err);
+            for(var i=data.countQuestion; i>0; i--){
+                var videoName = 'video' + i;
+                var pdfName = 'file' + i;
+                var questionName = 'question' + i;
+                var videoExt = (files[videoName].originalFilename.split('.')).pop().toLowerCase();
+                var pdfExt = (files[pdfName].originalFilename.split('.')).pop().toLowerCase();
+                console.log(videoExt+'   '+pdfExt);
+
+                if(!files[videoName] && body[videoName]) return callback(new Error('Survey video is not found'));
+                if(!files[pdfName] && body[pdfName]) return callback(new Error('Survey pdf files is not found'));
+                if(!body[questionName]) return callback(new Error('Survey question is not found'));
+                //typeValidation
+                if (!!files[videoName] && formatsVideo.indexOf(videoExt) == -1) return callback( new Error('Survey video format is not support'));
+                if(!files[pdfName] && pdfExt !='pdf') return callback(new Error('Survey pdf files format is not support'));
             }
 
+            if(!files['logo'])return callback(new Error('Logo is not found'));
+            var logoExt = (files['logo'].originalFilename.split('.')).pop().toLowerCase();
+            if(formatsImage.indexOf(logoExt) == -1)return callback(new Error('Logo is not found'));
+            return callback( null);
+        };
+
+
+
+
+    function saveMainVideo(id, files, callback) {
+            var sep = path.sep;
             var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString();
-            upFile(url, files['logo'], function (err, logoUri) {
+
+            upFile(url, files['video'], function (err, mainVideoUri) {
                 if (err) {
                     return callback(err);
                 }
 
-                CompanyModel.findByIdAndUpdate(id, {$set: {mainVideoUri: mainVideoUri, logoUri: logoUri}},
-                    function (err, company) {
-                        if (err) {
-                            return callback(err);
-                        }
-                        callback(null);
-                    });
+                var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString();
+                upFile(url, files['logo'], function (err, logoUri) {
+                    if (err) {
+                        return callback(err);
+                    }
+
+                    CompanyModel.findByIdAndUpdate(id, {$set: {mainVideoUri: mainVideoUri, logoUri: logoUri}},
+                        function (err, company) {
+                            if (err) {
+                                return callback(err);
+                            }
+                            callback(null);
+                        });
+                });
             });
-        });
     };
 
     function saveSurveyVideo(num, id, files, data, callback) {
-        var question = 'question'+num;
-        var name = 'video'+num;
-        var sep = path.sep;
-        var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString() + sep + 'survey'+num;
+        var question = 'question' + num;
+        var name = 'video' + num;
+
+        if (!!files[name]){
+            var sep = path.sep;
+            var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString() + sep + 'survey' + num;
 
         upFile(url, files[name], function (err, videoUri) {
             if (err) {
@@ -432,13 +429,27 @@ var UserHandler = function (db) {
                 question: data[question],
                 videoUri: videoUri
             };
-            CompanyModel.findByIdAndUpdate(id, {$addToSet: {survey: insSurvey}}, function (err, company) {
+            CompanyModel.findByIdAndUpdate(id, {$addToSet: {survey: insSurvey}}, function (err) {
                 if (err) {
                     callback(err);
                 }
                 callback(null)
             });
         });
+    } else {
+            var insSurvey = {
+                question: data[question],
+                videoUri: data[name]
+            };
+            CompanyModel.findByIdAndUpdate(id, {$addToSet: {survey: insSurvey}}, function (err) {
+                if (err) {
+                    callback(err);
+                }
+                callback(null)
+            });
+        }
+
+
     };
 
     function saveSurveyFiles(num, id, files, data, cb) {
@@ -446,7 +457,6 @@ var UserHandler = function (db) {
         var name = 'file'+num;
         var sep = path.sep;
         var arr = [];
-
         if (!files[name]){
             return cb(err);
         }
@@ -483,48 +493,69 @@ var UserHandler = function (db) {
 
     //========================================================
     this.upload = function (req, res, next) {
-        var data = req.body;
-        var files = req.files;
-        
+        validation (req, function(err){
+            if(err) return next (err);
 
-        var insObj = {
-            name: data.name,
-            contactMeInfo: data.contact,
-            mainVideoDescription: data.desc
-        };
+            var data = req.body;
+            var files = req.files;
 
-        var newCompany = new CompanyModel(insObj);
-        newCompany.save(function (err, result) {
-            if (err){
-              return  next(err);
-            }
-            var id = result._id;
 
-           async.series([
-               function (cb) {
-                   saveMainVideo(id, files, cb);
-               },
-               function (cb) {
-                   for(var i=data.countQuestion; i>0; i--){
-                       async.applyEachSeries([saveSurveyVideo, saveSurveyFiles ],i, id, files, data, function () {
-                           if(err) return next(err);
-                       });
+            var insObj = {
+               /* name: data.name,*/
+                contactMeInfo: data.contact,
+                mainVideoDescription: data.desc
+            };
+
+            var newCompany = new CompanyModel(insObj);
+            newCompany.save(function (err, result) {
+                if (err){
+                  return  next(err);
+                }
+                var id = result._id;
+
+               async.series([
+                   function (cb) {
+                       if (!!files['video']){
+                         saveMainVideo(id, files, cb);
+                       }
+                       else {
+                           var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString();
+                           upFile(url, files['logo'], function (err, logoUri) {
+                               if (err) {
+                                   return callback(err);
+                               }
+                                   CompanyModel.findByIdAndUpdate(id, {$set: {mainVideoUri: data.video, logoUri: logoUri}},
+                                       function (err) {
+                                           if (err) {
+                                               return callback(err);
+                                           }
+                                           callback(null);
+                                       });
+                             });
+                       }
+                   },
+                   function (cb) {
+                       for(var i=data.countQuestion; i>0; i--){
+                           async.applyEachSeries([saveSurveyVideo, saveSurveyFiles ],i, id, files, data, function () {
+                               if(err) return cb(err);
+                           });
+                       }
+                       cb();
+
+                   }], function (err) {
+                   if (err) {
+                       return next(err);
                    }
-                   cb();
 
-               }], function (err) {
-               if (err) {
-                   return next(err);
-               }
-
-               res.status(201).send({
-                   success: 'success signUp',
-                   message: 'Thank you for register. Please check your email and verify account'
+                   res.status(201).send({
+                       success: 'success signUp',
+                       message: 'Thank you for register. Please check your email and verify account'
+                   });
                });
-           });
 
+            });
+            localFs.defaultPublicDir = 'public';
         });
-        localFs.defaultPublicDir = 'public';
     };
 
 
@@ -537,7 +568,7 @@ var UserHandler = function (db) {
             confirmToken: null
         };
 
-        UserModel.findOneAndUpdate(condition, update, function (err, userModel) {
+        ProspectModel.findOneAndUpdate(condition, update, function (err, userModel) {
             if (err) {
                 //return self.renderError(err, req, res);
                 return next(err);
@@ -563,7 +594,7 @@ var UserHandler = function (db) {
             pass: false
         };
 
-        UserModel.findOne(query, fields, function (err, user) {
+        ProspectModel.findOne(query, fields, function (err, user) {
 
             if (err) {
                 if (callback && (typeof callback === 'function')) {
@@ -697,7 +728,7 @@ var UserHandler = function (db) {
 
                 if (newPassword) {
 
-                    UserModel.findOne({ // find a user to compare user's password ws options.password
+                    ProspectModel.findOne({ // find a user to compare user's password ws options.password
                         _id: userId
                     }, function (err, user) {
                         if (err) {
@@ -749,7 +780,7 @@ var UserHandler = function (db) {
             return next(badRequests.NotEnParams({reqParams: ['email']}));
         }
 
-        UserModel.findOne(criteria, function (err, user) {
+        ProspectModel.findOne(criteria, function (err, user) {
             if (err) {
                 return next(err);
             } else if (!user) {
@@ -778,7 +809,7 @@ var UserHandler = function (db) {
             return next(badRequests.NotEnParams({reqParams: ['token', 'password']}));
         }
 
-        UserModel.findOne({
+        ProspectModel.findOne({
             forgotToken: token
         }, function (err, user) {
             if (err) {

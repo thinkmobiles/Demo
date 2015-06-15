@@ -26,10 +26,8 @@ module.exports = function (app, db) {
     app.get('/', function (req, res, next) {
         res.sendfile('index.html');
     });
-
-    app.post('/addCompany', userHandler.addCompany);
+app.post('/track', userHandler.track);
     app.post('/upload', multipart, userHandler.upload);
-    app.post('/testUpload', multipart, userHandler.testUpload);
     app.get('/isAuth', session.isAuthenticatedUser);
     app.post('/signUp', userHandler.signUp);
     app.get('/redirect', userHandler.redirect);
