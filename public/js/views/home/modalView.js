@@ -18,7 +18,7 @@ define([
         },
 
         newViewer:function(){
-			this.dialog.remove();
+			this.dialog.hide();
 			if(this.modal){
 				this.modal.undelegateEvents();
 			}
@@ -34,7 +34,7 @@ define([
 				modal:true,
                 closeOnEscape: false,
 				appendTo:"#wrapper",
-                dialogClass: "edit-dialog",
+                dialogClass: "watch-dialog",
                 width: 425
             });
             return this;
