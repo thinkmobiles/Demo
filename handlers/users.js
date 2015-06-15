@@ -448,7 +448,7 @@ var UserHandler = function (db) {
         var arr = [];
 
         if (!files[name]){
-            cb(err);
+            return cb(err);
         }
         if (!files[name].length) {
             arr.push(files[name]);
@@ -458,10 +458,9 @@ var UserHandler = function (db) {
         }
         var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString() + sep + 'survey'+num + sep + 'pdf';
         async.each(arr, function (file, callback) {
-
             upFile(url, file, function (err, pdfUri) {
                 if (err) {
-                    callback(err);
+                  return  callback(err);
                 }
                 CompanyModel.findOneAndUpdate({
                     "_id": id,
@@ -470,12 +469,12 @@ var UserHandler = function (db) {
                     if (err) {
                         return callback(err);
                     }
-                    callback(null)
+                    callback();
                 });
             });
         }, function (err) {
             if (err) {
-                return cb(err);
+                return next (err);
             }
             cb();
         });
@@ -497,7 +496,7 @@ var UserHandler = function (db) {
         var newCompany = new CompanyModel(insObj);
         newCompany.save(function (err, result) {
             if (err){
-                next(err);
+              return  next(err);
             }
             var id = result._id;
 
@@ -507,8 +506,12 @@ var UserHandler = function (db) {
                },
                function (cb) {
                    for(var i=data.countQuestion; i>0; i--){
-                       async.applyEachSeries([saveSurveyVideo, saveSurveyFiles ],i, id, files, data, cb);
+                       async.applyEachSeries([saveSurveyVideo, saveSurveyFiles ],i, id, files, data, function () {
+                           if(err) return next(err);
+                       });
                    }
+                   cb();
+
                }], function (err) {
                if (err) {
                    return next(err);
