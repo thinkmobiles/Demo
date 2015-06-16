@@ -13,7 +13,7 @@ define([
 
         routes: {
             "login"                     :  "login",
-            "home"                     :  "home",
+            "home(/:videoId)"           :  "home",
             "main(/page/:page)"         :  "main",
             "forgotPassword"            :  "forgotPassword",
             "signUp"                    :  "signUp",
@@ -143,8 +143,8 @@ define([
         contactUs: function () {
             this.loadWrapperView('contactUs');
         },
-        home: function () {
-            this.loadWrapperView('home');
+        home: function (videoId) {
+            this.loadWrapperView('home',{videoId:videoId});
         },
         profile: function () {
             this.loadWrapperView('profile');
