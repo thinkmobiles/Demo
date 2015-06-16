@@ -61,7 +61,7 @@ define([
 			$(this.$el).find(".collapseQuestions").append(_.template(CollapseQuestion)({
 				question:$(e.target).closest(".videoElement").find(".questionText").val(),
 				video:self.getFiles($(e.target).closest(".videoElement").find(".right .uploadContainer input[type='file']").get(0).files),
-				pdf:self.getFiles($(e.target).closest(".videoElement").find(".left input[type='file']").get(0).files),
+				pdf:self.getFiles($(e.target).closest(".videoElement").find(".left input[type='file']").get(0).files)
 			}));
 			$(this.$el).find(".countQuestion").val(this.countQuestion);
 			$(e.target).closest(".videoElement").hide();

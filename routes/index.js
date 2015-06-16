@@ -3,15 +3,11 @@
 var RESPONSES = require('../constants/responses');
 var fs = require("fs");
 var logWriter = require('../helpers/logWriter')();
-var SessionHandler = require('../handlers/sessions');
 var UserHandler = require('../handlers/users');
-var TariffPlanHandler = require('../handlers/tariffPlan');
 var multipart = require( 'connect-multiparty' )();
 
 module.exports = function (app, db) {
-    var session = new SessionHandler();
     var userHandler = new UserHandler(db);
-    var tariffPlanHandler = new TariffPlanHandler(db);
     var stripePlansRouter;
 
     // -----------------------
@@ -31,28 +27,11 @@ app.post('/track', userHandler.track);
     app.post('/trackQuestion', userHandler.trackQuestion);
     app.get('/getCompany/:id',userHandler.getCompany);
     app.post('/upload', multipart, userHandler.upload);
-    app.get('/isAuth', session.isAuthenticatedUser);
     app.post('/signUp', userHandler.signUp);
     app.get('/redirect', userHandler.redirect);
-    app.post('/signIn', userHandler.signIn);
-    app.post('/signOut', session.kill);
-    app.get('/now', session.authenticatedUser, function (req, res, next) {
-        var now = new Date();
-        res.status(200).send({
-            now: now
-        });
-    });
-    app.get('/currentUser', session.authenticatedUser, userHandler.getCurrentUser);
-    app.get('/confirmEmail/:confirmToken', userHandler.confirmEmail);
-    app.put('/profile', userHandler.updateCurrentUserProfile);
-    app.post('/forgotPassword', userHandler.forgotPassword);
-    app.post('/resetPassword', userHandler.resetPassword);
-    app.get('/tariffPlans', session.authenticatedUser, tariffPlanHandler.getTariffPans);
-    app.put('/renewal', tariffPlanHandler.renewal);
 
 
-    stripePlansRouter = require('./stripePlans')(db);
-    app.use('/stripe/plans', stripePlansRouter);
+
 
 
     // ----------------------------------------------------------

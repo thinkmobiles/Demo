@@ -25,7 +25,6 @@ define([
 			this.modal =new ModalView();
         },
 
-
         // render template (once! because google maps)
         render: function () {
 			 var formString = _.template(modalTemplate)({

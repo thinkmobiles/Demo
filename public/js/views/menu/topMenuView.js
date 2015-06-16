@@ -10,7 +10,7 @@ define([
         events: {
 			"click .showModal":"showModal",
             'click #logOut': 'logout',
-            'click .topMenuItem' :'changeTab'
+            'click .topMenu' :'changeTab'
         },
 
 
