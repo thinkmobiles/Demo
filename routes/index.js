@@ -25,7 +25,7 @@ module.exports = function (app, db) {
 app.post('/track', userHandler.track);
     app.post('/trackDocument', userHandler.trackDocument);
     app.post('/trackQuestion', userHandler.trackQuestion);
-    app.get('/getCompany/:id',userHandler.getCompany);
+    app.get('/company/:id',userHandler.company);
     app.post('/upload', multipart, userHandler.upload);
     app.post('/signUp', userHandler.signUp);
     app.get('/redirect', userHandler.redirect);
