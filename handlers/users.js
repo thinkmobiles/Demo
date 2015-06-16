@@ -132,7 +132,7 @@ var UserHandler = function (db) {
     };
 
 
-    this.getCompany = function (req, res, next) {
+    this.company = function (req, res, next) {
     var id = req.params.id;
         CompanyModel.findById(id, function (err, found) {
             if (err) {
