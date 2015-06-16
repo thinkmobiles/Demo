@@ -56,8 +56,7 @@ define([
 		},
 
 		clickOnFile:function(e){
-		            e.stopPropagation();
-
+            e.stopPropagation();
         },
 
 
