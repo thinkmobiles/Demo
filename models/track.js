@@ -13,11 +13,13 @@ module.exports = (function () {
 
           userId: {type: String, required: true, unique: true},
           companyId: {type: String, unique: true},
-        question:[{
+        questions:[{
+            _id: false,
             questionId: {type: String},
             item: {type: String, enum: ['not', 'somewhat', 'very']}
         }],
-        video: [{
+        videos: [{
+            _id: false,
             videoId: {type: String},
             rangeWatched: [{
                 start:{ type: Number},
@@ -25,7 +27,11 @@ module.exports = (function () {
             }],
             howMuchWatched: { type: Number}
         }],
-        downDocId: { type: String},
+       documents:[
+           {   _id: false,
+               documentId: { type: String} }
+       ],
+
 
         createdAt: {type: Date, default: Date.now},
         updatedAt: {type: Date, default: Date.now}

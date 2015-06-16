@@ -27,6 +27,9 @@ module.exports = function (app, db) {
         res.sendfile('index.html');
     });
 app.post('/track', userHandler.track);
+    app.post('/trackDocument', userHandler.trackDocument);
+    app.post('/trackQuestion', userHandler.trackQuestion);
+    app.get('/getCompany/:id',userHandler.getCompany);
     app.post('/upload', multipart, userHandler.upload);
     app.get('/isAuth', session.isAuthenticatedUser);
     app.post('/signUp', userHandler.signUp);

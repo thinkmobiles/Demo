@@ -324,6 +324,48 @@ var UserHandler = function (db) {
             return next(badRequests.NotEnParams({}));
         }
     };
+    this.getCompany = function (req, res, next) {
+    var id = req.params.id;
+        CompanyModel.findById(id, function (err, found) {
+            if (err) {
+                next(err);
+            }
+            res.status(200).send(found);
+        });
+
+    };
+    this.trackQuestion = function (req, res, next) {
+        var data = req.body;
+        var userId = req.query.userId;
+        var companyId = req.query.companyId;
+        TrackModel.findOneAndUpdate({
+            "userId": userId,
+            "companyId": companyId
+        }, {$set: {questions: data.questions}}, function (err) {
+            if (err) {
+                return next(err);
+            }
+            res.status(200).send("Successful update");
+
+        });
+    };
+    this.trackDocument = function (req, res, next) {
+        var data = req.body;
+        var userId = req.query.userId;
+        var companyId = req.query.companyId;
+        TrackModel.findOneAndUpdate({
+            "userId": userId,
+            "companyId": companyId
+        }, {$addToSet: {documents: data}}, function (err) {
+            if (err) {
+                return next(err);
+            }
+            res.status(200).send("Successful update");
+
+        });
+    };
+
+
 
     this.track = function (req, res, next) {
             var data = req.body;
@@ -356,26 +398,30 @@ var UserHandler = function (db) {
             var formatsVideo = '.mp4 .WebM .Ogg';
             var formatsImage = '.jpg .bmp .png .ico';
             var mainVideoExt = (files['video'].originalFilename.split('.')).pop().toLowerCase();
+            console.log(mainVideoExt);
 
-            if(!body.contact || !body.desc) return callback(new Error('Not  completed fields'));
+            if(!body.contact || !body.desc|| !body.name) return callback(new Error('Not  completed fields'));
             if(!files['video'] && body['video']) return callback(new Error('Main video is not found'));
             if(!body.countQuestion) return callback(new Error('Question  is not found'));
             if (!!files['video'] && formatsVideo.indexOf(mainVideoExt) == -1) return callback( new Error('Main video format is not support'));
 
-            for(var i=data.countQuestion; i>0; i--){
+            for(var i=body.countQuestion; i>0; i--){
                 var videoName = 'video' + i;
                 var pdfName = 'file' + i;
                 var questionName = 'question' + i;
                 var videoExt = (files[videoName].originalFilename.split('.')).pop().toLowerCase();
-                var pdfExt = (files[pdfName].originalFilename.split('.')).pop().toLowerCase();
-                console.log(videoExt+'   '+pdfExt);
 
-                if(!files[videoName] && body[videoName]) return callback(new Error('Survey video is not found'));
-                if(!files[pdfName] && body[pdfName]) return callback(new Error('Survey pdf files is not found'));
+                async.each(files[pdfName], function (file, cb) {
+                    var pdfExt = (file.originalFilename.split('.')).pop().toLowerCase();
+                    if(pdfExt !='pdf'){
+                        return cb(new Error('Survey pdf files format is not support'));
+                    }
+                    else cb();
+                });
+                if(!files[videoName] && !body[videoName]) return callback(new Error('Survey video is not found'));
                 if(!body[questionName]) return callback(new Error('Survey question is not found'));
                 //typeValidation
                 if (!!files[videoName] && formatsVideo.indexOf(videoExt) == -1) return callback( new Error('Survey video format is not support'));
-                if(!files[pdfName] && pdfExt !='pdf') return callback(new Error('Survey pdf files format is not support'));
             }
 
             if(!files['logo'])return callback(new Error('Logo is not found'));
@@ -484,7 +530,7 @@ var UserHandler = function (db) {
             });
         }, function (err) {
             if (err) {
-                return next (err);
+                return cb (err); //TODO: callback
             }
             cb();
         });
@@ -499,9 +545,8 @@ var UserHandler = function (db) {
             var data = req.body;
             var files = req.files;
 
-
             var insObj = {
-               /* name: data.name,*/
+                name: data.name,
                 contactMeInfo: data.contact,
                 mainVideoDescription: data.desc
             };
@@ -546,13 +591,8 @@ var UserHandler = function (db) {
                    if (err) {
                        return next(err);
                    }
-
-                   res.status(201).send({
-                       success: 'success signUp',
-                       message: 'Thank you for register. Please check your email and verify account'
-                   });
+                   res.status(201).send({_id: id});
                });
-
             });
             localFs.defaultPublicDir = 'public';
         });
@@ -648,23 +688,24 @@ var UserHandler = function (db) {
 
             }
         }, function(error, response, body1) {
+            console.log(body1.access_token);
             try {
                 body1 = JSON.parse(body1);
             }catch (e){}
-            request.post({
+            request.get({
                 url: 'https://app.jumplead.com/api/v1/contacts',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': 'Bearer ' + body1.access_token
-                },
-                json: {
+                }
+               /* ,json: {
                     "grant_type": "client_credentials",
                     "data": {
                         "first_name": "Irvin",
                         "last_name": "Colenski",
                         "email": "faspert@meta.com"
-                    }
-                }
+                    }*/
+
             }, function (error, response, body2) {
                 console.log('response from create contacts: '+body2);
                 console.log('response : '+JSON.stringify(response));

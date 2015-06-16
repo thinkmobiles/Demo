@@ -13,9 +13,8 @@ module.exports = (function () {
     var COMMENTS_MAX_LENGTH = CONSTANTS. COMMENTS_MAX_LENGTH;
 
     var mongoose = require('mongoose');
-    var ObjectId = mongoose.Schema.Types.ObjectId;
 
-    var userSchema = mongoose.Schema({
+    var prospectSchema = mongoose.Schema({
         email: {type: String, required: true, unique: true},
         firstName: {type: String, minlength: NAME_MIN_LENGTH, maxlength: NAME_MAX_LENGTH},
         lastName: {type: String, minlength: NAME_MIN_LENGTH, maxlength: NAME_MAX_LENGTH},
@@ -29,18 +28,18 @@ module.exports = (function () {
         //forgotToken: {type: String},
         //minderId: {type: String, required: true, unique: true},
         //role: {type: Number, required: true, default: USER_ROLES.USER}
-    }, {collection: 'Users'});
+    }, {collection: 'Prospects'});
 
-    mongoose.model('User', userSchema);
+    mongoose.model('Prospect', prospectSchema);
 
     if (!mongoose.Schemas) {
         mongoose.Schemas = {};
     }
 
-    mongoose.Schemas['User'] = userSchema;
+    mongoose.Schemas['Prospect'] = prospectSchema;
 
     if (process.env.NODE_ENV !== 'production') {
-        userSchema.set('autoIndex', false);
+        prospectSchema.set('autoIndex', false);
     }
 
 })();
