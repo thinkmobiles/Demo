@@ -21,7 +21,7 @@ define([
 			var videoId = options?options.videoId:"55800aadcb7bb82c1f000002";
 			this.company = new CompanyModel({_id:videoId});
 			this.company.fetch();
-			this.listenTo(this.company, 'change:params', this.render);
+			this.listenTo(this.company, 'change', this.render);
             //this.render();
         },
 
@@ -30,7 +30,9 @@ define([
 			if(this.videoModal){
 				this.videoModal.undelegateEvents();
 			}
-			this.videoModal =new VideoModalView();
+			this.videoModal =new VideoModalView({
+				company:this.company
+			});
 			
 		},
 
@@ -45,6 +47,7 @@ define([
         // render template (once! because google maps)
         render: function () {
 			 var formString = _.template(modalTemplate)({
+				 name:this.company.toJSON().name
              });
             this.dialog = $(formString).dialog({
 				modal:true,

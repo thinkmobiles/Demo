@@ -13,7 +13,8 @@ define([
         },
 
 
-        initialize: function () {
+        initialize: function (options) {
+			this.company = options.company;
             this.render();
         },
 
@@ -50,6 +51,10 @@ define([
         // render template (once! because google maps)
         render: function () {
             var formString = _.template(modalTemplate)({
+				company:{
+					mainVideoUri:this.company.toJSON().mainVideoUri.replace('public\\',''),
+					logoUri:this.company.toJSON().logoUri.replace('public\\','')
+				}
             });
             this.dialog = $(formString).dialog({
                 modal:true,
