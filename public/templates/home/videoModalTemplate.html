@@ -1,8 +1,30 @@
 <div class="videoWatch">
   <div class="left">
-	<video controls="true" width="716" height="404">
-      <source src="<%= company.mainVideoUri %>" type="video/mp4" />
-	</video>
+    <div class="videoSection">
+	  <video controls="true" width="716" height="404" class="mainVideo">
+		<source src="<%= company.mainVideoUri %>" type="video/mp4" />
+	  </video>
+    </div>
+    <div class="questionSection">
+	  <h2>Choose what is most important to you to personalize your demo:</h2>
+	  <table>
+		<tr>
+		  <th>Title</th>
+		  <th>Not important</th>
+		  <th>Somewhat important</th>
+		  <th>Very important</th>
+		</tr>
+	  <%_.forEach(company.survey,function(item){%>
+		<tr>
+		  <td><%=item.question%></td>
+		  <td>&nbsp;</td>
+		  <td>&nbsp;</td>
+		  <td>&nbsp;</td>
+		</tr>
+	  <%})%>
+	  </table>
+    </div>
+	
   </div>
   <div class="right">
 	<img src="<%= company.logoUri %>" height="80"/>

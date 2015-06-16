@@ -9,7 +9,8 @@ define([
         el:"#wrapper",
         events: {
             "click .ui-dialog-titlebar-close":"closeDialog",
-            "click .continue":"register"
+            "click .continue":"register",
+			"ended .mainVideo":"endedMainVideo"
         },
 
 
@@ -17,6 +18,11 @@ define([
 			this.company = options.company;
             this.render();
         },
+
+		endedMainVideo:function(e){
+			$(".videoSection").hide();
+			$(".questionSection").show();
+		},
 
         register: function(){
             var userModel = new UserModel();
@@ -53,7 +59,8 @@ define([
             var formString = _.template(modalTemplate)({
 				company:{
 					mainVideoUri:this.company.toJSON().mainVideoUri.replace('public\\',''),
-					logoUri:this.company.toJSON().logoUri.replace('public\\','')
+					logoUri:this.company.toJSON().logoUri.replace('public\\',''),
+					survey:this.company.toJSON().survey
 				}
             });
             this.dialog = $(formString).dialog({
@@ -63,6 +70,7 @@ define([
                 dialogClass: "register-dialog",
                 width: 1180
             });
+			this.$el.find(".mainVideo").on('ended',this.endedMainVideo);
             return this;
         }
 
