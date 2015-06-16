@@ -1,21 +1,33 @@
 define([
     'text!templates/home/modalTemplate.html',
-	'views/home/registerModalView'
-], function ( modalTemplate, ModalView) {
+	'views/home/registerModalView',
+	'views/home/videoModalView'
+], function ( modalTemplate, ModalView, VideoModalView) {
 
     var View;
 	
     View = Backbone.View.extend({
 		el:"#wrapper",
         events: {
-            "click .newViewer":"newViewer"
+            "click .newViewer":"newViewer",
+            "click .sign":"sign"
         },
 
 
         initialize: function () {
 			this.modal = null;
+			this.videoModal = null;
             this.render();
         },
+
+		sign: function(){
+			this.dialog.hide();
+			if(this.videoModal){
+				this.videoModal.undelegateEvents();
+			}
+			this.videoModal =new VideoModalView();
+			
+		},
 
         newViewer:function(){
 			this.dialog.hide();

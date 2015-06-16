@@ -5,24 +5,17 @@ define([
     'custom',
     'validation'
 ], function (LoginTemplate, CollapseQuestion, VideoElement, Custom, validation) {
-
-    var View;
-    View = Backbone.View.extend({
+    var View = Backbone.View.extend({
 
         initialize: function () {
-            this.setDefaultData();
-
-            // keep data actual
-            this.listenTo(this.stateModel, 'change', this.render);
 			this.countQuestion = 0;
-			
             this.render();
         },
 
         events: {
-            "submit #loginForm": "login",
             "click .decline": "decline",
             "click .question": "question",
+            "click .collapseQuestions .collapseQuestion .close": "removeQuestion",
             "click .login-button": "login",
             "click .uploadContainer.file": "browse",
             "change .uploadContainer.file input[type='file']": "changeFile",
@@ -47,25 +40,58 @@ define([
             }
         },
 
-		clickOnFile:function(e){
-			e.stopPropagation();
-	
+		removeQuestion: function(e){
+			var current = $(e.target).closest(".collapseQuestion");
+			var n = this.$el.find(".collapseQuestions .collapseQuestion").index(current);
+			this.$el.find(".videoContainer .videoElement").each(function(index){
+				if (index>n){
+					$(this).find(".questionText").attr("name","question"+index);
+					$(this).find(".right .uploadContainer.file input[type='file']").attr("name","video"+index);
+					$(this).find(".right .uploadContainer.link input").attr("name","video"+index);
+					$(this).find(".left .uploadContainer.file input[type='file']").attr("name","file"+index);
+				}
+			});
+			this.$el.find(".videoContainer .videoElement").eq(n).remove();
+			current.remove();
 		},
+
+		clickOnFile:function(e){
+		            e.stopPropagation();
+
+        },
 
 
 		question:function(e){
 			var self = this;
+			var hasError = false;
 			e.preventDefault();
 			this.countQuestion++;
-			
-			$(this.$el).find(".collapseQuestions").append(_.template(CollapseQuestion)({
-				question:$(e.target).closest(".videoElement").find(".questionText").val(),
-				video:self.getFiles($(e.target).closest(".videoElement").find(".right .uploadContainer input[type='file']").get(0).files),
-				pdf:self.getFiles($(e.target).closest(".videoElement").find(".left input[type='file']").get(0).files)
-			}));
-			$(this.$el).find(".countQuestion").val(this.countQuestion);
-			$(e.target).closest(".videoElement").hide();
-			$(this.$el).find(".videoContainer").append(_.template(VideoElement)({index:this.countQuestion+1}));
+			$(".error").removeClass("error");
+
+			var videoName = $(e.target).closest(".videoElement").find(".right .uploadContainer input[type='file']").get(0).files.length?self.getFiles($(e.target).closest(".videoElement").find(".right .uploadContainer input[type='file']").get(0).files):$(e.target).closest(".videoElement").find(".right .uploadContainer.link input[type='text']").val();
+		
+			if (!$(e.target).closest(".videoElement").find(".questionText").val().trim()){
+				$(e.target).closest(".videoElement").find(".questionText").addClass("error")
+				hasError = !0;
+			}
+			if (!videoName){
+				$(e.target).closest(".videoElement").find(".right .uploadContainer").addClass("error");
+				hasError = !0;
+			}
+			if (!videoName){
+				$(e.target).closest(".videoElement").find(".right .uploadContainer").addClass("error");
+				hasError = !0;
+			}
+			if (!hasError){
+				$(this.$el).find(".collapseQuestions").append(_.template(CollapseQuestion)({
+					question:$(e.target).closest(".videoElement").find(".questionText").val(),
+					video:videoName,
+					pdf:self.getFiles($(e.target).closest(".videoElement").find(".left input[type='file']").get(0).files),
+				}));
+				$(this.$el).find(".countQuestion").val(this.countQuestion);
+				$(e.target).closest(".videoElement").hide();
+				$(this.$el).find(".videoContainer").append(_.template(VideoElement)({index:this.countQuestion+1}));
+			}
 		},
 
 		decline: function(e){
@@ -90,95 +116,8 @@ define([
 			$(e.target).closest(".uploadContainer").find("input[type='text']").val(self.getFiles($(e.target).get(0).files));
 		},
 		
-        afterUpend: function () {
-            //update page when reopened
-            this.setDefaultData();
-            this.render();
-        },
-
-        login: function (event) {
-            event.stopImmediatePropagation();
-            event.preventDefault();
-
-            var self = this;
-            var errors = [];
-            var messages = [];
-            var errObj = {};
-
-            var stateModelUpdate = {
-                errors: false,
-                messages: false,
-                email: this.$el.find("#email").val().trim(),
-                password: this.$el.find("#password").val().trim(),
-                rememberMe: this.$el.find('#rememberMe').prop('checked')
-            };
-
-            this.stateModel.set(stateModelUpdate);
-
-            // validation
-            validation.checkEmailField(messages, true, stateModelUpdate.email, 'Email');
-            validation.checkPasswordField(errObj, true, stateModelUpdate.password, 'Password');
-
-            for (var my in errObj) {
-                if (errObj[my].length>0){
-                    messages.push(errObj[my]);
-                }
-            }
-
-            if (errors.length > 0 || messages.length > 0) {
-                if (errors.length > 0) {
-                    stateModelUpdate.errors = errors;
-                }
-                if (messages.length > 0) {
-                    stateModelUpdate.messages = messages;
-                }
-                this.stateModel.set(stateModelUpdate);
-                // if errors prevent request
-                return this;
-            }
-            $.ajax({
-                url: "/signIn",
-                type: "POST",
-                dataType: 'json',
-                data: {
-                    email: stateModelUpdate.email,
-                    pass: stateModelUpdate.password,
-                    rememberMe : stateModelUpdate.rememberMe
-                },
-                success: function (response) {
-                    App.sessionData.set({
-                        authorized: true,
-                        admin: false,
-                        user: response.user
-                    });
-                    App.router.navigate("main", {trigger: true});
-                    self.stateModel.set({
-                        password: '',
-                        errors: false,
-                        messages: false,
-                        email: ''
-                    });
-                },
-                error: function (err) {
-                    App.sessionData.set({
-                        authorized: false,
-                        admin: false,
-                        user: null
-                    });
-
-                    //App.error(err);
-
-                    self.stateModel.set({
-                        errors: [err.responseJSON.error],
-                        password: null
-                    });
-                }
-            });
-            return this;
-        },
-
         render: function () {
-            this.$el.html(_.template(LoginTemplate, this.stateModel.toJSON()));
+            this.$el.html(_.template(LoginTemplate));
             return this;
         }
 

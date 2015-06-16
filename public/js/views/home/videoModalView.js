@@ -56,7 +56,7 @@ define([
                 closeOnEscape: false,
                 appendTo:"#wrapper",
                 dialogClass: "register-dialog",
-                width: 700
+                width: 1180
             });
             return this;
         }
