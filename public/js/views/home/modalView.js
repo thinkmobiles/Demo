@@ -1,8 +1,9 @@
 define([
     'text!templates/home/modalTemplate.html',
 	'views/home/registerModalView',
-	'views/home/videoModalView'
-], function ( modalTemplate, ModalView, VideoModalView) {
+	'views/home/videoModalView',
+	'models/companyModel',
+], function ( modalTemplate, ModalView, VideoModalView, CompanyModel) {
 
     var View;
 	
@@ -14,10 +15,14 @@ define([
         },
 
 
-        initialize: function () {
+        initialize: function (options) {
 			this.modal = null;
 			this.videoModal = null;
-            this.render();
+			var videoId = options?options.videoId:"55800aadcb7bb82c1f000002";
+			this.company = new CompanyModel({_id:videoId});
+			this.company.fetch();
+			this.listenTo(this.company, 'change:params', this.render);
+            //this.render();
         },
 
 		sign: function(){

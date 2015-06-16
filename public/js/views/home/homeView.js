@@ -7,13 +7,14 @@ define([
 
     View = Backbone.View.extend({
         className: "mainPage",
-
+		el:"#wrapper",
         events: {
             "click .showModal":"showModal"
         },
 
 
-        initialize: function () {
+        initialize: function (options) {
+			this.options = options;
 			this.modal = null;
             this.render();
         },
@@ -22,7 +23,7 @@ define([
 			if(this.modal){
 				this.modal.undelegateEvents();
 			}
-			this.modal =new ModalView();
+			this.modal =new ModalView(this.options);
 		},
 
 
