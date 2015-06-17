@@ -6,16 +6,11 @@ var async = require('async');
 var crypto = require("crypto");
 var mongoose = require('mongoose');
 var http = require('http');
-var querystring = require('querystring');
 var request = require('request');
 var REG_EXP = require('../constants/regExp');
 
 var badRequests = require('../helpers/badRequests');
-var tokenGenerator = require('../helpers/randomPass');
-var logWriter = require('../helpers/logWriter')();
-
-var mailer = require('../helpers/mailer');
-
+//var pdfutils = require('pdfutils').pdfutils;
 
 var LocalFs = require( './fileStorage/localFs' )();
 var localFs = new LocalFs();
@@ -132,7 +127,7 @@ var UserHandler = function (db) {
     };
 
 
-    this.getCompany = function (req, res, next) {
+    this.company = function (req, res, next) {
     var id = req.params.id;
         CompanyModel.findById(id, function (err, found) {
             if (err) {
@@ -257,8 +252,9 @@ var UserHandler = function (db) {
                     if (err) {
                         return callback(err);
                     }
-
-                    CompanyModel.findByIdAndUpdate(id, {$set: {mainVideoUri: mainVideoUri, logoUri: logoUri}},
+                    var saveMainVideoUri = mainVideoUri.replace('public'+sep, '');
+                    var saveLogoUri = logoUri.replace('public'+sep, '');
+                    CompanyModel.findByIdAndUpdate(id, {$set: {mainVideoUri: saveMainVideoUri, logoUri: saveLogoUri}},
                         function (err, company) {
                             if (err) {
                                 return callback(err);
@@ -281,9 +277,10 @@ var UserHandler = function (db) {
             if (err) {
                 callback(err);
             }
+            var saveVideoUri = videoUri.replace('public'+sep, '');
             var insSurvey = {
                 question: data[question],
-                videoUri: videoUri
+                videoUri: saveVideoUri
             };
             CompanyModel.findByIdAndUpdate(id, {$addToSet: {survey: insSurvey}}, function (err) {
                 if (err) {
@@ -328,10 +325,16 @@ var UserHandler = function (db) {
                 if (err) {
                   return  callback(err);
                 }
+                //-----------------------------------------------------------------
+              /*  pdfutils(file.path, function(err, doc) {
+                    doc[0].asPNG({maxWidth: 200, maxHeight: 300}).toFile(url+sep+file.originalFilename.split(sep).pop().slice(0, -4));
+                });*/
+                //-----------------------------------------------------------------
+                var savePdfUri = pdfUri.replace('public'+sep, '');
                 CompanyModel.findOneAndUpdate({
                     "_id": id,
                     "survey.question": data[question]
-                }, {$addToSet: {"survey.$.pdfUri": pdfUri}}, function (err, company) {
+                }, {$addToSet: {"survey.$.pdfUri": savePdfUri}}, function (err, company) {
                     if (err) {
                         return callback(err);
                     }
@@ -378,8 +381,8 @@ var UserHandler = function (db) {
                            upFile(url, files['logo'], function (err, logoUri) {
                                if (err) {
                                    return callback(err);
-                               }
-                                   CompanyModel.findByIdAndUpdate(id, {$set: {mainVideoUri: data.video, logoUri: logoUri}},
+                               } var saveLogoUri = logoUri.replace('public'+sep, '');
+                                   CompanyModel.findByIdAndUpdate(id, {$set: {mainVideoUri: data.video, logoUri: saveLogoUri}},
                                        function (err) {
                                            if (err) {
                                                return callback(err);

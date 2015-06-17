@@ -7,6 +7,8 @@ define([
 ], function (LoginTemplate, CollapseQuestion, VideoElement, Custom, validation) {
     var View = Backbone.View.extend({
 
+		el:"#wrapper",
+
         initialize: function () {
 			this.countQuestion = 0;
             this.render();

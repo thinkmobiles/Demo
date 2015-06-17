@@ -9,13 +9,26 @@ define([
         el:"#wrapper",
         events: {
             "click .ui-dialog-titlebar-close":"closeDialog",
-            "click .continue":"register"
+            "click .continue":"register",
+			"click .questionSection table .checkbox" : "checkedQuestion",
+			"ended .mainVideo":"endedMainVideo"
         },
 
 
-        initialize: function () {
+        initialize: function (options) {
+			this.company = options.company;
             this.render();
         },
+
+		endedMainVideo:function(e){
+			$(".videoSection").hide();
+			$(".questionSection").show();
+		},
+
+		checkedQuestion: function(e){
+			$(e.target).parents("tr").find(".checked").removeClass("checked");
+			$(e.target).addClass("checked");
+		},
 
         register: function(){
             var userModel = new UserModel();
@@ -50,6 +63,11 @@ define([
         // render template (once! because google maps)
         render: function () {
             var formString = _.template(modalTemplate)({
+				company:{
+					mainVideoUri:this.company.toJSON().mainVideoUri.replace('public\\',''),
+					logoUri:this.company.toJSON().logoUri.replace('public\\',''),
+					survey:this.company.toJSON().survey
+				}
             });
             this.dialog = $(formString).dialog({
                 modal:true,
@@ -58,6 +76,7 @@ define([
                 dialogClass: "register-dialog",
                 width: 1180
             });
+			this.$el.find(".mainVideo").on('ended',this.endedMainVideo);
             return this;
         }
 

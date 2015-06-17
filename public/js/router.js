@@ -87,21 +87,15 @@ define([
             //create new view if it not created before
             var self = this;
             require(['views/' + name + '/' + name + 'View'], function (View) {
-                if (!self[name + 'View']) {
-                    self[name + 'View'] = new View();
-                }
-                // append view
-                self.changeWrapperView(self[name + 'View'], params);
+                self.changeWrapperView(new View(params));
             });
         },
 
-        changeWrapperView: function (wrapperView, params) {
+        changeWrapperView: function (wrapperView) {
             if (this.wrapperView) {
                 this.wrapperView.undelegateEvents();
-                $('#wrapper').html('');
             }
 
-            $('#wrapper').html(wrapperView.el);
             wrapperView.delegateEvents();
 
             this.wrapperView = wrapperView;
@@ -110,11 +104,6 @@ define([
             // using for clenaning
             if (wrapperView.afterUpend) {
                 wrapperView.afterUpend();
-            }
-
-            // hook and aplay query params
-            if (wrapperView.setParams) {
-                wrapperView.setParams(params);
             }
         },
 
