@@ -52,6 +52,13 @@
 	line-height:@h;
 }
 
+.filter(@blur){
+	-webkit-filter: blur(@blur);
+	-moz-filter: blur(@blur);
+	-o-filter: blur(@blur);
+	-ms-filter: blur(@blur);
+	filter: blur(@blur);
+}
 @img-path: "../i";
 
 .i(@name){
@@ -74,6 +81,9 @@ html,body{
 	height:120px;
 	background-color:rgba(0,0,0,0.2);
 	position:relative;
+	z-index:100;
+	transition: all 0.5s ease;
+
 	.inner{
 		width:1070px;
 		margin:0 auto;
@@ -99,7 +109,7 @@ html,body{
 					line-height:120px;
 					padding:10px 20px;
 					color:white;
-					&.active{
+					&:hover{
 						background-color:rgba(0,0,0,0.2);
 						border-radius:5px;
 					}
@@ -374,10 +384,29 @@ html,body{
 	background-color:rgba(0,0,0,0.5);
 }
 .homeContainer{
-	.i("bg.jpg");
 	margin-top:-120px;
 	padding-top:120px;
 	height:722px;
+	position:relative;
+	overflow:hidden;
+	.inner{
+		position:relative;
+		z-index:100;
+	}
+	.bg{
+		.i("bg.jpg");
+		position:absolute;
+		width:100%;
+		height:100%;
+		top:0;
+		left:0;
+		transition: all 0.5s ease;
+	}
+	&.login{
+		.bg{
+			.filter(36px);			
+		}
+	}
 }
 .logo{
 	.lh(120px);
@@ -386,6 +415,22 @@ html,body{
 	text-decoration:none;
 	span{
 		color:#44cbff;
+	}
+}
+
+body.withLogin{
+	.topMenu{
+		background-color:rgba(0,0,0,0);
+	}
+	.homeContainer{
+		.bg{
+			.filter(36px);			
+		}
+		.inner{
+			.homePage{
+				display:none;
+			}
+		}
 	}
 }
 
