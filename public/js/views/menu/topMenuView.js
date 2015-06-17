@@ -8,7 +8,7 @@ define([
         el: '#topMenu',
 
         events: {
-			"click .showModal":"showModal",
+			//"click .showModal":"showModal",
             'click #logOut': 'logout',
             'click .topMenu' :'changeTab'
         },

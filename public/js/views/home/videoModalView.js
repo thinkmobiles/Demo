@@ -10,6 +10,7 @@ define([
         events: {
             "click .ui-dialog-titlebar-close":"closeDialog",
             "click .continue":"register",
+			"click .questionSection table .checkbox" : "checkedQuestion",
 			"ended .mainVideo":"endedMainVideo"
         },
 
@@ -22,6 +23,11 @@ define([
 		endedMainVideo:function(e){
 			$(".videoSection").hide();
 			$(".questionSection").show();
+		},
+
+		checkedQuestion: function(e){
+			$(e.target).parents("tr").find(".checked").removeClass("checked");
+			$(e.target).addClass("checked");
 		},
 
         register: function(){

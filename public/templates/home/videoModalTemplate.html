@@ -7,27 +7,32 @@
     </div>
     <div class="questionSection">
 	  <h2>Choose what is most important to you to personalize your demo:</h2>
-	  <table>
+	  <table cellspacing="0" cellpadding="0">
 		<tr>
 		  <th>Title</th>
-		  <th>Not important</th>
-		  <th>Somewhat important</th>
-		  <th>Very important</th>
+		  <th>Not<br/>important</th>
+		  <th>Somewhat<br/>important</th>
+		  <th>Very<br/>important</th>
 		</tr>
 	  <%_.forEach(company.survey,function(item){%>
 		<tr>
 		  <td><%=item.question%></td>
-		  <td>&nbsp;</td>
-		  <td>&nbsp;</td>
-		  <td>&nbsp;</td>
+		  <td><div class="checkbox"></div></td>
+		  <td><div class="checkbox"></div></td>
+		  <td><div class="checkbox"></div></td>
 		</tr>
 	  <%})%>
 	  </table>
+
+	  <button>CONTINUE</button>
     </div>
 	
   </div>
   <div class="right">
-	<img src="<%= company.logoUri %>" height="80"/>
+	<img src="<%= company.logoUri %>" height="80" class="logo"/><br/><img src="i/socials.png" height="27" class="social"/>
+	<br/><br/><br/><br/><br/>
+	<span>OR CALL US: +31 086 500 00 00</span>
+	<button>CONTACT ME</button>
   </div>
   <div class="clear">
   </div>
