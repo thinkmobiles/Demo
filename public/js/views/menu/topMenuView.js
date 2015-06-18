@@ -1,7 +1,8 @@
 define([
     'text!templates/menu/topMenuTemplate.html',
-	'views/home/modalView'
-], function (topMenuTemplate, ModalView) {
+	'views/home/modalView',
+	'views/home/passView'
+], function (topMenuTemplate, ModalView, passView) {
 
     var View;
     View = Backbone.View.extend({
@@ -10,7 +11,8 @@ define([
         events: {
 			//"click .showModal":"showModal",
             'click #logOut': 'logout',
-            'click .topMenu' :'changeTab'
+            'click .topMenu' :'changeTab',
+            'click .checkPass': 'checkPass'
         },
 
 
@@ -23,7 +25,10 @@ define([
 			var modalView  = new ModalView();
 		},
 
-		
+        checkPass: function(){
+            var modalView  = new passView();
+        },
+
         changeTab: function(event) {
             var holder = $(event.target);
             var closestEl = holder.closest('.loggedMenu');

@@ -23,12 +23,68 @@ define([
 		endedMainVideo:function(e){
 			$(".videoSection").hide();
 			$(".questionSection").show();
+            sendAjax();
 		},
 
 		checkedQuestion: function(e){
 			$(e.target).parents("tr").find(".checked").removeClass("checked");
 			$(e.target).addClass("checked");
 		},
+        range: function () {
+            var video = document.getElementsByTagName('video')[0];
+            var ranges = [];
+            var time_ranges = video.played;
+            for (var i=0; i < time_ranges.length; i++) {
+                var range = {};
+                range.start = Math.round(time_ranges.start(i));
+                range.end = Math.round(time_ranges.end(i));
+                ranges.push(range);
+            }
+            console.log(ranges);
+            console.log(time_ranges);
+
+        },
+        sendAjax: function(){
+            var video =this.$el.find(".mainVideo")[0];
+            var time_ranges = video.played;
+            var ranges = [];
+            //var pos = video.currentSrc.indexOf('video');
+            //var videoId = decodeURI(video.currentSrc.slice(pos));
+
+            for (var i=0; i < time_ranges.length; i++) {
+                var range = {};
+                range.start = Math.round(time_ranges.start(i));
+                range.end = Math.round(time_ranges.end(i));
+                ranges.push(range);
+            }
+            var videoData = {
+                companyId: this.company.toJSON()._id,
+                //userId: //ToDo: user id
+                data:{
+                    videoId: this.company.toJSON().mainVideoUri,
+                    rangeWatched: ranges
+                }
+            };
+            $.ajax({
+                type: "POST",
+                url: "/testTrackVideo",
+                data: JSON.stringify(videoData),
+                contentType: "application/json",
+
+                success: function (msg) {
+                    if (msg) {
+                        console.log('Successfully send')
+                    } else {
+                        console.log("Cant track the video");
+                    }
+                },
+                error: function (model, xhr) {
+                    console.log(xhr);
+                    console.log(model);
+
+                }
+            });
+        },
 
         register: function(){
             var userModel = new UserModel();
