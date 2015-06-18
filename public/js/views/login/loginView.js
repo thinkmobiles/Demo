@@ -1,10 +1,10 @@
 define([
-    'text!templates/login/LoginTemplate.html',
+    'text!templates/login/RegistrationTemplate.html',
     'text!templates/login/collapseQuestion.html',
     'text!templates/login/videoElement.html',
     'custom',
     'validation'
-], function (LoginTemplate, CollapseQuestion, VideoElement, Custom, validation) {
+], function (RegistrationTemplate, CollapseQuestion, VideoElement, Custom, validation) {
     var View = Backbone.View.extend({
 
 		el:"#wrapper",
@@ -118,7 +118,7 @@ define([
 		},
 		
         render: function () {
-            this.$el.html(_.template(LoginTemplate));
+            this.$el.html(_.template(RegistrationTemplate));
             return this;
         }
 
