@@ -11,6 +11,8 @@ define([
         events: {
 			//"click .showModal":"showModal",
             'click #logOut': 'logout',
+            'click .login': 'login',
+            'click .navBar': 'toPage',
             'click .topMenu' :'changeTab',
             'click .checkPass': 'checkPass'
         },
