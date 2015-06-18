@@ -9,7 +9,8 @@ define([
         className: "mainPage",
 		el:"#wrapper",
         events: {
-            "click .showModal":"showModal"
+            "click .showModal":"showModal",
+            "click .checkbox":"checkboxClick"
         },
 
 
@@ -18,6 +19,10 @@ define([
 			this.modal = null;
             this.render();
         },
+
+		checkboxClick:function(e){
+			$(e.target).closest(".checkbox").toggleClass("checked");
+		},
 
         showModal:function(){
 			if(this.modal){
