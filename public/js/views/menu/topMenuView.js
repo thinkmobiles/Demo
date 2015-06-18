@@ -21,6 +21,15 @@ define([
             this.render();
         },
 
+		toPage:function(){
+			$("body").removeClass("withLogin");
+		},
+
+		login: function(e){
+			e.stopPropagation();
+			$("body").addClass("withLogin");
+		},
+
         showModal:function(){
 			var modalView  = new ModalView();
 		},
@@ -32,8 +41,6 @@ define([
         changeTab: function(event) {
             var holder = $(event.target);
             var closestEl = holder.closest('.loggedMenu');
-            closestEl.find(".active").removeClass("active");
-            holder.addClass("active");
 
         },
 
