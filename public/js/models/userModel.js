@@ -2,7 +2,7 @@ define(['validation'], function (validation) {
     var Model = Backbone.Model.extend({
         idAttribute: "_id",
         url: function () {
-            return "/signUp"
+            return "/prospectSignUp"
         },
         initialize: function () {
             this.on('invalid', function (model, errors) {

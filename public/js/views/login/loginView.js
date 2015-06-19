@@ -16,6 +16,7 @@ define([
 
         events: {
             "click .decline": "decline",
+            "click .save": "save",
             "click .question": "question",
             "click .collapseQuestions .collapseQuestion .close": "removeQuestion",
             "click .login-button": "login",
@@ -98,6 +99,26 @@ define([
 		decline: function(e){
 			e.preventDefault();
 			window.location="/#home";
+		},
+		save: function(e){
+			e.preventDefault();
+			var form = document.forms.namedItem("videoForm");
+
+			oData = new FormData(form);
+
+
+			var oReq = new XMLHttpRequest();
+			oReq.open("POST", "/upload", true);
+			oReq.onload = function(oEvent) {
+				if (oReq.status == 201) {
+					window.location="/#home";
+				} else {
+					alert("Error");
+				}
+			};
+
+			oReq.send(oData);
+
 		},
 
 		browse: function(e){

@@ -41,7 +41,9 @@ define([
 			if(this.modal){
 				this.modal.undelegateEvents();
 			}
-			this.modal =new ModalView();
+			this.modal =new ModalView({
+				company:this.company
+			});
         },
 
         // render template (once! because google maps)
