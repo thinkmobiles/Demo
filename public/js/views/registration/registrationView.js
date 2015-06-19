@@ -7,13 +7,38 @@ define([
 		el:"#wrapper",
         events:{
             "input #pass": "progressBar",
-            "click .cancel":"cancel"
+            "click .cancel":"cancel",
+            "click .registerBtn":"register"
         },
         initialize: function () {
             $("#progressBar").progressbar({value: 5 });
             this.render();
         },
 
+		register: function(e){
+			var self = this;
+
+			$.ajax({
+                url: "/signUp",
+                type: "POST",
+                data: {
+                    email: self.$el.find(".registration .email").val(),
+                    firstName: self.$el.find(".registration .firstName").val(),
+                    lastName: self.$el.find(".registration .lastName").val(),
+                    userName: self.$el.find(".registration .userName").val(),
+                    organization: self.$el.find(".registration .organization").val(),
+                    pass: self.$el.find(".registration .pass").val()
+                },
+                success: function (model) {
+					console.log(model);
+					Backbone.history.navigate("home",{ trigger:true })
+                },
+                error: function (err) {
+					console.log(err);
+
+                }
+            });
+		},
 
         progressBar: function () {
             var pass = $("#pass").val();

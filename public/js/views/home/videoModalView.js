@@ -1,7 +1,8 @@
 define([
     'text!templates/home/videoModalTemplate.html',
+    'text!templates/home/relatedVideo.html',
     "models/userModel"
-], function ( modalTemplate, UserModel) {
+], function ( modalTemplate, relatedVideo, UserModel) {
 
     var View;
 
@@ -11,7 +12,8 @@ define([
             "click .ui-dialog-titlebar-close":"closeDialog",
             "click .continue":"register",
 			"click .questionSection table .checkbox" : "checkedQuestion",
-			"ended .mainVideo":"endedMainVideo"
+			"ended .mainVideo":"endedMainVideo",
+			"click .showSurvay":"showSurvay"
         },
 
 
@@ -23,7 +25,13 @@ define([
 		endedMainVideo:function(e){
 			$(".videoSection").hide();
 			$(".questionSection").show();
-            sendAjax();
+            //sendAjax();
+		},
+
+		showSurvay:function(e){
+			$(".questionSection").hide();
+			$(".relatedVideo").show();
+			$(".relatedVideo").html(_.template(relatedVideo)(this.company.toJSON().survey[0]));
 		},
 
 		checkedQuestion: function(e){
