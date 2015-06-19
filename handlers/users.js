@@ -126,7 +126,7 @@ var routeHandler = function (db) {
             }
 
             if(!user){
-              return  res.status(204).send({error: "'Can\'t find User'"});
+              return  res.status(204).send({error: "Can\'t find User"});
             }
 
             if(user.pass === pass ){
