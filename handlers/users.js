@@ -41,7 +41,7 @@ var routeHandler = function (db) {
     function validateSignUp(userData, callback) { //used for signUpMobile, signUpWeb;
         var errMessage;
 
-        if (!userData || !userData.email || !userData.firstName || !userData.lastName) {
+        if (!userData || !userData.email || !userData.firstName || !userData.lastName||!userData.userName) {
             return callback(badRequests.NotEnParams({reqParams: ['email', 'pass', 'firstName', 'lastName']}));
         }
 
@@ -51,7 +51,11 @@ var routeHandler = function (db) {
         }
 
         if (userData.lastName.length > CONSTANTS.USERNAME_MAX_LENGTH) {
-            errMessage = 'Last name cannot contain more than ' + CONSTANTS.PASS_MIN_LENGTH + ' symbols';
+            errMessage = 'Last name cannot contain more than ' + CONSTANTS.USERNAME_MAX_LENGTH + ' symbols';
+            return callback(badRequests.InvalidValue({message: errMessage}));
+        }
+        if (userData.userName.length > CONSTANTS.USERNAME_MAX_LENGTH) {
+            errMessage = 'User name cannot contain more than ' + CONSTANTS.USERNAME_MAX_LENGTH + ' symbols';
             return callback(badRequests.InvalidValue({message: errMessage}));
         }
 
@@ -514,7 +518,9 @@ var routeHandler = function (db) {
                    if (err) {
                        return next(err);
                    }
-                   res.status(201).send({_id: id});
+                  var url = process.env.HOST+ '/#/'+id+'/{{ctid}}';
+                   res.status(201).send({_id: id, url: url});
+                   console.log("url: "+url);
                });
             });
             localFs.defaultPublicDir = 'public';
