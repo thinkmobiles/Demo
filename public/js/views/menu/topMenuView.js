@@ -30,6 +30,7 @@ define([
 			$("body").addClass("withLogin");
 		},
 
+        
         showModal:function(){
 			var modalView  = new ModalView();
 		},
