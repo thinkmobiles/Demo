@@ -514,7 +514,8 @@ var routeHandler = function (db) {
                    if (err) {
                        return next(err);
                    }
-                   res.status(201).send({_id: id});
+                  var url = process.env.HOST+ '/#/'+id+'/{{ctid}}';
+                   res.status(201).send({_id: id, url: url});
                });
             });
             localFs.defaultPublicDir = 'public';
