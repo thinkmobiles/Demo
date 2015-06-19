@@ -1,5 +1,5 @@
 define([
-    'text!templates/login/loginTemplate.html',
+    'text!templates/login/LoginTemplate.html',
     'text!templates/login/collapseQuestion.html',
     'text!templates/login/videoElement.html',
     'custom',
