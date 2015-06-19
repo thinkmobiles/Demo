@@ -116,7 +116,7 @@ var routeHandler = function (db) {
     this.login = function (req, res, next) {
         var options = req.body;
         if(!options.userName || !options.pass)
-            res.status(401).send({ error: "Username and password is required"});
+          return  res.status(401).send({ error: "Username and password is required"});
 
         var userName = options.userName;
         var pass = getEncryptedPass(options.pass);
@@ -126,16 +126,16 @@ var routeHandler = function (db) {
             }
 
             if(!user){
-                res.status(204).send({error: "'Can\'t find User'"});
+              return  res.status(204).send({error: "'Can\'t find User'"});
             }
 
             if(user.pass === pass ){
-                res.status(200).send({
+               return res.status(200).send({
                     success: "Login successful",
                     user: user
                  });
             } else{
-                res.status(401).send({ error: "Incorrect password" });
+               return res.status(401).send({ error: "Incorrect password" });
             }
         });
     };
