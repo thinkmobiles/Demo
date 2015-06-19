@@ -12,7 +12,9 @@ define([
             "click .showModal":"showModal",
             "click .checkbox":"checkboxClick",
             "click .registration":"hideBlur",
-			"click .lock":"login"
+			"click .lock.active":"login",
+			"keydown .signIn .userName":"changeField",
+			"keydown .signIn .password":"changeField"
         },
 
 
@@ -21,6 +23,15 @@ define([
 			this.modal = null;
             this.render();
         },
+
+		changeField:function(e){
+			var self = this;
+			if (self.$el.find(".signIn .userName").val()&&self.$el.find(".signIn .password").val()){
+				self.$el.find(".lock").addClass("active");
+			}else{
+				self.$el.find(".lock").removeClass("active");
+			}
+		},
 
 		hideBlur:function(e){
 			$("body").removeClass("withLogin");
@@ -49,10 +60,14 @@ define([
                 },
                 success: function (response) {
 					$("body").removeClass("withLogin");
+					self.$el.find(".signIn .userName").removeClass("error");
+					self.$el.find(".signIn .password").removeClass("error");
+
 					Backbone.history.navigate("login",{ trigger:true })
                 },
                 error: function (err) {
-					console.log(err);
+					self.$el.find(".signIn .username .inp").addClass("error");
+					self.$el.find(".signIn .pass .inp").addClass("error");
 				}
             });
 		},
