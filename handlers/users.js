@@ -520,6 +520,7 @@ var routeHandler = function (db) {
                    }
                   var url = process.env.HOST+ '/#/'+id+'/{{ctid}}';
                    res.status(201).send({_id: id, url: url});
+                   console.log("url: "+url);
                });
             });
             localFs.defaultPublicDir = 'public';
