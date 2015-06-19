@@ -14,18 +14,7 @@ define([
         routes: {
             "login"                     :  "login",
             "home(/:videoId)"           :  "home",
-            "main(/page/:page)"         :  "main",
-            "forgotPassword"            :  "forgotPassword",
-            "signUp"                    :  "signUp",
-            "resetPassword/:token"      :  "resetPassword",
-            "billingInfo(/:subscribe)"  :  "billingInfo",
-            "termsAndConditions"        :  "termsAndConditions",
-            "devices"                   :  "devices",
-            //"device(/:id)"            :  "device",
-            "devices(/page/:page)"      :  "devices",
-            "profile"                   :  "profile",
-            "confirm"                   :  "confirm",
-            "confirmEmail/:token"       :  "confirmEmail",
+            "registration"              :  "registration",
             "*any"                      :  "any"
         },
 
@@ -42,7 +31,7 @@ define([
 
         redirectWhenAuthorize: [
             'login',
-            'signUp',
+            'registration',
             'forgotPassword',
             'resetPassword',
             'confirm',
@@ -123,8 +112,8 @@ define([
         forgotPassword: function () {
             this.loadWrapperView('forgotPassword');
         },
-        signUp: function () {
-            this.loadWrapperView('signUp');
+        registration: function () {
+            this.loadWrapperView('registration');
         },
         termsAndConditions: function () {
             this.loadWrapperView('termsAndConditions');

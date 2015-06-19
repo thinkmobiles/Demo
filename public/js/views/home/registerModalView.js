@@ -28,15 +28,34 @@ define([
 				title : this.$el.find("#title").val(),
 				comments : this.$el.find("#comments").val()
             },
-							   {
-								   wait: true,
-								   success: function (model, response) {
-									   alert("OK!")
-								   },
-								   error: function (model, xhr) {
-    								   self.errorNotification(xhr);
-								   }
-							   });
+               {
+                   wait: true,
+                   success: function (model, response) {
+                       alert("OK!")
+                   },
+                   error: function (model, xhr) {
+                       self.errorNotification(xhr);
+                   }
+               });
+            $.ajax({
+                type: "POST",
+                url: "/trackUser",
+                data: JSON.stringify(videoData),
+                contentType: "application/json",
+
+                success: function (msg) {
+                    if (msg) {
+                        console.log('Successfully send')
+                    } else {
+                        console.log("Cant track the video");
+                    }
+                },
+                error: function (model, xhr) {
+                    console.log(xhr);
+                    console.log(model);
+
+                }
+            });
 		},
 
         closeDialog:function(e){

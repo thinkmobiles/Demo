@@ -3,14 +3,11 @@
 var RESPONSES = require('../constants/responses');
 var fs = require("fs");
 var logWriter = require('../helpers/logWriter')();
-var UserHandler = require('../handlers/users');
+var Handler = require('../handlers/users');
 var multipart = require( 'connect-multiparty' )();
 
 module.exports = function (app, db) {
-    var userHandler = new UserHandler(db);
-    var stripePlansRouter;
-
-    // -----------------------
+    var handler = new Handler(db);
 
     app.use(function (req, res, next) {
         if (process.env.NODE_ENV === 'development') {
@@ -22,13 +19,16 @@ module.exports = function (app, db) {
     app.get('/', function (req, res, next) {
         res.sendfile('index.html');
     });
-app.post('/track', userHandler.track);
-    app.post('/trackDocument', userHandler.trackDocument);
-    app.post('/trackQuestion', userHandler.trackQuestion);
-    app.get('/company/:id',userHandler.company);
-    app.post('/upload', multipart, userHandler.upload);
-    app.post('/signUp', userHandler.signUp);
-    app.get('/redirect', userHandler.redirect);
+    app.post('/trackDocument', handler.trackDocument);
+    app.post('/trackQuestion', handler.trackQuestion);
+    app.post('/trackVideo', handler.trackVideo);
+    //app.post('/trackProspect', handler.trackProspect);
+    app.get('/company/:id',handler.company);
+    app.post('/upload', multipart, handler.upload);
+    app.post('/prospectSignUp', handler.prospectSignUp);
+    app.post('/signUp', handler.signUp);
+    app.post('/login', handler.login);
+    app.get('/redirect', handler.redirect);
 
 
 

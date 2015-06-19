@@ -17,7 +17,7 @@ var localFs = new LocalFs();
 var path = require('path');
 var fs = require('fs');
 
-var UserHandler = function (db) {
+var routeHandler = function (db) {
 
 
     var prospectSchema = mongoose.Schemas['Prospect'];
@@ -28,6 +28,10 @@ var UserHandler = function (db) {
 
     var companySchema = mongoose.Schemas['Company'];
     var CompanyModel = db.model('Company', companySchema);
+
+    var userSchema = mongoose.Schemas['User'];
+    var UserModel = db.model('User', userSchema);
+
     var self = this;
 
     function normalizeEmail(email) {
@@ -72,7 +76,24 @@ var UserHandler = function (db) {
     function createProspect(userData, callback) {
 
         //create user:
-        var newUser = new ProspectModel(userData);
+        var newProspect = new ProspectModel(userData);
+        newProspect.save(function (err, result) {
+            if (err) {
+                if (callback && (typeof callback === 'function')) {
+                    callback(err);
+                }
+            } else {
+                if (callback && (typeof callback === 'function')) {
+                    callback(null, result);
+                }
+            }
+        });
+    };
+
+    function createUser(userData, callback) {
+
+        //create user:
+        var newUser = new UserModel(userData);
         newUser.save(function (err, result) {
             if (err) {
                 if (callback && (typeof callback === 'function')) {
@@ -86,9 +107,76 @@ var UserHandler = function (db) {
         });
     };
 
+    function getEncryptedPass(pass) {
+        var shaSum = crypto.createHash('sha256');
+        shaSum.update(pass);
+        return shaSum.digest('hex');
+    };
 
+    this.login = function (req, res, next) {
+        var options = req.body;
+        if(!options.userName || !options.pass)
+          return  res.status(401).send({ error: "Username and password is required"});
+
+        var userName = options.userName;
+        var pass = getEncryptedPass(options.pass);
+        UserModel.findOne({userName: userName}, function (err, user) {
+            if(err) {
+                return next(err);
+            }
+
+            if(!user){
+              return  res.status(500).send({error: "Can\'t find User"});
+            }
+
+            if(user.pass === pass ){
+               return res.status(200).send({
+                    success: "Login successful",
+                    user: user
+                 });
+            } else{
+               return res.status(401).send({ error: "Incorrect password" });
+            }
+        });
+    };
 
     this.signUp = function (req, res, next) {
+        var options = req.body;
+        var pass = options.pass;
+        options.pass = getEncryptedPass(pass);
+        async.series([
+
+            //validation:
+            function (cb) {
+                validateSignUp(options, function (err) {
+                    if (err) {
+                        return cb(err);
+                    }
+                    cb();
+                });
+            },
+            //create user:
+            function (cb) {
+                createUser(options, function (err, user) {
+                    if (err) {
+                        return cb(err);
+                    }
+
+                    cb(null, user);
+                });
+            }], function (err) {
+            if (err) {
+                return next(err);
+            }
+
+            res.status(201).send({
+                success: 'Success signUp',
+                message: 'Thank you for register.'
+            });
+        });
+    };
+
+    this.prospectSignUp = function (req, res, next) {
         var options = req.body;
 
         async.series([
@@ -103,7 +191,7 @@ var UserHandler = function (db) {
                 });
             },
 
-            //create user:
+            //create prospect:
             function (cb) {
                 createProspect(options, function (err, user) {
                     if (err) {
@@ -140,8 +228,8 @@ var UserHandler = function (db) {
 
     this.trackQuestion = function (req, res, next) {
         var data = req.body;
-        var userId = req.query.userId;
-        var companyId = req.query.companyId;
+        var userId = req.body.userId;
+        var companyId = req.body.companyId;
         TrackModel.findOneAndUpdate({
             "userId": userId,
             "companyId": companyId
@@ -156,8 +244,8 @@ var UserHandler = function (db) {
 
     this.trackDocument = function (req, res, next) {
         var data = req.body;
-        var userId = req.query.userId;
-        var companyId = req.query.companyId;
+        var userId = req.body.userId;
+        var companyId = req.body.companyId;
         TrackModel.findOneAndUpdate({
             "userId": userId,
             "companyId": companyId
@@ -170,19 +258,40 @@ var UserHandler = function (db) {
         });
     };
 
-
-
-    this.track = function (req, res, next) {
-            var data = req.body;
-            var newTrack = new TrackModel(data);
-        newTrack.save(function (err, result) {
+    this.trackVideo = function (req, res, next) {
+        var body = req.body;
+        var userId = body.userId;
+        var companyId = body.companyId;
+        TrackModel.findOneAndUpdate({
+            "userId": userId,
+            "companyId": companyId
+        }, {$add: {documents: data}}, function (err) {
             if (err) {
-                console.log(err);
-                res.status(423).send('somth wrong');
+                return next(err);
             }
-            //res.redirect('/#home');
-            res.status(201).send(result);
+            res.status(200).send("Successful update");
+
         });
+    };
+
+    this.testTrackVideo = function (req, res, next) {
+        var body = req.body;
+        //var userId = body.userId;
+        var companyId = body.companyId;
+        var data = body.data;
+        console.log('companyId ' +companyId);
+        //console.log('userId ' +userId);
+        console.log('data ' +data.videoId);
+        CompanyModel.find({},function(err, found){
+            console.log(found);
+            res.status(200).send({
+                body: data,
+                //userId: userId,
+                companyId:companyId
+            });
+
+        });
+
 
     };
 
@@ -197,6 +306,7 @@ var UserHandler = function (db) {
             });
         });
     };
+
         function validation (data, callback){
             var files = data.files;
             var body = data.body;
@@ -486,4 +596,4 @@ var UserHandler = function (db) {
     };
 };
 
-module.exports = UserHandler;
+module.exports = routeHandler;
