@@ -23,7 +23,7 @@ define([
 		endedMainVideo:function(e){
 			$(".videoSection").hide();
 			$(".questionSection").show();
-            sendAjax();
+            //sendAjax();
 		},
 
 		checkedQuestion: function(e){
