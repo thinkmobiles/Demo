@@ -10,7 +10,8 @@ define([
 		el:"#wrapper",
         events: {
             "click .showModal":"showModal",
-            "click .checkbox":"checkboxClick"
+            "click .checkbox":"checkboxClick",
+            "click .registration":"hideBlur"
         },
 
 
@@ -19,6 +20,10 @@ define([
 			this.modal = null;
             this.render();
         },
+
+		hideBlur:function(e){
+			$("body").removeClass("withLogin");
+		},
 
 		checkboxClick:function(e){
 			$(e.target).closest(".checkbox").toggleClass("checked");

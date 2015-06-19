@@ -11,8 +11,13 @@ define([
         },
 
         events: {
+			"click .cancel":"cancel"
         },
 
+		cancel:function(e){
+			Backbone.history.navigate("home",{ trigger:true })
+		},
+		
         render: function () {
             this.$el.html(_.template(RegistrationTemplate));
             return this;
