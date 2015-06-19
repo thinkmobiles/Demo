@@ -18,6 +18,43 @@ define([
 		register: function(e){
 			var self = this;
 
+			var isError = false;
+			
+			self.$el.find(".registration .error").removeClass("error");
+
+			if (!self.$el.find(".registration .email").val()){
+				isError = true;
+				self.$el.find(".registration .email").addClass("error");
+			}
+			if (!self.$el.find(".registration .firstName").val()){
+				isError = true;
+				self.$el.find(".registration .firstName").addClass("error");
+			}
+			if (!self.$el.find(".registration .lastName").val()){
+				isError = true;
+				self.$el.find(".registration .lastName").addClass("error");
+			}
+			if (!self.$el.find(".registration .userName").val()){
+				isError = true;
+				self.$el.find(".registration .userName").addClass("error");
+			}
+
+			if (!self.$el.find(".registration .organization").val()){
+				isError = true;
+				self.$el.find(".registration .organization").addClass("error");
+			}
+
+			if (!self.$el.find(".registration .pass").val()){
+				isError = true;
+				self.$el.find(".registration .pass").addClass("error");
+			}
+
+			if (!self.$el.find(".registration .conf").val() || self.$el.find(".registration .conf").val()!==self.$el.find(".registration .pass").val()){
+				isError = true;
+				self.$el.find(".registration .conf").addClass("error");
+			}
+
+			if (isError)return;
 			$.ajax({
                 url: "/signUp",
                 type: "POST",
