@@ -1,8 +1,7 @@
 define([
     'text!templates/menu/topMenuTemplate.html',
-	'views/home/modalView',
-	'views/home/passView'
-], function (topMenuTemplate, ModalView, passView) {
+	'views/home/modalView'
+], function (topMenuTemplate, ModalView) {
 
     var View;
     View = Backbone.View.extend({
@@ -13,8 +12,7 @@ define([
             'click #logOut': 'logout',
             'click .login': 'login',
             'click .navBar': 'toPage',
-            'click .topMenu' :'changeTab',
-            'click .checkPass': 'checkPass'
+            'click .topMenu' :'changeTab'
         },
 
 
@@ -32,13 +30,10 @@ define([
 			$("body").addClass("withLogin");
 		},
 
+        
         showModal:function(){
 			var modalView  = new ModalView();
 		},
-
-        checkPass: function(){
-            var modalView  = new passView();
-        },
 
         changeTab: function(event) {
             var holder = $(event.target);
