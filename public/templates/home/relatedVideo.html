@@ -1,0 +1,11 @@
+<div>
+  <video controls="true" width="716" height="404" class="mainVideo">
+	<source src="<%= videoUri %>" type="video/mp4" />
+  </video>
+  <h3>Related video:</h3>
+  <ul>
+	<%_.forEach(pdfUri,function(url){%>
+	<li><a href="<%=url%>"><%=url.split("\\").pop()%></a></li>
+	<%})%>
+  </ul>
+</div>
