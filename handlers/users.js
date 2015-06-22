@@ -16,8 +16,8 @@ var LocalFs = require( './fileStorage/localFs' )();
 var localFs = new LocalFs();
 var path = require('path');
 var fs = require('fs');
-var Jumplead= require('../helpers/jumplead');
-
+var Jumplead = require('../helpers/jumplead');
+var Sessions = require('../helpers/sessions');
 
 var routeHandler = function (db) {
 
@@ -35,13 +35,48 @@ var routeHandler = function (db) {
     var UserModel = db.model('User', userSchema);
 
     var jumplead = new Jumplead(db);
+    var session = new Sessions(db);
     var self = this;
 
     function normalizeEmail(email) {
         return email.trim().toLowerCase();
     };
 
-    function validateSignUp(userData, callback) { //used for signUpMobile, signUpWeb;
+    function validateProspectSignUp(userData, callback) { //used for signUpMobile, signUpWeb;
+        var errMessage;
+
+        if (!userData || !userData.email || !userData.firstName || !userData.lastName||!userData.userName) {
+            return callback(badRequests.NotEnParams({reqParams: ['email', 'pass', 'firstName', 'lastName']}));
+        }
+
+        if (userData.firstName.length > CONSTANTS.USERNAME_MAX_LENGTH) {
+            errMessage = 'First name cannot contain more than ' + CONSTANTS.USERNAME_MAX_LENGTH + ' symbols';
+            return callback(badRequests.InvalidValue({message: errMessage}));
+        }
+
+        if (userData.lastName.length > CONSTANTS.USERNAME_MAX_LENGTH) {
+            errMessage = 'Last name cannot contain more than ' + CONSTANTS.USERNAME_MAX_LENGTH + ' symbols';
+            return callback(badRequests.InvalidValue({message: errMessage}));
+        }
+        if (!REG_EXP.EMAIL_REGEXP.test(userData.email)) {
+            return callback(badRequests.InvalidEmail());
+        }
+
+        userData.email = normalizeEmail(userData.email);
+
+        ProspectModel.findOne({email: userData.email}, function (err, user) {
+            if (err) {
+                callback(err);
+            } else if (user) {
+                callback(badRequests.EmailInUse());
+            } else {
+                callback();
+            }
+        });
+
+    };
+
+    function validateUserSignUp(userData, callback) { //used for signUpMobile, signUpWeb;
         var errMessage;
 
         if (!userData || !userData.email || !userData.firstName || !userData.lastName||!userData.userName) {
@@ -68,7 +103,7 @@ var routeHandler = function (db) {
 
         userData.email = normalizeEmail(userData.email);
 
-        ProspectModel.findOne({email: userData.email}, function (err, user) {
+        UserModel.findOne({email: userData.email}, function (err, user) {
             if (err) {
                 callback(err);
             } else if (user) {
@@ -108,6 +143,7 @@ var routeHandler = function (db) {
                 }
             } else {
                 if (callback && (typeof callback === 'function')) {
+                    session.register(req, result);
                     callback(null, result);
                 }
             }
@@ -118,6 +154,21 @@ var routeHandler = function (db) {
         var shaSum = crypto.createHash('sha256');
         shaSum.update(pass);
         return shaSum.digest('hex');
+    };
+
+    this.redirect = function (req, res, next) {
+        var code = req.query.code;
+        session.getUserId(req, function (err, userId) {
+            if(err){
+                return next(err);
+            }
+            jumplead.getToken(code, userId, function (err) {
+                if(err){
+                    next(err)
+                }
+                res.redirect('/#/home');
+            });
+        });
     };
 
     this.login = function (req, res, next) {
@@ -155,7 +206,7 @@ var routeHandler = function (db) {
 
             //validation:
             function (cb) {
-                validateSignUp(options, function (err) {
+                validateUserSignUp(options, function (err) {
                     if (err) {
                         return cb(err);
                     }
@@ -175,11 +226,7 @@ var routeHandler = function (db) {
             if (err) {
                 return next(err);
             }
-
-            res.status(201).send({
-                success: 'Success signUp',
-                message: 'Thank you for register.'
-            });
+            res.redirect('https://account.mooloop.com/oauth/authorize?response_type=code&client_id=FcDOCBsnZ2TtKbHTGULY&redirect_uri=http://demo.com:8838/redirect&scope=jumplead.contacts');
         });
     };
 
@@ -190,7 +237,7 @@ var routeHandler = function (db) {
 
             //validation:
             function (cb) {
-                validateSignUp(options, function (err) {
+                validateProspectSignUp(options, function (err) {
                     if (err) {
                         return cb(err);
                     }
@@ -289,6 +336,9 @@ var routeHandler = function (db) {
             ContentModel.findById(contentId, function (err, foundContent) {
                 if (err) {
                     return next(err);
+                }
+                if(!foundContent){
+                    return next('Contentc Not Found');
                 }
                 content = foundContent;
 
@@ -641,15 +691,7 @@ var routeHandler = function (db) {
     //"https://account.mooloop.com/oauth/authorize?response_type=code&client_id=FcDOCBsnZ2TtKbHTGULY&redirect_uri=http://demo.com:8838/redirect&scope=jumplead.contacts"
 
 
-    this.redirect = function (req, res, next) {
-        var code = req.query.code;
-        jumplead.getToken(code, userId, function () {
-            if(err){
-                next(err)
-            }
-            res.redirect('/#/registration');
-        });
-    };
+
 
 
 };

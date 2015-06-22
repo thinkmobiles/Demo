@@ -69,7 +69,7 @@ db.once('open', function() {
     app.use(express.static(path.join(__dirname, 'public')));
 
     app.use(session({
-        name: 'Minder',
+        name: 'Demo',
         secret: '1q2w3e4r5tdhgkdfhgejflkejgkdlgh8j0jge4547hh',
         resave: false,
         saveUninitialized: false,
