@@ -16,6 +16,8 @@ var LocalFs = require( './fileStorage/localFs' )();
 var localFs = new LocalFs();
 var path = require('path');
 var fs = require('fs');
+var Jumplead= require('../helpers/jumplead');
+
 
 var routeHandler = function (db) {
 
@@ -26,12 +28,13 @@ var routeHandler = function (db) {
     var trackSchema = mongoose.Schemas['Track'];
     var TrackModel = db.model('Track', trackSchema);
 
-    var companySchema = mongoose.Schemas['Company'];
-    var CompanyModel = db.model('Company', companySchema);
+    var contentSchema = mongoose.Schemas['Content'];
+    var ContentModel = db.model('Content', contentSchema);
 
     var userSchema = mongoose.Schemas['User'];
     var UserModel = db.model('User', userSchema);
 
+    var jumplead = new Jumplead(db);
     var self = this;
 
     function normalizeEmail(email) {
@@ -221,14 +224,95 @@ var routeHandler = function (db) {
 
     this.company = function (req, res, next) {
     var id = req.params.id;
-        CompanyModel.findById(id, function (err, found) {
+        ContentModel.findById(id, function (err, found) {
             if (err) {
-                next(err);
+               return  next(err);
             }
             res.status(200).send(found);
         });
-
     };
+
+    function refreshToken (userId, accessToken, refreshToken, callback){
+        request.get({
+            url: 'https://app.jumplead.com/api/v1/contacts',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + accessToken
+            }
+        }, function (error, response, body) {
+            if (!body.data || error) {
+                request.post({
+                    url: 'https://account.mooloop.com/oauth/access_token',
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    form: {
+                        code: code,
+                        client_id: "FcDOCBsnZ2TtKbHTGULY",
+                        client_secret: "sCkxGw1dWL4j1QrOnNmT6ZOv9feBqFhUbe1uTg4Y",
+                        refresh_token: refreshToken,
+                        redirect_uri: "http://demo.com:8838/redirect",
+                        grant_type: "refresh_token"
+
+                    }
+                }, function (error, response, body1) {
+                    try {
+                        body1 = JSON.parse(body1);
+                    } catch (e) {
+                    }
+                    var accessToken = body1.access_token;
+                    var refreshToken = body1.refresh_token;
+                    UserModel.findByIdAndUpdate(userId, {$set: {
+                        accessToken: accessToken,
+                        refreshToken: refreshToken
+                    }}, function (err, foundUser) {
+                        if (err) {
+                            return callback(err);
+                        }
+                        return callback(null);
+                    });
+                });
+            }else{
+              return  callback(null);
+            }
+        });
+    };
+
+//ToDo: use async
+    // url = '/:contentId/:ctid'
+    this.getMainVideo = function (req, res, next) {
+        var contentId = req.params.comId;
+        var prospectId = req.params.ctid;
+        var content;
+        var data;
+
+            ContentModel.findById(contentId, function (err, foundContent) {
+                if (err) {
+                    return next(err);
+                }
+                content = foundContent;
+
+                UserModel.findById(content.userId , function (err, user) {
+                    if (err) {
+                        return next(err);
+                    }
+                    jumplead.getContact(user._id, prospectId, function (err, prospect) {
+                        if(err){
+                            return next(err);
+                        }
+                        data = {
+                            content: content,
+                            contact: {
+                                firstName: prospect.first_name,
+                                lastName: prospect.last_name,
+                                email: prospect.email
+                            }
+                        };
+                        res.status(200).send(data);
+                    });
+                });
+            });
+        };
 
     this.trackQuestion = function (req, res, next) {
         var data = req.body;
@@ -518,7 +602,7 @@ var routeHandler = function (db) {
                    if (err) {
                        return next(err);
                    }
-                  var url = process.env.HOST+ '/#/'+id+'/{{ctid}}';
+                  var url = process.env.HOST+ '/#/home/'+id+'/{{ctid}}';
                    res.status(201).send({_id: id, url: url});
                    console.log("url: "+url);
                });
@@ -554,52 +638,20 @@ var routeHandler = function (db) {
         });
 
     };
+    //"https://account.mooloop.com/oauth/authorize?response_type=code&client_id=FcDOCBsnZ2TtKbHTGULY&redirect_uri=http://demo.com:8838/redirect&scope=jumplead.contacts"
 
 
     this.redirect = function (req, res, next) {
         var code = req.query.code;
-        console.log(req.query);
-
-        request.post({
-            url:'https://account.mooloop.com/oauth/access_token',
-            headers: {
-                'content-type': 'application/json'
-            },
-            form: {
-                code: code,
-                client_id: "FcDOCBsnZ2TtKbHTGULY",
-                client_secret: "KMdpjWHOQ1EKcuUGNQcpraGpN8e2qc34VhFWAGtB",
-                redirect_uri:"http://demo.com:8838/redirect",
-                grant_type: "authorization_code"
-
+        jumplead.getToken(code, userId, function () {
+            if(err){
+                next(err)
             }
-        }, function(error, response, body1) {
-            console.log(body1.access_token);
-            try {
-                body1 = JSON.parse(body1);
-            }catch (e){}
-            request.get({
-                url: 'https://app.jumplead.com/api/v1/contacts',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + body1.access_token
-                }
-               /* ,json: {
-                    "grant_type": "client_credentials",
-                    "data": {
-                        "first_name": "Irvin",
-                        "last_name": "Colenski",
-                        "email": "faspert@meta.com"
-                    }*/
-
-            }, function (error, response, body2) {
-                console.log('response from create contacts: '+body2);
-                console.log('response : '+JSON.stringify(response));
-                console.log('error : '+error);
-            });
+            res.redirect('/#/registration');
         });
-        res.redirect('/#home');
     };
+
+
 };
 
 module.exports = routeHandler;
