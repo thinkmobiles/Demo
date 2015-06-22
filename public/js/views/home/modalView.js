@@ -2,7 +2,7 @@ define([
     'text!templates/home/modalTemplate.html',
 	'views/home/registerModalView',
 	'views/home/videoModalView',
-	'models/companyModel',
+	'models/companyModel'
 ], function ( modalTemplate, ModalView, VideoModalView, CompanyModel) {
 
     var View;
