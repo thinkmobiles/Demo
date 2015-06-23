@@ -19,7 +19,7 @@ define([
         },
 
         needAuthorize: [
-
+            'login',
             "billingInfo",
             "device",
             "devices",
@@ -30,7 +30,6 @@ define([
         ],
 
         redirectWhenAuthorize: [
-            'login',
             'registration',
             'forgotPassword',
             'resetPassword',

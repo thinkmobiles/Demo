@@ -15,7 +15,7 @@ define([
             "click .registration":"hideBlur",
 			"click .lock.active":"login",
 			"keyup .signIn .userName":"changeFieldUsername",
-			"keydown .signIn .password":"changeField",
+			"keyup .signIn .password":"changeField",
 //			"change .signIn .userName":"showAvatar",
         },
 
@@ -28,6 +28,16 @@ define([
 
 		changeField:function(e){
 			var self = this;
+			if (self.$el.find(".signIn .userName").val()){
+				self.$el.find(".signIn .username .inp").addClass("valid");
+			}else{
+				self.$el.find(".signIn .username .inp").removeClass("valid");
+			}
+			if (self.$el.find(".signIn .password").val()){
+				self.$el.find(".signIn .pass .inp").addClass("valid");
+			}else{
+				self.$el.find(".signIn .pass .inp").removeClass("valid");
+			}
 			if (self.$el.find(".signIn .userName").val()&&self.$el.find(".signIn .password").val()){
 				self.$el.find(".lock").addClass("active");
 			}else{
