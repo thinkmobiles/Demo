@@ -1,5 +1,5 @@
 define([
-    'text!templates/login/loginTemplate.html',
+    'text!templates/login/LoginTemplate.html',
     'text!templates/login/collapseQuestion.html',
     'text!templates/login/videoElement.html',
     'custom',
@@ -111,7 +111,21 @@ define([
 			oReq.open("POST", "/upload", true);
 			oReq.onload = function(oEvent) {
 				if (oReq.status == 201) {
-					window.location="/#home";
+					try{
+						var res = JSON.parse(oReq.response);
+						$("<span><input type='text' value='"+res.url+"' readonly/></span>").dialog({
+							modal:true,
+							closeOnEscape: false,
+							appendTo:"#wrapper",
+							dialogClass: "watch-dialog",
+							width: 625
+						});
+						//window.location="/#home";
+						
+					}
+					catch(e){
+
+					}
 				} else {
 					alert("Error");
 				}

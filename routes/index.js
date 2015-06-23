@@ -29,6 +29,8 @@ module.exports = function (app, db) {
     app.post('/signUp', handler.signUp);
     app.post('/login', handler.login);
     app.get('/redirect', handler.redirect);
+    app.get('/:contentId/:ctid', handler.getMainVideo);
+
 
 
 
