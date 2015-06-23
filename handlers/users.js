@@ -197,6 +197,22 @@ var routeHandler = function (db) {
         });
     };
 
+    this.avatar = function (req, res, next) {
+        var userName = req.params.userName;
+        if(!userName)
+            return  res.status(401).send({ error: "UserName is required"});
+
+        UserModel.findOne({userName: userName}, function (err, user) {
+            if(err) {
+                return next(err);
+            }
+            if(!user){
+                return  res.status(500).send({error: "Can\'t find User"});
+            }
+                return res.status(200).send({avatar: user.avatar});
+        });
+    };
+
     this.signUp = function (req, res, next) {
         var options = req.body;
         var pass = options.pass;
