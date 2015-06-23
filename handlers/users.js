@@ -398,7 +398,7 @@ var routeHandler = function (db) {
 
     this.allContacts = function (req, res, next) {
         var usrId = mongoose.Types.ObjectId(req.params.id);
-       jumplead.getContact(usrId, function (err, prospects) {
+       jumplead.getAllContacts(usrId, function (err, prospects) {
                     if(err){
                         return next(err);
                     }
