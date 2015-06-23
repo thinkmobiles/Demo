@@ -207,7 +207,7 @@ var routeHandler = function (db) {
                 return next(err);
             }
             if(!user){
-                return  res.status(500).send({error: "Can\'t find User"});
+                return  res.status(200).send({avatar: ''});
             }
                 return res.status(200).send({avatar: user.avatar});
         });
@@ -384,18 +384,27 @@ var routeHandler = function (db) {
 
     this.allContacts = function (req, res, next) {
         var usrId = mongoose.Types.ObjectId(req.params.id);
-        console.log(usrId);
-       /* UserModel.findById(usrId, function (err, user) {
-            res.status(200).send(user);
-        });*/
-                jumplead.getAllContacts(usrId, function (err, prospects) {
+       jumplead.getContact(usrId, function (err, prospects) {
                     if(err){
                         return next(err);
                     }
-
+                    console.log(prospects);
                     res.status(200).send(prospects);
                 });
     };
+
+    this.contact = function (req, res, next) {
+        var uId = mongoose.Types.ObjectId(req.params.uid);
+        var cId = mongoose.Types.ObjectId(req.params.cid);
+       jumplead.getContact(uId, function (err, prospects) {
+                    if(err){
+                        return next(err);
+                    }
+                    console.log(prospects);
+                    res.status(200).send(prospects);
+                });
+    };
+
     this.allUsers = function (req, res, next) {
             UserModel.find({}, function (err, users) {
                 if(err) next(err);

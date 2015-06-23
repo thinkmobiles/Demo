@@ -77,6 +77,11 @@ var JumpleadModule = function (db) {
                     'Authorization': 'Bearer ' + user.accessToken
                 }
             }, function (error, response, body) {
+                try{
+                    body = JSON.parse(body);
+                }catch(e){
+                    console.log(e);
+                }
                 if (response.status == '401') {
                     self.refToken(userId, function (err) {
                         if (err) {
@@ -104,6 +109,11 @@ var JumpleadModule = function (db) {
                     'Authorization': 'Bearer ' + user.accessToken
                 }
             }, function (error, response, body) {
+                try{
+                    body = JSON.parse(body);
+                }catch(e){
+                    console.log(e);
+                }
                 if (response.status == '401') {
                     self.refToken(userId, function (err) {
                         if (err) {
