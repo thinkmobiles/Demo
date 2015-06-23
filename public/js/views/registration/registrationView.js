@@ -84,7 +84,8 @@ define([
                     lastName: self.$el.find(".registration .lastName").val(),
                     userName: self.$el.find(".registration .userName").val(),
                     organization: self.$el.find(".registration .organization").val(),
-                    pass: self.$el.find(".registration .pass").val()
+                    pass: self.$el.find(".registration .pass").val(),
+                    avatar: self.$el.find(".registration .preview").attr("src")
                 },
                 success: function (model) {
 					console.log(model);

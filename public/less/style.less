@@ -153,10 +153,13 @@ html,body{
 	}
 }
 .homePage{
-	padding-top:160px;
+	//padding-top:160px;
 	width:570px;
 	opacity:1;
-	transition: all 0.5s linear;
+	visibility:visible;
+	transition: all 0.25s linear;
+	position:absolute;
+	top:0px;
 	h1{
 		.mp;
 		font-size:54px;
@@ -451,8 +454,9 @@ html,body{
 }
 
 .signIn{
-	display:none;
-	transition: all 0.5s linear;
+	visibility:hidden;
+	//display:none;
+	transition: all 0.25s linear;
 	width:782px;
 	margin:0 auto;
 	opacity:0;
@@ -574,11 +578,12 @@ body.withLogin{
 		}
 		.inner{
 			.homePage{
-				display:none;
+				visibility:hidden;
 				opacity:0;
 			}
 			.signIn{
-				display:block;
+				//display:block;
+				visibility:visible;
 				opacity:1;
 			}
 		}
