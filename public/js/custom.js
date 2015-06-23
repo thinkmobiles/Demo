@@ -3,7 +3,7 @@ define([],function () {
         var url; // the url on boot up
         url =  Backbone.history.fragment || Backbone.history.getFragment();
 
-        if ((url === "")) url = 'main';
+        if ((url === "")) url = '#/home';
         if (Backbone.history.fragment) {
             Backbone.history.fragment = '';
         }
