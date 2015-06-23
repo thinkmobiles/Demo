@@ -33,8 +33,7 @@ define([
             'registration',
             'forgotPassword',
             'resetPassword',
-            'confirm',
-			'home'
+            'confirm'
         ],
 
         initialize: function () {
@@ -55,7 +54,7 @@ define([
         // load and create view if is exist
         loadWrapperView: function (name, params) {
             var WrongRout = null;
-
+			var self = this;
             // show only permitted pages
             if (!App.sessionData.get('authorized')) {
                 // access only authorized views
@@ -65,15 +64,16 @@ define([
                     }
                 });
                 if (WrongRout) {
-                    return Backbone.history.navigate("home", {trigger: true});
+                    return Backbone.history.navigate("#/home", {trigger: true});
                 }
             } else {
                 // access not authorized views
-			console.log(this.redirectWhenAuthorize);
-				
+				console.log("aut");
+
                 WrongRout = _.find(this.redirectWhenAuthorize, function (rout) {
                     if (name === rout) {
                         return true
+
                     }
                 });
                 if (WrongRout) {
