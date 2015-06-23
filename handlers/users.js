@@ -207,7 +207,7 @@ var routeHandler = function (db) {
                 return next(err);
             }
             if(!user){
-                return  res.status(404).send({error: "Can\'t find User"});
+                return  res.status(200).send({avatar: ''});
             }
                 return res.status(200).send({avatar: user.avatar});
         });
