@@ -39,7 +39,6 @@ var JumpleadModule = function (db) {
                 form: {
                     client_id: process.env.CLIENT_ID,
                     client_secret: process.env.CLIENT_SECRET,
-                    redirect_uri: REDIRECT_URI,
                     refresh_token: refreshToken,
                     grant_type: "refresh_token"
                 }
@@ -50,8 +49,8 @@ var JumpleadModule = function (db) {
                     console.log(e);
                 }
                 UserModel.findByIdAndUpdate(userId, {$set: {
-                    accessToken: body.access_token,
-                    refreshToken: body.refresh_token
+                    accessToken: body.access_token
+                    //,refreshToken: body.refresh_token
                 }}, function (err) {
                     if (err) {
                         return callback(err);
@@ -68,6 +67,8 @@ var JumpleadModule = function (db) {
         UserModel.findById(userId, function (err, user) {
             if (err) {
                 return callback(err);
+            }else if (!user) {
+                return callback(new Error(404, {err: 'User not found'}));
             }
 
             request.get({
@@ -79,16 +80,19 @@ var JumpleadModule = function (db) {
             }, function (error, response, body) {
                 try{
                     body = JSON.parse(body);
+                    console.log(body);
                 }catch(e){
                     console.log(e);
                 }
-                if (response.status == '401') {
-                    self.refToken(userId, function (err) {
-                        if (err) {
-                            return callback(err)
-                        }
-                        return self.getContact(userId, contactId, callback)
+                if (body.status == '401') {
+                    return (function(){
+                        self.refToken(userId, function (err) {
+                            if (err) {
+                                return callback(err)
+                            }
+                            return self.getContact(userId, contactId, callback)
                     });
+                })();
                 } else if (err) {
                     return callback(err);
                 }

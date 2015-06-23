@@ -157,16 +157,29 @@ var routeHandler = function (db) {
 
     this.redirect = function (req, res, next) {
         var code = req.query.code;
-        session.getUserId(req, function (err, userId) {
+        session.getUserDescription(req, function (err, obj) {
             if(err){
                 return next(err);
             }
-            jumplead.getToken(code, userId, function (err) {
+            jumplead.getToken(code, obj.id, function (err) {
                 if(err){
                     next(err)
                 }
                 res.redirect('/#/home');
             });
+        });
+    };
+
+    this.currentUser = function (req, res, next) {
+        session.getUserDescription(req, function (err, obj) {
+            if(err){
+                return next(err);
+            }
+            if(!obj){
+                res.status(401).send('Unauthorized')
+            }
+            res.status(200).send(obj);
+
         });
     };
 
@@ -187,6 +200,7 @@ var routeHandler = function (db) {
             }
 
             if(user.pass === pass ){
+                session.login(req, user);
                return res.status(200).send({
                     success: "Login successful",
                     user: user
@@ -207,7 +221,7 @@ var routeHandler = function (db) {
                 return next(err);
             }
             if(!user){
-                return  res.status(200).send({avatar: ''});
+                return  res.status().send({error: "Can\'t find User"});
             }
                 return res.status(200).send({avatar: user.avatar});
         });
@@ -234,7 +248,7 @@ var routeHandler = function (db) {
                     if (err) {
                         return cb(err);
                     }
-                    session.register(req, user);
+                    session.login(req, user);
                     cb(null, user);
                 });
             }], function (err) {
@@ -287,7 +301,7 @@ var routeHandler = function (db) {
     };
 
 
-    this.company = function (req, res, next) {
+    this.content = function (req, res, next) {
     var id = req.params.id;
         ContentModel.findById(id, function (err, found) {
             if (err) {
@@ -396,7 +410,7 @@ var routeHandler = function (db) {
     this.contact = function (req, res, next) {
         var uId = mongoose.Types.ObjectId(req.params.uid);
         var cId = mongoose.Types.ObjectId(req.params.cid);
-       jumplead.getContact(uId, function (err, prospects) {
+       jumplead.getContact(uId, cId, function (err, prospects) {
                     if(err){
                         return next(err);
                     }
@@ -415,10 +429,10 @@ var routeHandler = function (db) {
     this.trackQuestion = function (req, res, next) {
         var data = req.body;
         var userId = req.body.userId;
-        var companyId = req.body.companyId;
+        var ccntentId = req.body.contentId;
         TrackModel.findOneAndUpdate({
             "userId": userId,
-            "companyId": companyId
+            "contentId": contentId
         }, {$set: {questions: data.questions}}, function (err) {
             if (err) {
                 return next(err);
@@ -431,10 +445,10 @@ var routeHandler = function (db) {
     this.trackDocument = function (req, res, next) {
         var data = req.body;
         var userId = req.body.userId;
-        var companyId = req.body.companyId;
+        var contentId = req.body.contentId;
         TrackModel.findOneAndUpdate({
             "userId": userId,
-            "companyId": companyId
+            "contentId": contentId
         }, {$addToSet: {documents: data}}, function (err) {
             if (err) {
                 return next(err);
@@ -447,10 +461,10 @@ var routeHandler = function (db) {
     this.trackVideo = function (req, res, next) {
         var body = req.body;
         var userId = body.userId;
-        var companyId = body.companyId;
+        var contentId = body.contentId;
         TrackModel.findOneAndUpdate({
             "userId": userId,
-            "companyId": companyId
+            "contentId": contentId
         }, {$add: {documents: data}}, function (err) {
             if (err) {
                 return next(err);
@@ -463,17 +477,17 @@ var routeHandler = function (db) {
     this.testTrackVideo = function (req, res, next) {
         var body = req.body;
         //var userId = body.userId;
-        var companyId = body.companyId;
+        var contentId = body.contentId;
         var data = body.data;
-        console.log('companyId ' +companyId);
+        console.log('contentId ' +contentId);
         //console.log('userId ' +userId);
         console.log('data ' +data.videoId);
-        CompanyModel.find({},function(err, found){
+        ContentModel.find({},function(err, found){
             console.log(found);
             res.status(200).send({
                 body: data,
                 //userId: userId,
-                companyId:companyId
+                contentId:contentId
             });
 
         });
@@ -550,8 +564,8 @@ var routeHandler = function (db) {
                     }
                     var saveMainVideoUri = mainVideoUri.replace('public'+sep, '');
                     var saveLogoUri = logoUri.replace('public'+sep, '');
-                    CompanyModel.findByIdAndUpdate(id, {$set: {mainVideoUri: saveMainVideoUri, logoUri: saveLogoUri}},
-                        function (err, company) {
+                    ContentModel.findByIdAndUpdate(id, {$set: {mainVideoUri: saveMainVideoUri, logoUri: saveLogoUri}},
+                        function (err, content) {
                             if (err) {
                                 return callback(err);
                             }
@@ -578,7 +592,7 @@ var routeHandler = function (db) {
                 question: data[question],
                 videoUri: saveVideoUri
             };
-            CompanyModel.findByIdAndUpdate(id, {$addToSet: {survey: insSurvey}}, function (err) {
+            ContentModel.findByIdAndUpdate(id, {$addToSet: {survey: insSurvey}}, function (err) {
                 if (err) {
                     callback(err);
                 }
@@ -590,7 +604,7 @@ var routeHandler = function (db) {
                 question: data[question],
                 videoUri: data[name]
             };
-            CompanyModel.findByIdAndUpdate(id, {$addToSet: {survey: insSurvey}}, function (err) {
+            ContentModel.findByIdAndUpdate(id, {$addToSet: {survey: insSurvey}}, function (err) {
                 if (err) {
                     callback(err);
                 }
@@ -627,10 +641,10 @@ var routeHandler = function (db) {
                 });*/
                 //-----------------------------------------------------------------
                 var savePdfUri = pdfUri.replace('public'+sep, '');
-                CompanyModel.findOneAndUpdate({
+                ContentModel.findOneAndUpdate({
                     "_id": id,
                     "survey.question": data[question]
-                }, {$addToSet: {"survey.$.pdfUri": savePdfUri}}, function (err, company) {
+                }, {$addToSet: {"survey.$.pdfUri": savePdfUri}}, function (err, content) {
                     if (err) {
                         return callback(err);
                     }
@@ -648,64 +662,78 @@ var routeHandler = function (db) {
 
     //========================================================
     this.upload = function (req, res, next) {
-        validation (req, function(err){
-            if(err) return next (err);
-
-            var data = req.body;
-            var files = req.files;
-
-            var insObj = {
-                name: data.name,
-                contactMeInfo: data.contact,
-                mainVideoDescription: data.desc
-            };
-
-            var newCompany = new CompanyModel(insObj);
-            newCompany.save(function (err, result) {
-                if (err){
-                  return  next(err);
+        validation(req, function (err) {
+            if (err) return next(err);
+            session.getUserDescription(req, function (err, obj) {
+                if(err){
+                    return next(err);
                 }
-                var id = result._id;
+                if(!obj){
+                    next(new Error(401,{err:'Unauthorized'}));
+                }
+                var data = req.body;
+                var files = req.files;
 
-               async.series([
-                   function (cb) {
-                       if (!!files['video']){
-                         saveMainVideo(id, files, cb);
-                       }
-                       else {
-                           var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString();
-                           upFile(url, files['logo'], function (err, logoUri) {
-                               if (err) {
-                                   return callback(err);
-                               } var saveLogoUri = logoUri.replace('public'+sep, '');
-                                   CompanyModel.findByIdAndUpdate(id, {$set: {mainVideoUri: data.video, logoUri: saveLogoUri}},
-                                       function (err) {
-                                           if (err) {
-                                               return callback(err);
-                                           }
-                                           callback(null);
-                                       });
-                             });
-                       }
-                   },
-                   function (cb) {
-                       for(var i=data.countQuestion; i>0; i--){
-                           async.applyEachSeries([saveSurveyVideo, saveSurveyFiles ],i, id, files, data, function () {
-                               if(err) return cb(err);
-                           });
-                       }
-                       cb();
+                var insObj = {
+                    userId: obj.id,
+                    name: data.name,
+                    contactMeInfo: data.contact,
+                    mainVideoDescription: data.desc
+                };
 
-                   }], function (err) {
-                   if (err) {
-                       return next(err);
-                   }
-                  var url = process.env.HOST+ '/#/home/'+id+'/{{ctid}}';
-                   res.status(201).send({_id: id, url: url});
-                   console.log("url: "+url);
-               });
+                var content = new ContentModel(insObj);
+                content.save(function (err, result) {
+                    if (err) {
+                        return next(err);
+                    }
+                    var id = result._id;
+
+                    async.series([
+                        function (cb) {
+                            if (!!files['video']) {
+                                saveMainVideo(id, files, cb);
+                            }
+                            else {
+                                var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString();
+                                upFile(url, files['logo'], function (err, logoUri) {
+                                    if (err) {
+                                        return callback(err);
+                                    }
+                                    var saveLogoUri = logoUri.replace('public' + sep, '');
+                                    ContentModel.findByIdAndUpdate(id, {
+                                            $set: {
+                                                mainVideoUri: data.video,
+                                                logoUri: saveLogoUri
+                                            }
+                                        },
+                                        function (err) {
+                                            if (err) {
+                                                return callback(err);
+                                            }
+                                            callback(null);
+                                        });
+                                });
+                            }
+                        },
+                        function (cb) {
+                            for (var i = data.countQuestion; i > 0; i--) {
+                                async.applyEachSeries([saveSurveyVideo, saveSurveyFiles], i, id, files, data, function () {
+                                    if (err) return cb(err);
+                                });
+                            }
+                            cb();
+
+                        }], function (err) {
+                        if (err) {
+                            return next(err);
+                        }
+                        var url = process.env.HOST + '/#/home/' + id + '/{{ctid}}';
+                        res.status(201).send({_id: id, url: url});
+                        console.log("url: " + url);
+                    });
+                });
+                localFs.defaultPublicDir = 'public';
             });
-            localFs.defaultPublicDir = 'public';
         });
     };
 

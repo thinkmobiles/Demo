@@ -3,21 +3,36 @@
  */
 var Session = function (db) {
 
-    this.login = function (req, res, options) {
+    this.login = function (req, options) {
+        if(!options) return false;
         req.session.loggedIn = true;
         req.session.uId = options._id;
         req.session.login = options.email;
         req.session.firstName = options.firstName;
         req.session.lastName = options.lastName;
-        //req.session.avatar = options.avatar;
-        res.status(200).send({
-            success: "Login successful",
-            uId: options._id,
-            fullName: options.fullName,
-            avatar: options.avatar
-        });
+        req.session.userName = options.userName;
+        req.session.avatar = options.avatar;
+        return true;
     };
 
+    this.getUserDescription = function (req, callback) {
+        if (req.session && req.session.uId && req.session.loggedIn) {
+            var obj = {
+                loggedIn: req.session.loggedIn,
+                id: req.session.uId,
+                email: req.session.login,
+                firstName: req.session.firstName,
+                lastName: req.session.lastName,
+                userName: req.session.userName,
+                avatar: req.session.avatar
+            }
+            return callback(null, obj);
+        } else {
+            var err = new Error('UnAuthorized');
+            err.status = 401;
+            callback(err);
+        }
+    };
     this.register = function (req, options) {
         req.session.loggedIn = true;
         req.session.uId = options._id;
@@ -33,7 +48,10 @@ var Session = function (db) {
             err.status = 401;
             callback(err);
         }
-    }
+    };
+
+
+
 
     this.kill = function (req, res, next) {
         if (req.session) {
