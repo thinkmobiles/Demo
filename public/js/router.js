@@ -34,7 +34,7 @@ define([
             'forgotPassword',
             'resetPassword',
             'confirm',
-            "home"
+			'home'
         ],
 
         initialize: function () {
@@ -69,13 +69,15 @@ define([
                 }
             } else {
                 // access not authorized views
+			console.log(this.redirectWhenAuthorize);
+				
                 WrongRout = _.find(this.redirectWhenAuthorize, function (rout) {
                     if (name === rout) {
                         return true
                     }
                 });
                 if (WrongRout) {
-                    return Backbone.history.navigate("home", {trigger: true});
+                    return Backbone.history.navigate("#/home", {trigger: true});
                 }
             }
 
