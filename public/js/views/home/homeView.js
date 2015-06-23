@@ -1,7 +1,8 @@
 define([
     'text!templates/home/HomeTemplate.html',
-	'views/home/modalView'
-], function (HomeTemplate, ModalView) {
+	'views/home/modalView',
+	'custom'
+], function (HomeTemplate, ModalView, Custom) {
 
     var View;
 
@@ -14,7 +15,8 @@ define([
             "click .registration":"hideBlur",
 			"click .lock.active":"login",
 			"keydown .signIn .userName":"changeField",
-			"keydown .signIn .password":"changeField"
+			"keydown .signIn .password":"changeField",
+			"change .signIn .userName":"showAvatar",
         },
 
 
@@ -31,6 +33,21 @@ define([
 			}else{
 				self.$el.find(".lock").removeClass("active");
 			}
+		},
+
+		showAvatar:function(e){
+			var self = this;
+			$.ajax({
+                url: "/avatar/"+self.$el.find(".signIn .userName").val(),
+                type: "GET",
+                dataType: 'json',
+                success: function (response) {
+					self.$el.find(".signIn .ava img").attr("src", response.avatar);
+                },
+                error: function (err) {
+					self.$el.find(".signIn .ava img").attr("src", Custom.defaultImage);
+				}
+            });
 		},
 
 		hideBlur:function(e){
