@@ -68,7 +68,6 @@ define([
                 }
             } else {
                 // access not authorized views
-				console.log("aut");
 
                 WrongRout = _.find(this.redirectWhenAuthorize, function (rout) {
                     if (name === rout) {
