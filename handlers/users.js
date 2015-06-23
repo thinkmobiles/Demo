@@ -390,6 +390,7 @@ var routeHandler = function (db) {
                                 email: prospect.email
                             }
                         };
+                        console.log(data);
                         res.status(200).send(data);
                     });
                 });

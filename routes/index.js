@@ -34,8 +34,8 @@ module.exports = function (app, db) {
     app.get('/redirect', handler.redirect);
     app.get('/avatar/:userName', handler.avatar);
     app.get('/allContacts/:id', handler.allContacts);
-    app.get('/:uid/:cid', handler.contact);
-    app.get('/:contentId/:ctid', handler.getMain);
+    //app.get('/:uid/:cid', handler.contact);
+    app.get('/#/home/:contentId/:ctid', handler.getMain);
     app.get('/allUsers', handler.allUsers);
 
 
