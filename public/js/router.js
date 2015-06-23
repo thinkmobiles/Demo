@@ -20,20 +20,13 @@ define([
 
         needAuthorize: [
             'login',
-            "billingInfo",
-            "device",
-            "devices",
-            "profile",
             'main'
 
 
         ],
 
         redirectWhenAuthorize: [
-            'registration',
-            'forgotPassword',
-            'resetPassword',
-            'confirm'
+            'registration'
         ],
 
         initialize: function () {
@@ -116,46 +109,12 @@ define([
         login: function () {
             this.loadWrapperView('login');
         },
-        forgotPassword: function () {
-            this.loadWrapperView('forgotPassword');
-        },
         registration: function () {
             this.loadWrapperView('registration');
         },
-        termsAndConditions: function () {
-            this.loadWrapperView('termsAndConditions');
-        },
-        contactUs: function () {
-            this.loadWrapperView('contactUs');
-        },
         home: function (videoId) {
             this.loadWrapperView('home',{videoId:videoId});
-        },
-        profile: function () {
-            this.loadWrapperView('profile');
-        },
-        billingInfo: function (subscribe) {
-            this.loadWrapperView('billingInfo', {
-                subscribe: subscribe
-            });
-        },
-        devices: function (page) {
-            if (page) page = parseInt(page);
-            this.loadWrapperView('devices', {page: page});
-        },
-        /*device: function (id) {
-            this.loadWrapperView('device', {id: id});
-        },*/
-        resetPassword: function (token) {
-            this.loadWrapperView('resetPassword', {token: token});
-        },
-        confirm:function(){
-            this.loadWrapperView('confirm');
-        },
-        confirmEmail:function(token){
-            this.loadWrapperView('confirmEmail', {token: token});
         }
-
     });
 
     return appRouter;
