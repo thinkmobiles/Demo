@@ -43,6 +43,13 @@ define([
 			$(document).on("click", ".ui-dialog-titlebar-close", function (e) {
 				$(".ui-dialog").remove();
             });
+			$(document).on( 'scroll', function(){
+				if ($(document).scrollTop()){
+					$(".navBar").addClass("small");
+				}else{
+					$(".navBar").removeClass("small");
+				}
+			});
 			
         },
 

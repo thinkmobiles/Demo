@@ -8,12 +8,29 @@ define([
         events:{
             "input #pass": "progressBar",
             "click .cancel":"cancel",
-            "click .registerBtn":"register"
+            "click .registerBtn":"register",
+            "click .preview":"showFiles",
+            "change #ava":"showPreview"
         },
         initialize: function () {
             $("#progressBar").progressbar({value: 5 });
             this.render();
         },
+
+		showFiles: function(e){
+			this.$el.find("#ava").click();
+		},
+
+		showPreview: function(e){
+			var input = e.target;
+			if ( input.files && input.files[0] ) {
+				var FR= new FileReader();
+				FR.onload = function(e) {
+					$('.preview').attr( "src", e.target.result );
+				};       
+				FR.readAsDataURL( input.files[0] );
+			}
+		},
 
 		register: function(e){
 			var self = this;
