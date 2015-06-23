@@ -14,9 +14,9 @@ define([
             "click .checkbox":"checkboxClick",
             "click .registration":"hideBlur",
 			"click .lock.active":"login",
-			"keydown .signIn .userName":"changeField",
+			"keyup .signIn .userName":"changeFieldUsername",
 			"keydown .signIn .password":"changeField",
-			"change .signIn .userName":"showAvatar",
+//			"change .signIn .userName":"showAvatar",
         },
 
 
@@ -42,12 +42,21 @@ define([
                 type: "GET",
                 dataType: 'json',
                 success: function (response) {
-					self.$el.find(".signIn .ava img").attr("src", response.avatar);
+					if (response.avatar){
+						self.$el.find(".signIn .ava img").attr("src", response.avatar);
+					}else{
+						self.$el.find(".signIn .ava img").attr("src", Custom.defaultImage);
+					}
                 },
                 error: function (err) {
 					self.$el.find(".signIn .ava img").attr("src", Custom.defaultImage);
 				}
             });
+		},
+		
+		changeFieldUsername:function(e){
+			this.changeField(e);
+			this.showAvatar(e);
 		},
 
 		hideBlur:function(e){
