@@ -91,6 +91,34 @@ var JumpleadModule = function (db) {
             });
         });
     };
+    this.getAllContacts = function (userId, callback) {
+
+        UserModel.findById(userId, function (err, user) {
+            if (err) {
+                return callback(err);
+            }
+            request.get({
+                url: CONTACTS_URL,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + user.accessToken
+                }
+            }, function (error, response, body) {
+                if (response.status == '401') {
+                    self.refToken(userId, function (err) {
+                        if (err) {
+                            return callback(err)
+                        }
+                        return self.getContact(userId, callback)
+                    });
+                } else if (err) {
+                    return callback(err);
+                }
+                return callback(null, body.data)
+            });
+        });
+    };
+
 
     this.getToken = function (code, userId, callback) {
         request.post({

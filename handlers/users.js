@@ -143,7 +143,6 @@ var routeHandler = function (db) {
                 }
             } else {
                 if (callback && (typeof callback === 'function')) {
-                    session.register(req, result);
                     callback(null, result);
                 }
             }
@@ -219,14 +218,17 @@ var routeHandler = function (db) {
                     if (err) {
                         return cb(err);
                     }
-
+                    session.register(req, user);
                     cb(null, user);
                 });
             }], function (err) {
             if (err) {
                 return next(err);
             }
-            res.redirect('https://account.mooloop.com/oauth/authorize?response_type=code&client_id=FcDOCBsnZ2TtKbHTGULY&redirect_uri=http://demo.com:8838/redirect&scope=jumplead.contacts');
+            res.status(201).send('User created');
+            //res.setHeader('Access-Control-Allow-Origin', '*');
+
+            //res.redirect(301, 'https://account.mooloop.com/oauth/authorize?response_type=code&client_id=FcDOCBsnZ2TtKbHTGULY&redirect_uri=http://demo.com:8838/redirect&scope=jumplead.contacts');
         });
     };
 
@@ -327,8 +329,8 @@ var routeHandler = function (db) {
 
 //ToDo: use async
     // url = '/:contentId/:ctid'
-    this.getMainVideo = function (req, res, next) {
-        var contentId = req.params.comId;
+    this.getMain = function (req, res, next) {
+        var contentId = req.params.contentId;
         var prospectId = req.params.ctid;
         var content;
         var data;
@@ -338,7 +340,7 @@ var routeHandler = function (db) {
                     return next(err);
                 }
                 if(!foundContent){
-                    return next('Contentc Not Found');
+                    return next('Content Not Found');
                 }
                 content = foundContent;
 
@@ -364,6 +366,27 @@ var routeHandler = function (db) {
             });
         };
 
+    this.allContacts = function (req, res, next) {
+        var usrId = mongoose.Types.ObjectId(req.params.id);
+        console.log(usrId);
+       /* UserModel.findById(usrId, function (err, user) {
+            res.status(200).send(user);
+        });*/
+                jumplead.getAllContacts(usrId, function (err, prospects) {
+                    if(err){
+                        return next(err);
+                    }
+
+                    res.status(200).send(prospects);
+                });
+    };
+    this.allUsers = function (req, res, next) {
+            UserModel.find({}, function (err, users) {
+                if(err) next(err);
+                res.status(200).send(users);
+            });
+
+    };
     this.trackQuestion = function (req, res, next) {
         var data = req.body;
         var userId = req.body.userId;
