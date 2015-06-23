@@ -29,6 +29,7 @@ module.exports = function (app, db) {
     app.post('/signUp', handler.signUp);
     app.post('/login', handler.login);
     app.get('/redirect', handler.redirect);
+    app.get('/avatar/:userName', handler.avatar);
     app.get('/allContacts/:id', handler.allContacts);
     //app.get('/:contentId/:ctid', handler.getMain);
     app.get('/allUsers', handler.allUsers);
