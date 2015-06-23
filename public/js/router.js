@@ -96,7 +96,7 @@ define([
             this.wrapperView = wrapperView;
 
             // hook
-            // using for clenaning
+            // using for cleaning
             if (wrapperView.afterUpend) {
                 wrapperView.afterUpend();
             }

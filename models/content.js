@@ -23,7 +23,7 @@ module.exports = (function () {
         survey: [surveySchems],
         createdAt: {type: Date, default: Date.now},
         updatedAt: {type: Date, default: Date.now}
-    }, {collection: 'Contents'});
+    }, {collection: 'Content'});
 
     mongoose.model('Content', contentSchema);
 

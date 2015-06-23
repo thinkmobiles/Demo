@@ -221,7 +221,7 @@ var routeHandler = function (db) {
                 return next(err);
             }
             if(!user){
-                return  res.status().send({error: "Can\'t find User"});
+                return  res.status(200).send({avatar: ""});
             }
                 return res.status(200).send({avatar: user.avatar});
         });
@@ -687,49 +687,52 @@ var routeHandler = function (db) {
                         return next(err);
                     }
                     var id = result._id;
+                    UserModel.findByIdAndUpdate(obj.id,{$set: {contentId: result._id}}, function (err, user) {
+                        if(err) return next(err);
 
-                    async.series([
-                        function (cb) {
-                            if (!!files['video']) {
-                                saveMainVideo(id, files, cb);
-                            }
-                            else {
-                                var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString();
-                                upFile(url, files['logo'], function (err, logoUri) {
-                                    if (err) {
-                                        return callback(err);
-                                    }
-                                    var saveLogoUri = logoUri.replace('public' + sep, '');
-                                    ContentModel.findByIdAndUpdate(id, {
-                                            $set: {
-                                                mainVideoUri: data.video,
-                                                logoUri: saveLogoUri
-                                            }
-                                        },
-                                        function (err) {
-                                            if (err) {
-                                                return callback(err);
-                                            }
-                                            callback(null);
-                                        });
-                                });
-                            }
-                        },
-                        function (cb) {
-                            for (var i = data.countQuestion; i > 0; i--) {
-                                async.applyEachSeries([saveSurveyVideo, saveSurveyFiles], i, id, files, data, function () {
-                                    if (err) return cb(err);
-                                });
-                            }
-                            cb();
+                        async.series([
+                            function (cb) {
+                                if (!!files['video']) {
+                                    saveMainVideo(id, files, cb);
+                                }
+                                else {
+                                    var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString();
+                                    upFile(url, files['logo'], function (err, logoUri) {
+                                        if (err) {
+                                            return callback(err);
+                                        }
+                                        var saveLogoUri = logoUri.replace('public' + sep, '');
+                                        ContentModel.findByIdAndUpdate(id, {
+                                                $set: {
+                                                    mainVideoUri: data.video,
+                                                    logoUri: saveLogoUri
+                                                }
+                                            },
+                                            function (err) {
+                                                if (err) {
+                                                    return callback(err);
+                                                }
+                                                callback(null);
+                                            });
+                                    });
+                                }
+                            },
+                            function (cb) {
+                                for (var i = data.countQuestion; i > 0; i--) {
+                                    async.applyEachSeries([saveSurveyVideo, saveSurveyFiles], i, id, files, data, function () {
+                                        if (err) return cb(err);
+                                    });
+                                }
+                                cb();
 
-                        }], function (err) {
-                        if (err) {
-                            return next(err);
-                        }
-                        var url = process.env.HOST + '/#/home/' + id + '/{{ctid}}';
-                        res.status(201).send({_id: id, url: url});
-                        console.log("url: " + url);
+                            }], function (err) {
+                            if (err) {
+                                return next(err);
+                            }
+                            var url = process.env.HOST + '/#/home/' + id + '/{{ctid}}';
+                            res.status(201).send({_id: id, url: url});
+                            console.log("url: " + url);
+                        });
                     });
                 });
                 localFs.defaultPublicDir = 'public';
