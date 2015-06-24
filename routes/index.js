@@ -23,7 +23,7 @@ module.exports = function (app, db) {
     app.post('/trackQuestion', handler.trackQuestion);
     app.post('/trackVideo', handler.trackVideo);
     //app.post('/trackProspect', handler.trackProspect);
-    app.get('/content/:id',handler.content);
+   // app.get('/content/:id',handler.content);
     app.post('/upload', multipart, handler.upload);
 
     app.post('/prospectSignUp', handler.prospectSignUp);
@@ -36,7 +36,7 @@ module.exports = function (app, db) {
     app.get('/avatar/:userName', handler.avatar);
     app.get('/allContacts/:id', handler.allContacts);
     //app.get('/:uid/:cid', handler.contact);
-    app.get('/#/home/:contentId/:ctid', handler.getMain);
+    app.get('/content/:contentId/:ctid', handler.getMain);
     app.get('/allUsers', handler.allUsers);
 
 

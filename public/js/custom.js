@@ -14,13 +14,13 @@ define([],function () {
                 authorized: true,
                 user: data
             });
-            return Backbone.history.navigate(url, {trigger: true});
+            return Backbone.history.navigate("#/"+url, {trigger: true});
         } else {
             App.sessionData.set({
                 authorized: false,
                 user: null
             });
-            return Backbone.history.navigate(url, {trigger: true});
+            return Backbone.history.navigate("#/"+url, {trigger: true});
         }
 
     };

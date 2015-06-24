@@ -13,7 +13,7 @@ define([
 
         routes: {
             "login"                     :  "login",
-            "home(/:videoId)"           :  "home",
+            "home(/:videoId/:userId)"           :  "home",
             "registration"              :  "registration",
             "*any"                      :  "any"
         },
@@ -112,8 +112,8 @@ define([
         registration: function () {
             this.loadWrapperView('registration');
         },
-        home: function (videoId) {
-            this.loadWrapperView('home',{videoId:videoId});
+        home: function (videoId, userId) {
+            this.loadWrapperView('home',{videoId:videoId, userId:userId});
         }
     });
 

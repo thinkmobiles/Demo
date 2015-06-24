@@ -19,7 +19,8 @@ define([
 			this.modal = null;
 			this.videoModal = null;
 			var videoId = options?options.videoId:"55800aadcb7bb82c1f000002";
-			this.company = new CompanyModel({_id:videoId});
+			var userId = options?options.userId:"55800aadcb7bb82c1f000002";
+			this.company = new CompanyModel({_id:videoId, userId:userId});
 			this.company.fetch();
 			this.listenTo(this.company, 'change', this.render);
             //this.render();
