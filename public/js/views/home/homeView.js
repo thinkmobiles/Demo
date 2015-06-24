@@ -98,8 +98,9 @@ define([
 					$("body").removeClass("withLogin");
 					self.$el.find(".signIn .userName").removeClass("error");
 					self.$el.find(".signIn .password").removeClass("error");
-
-					Backbone.history.navigate("#/login",{ trigger:true })
+					App.updateUser(function(){
+						Backbone.history.navigate("#/login",{ trigger:true })
+					});
                 },
                 error: function (err) {
 					self.$el.find(".signIn .username .inp").addClass("error");

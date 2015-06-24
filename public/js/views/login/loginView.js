@@ -97,8 +97,8 @@ define([
 		},
 
 		decline: function(e){
-			e.preventDefault();
-			window.location="/#home";
+			e.preventDefault()
+;            Backbone.history.navigate("#/home", {trigger: true});
 		},
 		save: function(e){
 			e.preventDefault();

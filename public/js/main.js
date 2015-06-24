@@ -58,17 +58,20 @@ require(['app'], function (app) {
         }
     };
 
-    App.updateUser = function () {  //update user data when subscription is change
+    App.updateUser = function (callback) {  //update user data when subscription is change
         $.ajax({
             url: "/currentUser",
             type: "GET",
             success: function (data) {
                 App.sessionData.set({
+					authorized: true,
                     user: data
                 })
+				if (callback)callback();
             },
             error: function (data) {
                 App.error(data);
+				if (callback)callback(data);
             }
         });
     };

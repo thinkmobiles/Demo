@@ -108,7 +108,7 @@ define([
             $(".ui-progressbar-value").addClass(add).removeClass(remove);
         },
 		cancel:function(e){
-			Backbone.history.navigate("home",{ trigger:true })
+            Backbone.history.navigate("#/home", {trigger: true});
 		},
 		
         render: function () {
