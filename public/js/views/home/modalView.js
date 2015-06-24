@@ -50,7 +50,8 @@ define([
         // render template (once! because google maps)
         render: function () {
 			 var formString = _.template(modalTemplate)({
-				 name:this.company.toJSON().name
+				 name:this.company.toJSON().content.name,
+				 contact:this.company.toJSON().contact
              });
             this.dialog = $(formString).dialog({
 				modal:true,
