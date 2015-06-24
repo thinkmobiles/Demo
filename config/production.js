@@ -5,5 +5,5 @@ process.env.PORT = 8838;
 process.env.DB_HOST = 'localhost';
 //process.env.DB_HOST = '127.0.0.1';
 process.env.DB_NAME = 'demoDB';
-process.env.CLIENT_SECRET = "sCkxGw1dWL4j1QrOnNmT6ZOv9feBqFhUbe1uTg4Y";
-process.env.CLIENT_ID = "FcDOCBsnZ2TtKbHTGULY";
+process.env.CLIENT_SECRET = "cPtrcBklxNUEnVL3VBETsKhsDGQHGF73wkYcwWU9";
+process.env.CLIENT_ID = "uemnB2ZAA92gv5CoTCHc";
