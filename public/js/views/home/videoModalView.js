@@ -31,7 +31,7 @@ define([
 		showSurvay:function(e){
 			$(".questionSection").hide();
 			$(".relatedVideo").show();
-			$(".relatedVideo").html(_.template(relatedVideo)(this.content.toJSON().survey[0]));
+			$(".relatedVideo").html(_.template(relatedVideo)(this.content.toJSON().content.survey[0]));
 		},
 
 		checkedQuestion: function(e){
