@@ -163,9 +163,9 @@ var routeHandler = function (db) {
             }
             jumplead.getToken(code, obj.id, function (err) {
                 if(err){
-                    next(err)
+                  return  next(err)
                 }
-                res.redirect('/#/home');
+               return res.redirect('/#/home');
             });
         });
     };
