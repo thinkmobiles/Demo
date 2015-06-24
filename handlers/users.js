@@ -210,6 +210,11 @@ var routeHandler = function (db) {
             }
         });
     };
+    this.logout = function (req, res, next) {
+        session.kill(req, function () {
+            res.redirect('/#/home');
+        })
+    };
 
     this.avatar = function (req, res, next) {
         var userName = req.params.userName;

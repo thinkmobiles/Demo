@@ -53,11 +53,12 @@ var Session = function (db) {
 
 
 
-    this.kill = function (req, res, next) {
+    this.kill = function (req, callback) {
         if (req.session) {
             req.session.destroy();
+            return callback (true);
         }
-        res.status(200).send({success: "Logout successful"});
+        return callback (false);
     };
 
     this.authenticatedUser = function (req, res, next) {

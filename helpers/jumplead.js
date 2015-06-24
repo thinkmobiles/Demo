@@ -118,7 +118,7 @@ var JumpleadModule = function (db) {
                 }catch(e){
                     console.log(e);
                 }
-                if (response.status == '401') {
+                if (body.status == '401') {
                     self.refToken(userId, function (err) {
                         if (err) {
                             return callback(err)
