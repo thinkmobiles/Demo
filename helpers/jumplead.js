@@ -158,6 +158,7 @@ var JumpleadModule = function (db) {
                 refreshToken: body.refresh_token
             }}, function (err) {
                 if (err) {
+                    console.log(err);
                     return callback(err);
                 }
                 return callback(null);
