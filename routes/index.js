@@ -29,7 +29,7 @@ module.exports = function (app, db) {
     app.post('/prospectSignUp', handler.prospectSignUp);
     app.post('/signUp', handler.signUp);
     app.post('/login', handler.login);
-    app.post('/logout', handler.logout);
+    app.get('/logout', handler.logout);
     app.get('/currentUser', handler.currentUser);
 
     app.get('/redirect', handler.redirect);
