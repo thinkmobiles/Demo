@@ -2,8 +2,8 @@ define([
     'text!templates/home/modalTemplate.html',
 	'views/home/registerModalView',
 	'views/home/videoModalView',
-	'models/companyModel'
-], function ( modalTemplate, ModalView, VideoModalView, CompanyModel) {
+	'models/contentModel'
+], function ( modalTemplate, ModalView, VideoModalView, ContentModel) {
 
     var View;
 	
@@ -20,9 +20,9 @@ define([
 			this.videoModal = null;
 			var videoId = options?options.videoId:"55800aadcb7bb82c1f000002";
 			var userId = options?options.userId:"55800aadcb7bb82c1f000002";
-			this.company = new CompanyModel({_id:videoId, userId:userId});
-			this.company.fetch();
-			this.listenTo(this.company, 'change', this.render);
+			this.content = new ContentModel({_id:videoId, userId:userId});
+			this.content.fetch();
+			this.listenTo(this.content, 'change', this.render);
             //this.render();
         },
 
@@ -32,7 +32,7 @@ define([
 				this.videoModal.undelegateEvents();
 			}
 			this.videoModal =new VideoModalView({
-				company:this.company
+				content:this.content
 			});
 			
 		},
@@ -43,15 +43,15 @@ define([
 				this.modal.undelegateEvents();
 			}
 			this.modal =new ModalView({
-				company:this.company
+				content:this.content
 			});
         },
 
         // render template (once! because google maps)
         render: function () {
 			 var formString = _.template(modalTemplate)({
-				 name:this.company.toJSON().content.name,
-				 contact:this.company.toJSON().contact
+				 name:this.content.toJSON().content.name,
+				 contact:this.content.toJSON().contact
              });
             this.dialog = $(formString).dialog({
 				modal:true,

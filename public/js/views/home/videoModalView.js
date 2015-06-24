@@ -18,7 +18,7 @@ define([
 
 
         initialize: function (options) {
-			this.company = options.company;
+			this.content = options.content;
             this.render();
         },
 
@@ -31,7 +31,7 @@ define([
 		showSurvay:function(e){
 			$(".questionSection").hide();
 			$(".relatedVideo").show();
-			$(".relatedVideo").html(_.template(relatedVideo)(this.company.toJSON().survey[0]));
+			$(".relatedVideo").html(_.template(relatedVideo)(this.content.toJSON().survey[0]));
 		},
 
 		checkedQuestion: function(e){
@@ -66,10 +66,10 @@ define([
                 ranges.push(range);
             }
             var videoData = {
-                companyId: this.company.toJSON()._id,
+                contentId: this.content.toJSON()._id,
                 //userId: //ToDo: user id
                 data:{
-                    videoId: this.company.toJSON().mainVideoUri,
+                    videoId: this.content.toJSON().mainVideoUri,
                     rangeWatched: ranges
                 }
             };
@@ -127,11 +127,7 @@ define([
         // render template (once! because google maps)
         render: function () {
             var formString = _.template(modalTemplate)({
-				company:{
-					mainVideoUri:this.company.toJSON().mainVideoUri.replace('public\\',''),
-					logoUri:this.company.toJSON().logoUri.replace('public\\',''),
-					survey:this.company.toJSON().survey
-				}
+				content:this.content.toJSON().content
             });
             this.dialog = $(formString).dialog({
                 modal:true,

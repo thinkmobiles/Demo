@@ -16,7 +16,7 @@ define([
 
         initialize: function (options) {
 			this.videoModal = null;
-			this.company = options.company;
+			this.content = options.content;
             this.render();
         },
 
@@ -78,7 +78,7 @@ define([
 						   self.videoModal.undelegateEvents();
 					   }
 					   self.videoModal =new VideoModalView({
-						   company:self.company
+						   content:self.content
 					   });
 
                    },
