@@ -29,13 +29,14 @@ module.exports = function (app, db) {
     app.post('/prospectSignUp', handler.prospectSignUp);
     app.post('/signUp', handler.signUp);
     app.post('/login', handler.login);
+    app.post('/logout', handler.logout);
     app.get('/currentUser', handler.currentUser);
 
     app.get('/redirect', handler.redirect);
     app.get('/avatar/:userName', handler.avatar);
     app.get('/allContacts/:id', handler.allContacts);
-    app.get('/:uid/:cid', handler.contact);
-    app.get('/:contentId/:ctid', handler.getMain);
+    //app.get('/:uid/:cid', handler.contact);
+    app.get('/#/home/:contentId/:ctid', handler.getMain);
     app.get('/allUsers', handler.allUsers);
 
 
