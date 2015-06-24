@@ -16,6 +16,8 @@ var LocalFs = require( './fileStorage/localFs' )();
 var localFs = new LocalFs();
 var path = require('path');
 var fs = require('fs');
+var Jumplead = require('../helpers/jumplead');
+var Sessions = require('../helpers/sessions');
 
 var routeHandler = function (db) {
 
@@ -26,22 +28,24 @@ var routeHandler = function (db) {
     var trackSchema = mongoose.Schemas['Track'];
     var TrackModel = db.model('Track', trackSchema);
 
-    var companySchema = mongoose.Schemas['Company'];
-    var CompanyModel = db.model('Company', companySchema);
+    var contentSchema = mongoose.Schemas['Content'];
+    var ContentModel = db.model('Content', contentSchema);
 
     var userSchema = mongoose.Schemas['User'];
     var UserModel = db.model('User', userSchema);
 
+    var jumplead = new Jumplead(db);
+    var session = new Sessions(db);
     var self = this;
 
     function normalizeEmail(email) {
         return email.trim().toLowerCase();
     };
 
-    function validateSignUp(userData, callback) { //used for signUpMobile, signUpWeb;
+    function validateProspectSignUp(userData, callback) { //used for signUpMobile, signUpWeb;
         var errMessage;
 
-        if (!userData || !userData.email || !userData.firstName || !userData.lastName) {
+        if (!userData || !userData.email || !userData.firstName || !userData.lastName||!userData.userName) {
             return callback(badRequests.NotEnParams({reqParams: ['email', 'pass', 'firstName', 'lastName']}));
         }
 
@@ -51,7 +55,45 @@ var routeHandler = function (db) {
         }
 
         if (userData.lastName.length > CONSTANTS.USERNAME_MAX_LENGTH) {
-            errMessage = 'Last name cannot contain more than ' + CONSTANTS.PASS_MIN_LENGTH + ' symbols';
+            errMessage = 'Last name cannot contain more than ' + CONSTANTS.USERNAME_MAX_LENGTH + ' symbols';
+            return callback(badRequests.InvalidValue({message: errMessage}));
+        }
+        if (!REG_EXP.EMAIL_REGEXP.test(userData.email)) {
+            return callback(badRequests.InvalidEmail());
+        }
+
+        userData.email = normalizeEmail(userData.email);
+
+        ProspectModel.findOne({email: userData.email}, function (err, user) {
+            if (err) {
+                callback(err);
+            } else if (user) {
+                callback(badRequests.EmailInUse());
+            } else {
+                callback();
+            }
+        });
+
+    };
+
+    function validateUserSignUp(userData, callback) { //used for signUpMobile, signUpWeb;
+        var errMessage;
+
+        if (!userData || !userData.email || !userData.firstName || !userData.lastName||!userData.userName) {
+            return callback(badRequests.NotEnParams({reqParams: ['email', 'pass', 'firstName', 'lastName']}));
+        }
+
+        if (userData.firstName.length > CONSTANTS.USERNAME_MAX_LENGTH) {
+            errMessage = 'First name cannot contain more than ' + CONSTANTS.USERNAME_MAX_LENGTH + ' symbols';
+            return callback(badRequests.InvalidValue({message: errMessage}));
+        }
+
+        if (userData.lastName.length > CONSTANTS.USERNAME_MAX_LENGTH) {
+            errMessage = 'Last name cannot contain more than ' + CONSTANTS.USERNAME_MAX_LENGTH + ' symbols';
+            return callback(badRequests.InvalidValue({message: errMessage}));
+        }
+        if (userData.userName.length > CONSTANTS.USERNAME_MAX_LENGTH) {
+            errMessage = 'User name cannot contain more than ' + CONSTANTS.USERNAME_MAX_LENGTH + ' symbols';
             return callback(badRequests.InvalidValue({message: errMessage}));
         }
 
@@ -61,7 +103,7 @@ var routeHandler = function (db) {
 
         userData.email = normalizeEmail(userData.email);
 
-        ProspectModel.findOne({email: userData.email}, function (err, user) {
+        UserModel.findOne({email: userData.email}, function (err, user) {
             if (err) {
                 callback(err);
             } else if (user) {
@@ -113,6 +155,34 @@ var routeHandler = function (db) {
         return shaSum.digest('hex');
     };
 
+    this.redirect = function (req, res, next) {
+        var code = req.query.code;
+        session.getUserDescription(req, function (err, obj) {
+            if(err){
+                return next(err);
+            }
+            jumplead.getToken(code, obj.id, function (err) {
+                if(err){
+                    next(err)
+                }
+                res.redirect('/#/home');
+            });
+        });
+    };
+
+    this.currentUser = function (req, res, next) {
+        session.getUserDescription(req, function (err, obj) {
+            if(err){
+                return next(err);
+            }
+            if(!obj){
+                res.status(401).send('Unauthorized')
+            }
+            res.status(200).send(obj);
+
+        });
+    };
+
     this.login = function (req, res, next) {
         var options = req.body;
         if(!options.userName || !options.pass)
@@ -130,6 +200,7 @@ var routeHandler = function (db) {
             }
 
             if(user.pass === pass ){
+                session.login(req, user);
                return res.status(200).send({
                     success: "Login successful",
                     user: user
@@ -137,6 +208,27 @@ var routeHandler = function (db) {
             } else{
                return res.status(401).send({ error: "Incorrect password" });
             }
+        });
+    };
+    this.logout = function (req, res, next) {
+        session.kill(req, function () {
+            res.redirect('/#/home');
+        })
+    };
+
+    this.avatar = function (req, res, next) {
+        var userName = req.params.userName;
+        if(!userName)
+            return  res.status(401).send({ error: "UserName is required"});
+
+        UserModel.findOne({userName: userName}, function (err, user) {
+            if(err) {
+                return next(err);
+            }
+            if(!user){
+                return  res.status(200).send({avatar: ""});
+            }
+                return res.status(200).send({avatar: user.avatar});
         });
     };
 
@@ -148,7 +240,7 @@ var routeHandler = function (db) {
 
             //validation:
             function (cb) {
-                validateSignUp(options, function (err) {
+                validateUserSignUp(options, function (err) {
                     if (err) {
                         return cb(err);
                     }
@@ -161,18 +253,17 @@ var routeHandler = function (db) {
                     if (err) {
                         return cb(err);
                     }
-
+                    session.login(req, user);
                     cb(null, user);
                 });
             }], function (err) {
             if (err) {
                 return next(err);
             }
+            res.status(201).send('User created');
+            //res.setHeader('Access-Control-Allow-Origin', '*');
 
-            res.status(201).send({
-                success: 'Success signUp',
-                message: 'Thank you for register.'
-            });
+            //res.redirect(301, 'https://account.mooloop.com/oauth/authorize?response_type=code&client_id=FcDOCBsnZ2TtKbHTGULY&redirect_uri=http://demo.com:8838/redirect&scope=jumplead.contacts');
         });
     };
 
@@ -183,7 +274,7 @@ var routeHandler = function (db) {
 
             //validation:
             function (cb) {
-                validateSignUp(options, function (err) {
+                validateProspectSignUp(options, function (err) {
                     if (err) {
                         return cb(err);
                     }
@@ -215,24 +306,139 @@ var routeHandler = function (db) {
     };
 
 
-    this.company = function (req, res, next) {
+    this.content = function (req, res, next) {
     var id = req.params.id;
-        CompanyModel.findById(id, function (err, found) {
+        ContentModel.findById(id, function (err, found) {
             if (err) {
-                next(err);
+               return  next(err);
             }
             res.status(200).send(found);
         });
-
     };
 
+    function refreshToken (userId, accessToken, refreshToken, callback){
+        request.get({
+            url: 'https://app.jumplead.com/api/v1/contacts',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + accessToken
+            }
+        }, function (error, response, body) {
+            if (!body.data || error) {
+                request.post({
+                    url: 'https://account.mooloop.com/oauth/access_token',
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    form: {
+                        code: code,
+                        client_id: "FcDOCBsnZ2TtKbHTGULY",
+                        client_secret: "sCkxGw1dWL4j1QrOnNmT6ZOv9feBqFhUbe1uTg4Y",
+                        refresh_token: refreshToken,
+                        redirect_uri: "http://demo.com:8838/redirect",
+                        grant_type: "refresh_token"
+
+                    }
+                }, function (error, response, body1) {
+                    try {
+                        body1 = JSON.parse(body1);
+                    } catch (e) {
+                    }
+                    var accessToken = body1.access_token;
+                    var refreshToken = body1.refresh_token;
+                    UserModel.findByIdAndUpdate(userId, {$set: {
+                        accessToken: accessToken,
+                        refreshToken: refreshToken
+                    }}, function (err, foundUser) {
+                        if (err) {
+                            return callback(err);
+                        }
+                        return callback(null);
+                    });
+                });
+            }else{
+              return  callback(null);
+            }
+        });
+    };
+
+//ToDo: use async
+    // url = '/:contentId/:ctid'
+    this.getMain = function (req, res, next) {
+        var contentId = req.params.contentId;
+        var prospectId = req.params.ctid;
+        var content;
+        var data;
+
+            ContentModel.findById(contentId, function (err, foundContent) {
+                if (err) {
+                    return next(err);
+                }
+                if(!foundContent){
+                    return next('Content Not Found');
+                }
+                content = foundContent;
+
+                UserModel.findById(content.userId , function (err, user) {
+                    if (err) {
+                        return next(err);
+                    }
+                    jumplead.getContact(user._id, prospectId, function (err, prospect) {
+                        if(err){
+                            return next(err);
+                        }
+                        data = {
+                            content: content,
+                            contact: {
+                                firstName: prospect.first_name,
+                                lastName: prospect.last_name,
+                                email: prospect.email
+                            }
+                        };
+                        console.log(data);
+                        res.status(200).send(data);
+                    });
+                });
+            });
+        };
+
+    this.allContacts = function (req, res, next) {
+        var usrId = mongoose.Types.ObjectId(req.params.id);
+       jumplead.getAllContacts(usrId, function (err, prospects) {
+                    if(err){
+                        return next(err);
+                    }
+                    console.log(prospects);
+                    res.status(200).send(prospects);
+                });
+    };
+
+    this.contact = function (req, res, next) {
+        var uId = mongoose.Types.ObjectId(req.params.uid);
+        var cId = mongoose.Types.ObjectId(req.params.cid);
+       jumplead.getContact(uId, cId, function (err, prospects) {
+                    if(err){
+                        return next(err);
+                    }
+                    console.log(prospects);
+                    res.status(200).send(prospects);
+                });
+    };
+
+    this.allUsers = function (req, res, next) {
+            UserModel.find({}, function (err, users) {
+                if(err) next(err);
+                res.status(200).send(users);
+            });
+
+    };
     this.trackQuestion = function (req, res, next) {
         var data = req.body;
         var userId = req.body.userId;
-        var companyId = req.body.companyId;
+        var ccntentId = req.body.contentId;
         TrackModel.findOneAndUpdate({
             "userId": userId,
-            "companyId": companyId
+            "contentId": contentId
         }, {$set: {questions: data.questions}}, function (err) {
             if (err) {
                 return next(err);
@@ -245,10 +451,10 @@ var routeHandler = function (db) {
     this.trackDocument = function (req, res, next) {
         var data = req.body;
         var userId = req.body.userId;
-        var companyId = req.body.companyId;
+        var contentId = req.body.contentId;
         TrackModel.findOneAndUpdate({
             "userId": userId,
-            "companyId": companyId
+            "contentId": contentId
         }, {$addToSet: {documents: data}}, function (err) {
             if (err) {
                 return next(err);
@@ -261,10 +467,10 @@ var routeHandler = function (db) {
     this.trackVideo = function (req, res, next) {
         var body = req.body;
         var userId = body.userId;
-        var companyId = body.companyId;
+        var contentId = body.contentId;
         TrackModel.findOneAndUpdate({
             "userId": userId,
-            "companyId": companyId
+            "contentId": contentId
         }, {$add: {documents: data}}, function (err) {
             if (err) {
                 return next(err);
@@ -277,17 +483,17 @@ var routeHandler = function (db) {
     this.testTrackVideo = function (req, res, next) {
         var body = req.body;
         //var userId = body.userId;
-        var companyId = body.companyId;
+        var contentId = body.contentId;
         var data = body.data;
-        console.log('companyId ' +companyId);
+        console.log('contentId ' +contentId);
         //console.log('userId ' +userId);
         console.log('data ' +data.videoId);
-        CompanyModel.find({},function(err, found){
+        ContentModel.find({},function(err, found){
             console.log(found);
             res.status(200).send({
                 body: data,
                 //userId: userId,
-                companyId:companyId
+                contentId:contentId
             });
 
         });
@@ -364,8 +570,8 @@ var routeHandler = function (db) {
                     }
                     var saveMainVideoUri = mainVideoUri.replace('public'+sep, '');
                     var saveLogoUri = logoUri.replace('public'+sep, '');
-                    CompanyModel.findByIdAndUpdate(id, {$set: {mainVideoUri: saveMainVideoUri, logoUri: saveLogoUri}},
-                        function (err, company) {
+                    ContentModel.findByIdAndUpdate(id, {$set: {mainVideoUri: saveMainVideoUri, logoUri: saveLogoUri}},
+                        function (err, content) {
                             if (err) {
                                 return callback(err);
                             }
@@ -392,7 +598,7 @@ var routeHandler = function (db) {
                 question: data[question],
                 videoUri: saveVideoUri
             };
-            CompanyModel.findByIdAndUpdate(id, {$addToSet: {survey: insSurvey}}, function (err) {
+            ContentModel.findByIdAndUpdate(id, {$addToSet: {survey: insSurvey}}, function (err) {
                 if (err) {
                     callback(err);
                 }
@@ -404,7 +610,7 @@ var routeHandler = function (db) {
                 question: data[question],
                 videoUri: data[name]
             };
-            CompanyModel.findByIdAndUpdate(id, {$addToSet: {survey: insSurvey}}, function (err) {
+            ContentModel.findByIdAndUpdate(id, {$addToSet: {survey: insSurvey}}, function (err) {
                 if (err) {
                     callback(err);
                 }
@@ -441,10 +647,10 @@ var routeHandler = function (db) {
                 });*/
                 //-----------------------------------------------------------------
                 var savePdfUri = pdfUri.replace('public'+sep, '');
-                CompanyModel.findOneAndUpdate({
+                ContentModel.findOneAndUpdate({
                     "_id": id,
                     "survey.question": data[question]
-                }, {$addToSet: {"survey.$.pdfUri": savePdfUri}}, function (err, company) {
+                }, {$addToSet: {"survey.$.pdfUri": savePdfUri}}, function (err, content) {
                     if (err) {
                         return callback(err);
                     }
@@ -462,62 +668,81 @@ var routeHandler = function (db) {
 
     //========================================================
     this.upload = function (req, res, next) {
-        validation (req, function(err){
-            if(err) return next (err);
-
-            var data = req.body;
-            var files = req.files;
-
-            var insObj = {
-                name: data.name,
-                contactMeInfo: data.contact,
-                mainVideoDescription: data.desc
-            };
-
-            var newCompany = new CompanyModel(insObj);
-            newCompany.save(function (err, result) {
-                if (err){
-                  return  next(err);
+        validation(req, function (err) {
+            if (err) return next(err);
+            session.getUserDescription(req, function (err, obj) {
+                if(err){
+                    return next(err);
                 }
-                var id = result._id;
+                if(!obj){
+                    next(new Error(401,{err:'Unauthorized'}));
+                }
+                var data = req.body;
+                var files = req.files;
 
-               async.series([
-                   function (cb) {
-                       if (!!files['video']){
-                         saveMainVideo(id, files, cb);
-                       }
-                       else {
-                           var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString();
-                           upFile(url, files['logo'], function (err, logoUri) {
-                               if (err) {
-                                   return callback(err);
-                               } var saveLogoUri = logoUri.replace('public'+sep, '');
-                                   CompanyModel.findByIdAndUpdate(id, {$set: {mainVideoUri: data.video, logoUri: saveLogoUri}},
-                                       function (err) {
-                                           if (err) {
-                                               return callback(err);
-                                           }
-                                           callback(null);
-                                       });
-                             });
-                       }
-                   },
-                   function (cb) {
-                       for(var i=data.countQuestion; i>0; i--){
-                           async.applyEachSeries([saveSurveyVideo, saveSurveyFiles ],i, id, files, data, function () {
-                               if(err) return cb(err);
-                           });
-                       }
-                       cb();
+                var insObj = {
+                    userId: obj.id,
+                    name: data.name,
+                    contactMeInfo: data.contact,
+                    mainVideoDescription: data.desc
+                };
 
-                   }], function (err) {
-                   if (err) {
-                       return next(err);
-                   }
-                   res.status(201).send({_id: id});
-               });
+                var content = new ContentModel(insObj);
+                content.save(function (err, result) {
+                    if (err) {
+                        return next(err);
+                    }
+                    var id = result._id;
+                    UserModel.findByIdAndUpdate(obj.id,{$set: {contentId: result._id}}, function (err, user) {
+                        if(err) return next(err);
+
+                        async.series([
+                            function (cb) {
+                                if (!!files['video']) {
+                                    saveMainVideo(id, files, cb);
+                                }
+                                else {
+                                    var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString();
+                                    upFile(url, files['logo'], function (err, logoUri) {
+                                        if (err) {
+                                            return callback(err);
+                                        }
+                                        var saveLogoUri = logoUri.replace('public' + sep, '');
+                                        ContentModel.findByIdAndUpdate(id, {
+                                                $set: {
+                                                    mainVideoUri: data.video,
+                                                    logoUri: saveLogoUri
+                                                }
+                                            },
+                                            function (err) {
+                                                if (err) {
+                                                    return callback(err);
+                                                }
+                                                callback(null);
+                                            });
+                                    });
+                                }
+                            },
+                            function (cb) {
+                                for (var i = data.countQuestion; i > 0; i--) {
+                                    async.applyEachSeries([saveSurveyVideo, saveSurveyFiles], i, id, files, data, function () {
+                                        if (err) return cb(err);
+                                    });
+                                }
+                                cb();
+
+                            }], function (err) {
+                            if (err) {
+                                return next(err);
+                            }
+                            var url = process.env.HOST + '/#/home/' + id + '/{{ctid}}';
+                            res.status(201).send({_id: id, url: url});
+                            console.log("url: " + url);
+                        });
+                    });
+                });
+                localFs.defaultPublicDir = 'public';
             });
-            localFs.defaultPublicDir = 'public';
         });
     };
 
@@ -548,52 +773,12 @@ var routeHandler = function (db) {
         });
 
     };
+    //"https://account.mooloop.com/oauth/authorize?response_type=code&client_id=FcDOCBsnZ2TtKbHTGULY&redirect_uri=http://demo.com:8838/redirect&scope=jumplead.contacts"
 
 
-    this.redirect = function (req, res, next) {
-        var code = req.query.code;
-        console.log(req.query);
 
-        request.post({
-            url:'https://account.mooloop.com/oauth/access_token',
-            headers: {
-                'content-type': 'application/json'
-            },
-            form: {
-                code: code,
-                client_id: "FcDOCBsnZ2TtKbHTGULY",
-                client_secret: "KMdpjWHOQ1EKcuUGNQcpraGpN8e2qc34VhFWAGtB",
-                redirect_uri:"http://demo.com:8838/redirect",
-                grant_type: "authorization_code"
 
-            }
-        }, function(error, response, body1) {
-            console.log(body1.access_token);
-            try {
-                body1 = JSON.parse(body1);
-            }catch (e){}
-            request.get({
-                url: 'https://app.jumplead.com/api/v1/contacts',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + body1.access_token
-                }
-               /* ,json: {
-                    "grant_type": "client_credentials",
-                    "data": {
-                        "first_name": "Irvin",
-                        "last_name": "Colenski",
-                        "email": "faspert@meta.com"
-                    }*/
 
-            }, function (error, response, body2) {
-                console.log('response from create contacts: '+body2);
-                console.log('response : '+JSON.stringify(response));
-                console.log('error : '+error);
-            });
-        });
-        res.redirect('/#home');
-    };
 };
 
 module.exports = routeHandler;

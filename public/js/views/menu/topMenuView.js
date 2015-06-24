@@ -18,6 +18,7 @@ define([
 
         initialize: function () {
             // keep menu actual
+			this.listenTo(App.sessionData, 'change:authorized', this.render);
             this.render();
         },
 
@@ -44,7 +45,12 @@ define([
 
         render: function () {
 
-            this.$el.html(_.template(topMenuTemplate));
+            console.log(App.sessionData.get("authorized"));
+
+            this.$el.html(_.template(topMenuTemplate)({
+				authorized:App.sessionData.get("authorized"),
+				user:App.sessionData.get("user")
+			}));
             return this;
         }
     });

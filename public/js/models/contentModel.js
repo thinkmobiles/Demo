@@ -5,7 +5,7 @@ define(['validation'], function (validation) {
     var Model = Backbone.Model.extend({
         idAttribute: "_id",
         url: function () {
-            return "/company/" + this.get('_id');
+            return "/content/" + this.get('_id')+"/"+this.get('userId');
         },
         initialize: function () {
             this.on('invalid', function (model, errors) {

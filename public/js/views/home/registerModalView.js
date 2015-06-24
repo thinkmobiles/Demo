@@ -1,7 +1,8 @@
 define([
     'text!templates/home/registerModalTemplate.html',
+	'views/home/videoModalView',
 	 "models/userModel"
-], function ( modalTemplate, UserModel) {
+], function ( modalTemplate, VideoModalView, UserModel) {
 
     var View;
 	
@@ -13,12 +14,53 @@ define([
         },
 
 
-        initialize: function () {
+        initialize: function (options) {
+			this.videoModal = null;
+			this.content = options.content;
             this.render();
         },
 
 		register: function(){
+			var self = this;
 			var userModel = new UserModel();
+			var isError = false;
+			this.$el.find(".error").removeClass("error");
+			if (!this.$el.find("#email").val()){
+				this.$el.find("#email").addClass("error");
+				isError = true;
+			}
+			if (!this.$el.find("#confirmEmail").val() || this.$el.find("#email").val() !== this.$el.find("#confirmEmail").val()){
+				this.$el.find("#confirmEmail").addClass("error");
+				isError = true;
+			}
+
+			if (!this.$el.find("#fname").val()){
+				this.$el.find("#fname").addClass("error");
+				isError = true;
+			}
+			if (!this.$el.find("#lname").val()){
+				this.$el.find("#lname").addClass("error");
+				isError = true;
+			}
+			if (!this.$el.find("#phone").val()){
+				this.$el.find("#phone").addClass("error");
+				isError = true;
+			}
+			if (!this.$el.find("#organization").val()){
+				this.$el.find("#organization").addClass("error");
+				isError = true;
+			}
+			if (!this.$el.find("#title").val()){
+				this.$el.find("#title").addClass("error");
+				isError = true;
+			}
+			if (!this.$el.find("#comments").val()){
+				this.$el.find("#comments").addClass("error");
+				isError = true;
+			}
+			
+
+			if (isError)return;
 			userModel.save({
 				email : this.$el.find("#email").val(),
 				firstName : this.$el.find("#fname").val(),
@@ -31,13 +73,20 @@ define([
                {
                    wait: true,
                    success: function (model, response) {
-                       alert("OK!")
+					   self.dialog.hide();
+					   if(self.videoModal){
+						   self.videoModal.undelegateEvents();
+					   }
+					   self.videoModal =new VideoModalView({
+						   content:self.content
+					   });
+
                    },
-                   error: function (model, xhr) {
-                       self.errorNotification(xhr);
+                   error: function (err) {
+                       alert(err)
                    }
                });
-            $.ajax({
+            /*$.ajax({
                 type: "POST",
                 url: "/trackUser",
                 data: JSON.stringify(videoData),
@@ -55,7 +104,7 @@ define([
                     console.log(model);
 
                 }
-            });
+            });*/
 		},
 
         closeDialog:function(e){

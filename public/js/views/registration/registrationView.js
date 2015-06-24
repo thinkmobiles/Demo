@@ -8,12 +8,29 @@ define([
         events:{
             "input #pass": "progressBar",
             "click .cancel":"cancel",
-            "click .registerBtn":"register"
+            "click .registerBtn":"register",
+            "click .preview":"showFiles",
+            "change #ava":"showPreview"
         },
         initialize: function () {
             $("#progressBar").progressbar({value: 5 });
             this.render();
         },
+
+		showFiles: function(e){
+			this.$el.find("#ava").click();
+		},
+
+		showPreview: function(e){
+			var input = e.target;
+			if ( input.files && input.files[0] ) {
+				var FR= new FileReader();
+				FR.onload = function(e) {
+					$('.preview').attr( "src", e.target.result );
+				};       
+				FR.readAsDataURL( input.files[0] );
+			}
+		},
 
 		register: function(e){
 			var self = this;
@@ -58,17 +75,21 @@ define([
 			$.ajax({
                 url: "/signUp",
                 type: "POST",
+				xhrFields: {
+					withCredentials:true
+				},
                 data: {
                     email: self.$el.find(".registration .email").val(),
                     firstName: self.$el.find(".registration .firstName").val(),
                     lastName: self.$el.find(".registration .lastName").val(),
                     userName: self.$el.find(".registration .userName").val(),
                     organization: self.$el.find(".registration .organization").val(),
-                    pass: self.$el.find(".registration .pass").val()
+                    pass: self.$el.find(".registration .pass").val(),
+                    avatar: self.$el.find(".registration .preview").attr("src")
                 },
                 success: function (model) {
 					console.log(model);
-					Backbone.history.navigate("home",{ trigger:true })
+					window.location = 'https://account.mooloop.com/oauth/authorize?response_type=code&client_id=FcDOCBsnZ2TtKbHTGULY&redirect_uri=http://demo.com:8838/redirect&scope=jumplead.contacts';
                 },
                 error: function (err) {
 					console.log(err);
@@ -87,7 +108,7 @@ define([
             $(".ui-progressbar-value").addClass(add).removeClass(remove);
         },
 		cancel:function(e){
-			Backbone.history.navigate("home",{ trigger:true })
+            Backbone.history.navigate("#/home", {trigger: true});
 		},
 		
         render: function () {

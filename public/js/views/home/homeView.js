@@ -1,7 +1,8 @@
 define([
     'text!templates/home/HomeTemplate.html',
-	'views/home/modalView'
-], function (HomeTemplate, ModalView) {
+	'views/home/modalView',
+	'custom'
+], function (HomeTemplate, ModalView, Custom) {
 
     var View;
 
@@ -13,8 +14,9 @@ define([
             "click .checkbox":"checkboxClick",
             "click .registration":"hideBlur",
 			"click .lock.active":"login",
-			"keydown .signIn .userName":"changeField",
-			"keydown .signIn .password":"changeField"
+			"keyup .signIn .userName":"changeFieldUsername",
+			"keyup .signIn .password":"changeField",
+//			"change .signIn .userName":"showAvatar",
         },
 
 
@@ -26,11 +28,45 @@ define([
 
 		changeField:function(e){
 			var self = this;
+			if (self.$el.find(".signIn .userName").val()){
+				self.$el.find(".signIn .username .inp").addClass("valid");
+			}else{
+				self.$el.find(".signIn .username .inp").removeClass("valid");
+			}
+			if (self.$el.find(".signIn .password").val()){
+				self.$el.find(".signIn .pass .inp").addClass("valid");
+			}else{
+				self.$el.find(".signIn .pass .inp").removeClass("valid");
+			}
 			if (self.$el.find(".signIn .userName").val()&&self.$el.find(".signIn .password").val()){
 				self.$el.find(".lock").addClass("active");
 			}else{
 				self.$el.find(".lock").removeClass("active");
 			}
+		},
+
+		showAvatar:function(e){
+			var self = this;
+			$.ajax({
+                url: "/avatar/"+self.$el.find(".signIn .userName").val(),
+                type: "GET",
+                dataType: 'json',
+                success: function (response) {
+					if (response.avatar){
+						self.$el.find(".signIn .ava img").attr("src", response.avatar);
+					}else{
+						self.$el.find(".signIn .ava img").attr("src", Custom.defaultImage);
+					}
+                },
+                error: function (err) {
+					self.$el.find(".signIn .ava img").attr("src", Custom.defaultImage);
+				}
+            });
+		},
+		
+		changeFieldUsername:function(e){
+			this.changeField(e);
+			this.showAvatar(e);
 		},
 
 		hideBlur:function(e){
@@ -62,8 +98,9 @@ define([
 					$("body").removeClass("withLogin");
 					self.$el.find(".signIn .userName").removeClass("error");
 					self.$el.find(".signIn .password").removeClass("error");
-
-					Backbone.history.navigate("login",{ trigger:true })
+					App.updateUser(function(){
+						Backbone.history.navigate("#/login",{ trigger:true })
+					});
                 },
                 error: function (err) {
 					self.$el.find(".signIn .username .inp").addClass("error");

@@ -1,13 +1,20 @@
 <nav class="navBar topMenu">
   <div class="inner">
-    <a href="/#home" id="logo">DEMO<span>ROCKET</span></a>
+    <a href="#/home" id="logo">DEMO<span>ROCKET</span></a>
 
     <ul>
+	  <% if (!authorized){%>
       <li><a href="javascript:;" class="active showModal">WATCH DEMO</a></li>
-	  <li><a href="https://account.mooloop.com/oauth/authorize?response_type=code&client_id=FcDOCBsnZ2TtKbHTGULY&redirect_uri=http://demo.com:8838/redirect&scope=jumplead.contacts">PRICING</a></li>
+	  <!--<li><a href="https://account.mooloop.com/oauth/authorize?response_type=code&client_id=FcDOCBsnZ2TtKbHTGULY&redirect_uri=http://demo.com:8838/redirect&scope=jumplead.contacts">PRICING</a></li>-->
+	  <li><a href="javascript:;">PRICING</a></li>
 	  <li><a href="javascript:;">RESOURSES</a></li>
 	  <li><a href="javascript:;" class="checkPass">COMPANY</a></li>
 	  <li><a href="#/home" class="login">LOGIN</a></li>
+	  <%}else{%>
+	  <li class="userInfo"><span><img src="<%=user.avatar%>" width="50" height="50"/>Welcome, <strong><%=user.firstName%> <%=user.lastName%></strong></span></li>
+	  <li><a href="#/login">CREATE</a></li>
+	  <li><a href="/logout">LOGOUT</a></li>
+	  <%}%>
     </ul>
   </div>
 

@@ -10,7 +10,8 @@ module.exports = (function () {
         pdfUri: [{type: String}]
     },{versionKey: false, _id: false});
 
-    var companySchema = mongoose.Schema({
+    var contentSchema = mongoose.Schema({
+        userId: {type: ObjectId, required: true, unique: true},
         name: {type: String/*, required: true, unique: true*/},
         logoUri: {type: String},
         contactMeInfo: {type: String},
@@ -22,18 +23,18 @@ module.exports = (function () {
         survey: [surveySchems],
         createdAt: {type: Date, default: Date.now},
         updatedAt: {type: Date, default: Date.now}
-    }, {collection: 'Companies'});
+    }, {collection: 'Content'});
 
-    mongoose.model('Company', companySchema);
+    mongoose.model('Content', contentSchema);
 
     if (!mongoose.Schemas) {
         mongoose.Schemas = {};
     }
 
-    mongoose.Schemas['Company'] = companySchema;
+    mongoose.Schemas['Content'] = contentSchema;
 
     if (process.env.NODE_ENV !== 'production') {
-        companySchema.set('autoIndex', false);
+        contentSchema.set('autoIndex', false);
     }
 
 })();

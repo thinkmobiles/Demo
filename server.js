@@ -53,8 +53,15 @@ db.once('open', function() {
         if (/Trident/.test(browser)) {
             res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
         }
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header('Access-Control-Allow-Credentials', true);
+        res.header('Access-Control-Allow-Origin', req.headers.origin);
+        res.header('Access-Control-Allow-Methods', 'GET,PUT,POST');
+        res.header('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, X-HTTP-Method-Override, uid, hash, mid');
+
         next();
     };
+
     app.use(allowCrossDomain);
 
     app.use(express.static(__dirname + '/public'));
@@ -69,7 +76,7 @@ db.once('open', function() {
     app.use(express.static(path.join(__dirname, 'public')));
 
     app.use(session({
-        name: 'Minder',
+        name: 'Demo',
         secret: '1q2w3e4r5tdhgkdfhgejflkejgkdlgh8j0jge4547hh',
         resave: false,
         saveUninitialized: false,

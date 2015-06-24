@@ -16,6 +16,7 @@ define([
 
         events: {
             "click .decline": "decline",
+            "click .save": "save",
             "click .question": "question",
             "click .collapseQuestions .collapseQuestion .close": "removeQuestion",
             "click .login-button": "login",
@@ -96,8 +97,42 @@ define([
 		},
 
 		decline: function(e){
+			e.preventDefault()
+;            Backbone.history.navigate("#/home", {trigger: true});
+		},
+		save: function(e){
 			e.preventDefault();
-			window.location="/#home";
+			var form = document.forms.namedItem("videoForm");
+
+			oData = new FormData(form);
+
+
+			var oReq = new XMLHttpRequest();
+			oReq.open("POST", "/upload", true);
+			oReq.onload = function(oEvent) {
+				if (oReq.status == 201) {
+					try{
+						var res = JSON.parse(oReq.response);
+						$("<span><input type='text' value='"+res.url+"' readonly/></span>").dialog({
+							modal:true,
+							closeOnEscape: false,
+							appendTo:"#wrapper",
+							dialogClass: "watch-dialog",
+							width: 625
+						});
+						//window.location="/#home";
+						
+					}
+					catch(e){
+
+					}
+				} else {
+					alert("Error");
+				}
+			};
+
+			oReq.send(oData);
+
 		},
 
 		browse: function(e){

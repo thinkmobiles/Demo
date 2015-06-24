@@ -52,15 +52,15 @@ define([
             });
         }
 
-        // get date from server in intervals
-        setInterval(getDateTime, 1000 * 60 * 50);
-
-        App.sessionData.on('change:authorized', function () {
-            if (App.sessionData.get('authorized')) {
-                getPlans();
-                getDateTime();
-            }
-        });
+        //// get date from server in intervals
+        //setInterval(getDateTime, 1000 * 60 * 50);
+        //
+        //App.sessionData.on('change:authorized', function () {
+        //    if (App.sessionData.get('authorized')) {
+        //        getPlans();
+        //        getDateTime();
+        //    }
+        //});
 
         // create router
         appRouter = new Router();

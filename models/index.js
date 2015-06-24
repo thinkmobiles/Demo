@@ -2,7 +2,7 @@
 
 module.exports = (function () {
     require('./prospect.js');
-    require('./company.js');
+    require('./content.js');
     require('./track.js');
     require('./user.js');
 })();

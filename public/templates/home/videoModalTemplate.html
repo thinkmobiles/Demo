@@ -2,7 +2,7 @@
   <div class="left">
     <div class="videoSection">
 	  <video controls="true" width="716" height="404" class="mainVideo">
-		<source src="<%= company.mainVideoUri %>" type="video/mp4" />
+		<source src="<%= content.mainVideoUri %>" type="video/mp4" />
 	  </video>
     </div>
     <div class="questionSection">
@@ -14,7 +14,7 @@
 		  <th>Somewhat<br/>important</th>
 		  <th>Very<br/>important</th>
 		</tr>
-	  <%_.forEach(company.survey,function(item){%>
+	  <%_.forEach(content.survey,function(item){%>
 		<tr>
 		  <td><%=item.question%></td>
 		  <td><div class="checkbox"></div></td>
@@ -31,7 +31,7 @@
     </div>
   </div>
   <div class="right">
-	<img src="<%= company.logoUri %>" height="80" class="logo"/><br/><img src="i/socials.png" height="27" class="social"/>
+	<img src="<%= content.logoUri %>" height="80" class="logo"/><br/><img src="i/socials.png" height="27" class="social"/>
 	<br/><br/><br/><br/><br/>
 	<span>OR CALL US: +31 086 500 00 00</span>
 	<button>CONTACT ME</button>

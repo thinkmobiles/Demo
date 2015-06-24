@@ -80,10 +80,14 @@ html,body{
 .topMenu{
 	height:120px;
 	background-color:rgba(0,0,0,0.2);
-	position:relative;
-	z-index:100;
+	position:fixed;
+	top:0px;
+	width:100%;
+	z-index:200;
 	transition: all 0.5s linear;
+	
 
+	
 	.inner{
 		width:1070px;
 		margin:0 auto;
@@ -93,6 +97,7 @@ html,body{
 			font-size:36px;
 			color:white;
 			text-decoration:none;
+			transition: all 0.5s linear;
 			span{
 				color:#44cbff;
 			}
@@ -109,12 +114,57 @@ html,body{
 					line-height:120px;
 					padding:10px 20px;
 					color:white;
+					transition: all 0.5s linear;
 					&:hover{
 						background-color:rgba(0,0,0,0.2);
 						border-radius:5px;
 					}
 				}
 
+				&.userInfo{
+					line-height:118px;
+					color:white;
+					font-size:16px;
+					transition: all 0.5s linear;
+					span{
+						padding:0 20px 0 0;
+					}
+					img{
+						transition: all 0.5s linear;
+						margin-top:33px;
+						display:block;
+						float:left;
+						border-radius:50px;
+					}
+				}
+
+			}
+		}
+	}
+	&.small{
+		background-color:white !important;
+		height:73px;
+		border-bottom:1px solid #ebebeb;
+		.inner{
+			#logo{
+				.lh(73px);
+				color:#c7c7c7;
+			}
+			ul{
+				li{
+					a{
+						line-height:73px;
+						color:#44cbff;
+	
+					}
+					&.userInfo{
+						line-height:70px;
+						color:#808080;
+						img{
+							margin-top:10px;
+						}
+					}
+				}
 			}
 		}
 	}
@@ -128,8 +178,13 @@ html,body{
 	}
 }
 .homePage{
-	padding-top:160px;
+	//padding-top:160px;
 	width:570px;
+	opacity:1;
+	visibility:visible;
+	transition: all 0.25s linear;
+	position:absolute;
+	top:210px;
 	h1{
 		.mp;
 		font-size:54px;
@@ -385,14 +440,17 @@ html,body{
 	background-color:rgba(0,0,0,0.5);
 }
 .homeContainer{
-	margin-top:-120px;
+	top:-120px;
 	padding-top:120px;
 	height:722px;
 	position:relative;
 	overflow:hidden;
+	width:100%;
+		
 	.inner{
 		position:relative;
 		z-index:100;
+		padding-top:1px;
 	}
 	.bg{
 		.i("bg.jpg");
@@ -422,12 +480,14 @@ html,body{
 }
 
 .signIn{
-	display:none;
-	transition: all 0.5s linear;
+	visibility:hidden;
+	//display:none;
+	transition: all 0.25s linear;
 	width:782px;
 	margin:0 auto;
+	opacity:0;
 	h2{
-		margin-top:210px;
+		margin-top:310px;
 		text-align:center;
 		color:white;
 	}
@@ -439,6 +499,9 @@ html,body{
 	}
 	.ava{
 		margin-left:7px;
+		img{
+			border-radius:50px;
+		}
 	}
 	.lock{
 		.i("lock.png");
@@ -464,6 +527,9 @@ html,body{
 			border-radius:3px;
 			background-color:white;
 			border:1px solid #41bef0;
+			&.valid{
+				.i("user-icon-active.png");
+			}
 
 		}
 	}
@@ -477,6 +543,9 @@ html,body{
 			border-radius:3px;
 			background-color:white;
 			border:1px solid #41bef0;
+			&.valid{
+				.i("lock-icon-active.png");
+			}
 		}
 	}
 	.text{
@@ -544,10 +613,13 @@ body.withLogin{
 		}
 		.inner{
 			.homePage{
-				display:none;
+				visibility:hidden;
+				opacity:0;
 			}
 			.signIn{
-				display:block;
+				//display:block;
+				visibility:visible;
+				opacity:1;
 			}
 		}
 	}
@@ -601,6 +673,7 @@ footer{
   }
 }
 .login{
+	margin-top:200px;
 	.inner{
 		width:785px;
 		padding-bottom:100px;
@@ -773,6 +846,7 @@ footer{
 		font-size:14px;
 		outline:none;
 		&:after{
+			
 			content:'*';
 			color:#e85044;
 			font-size:18px;
@@ -948,9 +1022,15 @@ footer{
 
 .registration{
 	text-align:center;
+	padding-top:1px;
+
+	h3{
+		margin:0;
+	}
 	.inner{
 		width:1070px;
 		margin:0 auto;
+		margin-top:160px;
 		input{
 			height:46px;
 			width:270px;
@@ -960,10 +1040,16 @@ footer{
 				width:595px;
 			}
 		}
+		#ava{
+			display:none;
+		}
+
 	}
 	img{
 		margin-top:65px;
 		margin-bottom:45px;
+		border-radius: 215px;
+		cursor:pointer;
 	}
 
 	.buttons{

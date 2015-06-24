@@ -10,15 +10,19 @@ module.exports = (function () {
     var PASS_MAX_LENGTH = CONSTANTS.PASS_MAX_LENGTH;
 
     var mongoose = require('mongoose');
+    var ObjectId = mongoose.Schema.Types.ObjectId;
 
     var userSchema = mongoose.Schema({
         avatar: {type: String},
-        email: {type: String, required: true, unique: true},
+        email: {type: String, required: true},
         firstName: {type: String, required: true, minlength: NAME_MIN_LENGTH, maxlength: NAME_MAX_LENGTH},
         lastName: {type: String, required: true, minlength: NAME_MIN_LENGTH, maxlength: NAME_MAX_LENGTH},
-        userName: {type: String, required: true, unique: true, minlength: NAME_MIN_LENGTH, maxlength: NAME_MAX_LENGTH},
+        userName: {type: String, required: true,  minlength: NAME_MIN_LENGTH, maxlength: NAME_MAX_LENGTH},
         organization: {type: String, required: true, minlength: ORGANIZATION_MIN_LENGTH, maxlength: ORGANIZATION_MAX_LENGTH},
         pass: {type: String, required: true/*, minlength: PASS_MIN_LENGTH, maxlength: PASS_MAX_LENGTH*/},
+        contentId: {type: ObjectId},
+        accessToken: {type: String},
+        refreshToken: {type: String},
         createdAt: {type: Date, default: Date.now},
         updatedAt: {type: Date, default: Date.now}
 

@@ -1,6 +1,6 @@
 <div class="login">
   <div class="inner">
-	<form action="/upload" enctype="multipart/form-data" method="post" id="videoForm">
+	<form action="/upload" enctype="multipart/form-data" method="post" id="videoForm" name="videoForm">
 	  <input name="countQuestion" value="1" type="hidden" class="countQuestion"/>
 	  
 	  <h2>STEP1: CHOOSE YOUR MAIN VIDEO</h2>
@@ -16,7 +16,7 @@
           </div>
           <div class="right">
           </div>
-		  <input type="file" name="video"/>
+		  <input type="file" name="video" accept="video/mp4,video/x-m4v,video/*"/>
         </div><br/>
 		<span>Or paste a link:</span>
 		<div class="uploadContainer link">
@@ -50,7 +50,7 @@
 			  </div>
 			  <div class="right">
 			  </div>
-			  <input type="file" name="video1"/><br/>
+			  <input type="file" name="video1" accept="video/mp4,video/x-m4v,video/*"/><br/>
 			</div><br/>
 			<span>Or paste a link:</span>
 			<div class="uploadContainer link">
@@ -71,7 +71,7 @@
 			  </div>
 			  <div class="right">
 			  </div>
-			  <input type="file" name="file1" multiple/><br/>
+			  <input type="file" name="file1" multiple accept="application/pdf"/><br/>
 			</div>
 		  </div>
 		  <div class="right">
@@ -94,7 +94,7 @@
           </div>
           <div class="right">
           </div>
-		  <input type="file" name="logo" multiple/>
+		  <input type="file" name="logo" accept="image/*"/>
         </div>
 		<br/>
 		<span>Company Name:</span><br/>
