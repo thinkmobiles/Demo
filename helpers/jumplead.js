@@ -12,7 +12,7 @@ var JumpleadModule = function (db) {
     var CONSTANTS = require('../constants/jumplead');
     var ACCESS_TOKEN_URL = CONSTANTS.ACCESS_TOKEN_URL;
     var REFRESH_TOKEN_URL = CONSTANTS.REFRESH_TOKEN_URL;
-    var REDIRECT_URI = CONSTANTS.REDIRECT_URI;
+    var REDIRECT_URI = process.env.REDIRECT_URI;
     var AUTHORIZE_URL = CONSTANTS.AUTHORIZE_URL;
 
     var CONTACTS_URL = CONSTANTS.CONTACTS_URL;
@@ -100,6 +100,61 @@ var JumpleadModule = function (db) {
             });
         });
     };
+
+    this.setContact = function (userId, contact, callback) {
+        UserModel.findById(userId, function (err, user) {
+            if (err) {
+                return callback(err);
+            }else if (!user) {
+                return callback(new Error(404, {err: 'User not found'}));
+            }
+        var background = 'Phone: '+(contact.phone?contact.phone:'-') +"\n" +
+            "Title: " + (contact.title?contact.title:'-')+"\n" +
+            "Comments: " + (contact.comments?contact.comments:'-');
+            var body = {
+                data:{
+                    "first_name": contact.firstName,
+                    "last_name": contact.lastName,
+                    "email": contact.email
+                }
+            };
+
+            request({
+                url: CONTACTS_URL,
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + user.accessToken
+                },
+                json: true,
+                body: body
+
+            }, function (error, response, body) {
+                try{
+                    body = JSON.parse(body);
+                    console.log(body);
+                }catch(e){
+                    console.log(e);
+                }
+                console.log(body);
+                if (body.status == '401') {
+                    return (function(){
+                        self.refToken(userId, function (err) {
+                            if (err) {
+                                return callback(err)
+                            }
+                            return self.setContact(userId, contact, callback)
+                        });
+                    })();
+                } else if (error) {
+                    return callback(error);
+                }
+                return callback(null, body.data)
+            });
+        });
+    };
+
+
     this.getAllContacts = function (userId, callback) {
 
         UserModel.findById(userId, function (err, user) {
