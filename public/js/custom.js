@@ -7,20 +7,23 @@ define([],function () {
         if (Backbone.history.fragment) {
             Backbone.history.fragment = '';
         }
-
+		if (url[0]!=="#"){
+			url = "#/"+url;
+		}
         // check authorize and open current page
         if (!err) {
             App.sessionData.set({
                 authorized: true,
                 user: data
             });
-            return Backbone.history.navigate("#/"+url, {trigger: true});
+		
+            return Backbone.history.navigate(url, {trigger: true});
         } else {
             App.sessionData.set({
                 authorized: false,
                 user: null
             });
-            return Backbone.history.navigate("#/"+url, {trigger: true});
+            return Backbone.history.navigate(url, {trigger: true});
         }
 
     };

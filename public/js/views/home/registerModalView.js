@@ -116,7 +116,7 @@ define([
         },
 
 
-        // render template (once! because google maps)
+
         render: function () {
 			 var formString = _.template(modalTemplate)({
              });
