@@ -28,8 +28,8 @@ var JumpleadModule = function (db) {
             if (err) {
                 return callback(err);
             }
-            accessToken = foundUser.accessToken;
-            refreshToken = foundUser.refreshToken;
+            accessToken = foundUser.toJSON().accessToken;
+            refreshToken = foundUser.toJSON().refreshToken;
 
             request.post({
                 url: REFRESH_TOKEN_URL,
@@ -48,6 +48,7 @@ var JumpleadModule = function (db) {
                 } catch (e) {
                     console.log(e);
                 }
+                console.log(body);
                 UserModel.findByIdAndUpdate(userId, {$set: {
                     accessToken: body.access_token
                     //,refreshToken: body.refresh_token

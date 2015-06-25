@@ -1,8 +1,9 @@
 define([
     'text!templates/home/videoModalTemplate.html',
     'text!templates/home/relatedVideo.html',
+	    'text!templates/home/pdfTemplate.html',
     "models/userModel"
-], function ( modalTemplate, relatedVideo, UserModel) {
+], function ( modalTemplate, relatedVideo, pdfTemplate,  UserModel) {
 
     var View;
 
@@ -13,7 +14,8 @@ define([
             "click .continue":"register",
 			"click .questionSection table .checkbox" : "checkedQuestion",
 			"ended .mainVideo":"endedMainVideo",
-			"click .showSurvay":"showSurvay"
+			"click .showSurvay":"showSurvay",
+			"click .listVideo li":"clickOnVideo"
         },
 
 
@@ -22,16 +24,30 @@ define([
             this.render();
         },
 
+		clickOnVideo:function(e){
+			var index = $(e.target).closest("li").data("id");
+			$(e.target).closest("ul").find("li.current").removeClass("current");
+			$(e.target).closest("ul").find("li[data-id='"+index+"']").addClass("current");
+			this.$el.find(".videoConatiner>video").attr("src",this.content.toJSON().content.survey[index].videoUri);
+			this.$el.find(".pdfList").html(_.template(pdfTemplate)({
+				pdfUri:this.content.toJSON().content.survey[index].pdfUri
+			}));
+
+			
+		},
+		
 		endedMainVideo:function(e){
 			$(".videoSection").hide();
 			$(".questionSection").show();
-            //sendAjax();
 		},
 
 		showSurvay:function(e){
 			$(".questionSection").hide();
 			$(".relatedVideo").show();
-			$(".relatedVideo").html(_.template(relatedVideo)(this.content.toJSON().content.survey[0]));
+			$(".relatedVideo").html(_.template(relatedVideo)({
+				videoList:this.content.toJSON().content.survey
+			}
+			));
 		},
 
 		checkedQuestion: function(e){

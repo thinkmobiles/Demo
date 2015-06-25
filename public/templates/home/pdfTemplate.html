@@ -1,0 +1,4 @@
+<%_.forEach(pdfUri,function(url){%>
+<li><a href="<%=url%>" target="_blank"><%=url.split("\\").pop().split("/").pop()%></a>
+</li>
+<%})%>
