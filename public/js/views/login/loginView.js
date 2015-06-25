@@ -22,7 +22,8 @@ define([
             "click .login-button": "login",
             "click .uploadContainer.file": "browse",
             "change .uploadContainer.file input[type='file']": "changeFile",
-            "click .uploadContainer.file input[type='file']": "clickOnFile"
+            "click .uploadContainer.file input[type='file']": "clickOnFile",
+			"click .ui-dialog-titlebar-close": "decline"
         },
 
         //reset the data
@@ -101,6 +102,7 @@ define([
 ;            Backbone.history.navigate("#/home", {trigger: true});
 		},
 		save: function(e){
+			var self = this;
 			e.preventDefault();
 			var form = document.forms.namedItem("videoForm");
 
@@ -113,15 +115,15 @@ define([
 				if (oReq.status == 201) {
 					try{
 						var res = JSON.parse(oReq.response);
-						$("<span><input type='text' value='"+res.url+"' readonly/></span>").dialog({
+						$("<div><input type='text' value='"+res.url+"' readonly/></div>").dialog({
 							modal:true,
 							closeOnEscape: false,
 							appendTo:"#wrapper",
-							dialogClass: "watch-dialog",
-							width: 625
+							dialogClass: "link-dialog",
+							width: 725
 						});
 						//window.location="/#home";
-						
+						self.$el.find()
 					}
 					catch(e){
 
