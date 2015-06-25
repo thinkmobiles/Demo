@@ -5,7 +5,7 @@
   <h3>Related video:</h3>
   <ul>
 	<%_.forEach(pdfUri,function(url){%>
-	<li><a href="<%=url%>"><%=url.split("\\").pop()%></a></li>
+	<li><a href="<%=url%>" target="_blank"><%=url.split("\\").pop().split("/").pop()%></a></li>
 	<%})%>
   </ul>
 </div>

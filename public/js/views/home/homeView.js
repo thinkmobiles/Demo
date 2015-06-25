@@ -111,6 +111,12 @@ define([
 
         render: function () {
             this.$el.html(_.template(HomeTemplate));
+			if (this.options.videoId&&this.options.userId){
+				if(this.modal){
+					this.modal.undelegateEvents();
+				}
+				this.modal =new ModalView(this.options);
+			}
             return this;
         }
 
