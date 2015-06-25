@@ -10,7 +10,7 @@ var request = require('request');
 var REG_EXP = require('../constants/regExp');
 
 var badRequests = require('../helpers/badRequests');
-var pdfutils = require('pdfutils').pdfutils;
+//var pdfutils = require('pdfutils').pdfutils;
 
 var LocalFs = require( './fileStorage/localFs' )();
 var localFs = new LocalFs();
@@ -642,9 +642,9 @@ var routeHandler = function (db) {
                   return  callback(err);
                 }
                 //-----------------------------------------------------------------
-                pdfutils(file.path, function(err, doc) {
-                    doc[0].asPNG({maxWidth: 200, maxHeight: 300}).toFile(url+sep+file.originalFilename.split(sep).pop().slice(0, -4));
-                });
+                //pdfutils(file.path, function(err, doc) {
+                //    doc[0].asPNG({maxWidth: 200, maxHeight: 300}).toFile(url+sep+file.originalFilename.split(sep).pop().slice(0, -4));
+                //});
                 //-----------------------------------------------------------------
                 var savePdfUri = pdfUri.replace('public'+sep, '');
                 ContentModel.findOneAndUpdate({
