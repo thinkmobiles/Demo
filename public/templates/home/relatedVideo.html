@@ -1,10 +1,23 @@
 <div>
-  <video controls="true" width="716" height="404" class="mainVideo">
-	<source src="<%= videoUri %>" type="video/mp4" />
-  </video>
+  <div class="videoConatiner">
+	<video controls="true" width="716" height="404" class="mainVideo" src="<%= videoList[0].videoUri %>" type="video/mp4">
+	</video>
+	<ul class="listVideo">
+	  <%_.forEach(videoList,function(video, index){%>
+	  <li <%if (index==0){%>class="current"<%}%> data-id="<%=index%>">
+		<video width="90" height="50" class="mainVideo" src="<%= video.videoUri %>" type="video/mp4" >
+		</video>
+	  </li>
+	   <li <%if (index==0){%>class="current"<%}%> data-id="<%=index%>">
+		 <div class="text"><%= video.question %></div>
+	  </li>
+	  <%})%>
+	</ul>
+    </div>
+
   <h3>Related video:</h3>
-  <ul>
-	<%_.forEach(pdfUri,function(url){%>
+  <ul class="pdfList">
+	<%_.forEach(videoList[0].pdfUri,function(url){%>
 	<li><a href="<%=url%>" target="_blank"><%=url.split("\\").pop().split("/").pop()%></a></li>
 	<%})%>
   </ul>

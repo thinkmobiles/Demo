@@ -993,7 +993,7 @@ footer{
 			color:#333333;
 			font-family: "LatoMedium";
 		}
-		ul{
+		ul.pdfList{
 			.mp;
 			list-style:none;
 			li{
@@ -1121,6 +1121,40 @@ footer{
 .link-dialog{
 	input[type="text"]{
 		width:99%;
+	}
+}
+
+.videoConatiner{
+	width:716px;
+	height:404px;
+	position:relative;
+	background-color:black;
+	.listVideo{
+		.mp;
+		position:absolute;
+		height:calc(~"100% - 35px");
+		top:0px;
+		right:0px;
+		width:130px;
+		list-style:none;
+		background-color:rgba(255,255,255,0.5);
+		li{
+			padding:10px 0px;
+			cursor:pointer;
+			&.current{
+				background-color:rgba(255,255,255,0.5);
+			}
+			.text{
+				color:white;
+				text-align:center;
+				font-size:14px;
+			}
+			video{
+				display:block;
+				margin:0 auto;
+			}
+
+		}
 	}
 }
 ///=============================================
