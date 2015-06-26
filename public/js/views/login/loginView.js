@@ -2,9 +2,11 @@ define([
     'text!templates/login/LoginTemplate.html',
     'text!templates/login/collapseQuestion.html',
     'text!templates/login/videoElement.html',
+	'./progressBarView',
     'custom',
     'validation'
-], function (RegistrationTemplate, CollapseQuestion, VideoElement, Custom, validation) {
+
+], function (RegistrationTemplate, CollapseQuestion, VideoElement, progressBarView, Custom, validation) {
     var View = Backbone.View.extend({
 
 		el:"#wrapper",
@@ -89,7 +91,7 @@ define([
 				$(this.$el).find(".collapseQuestions").append(_.template(CollapseQuestion)({
 					question:$(e.target).closest(".videoElement").find(".questionText").val(),
 					video:videoName,
-					pdf:self.getFiles($(e.target).closest(".videoElement").find(".left input[type='file']").get(0).files),
+					pdf:self.getFiles($(e.target).closest(".videoElement").find(".left input[type='file']").get(0).files)
 				}));
 				$(this.$el).find(".countQuestion").val(this.countQuestion);
 				$(e.target).closest(".videoElement").hide();
@@ -101,15 +103,48 @@ define([
 			e.preventDefault()
 ;            Backbone.history.navigate("#/home", {trigger: true});
 		},
+
 		save: function(e){
 			var self = this;
 			e.preventDefault();
+			var pb = new progressBarView();
 			var form = document.forms.namedItem("videoForm");
 
-			oData = new FormData(form);
-
-
+			var oData = new FormData(form);
 			var oReq = new XMLHttpRequest();
+
+			oReq.upload.addEventListener("progress", function(evt) {
+				if (evt.lengthComputable) {
+					self.percentComplete = evt.loaded / evt.total;
+					self.percentComplete = parseInt(self.percentComplete * 100);
+					console.log(self.percentComplete);
+
+					if (self.percentComplete === 100) {
+						//remove dialog
+						pb.remove();
+					}
+				}
+			}, false);
+			//============================================================
+			oReq.upload.addEventListener('progress',visualEffectHandler, false);
+
+			function visualEffectHandler(){
+				var value = self.percentComplete
+				$('#progress_bar').val(value);
+
+				$('.progress-value').html(value + '%');
+					var deg = 360 * value / 100;
+				if (value > 50) {
+					$('.progress-pie-chart').addClass('gt-50');
+				}
+
+				$('.ppc-progress-fill').css('transform', 'rotate(' + deg + 'deg)');
+				$('.ppc-percents span').html(value + '%');
+				};
+
+				//============================================================
+
+
 			oReq.open("POST", "/upload", true);
 			oReq.onload = function(oEvent) {
 				if (oReq.status == 201) {
