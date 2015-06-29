@@ -29,6 +29,11 @@ define([
 		login: function(e){
 			e.stopPropagation();
 			$("body").addClass("withLogin");
+			console.log($(".signIn .username .userName")[0]);
+			setTimeout(function(){
+				$(".signIn .username .userName")[0].focus();
+			},550);
+			
 		},
 
         

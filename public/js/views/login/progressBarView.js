@@ -19,14 +19,18 @@ define([
                 modal:true,
                 closeOnEscape: false,
                 appendTo:"#wrapper",
-                dialogClass: "watch-dialog",
+                dialogClass: "progress-dialog",
                 width: 590,
                 height: 390,
                 resizable: false,
                 scroll: false
             });
             return this;
-        }
+        },
+		
+		hide:function(){
+			this.dialog.remove();
+		}
 
 
     });

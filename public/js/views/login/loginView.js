@@ -121,7 +121,7 @@ define([
 
 					if (self.percentComplete === 100) {
 						//remove dialog
-						pb.remove();
+						pb.hide();
 					}
 				}
 			}, false);
