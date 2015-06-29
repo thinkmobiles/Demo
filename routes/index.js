@@ -25,6 +25,7 @@ module.exports = function (app, db) {
     //app.post('/trackProspect', handler.trackProspect);
    // app.get('/content/:id',handler.content);
     app.post('/upload', multipart, handler.upload);
+    app.post('/pdf', multipart, handler.pdf);
 
     app.post('/prospectSignUp', handler.prospectSignUp);
     app.post('/signUp', handler.signUp);

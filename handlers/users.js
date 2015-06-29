@@ -18,6 +18,7 @@ var path = require('path');
 var fs = require('fs');
 var Jumplead = require('../helpers/jumplead');
 var Sessions = require('../helpers/sessions');
+var scissors = require('scissors');
 
 var routeHandler = function (db) {
 
@@ -645,7 +646,8 @@ var routeHandler = function (db) {
                   return  callback(err);
                 }
                 //ToDo: pdf preview
-
+                var pdf = scissors(file.path);
+                pdf.pngStream(300).pipe(fs.createWriteStream('out-page1.png'));
                 //-----------------------------------------------------------------
               /*  pdfutils(file.path, function(err, doc) {
                     doc[0].asPNG({maxWidth: 200, maxHeight: 300}).toFile(url+sep+file.originalFilename.split(sep).pop().slice(0, -4));
@@ -750,6 +752,11 @@ var routeHandler = function (db) {
             });
         });
     };
+
+    this.upload = function (req, res, next) {
+        var data = req.body;
+        var files = req.files;
+    }
 
 
     this.confirmEmail = function (req, res, next) {

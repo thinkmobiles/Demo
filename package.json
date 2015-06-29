@@ -28,6 +28,7 @@
     "oath": "^1.0.0",
     "pdfutils": "^0.3.2",
     "request": "^2.57.0",
+    "scissors": "^0.1.0",
     "stripe": "^3.3.4",
     "supertest": "0.15.0",
     "swig": "1.4.2"
