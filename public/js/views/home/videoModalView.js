@@ -42,10 +42,34 @@ define([
 		},
 
 		showSurvay:function(e){
+			var self = this;
+
+			$(".error").removeClass("error");
+			var hasError = false;
+			$(".questionSection table tr:not(:first)").each(function(){
+				if (!$(this).find(".checked").length){
+					$(this).find(".checkbox").addClass("error");
+					hasError = true;
+				}
+			});
+
+			if (!$(".questionSection .veryImp.checked").length){
+				$(".questionSection .veryImp").addClass("error");
+				hasError = true;
+			}
+			
+			if (hasError)return;
+
+			
 			$(".questionSection").hide();
 			$(".relatedVideo").show();
+			var survey = [];
+			$(".veryImp.checked").each(function(){
+				var index = $(this).closest("table").find("tr").index($(this).closest("tr"))-1;
+				survey.push(self.content.toJSON().content.survey[index]);
+			});
 			$(".relatedVideo").html(_.template(relatedVideo)({
-				videoList:this.content.toJSON().content.survey
+				videoList:survey
 			}
 			));
 		},
