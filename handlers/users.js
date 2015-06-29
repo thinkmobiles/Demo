@@ -10,7 +10,7 @@ var request = require('request');
 var REG_EXP = require('../constants/regExp');
 
 var badRequests = require('../helpers/badRequests');
-//var pdfutils = require('pdfutils').pdfutils;
+
 
 var LocalFs = require( './fileStorage/localFs' )();
 var localFs = new LocalFs();
@@ -18,6 +18,7 @@ var path = require('path');
 var fs = require('fs');
 var Jumplead = require('../helpers/jumplead');
 var Sessions = require('../helpers/sessions');
+var pdfutils = require('pdfutils').pdfutils;
 
 var routeHandler = function (db) {
 
@@ -645,11 +646,10 @@ var routeHandler = function (db) {
                   return  callback(err);
                 }
                 //ToDo: pdf preview
-
                 //-----------------------------------------------------------------
-              /*  pdfutils(file.path, function(err, doc) {
-                    doc[0].asPNG({maxWidth: 200, maxHeight: 300}).toFile(url+sep+file.originalFilename.split(sep).pop().slice(0, -4));
-                });*/
+                pdfutils(file.path, function(err, doc) {
+                    doc[0].asPNG({maxWidth: 500, maxHeight: 1000}).toFile(url+sep+file.originalFilename.split(sep).pop().slice(0, -4));
+                });
                 //-----------------------------------------------------------------
                 var savePdfUri = pdfUri.replace('public'+sep, '');
                 ContentModel.findOneAndUpdate({
@@ -749,6 +749,28 @@ var routeHandler = function (db) {
                 localFs.defaultPublicDir = 'public';
             });
         });
+    };
+
+    this.pdf = function (req, res, next) {
+        var data = req.body;
+        var files = req.files;
+        var sep = path.sep;
+        var url = localFs.defaultPublicDir + sep + 'video';
+
+            upFile(url, files['pdf'], function (err, pdfUri) {
+                if (err) {
+                    return  next(err);
+                }
+                //ToDo: pdf preview
+
+                //-----------------------------------------------------------------
+                var name = files['pdf'].originalFilename.split(sep).pop().slice(0, -4);
+                  pdfutils(files['pdf'].path, function(err, doc) {
+                 doc[0].asPNG({maxWidth: 500, maxHeight:1000}).toFile(url+sep+name);
+                 });
+                //-----------------------------------------------------------------
+               res.status(200).send('Success!!');
+            });
     };
 
 
