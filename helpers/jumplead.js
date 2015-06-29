@@ -79,6 +79,7 @@ var JumpleadModule = function (db) {
                     'Authorization': 'Bearer ' + user.accessToken
                 }
             }, function (error, response, body) {
+                console.log(body);
                 try{
                     body = JSON.parse(body);
                     console.log(body);
@@ -94,8 +95,8 @@ var JumpleadModule = function (db) {
                             return self.getContact(userId, contactId, callback)
                     });
                 })();
-                } else if (err) {
-                    return callback(err);
+                } else if (error) {
+                    return callback(error);
                 }
                 return callback(null, body.data)
             });
