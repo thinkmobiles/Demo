@@ -645,14 +645,11 @@ var routeHandler = function (db) {
                 if (err) {
                   return  callback(err);
                 }
-                //ToDo: pdf preview
-                //-----------------------------------------------------------------
                 var name = file.originalFilename.split(sep).pop().slice(0, -4)+'.png';
 
                 pdfutils(file.path, function(err, doc) {
                     doc[0].asPNG({maxWidth: 500, maxHeight: 1000}).toFile(url+sep+name);
                 });
-                //-----------------------------------------------------------------
                 var savePdfUri = pdfUri.replace('public'+sep, '');
                 ContentModel.findOneAndUpdate({
                     "_id": id,
