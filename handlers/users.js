@@ -45,7 +45,7 @@ var routeHandler = function (db) {
     function validateProspectSignUp(userData, callback) { //used for signUpMobile, signUpWeb;
         var errMessage;
 
-        if (!userData || !userData.email || !userData.firstName || !userData.lastName||!userData.userName) {
+        if (!userData || !userData.email || !userData.firstName || !userData.lastName) {
             return callback(badRequests.NotEnParams({reqParams: ['email', 'pass', 'firstName', 'lastName']}));
         }
 
@@ -278,21 +278,23 @@ var routeHandler = function (db) {
                     if (err) {
                         return cb(err);
                     }
+                    console.log('AFTER validate')
                     cb();
                 });
             },
 
             //create prospect:
             function (cb) {
-                createProspect(options, function (err, user) {
+                createProspect(options, function (err, prospect) {
                     if (err) {
                         return cb(err);
                     }
+                  jumplead.setContact(options.userId, prospect, function (err, contact) {
+                            cb(null, contact);
+                        });
 
-                    cb(null, user);
                 });
             }
-
         ], function (err) {
             if (err) {
                 return next(err);
@@ -362,6 +364,7 @@ var routeHandler = function (db) {
         });
     };
 
+    //First
 //ToDo: use async
     // url = '/:contentId/:ctid'
     this.getMain = function (req, res, next) {
@@ -403,7 +406,7 @@ var routeHandler = function (db) {
         };
 
     this.allContacts = function (req, res, next) {
-        var usrId = mongoose.Types.ObjectId(req.params.id);
+        var usrId = req.params.id;
        jumplead.getAllContacts(usrId, function (err, prospects) {
                     if(err){
                         return next(err);
@@ -641,6 +644,8 @@ var routeHandler = function (db) {
                 if (err) {
                   return  callback(err);
                 }
+                //ToDo: pdf preview
+
                 //-----------------------------------------------------------------
                 //pdfutils(file.path, function(err, doc) {
                 //    doc[0].asPNG({maxWidth: 200, maxHeight: 300}).toFile(url+sep+file.originalFilename.split(sep).pop().slice(0, -4));
@@ -735,7 +740,7 @@ var routeHandler = function (db) {
                             if (err) {
                                 return next(err);
                             }
-                            var url = process.env.HOST + '/#/home/' + id + '/{{ctid}}';
+                            var url = process.env.HOME_PAGE + id + '/{{ctid}}';
                             res.status(201).send({_id: id, url: url});
                             console.log("url: " + url);
                         });

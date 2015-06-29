@@ -2,9 +2,11 @@ define([
     'text!templates/login/LoginTemplate.html',
     'text!templates/login/collapseQuestion.html',
     'text!templates/login/videoElement.html',
+	'./progressBarView',
     'custom',
     'validation'
-], function (RegistrationTemplate, CollapseQuestion, VideoElement, Custom, validation) {
+
+], function (RegistrationTemplate, CollapseQuestion, VideoElement, progressBarView, Custom, validation) {
     var View = Backbone.View.extend({
 
 		el:"#wrapper",
@@ -22,7 +24,8 @@ define([
             "click .login-button": "login",
             "click .uploadContainer.file": "browse",
             "change .uploadContainer.file input[type='file']": "changeFile",
-            "click .uploadContainer.file input[type='file']": "clickOnFile"
+            "click .uploadContainer.file input[type='file']": "clickOnFile",
+			"click .ui-dialog-titlebar-close": "decline"
         },
 
         //reset the data
@@ -88,7 +91,7 @@ define([
 				$(this.$el).find(".collapseQuestions").append(_.template(CollapseQuestion)({
 					question:$(e.target).closest(".videoElement").find(".questionText").val(),
 					video:videoName,
-					pdf:self.getFiles($(e.target).closest(".videoElement").find(".left input[type='file']").get(0).files),
+					pdf:self.getFiles($(e.target).closest(".videoElement").find(".left input[type='file']").get(0).files)
 				}));
 				$(this.$el).find(".countQuestion").val(this.countQuestion);
 				$(e.target).closest(".videoElement").hide();
@@ -100,28 +103,98 @@ define([
 			e.preventDefault()
 ;            Backbone.history.navigate("#/home", {trigger: true});
 		},
+
 		save: function(e){
+			var self = this;
 			e.preventDefault();
+			this.$el.find(".error").removeClass("error");
+			var hasError = false;
+			if (!this.$el.find("textarea[name='desc']").val()){
+				this.$el.find("textarea[name='desc']").addClass("error");
+				hasError = true;
+			}
+			if (!this.$el.find("textarea[name='contact']").val()){
+				this.$el.find("textarea[name='contact']").addClass("error");
+				hasError = true;
+			}
+			
+			if (!this.$el.find(".uploadContainer.file input[name='video']").val()&&!this.$el.find(".uploadContainer.link input[name='video']").val()){
+				this.$el.find(".uploadContainer.file input[name='video']").closest(".uploadContainer").addClass("error");
+				this.$el.find(".uploadContainer.link input[name='video']").closest(".uploadContainer").addClass("error");
+				hasError = true;
+			}
+
+			if (!this.$el.find(".uploadContainer.file input[name='logo']").val()){
+				this.$el.find(".uploadContainer.file input[name='logo']").closest(".uploadContainer").addClass("error");
+				hasError = true;
+			}
+
+			if (!this.$el.find(".uploadContainer input[name='name']").val()){
+				this.$el.find(".uploadContainer input[name='name']").closest(".uploadContainer").addClass("error");
+				hasError = true;
+			}
+			
+			if (hasError){
+				return;
+			}
+			
+			
+
+
+
+			
+			var pb = new progressBarView();
 			var form = document.forms.namedItem("videoForm");
 
-			oData = new FormData(form);
-
-
+			var oData = new FormData(form);
 			var oReq = new XMLHttpRequest();
+
+			oReq.upload.addEventListener("progress", function(evt) {
+				if (evt.lengthComputable) {
+					self.percentComplete = evt.loaded / evt.total;
+					self.percentComplete = parseInt(self.percentComplete * 100);
+					console.log(self.percentComplete);
+
+					if (self.percentComplete === 100) {
+						//remove dialog
+						pb.hide();
+					}
+				}
+			}, false);
+			//============================================================
+			oReq.upload.addEventListener('progress',visualEffectHandler, false);
+
+			function visualEffectHandler(){
+				var value = self.percentComplete
+				$('#progress_bar').val(value);
+
+				$('.progress-value').html(value + '%');
+					var deg = 360 * value / 100;
+				if (value > 50) {
+					$('.progress-pie-chart').addClass('gt-50');
+				}
+
+				$('.ppc-progress-fill').css('transform', 'rotate(' + deg + 'deg)');
+				$('.ppc-percents span').html(value + '%');
+				};
+
+				//============================================================
+
+
 			oReq.open("POST", "/upload", true);
 			oReq.onload = function(oEvent) {
 				if (oReq.status == 201) {
 					try{
 						var res = JSON.parse(oReq.response);
-						$("<span><input type='text' value='"+res.url+"' readonly/></span>").dialog({
+						$("<div><input type='text' value='"+res.url+"' readonly/></div>").dialog({
 							modal:true,
 							closeOnEscape: false,
 							appendTo:"#wrapper",
-							dialogClass: "watch-dialog",
-							width: 625
+							dialogClass: "link-dialog",
+							width: 725
 						});
 						//window.location="/#home";
-						
+						self.$el.find()
 					}
 					catch(e){
 

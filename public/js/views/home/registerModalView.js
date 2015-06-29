@@ -68,7 +68,8 @@ define([
 				phone : this.$el.find("#phone").val(),
 				organization : this.$el.find("#organization").val(),
 				title : this.$el.find("#title").val(),
-				comments : this.$el.find("#comments").val()
+				comments : this.$el.find("#comments").val(),
+				userId: self.content.toJSON().content.userId
             },
                {
                    wait: true,
@@ -83,7 +84,7 @@ define([
 
                    },
                    error: function (err) {
-                       alert(err)
+                       console.log(JSON.stringify(err));
                    }
                });
             /*$.ajax({
@@ -115,7 +116,7 @@ define([
         },
 
 
-        // render template (once! because google maps)
+
         render: function () {
 			 var formString = _.template(modalTemplate)({
              });

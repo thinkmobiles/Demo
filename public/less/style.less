@@ -83,7 +83,7 @@ html,body{
 	position:fixed;
 	top:0px;
 	width:100%;
-	z-index:200;
+	z-index:100;
 	transition: all 0.5s linear;
 	
 
@@ -227,11 +227,12 @@ html,body{
 }
 
 .whatIs{
+	margin-top:-30px;
 	.inner{
 		width:1070px;
 		margin:0 auto;
 		h2{
-			margin-top:90px;
+			margin-top:0px;
 			text-align:center;
 			font-family: "LatoSemiBold";
 			font-size:34px;
@@ -449,7 +450,7 @@ html,body{
 		
 	.inner{
 		position:relative;
-		z-index:100;
+		z-index:50;
 		padding-top:1px;
 	}
 	.bg{
@@ -632,6 +633,9 @@ footer{
   .inner{
 	  width:1070px;
 	  margin:0 auto;
+	  a{
+		    color: #41bef0;
+	  }
 	  >div{
 		  float:left;
 		  width:33.33%;
@@ -753,6 +757,13 @@ footer{
 			.right{
 				.i("link.png");	
 			}	
+		}
+		&.text{
+			.left{
+				input{
+					width:222px;
+				}
+			}
 		}
 		&.long{
 			width:488px;
@@ -990,7 +1001,7 @@ footer{
 			color:#333333;
 			font-family: "LatoMedium";
 		}
-		ul{
+		ul.pdfList{
 			.mp;
 			list-style:none;
 			li{
@@ -1114,3 +1125,138 @@ footer{
   width: 302px;
   border-radius: 0px;
 }
+
+.link-dialog{
+	input[type="text"]{
+		width:99%;
+	}
+}
+
+.videoConatiner{
+	width:716px;
+	height:404px;
+	position:relative;
+	background-color:black;
+	.listVideo{
+		.mp;
+		position:absolute;
+		height:calc(~"100% - 35px");
+		top:0px;
+		right:0px;
+		width:130px;
+		list-style:none;
+		background-color:rgba(255,255,255,0.5);
+		overflow:auto;
+		
+		li{
+			padding:10px 0px;
+			cursor:pointer;
+			&.current{
+				background-color:rgba(255,255,255,0.5);
+			}
+			.text{
+				color:white;
+				text-align:center;
+				font-size:14px;
+			}
+			video{
+				display:block;
+				margin:0 auto;
+			}
+			&.videoTitle{
+				padding-top:0px;
+			}
+
+		}
+	}
+}
+///=============================================
+/* Pie Chart */
+.bar_container{
+  h2{
+	text-align: center;
+	margin-top: -15px;
+  }
+  h4{
+	text-align: center;
+	margin-top: -30px;
+  }
+}
+
+.progress-pie-chart {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background-color: #E5E5E5;
+  position: relative;
+}
+.progress-pie-chart.gt-50 {
+  background-color: #81CE97;
+}
+
+.ppc-progress {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  left: 0px;
+  top: 0px;
+  width: 180px;
+  height: 180px;
+  clip: rect(0, 180px, 180px, 90px);
+}
+.ppc-progress .ppc-progress-fill {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  left: 0px;
+  top: 0px;
+  width: 180px;
+  height: 180px;
+  clip: rect(0, 90px, 180px, 0);
+  background: #81CE97;
+  transform: rotate(60deg);
+}
+.gt-50 .ppc-progress {
+  clip: rect(0, 90px, 180px, 0);
+}
+.gt-50 .ppc-progress .ppc-progress-fill {
+  clip: rect(0, 180px, 180px, 90px);
+  background: #E5E5E5;
+}
+
+.ppc-percents {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  left: 15px;
+  top: 15px;
+  width: 150px;
+  height: 150px;
+  background: #fff;
+  text-align: center;
+  display: table;
+}
+.ppc-percents span {
+  display: block;
+  font-size: 2em;
+  font-family: LatoMedium;
+  color: rgba(116, 114, 109, 0.91);
+}
+
+.pcc-percents-wrapper {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.progress-pie-chart {
+  margin: 50px auto 0;
+}
+
+.bar-border {
+   border: 1px solid rgba(42, 75, 87, 0.4);
+   width: 195px;
+   height: 195px;
+   margin-top: -188px;
+   margin-left: 179px;
+   border-radius: 50%;
+ }

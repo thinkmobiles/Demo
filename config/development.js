@@ -9,3 +9,5 @@ process.env.DB_HOST = '192.168.88.250';
 process.env.DB_NAME = 'demoDB';
 process.env.CLIENT_SECRET = "sCkxGw1dWL4j1QrOnNmT6ZOv9feBqFhUbe1uTg4Y";
 process.env.CLIENT_ID = "FcDOCBsnZ2TtKbHTGULY";
+process.env.REDIRECT_URI = "http://demo.com:8838/redirect";
+process.env.HOME_PAGE = "http://demo.com:8838/#/home/";

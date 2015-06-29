@@ -12,14 +12,14 @@ define([
         view: null,
 
         routes: {
-            "login"                     :  "login",
+            "upload"                     :  "upload",
             "home(/:videoId/:userId)"           :  "home",
             "registration"              :  "registration",
             "*any"                      :  "any"
         },
 
         needAuthorize: [
-            'login',
+            'upload',
             'main'
 
 
@@ -106,7 +106,7 @@ define([
         any: function () {
             this.loadWrapperView('home');
         },
-        login: function () {
+        upload: function () {
             this.loadWrapperView('login');
         },
         registration: function () {

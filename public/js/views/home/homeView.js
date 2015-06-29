@@ -28,6 +28,9 @@ define([
 
 		changeField:function(e){
 			var self = this;
+			if (e.keyCode === 13){
+				self.$el.find(".lock.active").click();
+			}
 			if (self.$el.find(".signIn .userName").val()){
 				self.$el.find(".signIn .username .inp").addClass("valid");
 			}else{
@@ -111,6 +114,12 @@ define([
 
         render: function () {
             this.$el.html(_.template(HomeTemplate));
+			if (this.options&&this.options.videoId&&this.options.userId){
+				if(this.modal){
+					this.modal.undelegateEvents();
+				}
+				this.modal =new ModalView(this.options);
+			}
             return this;
         }
 
