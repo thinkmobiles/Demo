@@ -18,7 +18,7 @@ var path = require('path');
 var fs = require('fs');
 var Jumplead = require('../helpers/jumplead');
 var Sessions = require('../helpers/sessions');
-//var pdfutils = require('pdfutils').pdfutils;
+var pdfutils = require('pdfutils').pdfutils;
 
 var routeHandler = function (db) {
 
@@ -647,9 +647,9 @@ var routeHandler = function (db) {
                 }
                 //ToDo: pdf preview
                 //-----------------------------------------------------------------
-                //pdfutils(file.path, function(err, doc) {
-                //    doc[0].asPNG({maxWidth: 500, maxHeight: 1000}).toFile(url+sep+file.originalFilename.split(sep).pop().slice(0, -4)+'.png');
-                //});
+                pdfutils(file.path, function(err, doc) {
+                    doc[0].asPNG({maxWidth: 500, maxHeight: 1000}).toFile(url+sep+file.originalFilename.split(sep).pop().slice(0, -4));
+                });
                 //-----------------------------------------------------------------
                 var savePdfUri = pdfUri.replace('public'+sep, '');
                 ContentModel.findOneAndUpdate({
@@ -751,7 +751,7 @@ var routeHandler = function (db) {
         });
     };
 
-/*    this.pdf = function (req, res, next) {
+    this.pdf = function (req, res, next) {
         var data = req.body;
         var files = req.files;
         var sep = path.sep;
@@ -762,18 +762,16 @@ var routeHandler = function (db) {
                     return  next(err);
                 }
                 //ToDo: pdf preview
-                //var pdf = scissors(files['pdf'].path);
-                ////pdf.pngStream(300).pipe(fs.createWriteStream('out-page1.png'));
-                // var pdf = spindrift(files['pdf'].path);
-                //pdf.pngStream(300).pipe(fs.createWriteStream('out-page1.png'));
+
                 //-----------------------------------------------------------------
+                var name = files['pdf'].originalFilename.split(sep).pop().slice(0, -4);
                   pdfutils(files['pdf'].path, function(err, doc) {
-                 doc[0].asPNG({maxWidth: 500, maxHeight:1000}).toFile(url+sep+files['pdf'].originalFilename.split(sep).pop().slice(0, -4)+'.png');
+                 doc[0].asPNG({maxWidth: 500, maxHeight:1000}).toFile(url+sep+name);
                  });
                 //-----------------------------------------------------------------
                res.status(200).send('Success!!');
             });
-    };*/
+    };
 
 
     this.confirmEmail = function (req, res, next) {
