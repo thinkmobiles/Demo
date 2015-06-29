@@ -21,6 +21,7 @@ define([
 
         initialize: function (options) {
 			this.content = options.content;
+			this.currentSurvay = [];
             this.render();
         },
 
@@ -28,9 +29,9 @@ define([
 			var index = $(e.target).closest("li").data("id");
 			$(e.target).closest("ul").find("li.current").removeClass("current");
 			$(e.target).closest("ul").find("li[data-id='"+index+"']").addClass("current");
-			this.$el.find(".videoConatiner>video").attr("src",this.content.toJSON().content.survey[index].videoUri);
+			this.$el.find(".videoConatiner>video").attr("src",this.currentSurvay[index].videoUri);
 			this.$el.find(".pdfList").html(_.template(pdfTemplate)({
-				pdfUri:this.content.toJSON().content.survey[index].pdfUri
+				pdfUri:this.currentSurvay[index].pdfUri
 			}));
 
 			
@@ -63,13 +64,12 @@ define([
 			
 			$(".questionSection").hide();
 			$(".relatedVideo").show();
-			var survey = [];
 			$(".veryImp.checked").each(function(){
 				var index = $(this).closest("table").find("tr").index($(this).closest("tr"))-1;
-				survey.push(self.content.toJSON().content.survey[index]);
+				self.currentSurvay.push(self.content.toJSON().content.survey[index]);
 			});
 			$(".relatedVideo").html(_.template(relatedVideo)({
-				videoList:survey
+				videoList:self.currentSurvay
 			}
 			));
 		},
