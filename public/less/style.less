@@ -83,7 +83,7 @@ html,body{
 	position:fixed;
 	top:0px;
 	width:100%;
-	z-index:200;
+	z-index:100;
 	transition: all 0.5s linear;
 	
 
@@ -227,11 +227,12 @@ html,body{
 }
 
 .whatIs{
+	margin-top:-30px;
 	.inner{
 		width:1070px;
 		margin:0 auto;
 		h2{
-			margin-top:90px;
+			margin-top:0px;
 			text-align:center;
 			font-family: "LatoSemiBold";
 			font-size:34px;
@@ -449,7 +450,7 @@ html,body{
 		
 	.inner{
 		position:relative;
-		z-index:100;
+		z-index:50;
 		padding-top:1px;
 	}
 	.bg{
@@ -756,6 +757,13 @@ footer{
 			.right{
 				.i("link.png");	
 			}	
+		}
+		&.text{
+			.left{
+				input{
+					width:222px;
+				}
+			}
 		}
 		&.long{
 			width:488px;
@@ -1138,6 +1146,8 @@ footer{
 		width:130px;
 		list-style:none;
 		background-color:rgba(255,255,255,0.5);
+		overflow:auto;
+		
 		li{
 			padding:10px 0px;
 			cursor:pointer;
@@ -1152,6 +1162,9 @@ footer{
 			video{
 				display:block;
 				margin:0 auto;
+			}
+			&.videoTitle{
+				padding-top:0px;
 			}
 
 		}

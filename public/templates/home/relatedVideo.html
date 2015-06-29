@@ -8,7 +8,7 @@
 		<video width="90" height="50" class="mainVideo" src="<%= video.videoUri %>" type="video/mp4" >
 		</video>
 	  </li>
-	   <li <%if (index==0){%>class="current"<%}%> data-id="<%=index%>">
+	   <li class="videoTitle<%if (index==0){%> current<%}%>" data-id="<%=index%>">
 		 <div class="text"><%= video.question %></div>
 	  </li>
 	  <%})%>
