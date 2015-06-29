@@ -18,7 +18,7 @@
   <h3>Related files:</h3>
   <ul class="pdfList">
 	<%_.forEach(videoList[0].pdfUri,function(url){%>
-	<li><a href="<%=url%>" target="_blank"><%=url.split("\\").pop().split("/").pop()%></a></li>
+	<li><a href="<%=url%>" target="_blank"><%=url.split("\\").pop().split("/").pop()%></a><img class="preview" height="110" src="<%=url.replace('.pdf','.png')%>" alt="<%=url.split("\\").pop().split("/").pop()%>"/></li>
 	<%})%>
   </ul>
 </div>
