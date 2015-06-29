@@ -107,6 +107,42 @@ define([
 		save: function(e){
 			var self = this;
 			e.preventDefault();
+			this.$el.find(".error").removeClass("error");
+			var hasError = false;
+			if (!this.$el.find("textarea[name='desc']").val()){
+				this.$el.find("textarea[name='desc']").addClass("error");
+				hasError = true;
+			}
+			if (!this.$el.find("textarea[name='contact']").val()){
+				this.$el.find("textarea[name='contact']").addClass("error");
+				hasError = true;
+			}
+			
+			if (!this.$el.find(".uploadContainer.file input[name='video']").val()&&!this.$el.find(".uploadContainer.link input[name='video']").val()){
+				this.$el.find(".uploadContainer.file input[name='video']").closest(".uploadContainer").addClass("error");
+				this.$el.find(".uploadContainer.link input[name='video']").closest(".uploadContainer").addClass("error");
+				hasError = true;
+			}
+
+			if (!this.$el.find(".uploadContainer.file input[name='logo']").val()){
+				this.$el.find(".uploadContainer.file input[name='logo']").closest(".uploadContainer").addClass("error");
+				hasError = true;
+			}
+
+			if (!this.$el.find(".uploadContainer input[name='name']").val()){
+				this.$el.find(".uploadContainer input[name='name']").closest(".uploadContainer").addClass("error");
+				hasError = true;
+			}
+			
+			if (hasError){
+				return;
+			}
+			
+			
+
+
+
+			
 			var pb = new progressBarView();
 			var form = document.forms.namedItem("videoForm");
 

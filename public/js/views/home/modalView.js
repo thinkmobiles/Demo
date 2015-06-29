@@ -51,7 +51,8 @@ define([
         render: function () {
 			 var formString = _.template(modalTemplate)({
 				 name:this.content.toJSON().content.name,
-				 contact:this.content.toJSON().contact
+				 contact:this.content.toJSON().contact,
+				 logoUri:this.content.toJSON().content.logoUri
              });
             this.dialog = $(formString).dialog({
 				modal:true,
