@@ -1,9 +1,8 @@
 define([
     'text!templates/home/videoModalTemplate.html',
     'text!templates/home/relatedVideo.html',
-	    'text!templates/home/pdfTemplate.html',
-    "models/userModel"
-], function ( modalTemplate, relatedVideo, pdfTemplate,  UserModel) {
+	    'text!templates/home/pdfTemplate.html'
+], function ( modalTemplate, relatedVideo, pdfTemplate) {
 
     var View;
 
@@ -12,7 +11,6 @@ define([
         events: {
             "click .pdf": "trackDocument",
             "click .ui-dialog-titlebar-close":"closeDialog",
-            "click .continue":"register",
 			"click .questionSection table .checkbox" : "checkedQuestion",
 			"ended .mainVideo":"endedMainVideo",
 			"click .showSurvay":"showSurvay",
@@ -96,6 +94,7 @@ define([
 
         trackDocument: function (e) {
             $(e.target).attr('href');
+
         },
 
         sendAjax: function(){
@@ -138,28 +137,6 @@ define([
 
                 }
             });
-        },
-
-        register: function(){
-            var userModel = new UserModel();
-            userModel.save({
-                    email : this.$el.find("#email").val(),
-                    firstName : this.$el.find("#fname").val(),
-                    lastName : this.$el.find("#lname").val(),
-                    phone : this.$el.find("#phone").val(),
-                    organization : this.$el.find("#organization").val(),
-                    title : this.$el.find("#title").val(),
-                    comments : this.$el.find("#comments").val()
-                },
-                {
-                    wait: true,
-                    success: function (model, response) {
-                        alert("OK!")
-                    },
-                    error: function (model, xhr) {
-                        self.errorNotification(xhr);
-                    }
-                });
         },
 
         closeDialog:function(e){

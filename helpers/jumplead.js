@@ -110,9 +110,6 @@ var JumpleadModule = function (db) {
             }else if (!user) {
                 return callback(new Error(404, {err: 'User not found'}));
             }
-        var background = 'Phone: '+(contact.phone?contact.phone:'-') +"\n" +
-            "Title: " + (contact.title?contact.title:'-')+"\n" +
-            "Comments: " + (contact.comments?contact.comments:'-');
             var body = {
                 data:{
                     "first_name": contact.firstName,
@@ -132,12 +129,6 @@ var JumpleadModule = function (db) {
                 body: body
 
             }, function (error, response, body) {
-                try{
-                    body = JSON.parse(body);
-                    console.log(body);
-                }catch(e){
-                    console.log(e);
-                }
                 console.log(body);
                 if (body.status == '401') {
                     return (function(){

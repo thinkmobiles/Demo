@@ -177,7 +177,10 @@ var routeHandler = function (db) {
                 return next(err);
             }
             if(!obj){
-                res.status(401).send('Unauthorized')
+                var error = new Error();
+                error.message = "Unauthorized";
+                error.status = 401;
+                return next(error);
             }
             res.status(200).send(obj);
 
@@ -187,7 +190,12 @@ var routeHandler = function (db) {
     this.login = function (req, res, next) {
         var options = req.body;
         if(!options.userName || !options.pass)
-          return  res.status(401).send({ error: "Username and password is required"});
+        {
+            var error = new Error();
+            error.message = "Username and password is required";
+            error.status = 401;
+            return next(error);
+        }
 
         var userName = options.userName;
         var pass = getEncryptedPass(options.pass);
@@ -197,7 +205,10 @@ var routeHandler = function (db) {
             }
 
             if(!user){
-              return  res.status(500).send({error: "Can\'t find User"});
+                var error = new Error();
+                error.message = "Can\'t find User";
+                error.status = 404;
+                return next(error);
             }
 
             if(user.pass === pass ){
@@ -207,7 +218,10 @@ var routeHandler = function (db) {
                     user: user
                  });
             } else{
-               return res.status(401).send({ error: "Incorrect password" });
+                var error = new Error();
+                error.message = "Incorrect password";
+                error.status = 401;
+                return next(error);
             }
         });
     };
@@ -219,8 +233,12 @@ var routeHandler = function (db) {
 
     this.avatar = function (req, res, next) {
         var userName = req.params.userName;
-        if(!userName)
-            return  res.status(401).send({ error: "UserName is required"});
+        if (!userName) {
+        var error = new Error();
+        error.message = "UserName is required";
+        error.status = 401;
+        return next(error);
+    }
 
         UserModel.findOne({userName: userName}, function (err, user) {
             if(err) {
@@ -277,7 +295,7 @@ var routeHandler = function (db) {
                         return cb(err);
                     }
                     console.log('AFTER validate')
-                    cb();
+                    cb(null, true);
                 });
             },
 
@@ -288,19 +306,25 @@ var routeHandler = function (db) {
                         return cb(err);
                     }
                   jumplead.setContact(options.userId, prospect, function (err, contact) {
+                            if(err) {
+                                cb(err);
+                            }
+
                             cb(null, contact);
                         });
 
                 });
             }
-        ], function (err) {
+        ], function (err, rezult) {
             if (err) {
                 return next(err);
             }
+            var contact = rezult[1];
+            console.log('contact.id');
+            console.log(contact.id);
 
             res.status(201).send({
-                success: 'success signUp',
-                message: 'Thank you for register. Please check your email and verify account'
+               id: contact.id
             });
         });
     };
@@ -329,7 +353,10 @@ var routeHandler = function (db) {
                     return next(err);
                 }
                 if(!foundContent){
-                    return next(new Error(404, {message:'Content Not Found'}));
+                    var error = new Error();
+                    error.message = 'Content Not Found';
+                    error.status = 404;
+                    return next(error);
                 }
                 content = foundContent;
 
@@ -338,7 +365,10 @@ var routeHandler = function (db) {
                         return next(err);
                     }
                     if(!user){
-                        return next('User Not Found');
+                        var error = new Error();
+                        error.message = 'User Not Found';
+                        error.status = 404;
+                        return next(error);
                     }
                     jumplead.getContact(user._id, prospectId, function (err, prospect) {
                         if(err){
