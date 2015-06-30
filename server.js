@@ -77,7 +77,7 @@ db.once('open', function() {
 
     app.use(session({
         name: 'Demo',
-        secret: '1q2w3e4r5tdhgkdfhgejflkejgkdlgh8j0jge4547hh',
+        secret: '1q2w3e4r5tdhgkdfhgejflkejghylgh8j0jge4547hh',
         resave: false,
         saveUninitialized: false,
         store: new MemoryStore(sessionConfig)

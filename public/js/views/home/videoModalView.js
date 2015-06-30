@@ -10,6 +10,7 @@ define([
     View = Backbone.View.extend({
         el:"#wrapper",
         events: {
+            "click .pdf": "trackDocument",
             "click .ui-dialog-titlebar-close":"closeDialog",
             "click .continue":"register",
 			"click .questionSection table .checkbox" : "checkedQuestion",
@@ -92,6 +93,11 @@ define([
             console.log(time_ranges);
 
         },
+
+        trackDocument: function (e) {
+            $(e.target).attr('href');
+        },
+
         sendAjax: function(){
             var video =this.$el.find(".mainVideo")[0];
             var time_ranges = video.played;

@@ -1,4 +1,4 @@
 <%_.forEach(pdfUri,function(url){%>
-<li><a href="<%=url%>" target="_blank"><%=url.split("\\").pop().split("/").pop()%></a>
-</li>
+<%})%><li><a href="<%=url%>" target="_blank" class="pdf"><%=url.split("\\").pop().split("/").pop()%></a>
+    <img class="preview" height="110" src="<%=url.replace('.pdf','.png')%>" alt="<%=url.split('\\').pop().split('/').pop()%>"/></li>
 <%})%>

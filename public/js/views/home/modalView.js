@@ -18,10 +18,15 @@ define([
         initialize: function (options) {
 			this.modal = null;
 			this.videoModal = null;
-			var videoId = options?options.videoId:"55800aadcb7bb82c1f000002";
-			var userId = options?options.userId:"55800aadcb7bb82c1f000002";
+			var videoId = options&&options.videoId?options.videoId:"55800aadcb7bb82c1f000002";
+			var userId = options&&options.userId?options.userId:"55800aadcb7bb82c1f000002";
 			this.content = new ContentModel({_id:videoId, userId:userId});
-			this.content.fetch();
+			this.content.fetch({
+				error:function(collection,response,option){
+					App.notification(response.responseJSON.error);
+					console.log(response);
+				}
+			});
 			this.listenTo(this.content, 'change', this.render);
             //this.render();
         },

@@ -262,9 +262,6 @@ var routeHandler = function (db) {
                 return next(err);
             }
             res.status(201).send('User created');
-            //res.setHeader('Access-Control-Allow-Origin', '*');
-
-            //res.redirect(301, 'https://account.mooloop.com/oauth/authorize?response_type=code&client_id=FcDOCBsnZ2TtKbHTGULY&redirect_uri=http://demo.com:8838/redirect&scope=jumplead.contacts');
         });
     };
 
@@ -319,53 +316,6 @@ var routeHandler = function (db) {
         });
     };
 
-    function refreshToken (userId, accessToken, refreshToken, callback){
-        request.get({
-            url: 'https://app.jumplead.com/api/v1/contacts',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + accessToken
-            }
-        }, function (error, response, body) {
-            if (!body.data || error) {
-                request.post({
-                    url: 'https://account.mooloop.com/oauth/access_token',
-                    headers: {
-                        'content-type': 'application/json'
-                    },
-                    form: {
-                        code: code,
-                        client_id: "FcDOCBsnZ2TtKbHTGULY",
-                        client_secret: "sCkxGw1dWL4j1QrOnNmT6ZOv9feBqFhUbe1uTg4Y",
-                        refresh_token: refreshToken,
-                        redirect_uri: "http://demo.com:8838/redirect",
-                        grant_type: "refresh_token"
-
-                    }
-                }, function (error, response, body1) {
-                    try {
-                        body1 = JSON.parse(body1);
-                    } catch (e) {
-                    }
-                    var accessToken = body1.access_token;
-                    var refreshToken = body1.refresh_token;
-                    UserModel.findByIdAndUpdate(userId, {$set: {
-                        accessToken: accessToken,
-                        refreshToken: refreshToken
-                    }}, function (err, foundUser) {
-                        if (err) {
-                            return callback(err);
-                        }
-                        return callback(null);
-                    });
-                });
-            }else{
-              return  callback(null);
-            }
-        });
-    };
-
-    //First
 //ToDo: use async
     // url = '/:contentId/:ctid'
     this.getMain = function (req, res, next) {
@@ -379,13 +329,16 @@ var routeHandler = function (db) {
                     return next(err);
                 }
                 if(!foundContent){
-                    return next('Content Not Found');
+                    return next(new Error(404, {message:'Content Not Found'}));
                 }
                 content = foundContent;
 
                 UserModel.findById(content.userId , function (err, user) {
                     if (err) {
                         return next(err);
+                    }
+                    if(!user){
+                        return next('User Not Found');
                     }
                     jumplead.getContact(user._id, prospectId, function (err, prospect) {
                         if(err){
@@ -454,12 +407,12 @@ var routeHandler = function (db) {
 
     this.trackDocument = function (req, res, next) {
         var data = req.body;
-        var userId = req.body.userId;
-        var contentId = req.body.contentId;
+        var userId = data.userId;
+        var contentId = data.contentId;
         TrackModel.findOneAndUpdate({
             "userId": userId,
             "contentId": contentId
-        }, {$addToSet: {documents: data}}, function (err) {
+        }, {$addToSet: {"documents.documentId": data.documentId}}, function (err) {
             if (err) {
                 return next(err);
             }
@@ -645,12 +598,11 @@ var routeHandler = function (db) {
                 if (err) {
                   return  callback(err);
                 }
-                //ToDo: pdf preview
-                //-----------------------------------------------------------------
+                var name = file.originalFilename.split(sep).pop().slice(0, -4)+'.png';
+
                 pdfutils(file.path, function(err, doc) {
-                    doc[0].asPNG({maxWidth: 500, maxHeight: 1000}).toFile(url+sep+file.originalFilename.split(sep).pop().slice(0, -4));
+                    doc[0].asPNG({maxWidth: 500, maxHeight: 1000}).toFile(url+sep+name);
                 });
-                //-----------------------------------------------------------------
                 var savePdfUri = pdfUri.replace('public'+sep, '');
                 ContentModel.findOneAndUpdate({
                     "_id": id,
@@ -764,7 +716,7 @@ var routeHandler = function (db) {
                 //ToDo: pdf preview
 
                 //-----------------------------------------------------------------
-                var name = files['pdf'].originalFilename.split(sep).pop().slice(0, -4);
+                var name = files['pdf'].originalFilename.split(sep).pop().slice(0, -4)+'.png';
                   pdfutils(files['pdf'].path, function(err, doc) {
                  doc[0].asPNG({maxWidth: 500, maxHeight:1000}).toFile(url+sep+name);
                  });
