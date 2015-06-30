@@ -12,8 +12,8 @@ define([
         view: null,
 
         routes: {
-            "upload"                     :  "upload",
-            "home(/:videoId/:userId)"           :  "home",
+            "upload"                    :  "upload",
+            "home(/:videoId/:userId)"   :  "home",
             "registration"              :  "registration",
             "*any"                      :  "any"
         },
@@ -21,8 +21,6 @@ define([
         needAuthorize: [
             'upload',
             'main'
-
-
         ],
 
         redirectWhenAuthorize: [
@@ -107,13 +105,16 @@ define([
             this.loadWrapperView('home');
         },
         upload: function () {
-            this.loadWrapperView('login');
+            this.loadWrapperView('upload');
         },
         registration: function () {
             this.loadWrapperView('registration');
         },
         home: function (videoId, userId) {
-            this.loadWrapperView('home',{videoId:videoId, userId:userId});
+            this.loadWrapperView('home',{
+                videoId:videoId,
+                userId:userId
+            });
         }
     });
 
