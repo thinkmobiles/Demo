@@ -92,7 +92,6 @@ define([
                 url: "/trackUser",
                 data: JSON.stringify(videoData),
                 contentType: "application/json",
-
                 success: function (msg) {
                     if (msg) {
                         console.log('Successfully send')

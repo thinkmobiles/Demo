@@ -407,12 +407,12 @@ var routeHandler = function (db) {
 
     this.trackDocument = function (req, res, next) {
         var data = req.body;
-        var userId = req.body.userId;
-        var contentId = req.body.contentId;
+        var userId = data.userId;
+        var contentId = data.contentId;
         TrackModel.findOneAndUpdate({
             "userId": userId,
             "contentId": contentId
-        }, {$addToSet: {documents: data}}, function (err) {
+        }, {$addToSet: {"documents.documentId": data.documentId}}, function (err) {
             if (err) {
                 return next(err);
             }
