@@ -647,8 +647,8 @@ footer{
 		  }
 		  h2.logo{
 			  .mp;
-			  margin-top:95px;
-			  margin-bottom:37px;
+			  margin-top:72px;
+			  margin-bottom:61px;
 			  .lh(39px)
 		  }
 		  ul{
@@ -1010,9 +1010,22 @@ footer{
 				background-position:0px 50%;
 				float: left;
 				margin-right: 30px;
+				position:relative;
 				a{
 					font-size:14px;
 					color:#012cb9;
+				}
+				img.preview{
+					display:none;
+					position: absolute;
+					top: -110px;
+					left: -28px;
+					margin-left: -29px;
+				}
+				&:hover{
+					img.preview{
+						display:block;
+					}
 				}
 			}
 		}
