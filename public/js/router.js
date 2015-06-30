@@ -14,6 +14,7 @@ define([
         routes: {
             "upload"                    :  "upload",
             "home(/:videoId/:userId)"   :  "home",
+			"watchVideo(/:videoId/:userId)" :  "watchVideo",
             "registration"              :  "registration",
             "*any"                      :  "any"
         },
@@ -43,7 +44,7 @@ define([
         },
 
         // load and create view if is exist
-        loadWrapperView: function (name, params) {
+        loadWrapperView: function (name, params, callback) {
             var WrongRout = null;
 			var self = this;
             // show only permitted pages
@@ -75,6 +76,7 @@ define([
             var self = this;
             require(['views/' + name + '/' + name + 'View'], function (View) {
                 self.changeWrapperView(new View(params));
+				if (callback)callback();
             });
         },
 
@@ -94,6 +96,21 @@ define([
             }
         },
 
+     showModalView: function (name, params) {
+			var self = this;
+            require(['views/modal/' + name + 'View'], function (View) {
+				if (!self.wrapperView) {
+					self.loadWrapperView('home',{},function(){
+						new View(params);
+					});
+				}
+
+	
+            });
+			
+        },
+
+		
         main: function (page) {
             if (page) page = parseInt(page);
             this.loadWrapperView('main', {
@@ -115,6 +132,9 @@ define([
                 videoId:videoId,
                 userId:userId
             });
+        },
+			watchVideo: function (videoId, userId) {
+            this.showModalView('watchVideo',{videoId:videoId, userId:userId});
         }
     });
 
