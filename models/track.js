@@ -11,8 +11,8 @@ module.exports = (function () {
           //userId: {type: ObjectId, required: true, unique: true},
           //companyId: {type: ObjectId, unique: true},
 
-          userId: {type: String, required: true, unique: true},
-          companyId: {type: String, unique: true},
+          userId: {type: String},
+          companyId: {type: String},
         questions:[{
             _id: false,
             questionId: {type: String},
