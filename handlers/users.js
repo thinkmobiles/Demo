@@ -329,7 +329,7 @@ var routeHandler = function (db) {
                     return next(err);
                 }
                 if(!foundContent){
-                    return next('Content Not Found');
+                    return next(new Error(404, {message:'Content Not Found'}));
                 }
                 content = foundContent;
 
