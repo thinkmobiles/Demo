@@ -197,10 +197,14 @@ define([
 						self.$el.find()
 					}
 					catch(e){
-
+						App.notification(e);
 					}
 				} else {
-					alert("Error");
+					try{
+						App.notification(JSON.parse(oReq.responseText).error);
+					}catch(e){
+						App.notification();
+					}
 				}
 			};
 
