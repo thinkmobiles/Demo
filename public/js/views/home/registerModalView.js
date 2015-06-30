@@ -1,8 +1,8 @@
 define([
     'text!templates/home/registerModalTemplate.html',
 	'views/home/videoModalView',
-	 "models/userModel"
-], function ( modalTemplate, VideoModalView, UserModel) {
+	 "models/prospectModel"
+], function ( modalTemplate, VideoModalView, ProspectModel) {
 
     var View;
 	
@@ -22,7 +22,7 @@ define([
 
 		register: function(){
 			var self = this;
-			var userModel = new UserModel();
+			var prospectModel = new ProspectModel();
 			var isError = false;
 			this.$el.find(".error").removeClass("error");
 			if (!this.$el.find("#email").val()){
@@ -61,7 +61,7 @@ define([
 			
 
 			if (isError)return;
-			userModel.save({
+			prospectModel.save({
 				email : this.$el.find("#email").val(),
 				firstName : this.$el.find("#fname").val(),
 				lastName : this.$el.find("#lname").val(),
@@ -78,6 +78,11 @@ define([
 					   if(self.videoModal){
 						   self.videoModal.undelegateEvents();
 					   }
+
+					   var url = window.location.hash;
+					   var id = response.body.id;
+					   var navUrl = url.slice(1).split('/').pop().join('/')+'/'+id;
+					   Backbone.navigate(navUrl, {trigger: false, replace: true});
 					   self.videoModal =new VideoModalView({
 						   content:self.content
 					   });

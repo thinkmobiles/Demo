@@ -293,14 +293,13 @@ var routeHandler = function (db) {
 
                 });
             }
-        ], function (err) {
+        ], function (err, contact) {
             if (err) {
                 return next(err);
             }
 
             res.status(201).send({
-                success: 'success signUp',
-                message: 'Thank you for register. Please check your email and verify account'
+               id: contact.id
             });
         });
     };
