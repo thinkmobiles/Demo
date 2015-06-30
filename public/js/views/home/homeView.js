@@ -1,5 +1,5 @@
 define([
-    'text!templates/home/HomeTemplate.html',
+    'text!templates/home/homeTemplate.html',
 	'views/home/modalView',
 	'custom'
 ], function (HomeTemplate, ModalView, Custom) {

@@ -1,5 +1,5 @@
 define([
-    'text!templates/main/MainTemplate.html',
+    'text!templates/main/mainTemplate.html',
     'views/map/mapView',
     'views/map/markerView',
     'collections/devicesCollection',

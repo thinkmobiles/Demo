@@ -22,7 +22,6 @@ require.config({
     },
     shim: {
         'ajaxForm': ['jQuery'],
-        'Bootstrap': ['jQuery'],
         'Backbone': ['Underscore', 'jQuery'],
         'jQueryUI':['jQuery'],
         'app': ['Backbone', 'less','jQueryUI']

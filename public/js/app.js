@@ -15,53 +15,6 @@ define([
             tariffPlans: null
         });
 
-        // get time from server
-        function getDateTime() {
-            $.ajax({
-                url: '/now',
-                type: "GET",
-                dataType: 'json',
-                success: function (data) {
-                    App.sessionData.set({
-                        date: new Date(data.now)
-                    });
-                },
-                error: function (err) {
-                    App.error(err);
-                }
-            });
-        }
-
-        // get plans from server
-        function getPlans() {
-            if (App.sessionData.get('tariffPlans')) {
-                return
-            }
-            $.ajax({
-                url: '/tariffPlans',
-                type: "GET",
-                dataType: 'json',
-                success: function (data) {
-                    App.sessionData.set({
-                        tariffPlans: data
-                    });
-                },
-                error: function (err) {
-                    App.error(err);
-                }
-            });
-        }
-
-        //// get date from server in intervals
-        //setInterval(getDateTime, 1000 * 60 * 50);
-        //
-        //App.sessionData.on('change:authorized', function () {
-        //    if (App.sessionData.get('authorized')) {
-        //        getPlans();
-        //        getDateTime();
-        //    }
-        //});
-
         // create router
         appRouter = new Router();
 
