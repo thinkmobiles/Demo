@@ -57,7 +57,15 @@ require(['app'], function (app) {
             }
         }
     };
-
+	var inter = 0;
+	App.notification = function(text){
+		if (inter)clearInterval(inter);
+		$(".notification").show(100).text(text||"Error");
+		inter = setTimeout(function(){
+			$(".notification").hide(100);
+		},5000);
+	}
+	
     App.updateUser = function (callback) {  //update user data when subscription is change
         $.ajax({
             url: "/currentUser",
