@@ -277,7 +277,7 @@ var routeHandler = function (db) {
                         return cb(err);
                     }
                     console.log('AFTER validate')
-                    cb();
+                    cb(null, true);
                 });
             },
 
@@ -288,15 +288,22 @@ var routeHandler = function (db) {
                         return cb(err);
                     }
                   jumplead.setContact(options.userId, prospect, function (err, contact) {
+                            if(err) {
+                                cb(err);
+                            }
+
                             cb(null, contact);
                         });
 
                 });
             }
-        ], function (err, contact) {
+        ], function (err, rezult) {
             if (err) {
                 return next(err);
             }
+            var contact = rezult[1];
+            console.log('contact.id');
+            console.log(contact.id);
 
             res.status(201).send({
                id: contact.id

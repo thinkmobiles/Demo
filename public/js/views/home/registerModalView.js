@@ -80,9 +80,10 @@ define([
 					   }
 
 					   var url = window.location.hash;
-					   var id = response.body.id;
-					   var navUrl = url.slice(1).split('/').pop().join('/')+'/'+id;
-					   Backbone.navigate(navUrl, {trigger: false, replace: true});
+					   var id = response.id;
+
+					   var navUrl = url.substring(0, url.length - 24)+id.toString();
+					   Backbone.history.navigate(navUrl,{trigger: false, replace: true});
 					   self.videoModal =new VideoModalView({
 						   content:self.content
 					   });
