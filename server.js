@@ -70,8 +70,8 @@ db.once('open', function() {
     app.set('view engine', 'html');
     app.use(logger('dev'));
 
-    app.use(bodyParser.json({strict: false, inflate: false, limit: 1024 * 1024 * 5}));
-    app.use(bodyParser.urlencoded({extended: false, limit: 1024 * 1024 * 5}));
+    app.use(bodyParser.json({strict: false, inflate: false, limit: 1024 * 1024 * 500}));
+    app.use(bodyParser.urlencoded({extended: false, limit: 1024 * 1024 * 500}));
 
     app.use(express.static(path.join(__dirname, 'public')));
 
