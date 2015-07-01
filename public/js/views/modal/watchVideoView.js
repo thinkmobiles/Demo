@@ -127,16 +127,40 @@ define([
 		},
 
 		trackDocument: function (e) {
-			$(e.target).attr('href');
+			var document = $(e.target).attr('href');
+			data = {
+				userId: this.userId,
+				contentId: options.videoId,
+				document: document
+			};
+			$.ajax({
+				type: "POST",
+				url: "/trackDocument",
+				data: JSON.stringify(data),
+				contentType: "application/json",
+
+				success: function (msg) {
+					if (msg) {
+						console.log('Successfully send')
+					} else {
+						console.log("Cant track the video");
+					}
+				},
+				error: function (model, xhr) {
+					console.log(xhr);
+					console.log(model);
+
+				}
+			});
 
 		},
 
-		sendAjax: function(){
+		trackVideo: function(){
 			var video =this.$el.find(".mainVideo")[0];
 			var time_ranges = video.played;
 			var ranges = [];
-			//var pos = video.currentSrc.indexOf('video');
-			//var videoId = decodeURI(video.currentSrc.slice(pos));
+			var pos = video.currentSrc.indexOf('video');
+			var videoId = decodeURI(video.currentSrc.slice(pos));
 
 			for (var i=0; i < time_ranges.length; i++) {
 				var range = {};
@@ -144,11 +168,12 @@ define([
 				range.end = Math.round(time_ranges.end(i));
 				ranges.push(range);
 			}
+
 			var videoData = {
-				contentId: this.content.toJSON()._id,
-				//userId: //ToDo: user id
+				userId: this.userId,
+				contentId: options.videoId,
 				data:{
-					videoId: this.content.toJSON().mainVideoUri,
+					video: videoId,
 					rangeWatched: ranges
 				}
 			};
