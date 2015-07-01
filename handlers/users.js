@@ -444,11 +444,12 @@ var routeHandler = function (db) {
     this.trackQuestion = function (req, res, next) {
         var data = req.body;
         var userId = req.body.userId;
-        var ccntentId = req.body.contentId;
+        var contentId = req.body.contentId;
+
         TrackModel.findOneAndUpdate({
             "userId": userId,
             "contentId": contentId
-        }, {$set: {questions: data.questions}}, function (err) {
+        }, {$set: {questions: data.questions}}, {upsert:true}, function (err) {
             if (err) {
                 return next(err);
             }
@@ -461,10 +462,11 @@ var routeHandler = function (db) {
         var data = req.body;
         var userId = data.userId;
         var contentId = data.contentId;
+
         TrackModel.findOneAndUpdate({
             "userId": userId,
             "contentId": contentId
-        }, {$addToSet: {"documents.documentId": data.documentId}}, function (err) {
+        }, {$addToSet: {"documents": data.document}}, {upsert:true}, function (err, doc) {
             if (err) {
                 return next(err);
             }
@@ -480,7 +482,7 @@ var routeHandler = function (db) {
         TrackModel.findOneAndUpdate({
             "userId": userId,
             "contentId": contentId
-        }, {$add: {documents: data}}, function (err) {
+        }, {$add: {videos: data.videos}}, {upsert:true}, function (err) {
             if (err) {
                 return next(err);
             }
