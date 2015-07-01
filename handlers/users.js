@@ -166,8 +166,37 @@ var routeHandler = function (db) {
                 if(err){
                   return  next(err)
                 }
-               return res.redirect('/#/home');
-            });
+                //jumplead.checkUser(obj.id, function (err, user, email) {
+                //    if(err){
+                //        return next(err);
+                //    }
+                //    if(user){
+                //        UserModel.findByIdAndRemove(obj.id, function (err, removeUser) {
+                //            if(err){
+                //                return next(err);
+                //            }
+                //            delete removeUser._id;
+                //            UserModel.findByIdAndUpdate(user._id, removeUser ,function (err, updateUser) {
+                //                if(err) {
+                //                    return next(err);
+                //                }
+                //
+                //                console.log('You update some exist user');
+                //                session.login(req, updateUser);
+                //                return res.redirect('/#/home');
+                //            });
+                //        });
+                //    } else{
+                //        UserModel.findByIdAndUpdate(obj.id, {email: email} ,function (err, updateUser) {
+                //            if(err) {
+                //                return next(err);
+                //            }
+                //            console.log('Email successfully updated');
+                //        });
+                        return res.redirect('/#/home');
+                    //}
+                });
+        //    });
         });
     };
 
@@ -177,7 +206,10 @@ var routeHandler = function (db) {
                 return next(err);
             }
             if(!obj){
-                res.status(401).send('Unauthorized')
+                var error = new Error();
+                error.message = "Unauthorized";
+                error.status = 401;
+                return next(error);
             }
             res.status(200).send(obj);
 
@@ -187,7 +219,12 @@ var routeHandler = function (db) {
     this.login = function (req, res, next) {
         var options = req.body;
         if(!options.userName || !options.pass)
-          return  res.status(401).send({ error: "Username and password is required"});
+        {
+            var error = new Error();
+            error.message = "Username and password is required";
+            error.status = 401;
+            return next(error);
+        }
 
         var userName = options.userName;
         var pass = getEncryptedPass(options.pass);
@@ -197,7 +234,10 @@ var routeHandler = function (db) {
             }
 
             if(!user){
-              return  res.status(500).send({error: "Can\'t find User"});
+                var error = new Error();
+                error.message = "Can\'t find User";
+                error.status = 404;
+                return next(error);
             }
 
             if(user.pass === pass ){
@@ -207,7 +247,10 @@ var routeHandler = function (db) {
                     user: user
                  });
             } else{
-               return res.status(401).send({ error: "Incorrect password" });
+                var error = new Error();
+                error.message = "Incorrect password";
+                error.status = 401;
+                return next(error);
             }
         });
     };
@@ -219,8 +262,12 @@ var routeHandler = function (db) {
 
     this.avatar = function (req, res, next) {
         var userName = req.params.userName;
-        if(!userName)
-            return  res.status(401).send({ error: "UserName is required"});
+        if (!userName) {
+        var error = new Error();
+        error.message = "UserName is required";
+        error.status = 401;
+        return next(error);
+    }
 
         UserModel.findOne({userName: userName}, function (err, user) {
             if(err) {
@@ -276,8 +323,7 @@ var routeHandler = function (db) {
                     if (err) {
                         return cb(err);
                     }
-                    console.log('AFTER validate')
-                    cb();
+                    cb(null, true);
                 });
             },
 
@@ -288,19 +334,22 @@ var routeHandler = function (db) {
                         return cb(err);
                     }
                   jumplead.setContact(options.userId, prospect, function (err, contact) {
+                            if(err) {
+                                cb(err);
+                            }
+
                             cb(null, contact);
                         });
 
                 });
             }
-        ], function (err) {
+        ], function (err, rezult) {
             if (err) {
                 return next(err);
             }
-
+            var contact = rezult[1];
             res.status(201).send({
-                success: 'success signUp',
-                message: 'Thank you for register. Please check your email and verify account'
+               id: contact.id
             });
         });
     };
@@ -329,7 +378,10 @@ var routeHandler = function (db) {
                     return next(err);
                 }
                 if(!foundContent){
-                    return next(new Error(404, {message:'Content Not Found'}));
+                    var error = new Error();
+                    error.message = 'Content Not Found';
+                    error.status = 404;
+                    return next(error);
                 }
                 content = foundContent;
 
@@ -338,7 +390,10 @@ var routeHandler = function (db) {
                         return next(err);
                     }
                     if(!user){
-                        return next('User Not Found');
+                        var error = new Error();
+                        error.message = 'User Not Found';
+                        error.status = 404;
+                        return next(error);
                     }
                     jumplead.getContact(user._id, prospectId, function (err, prospect) {
                         if(err){
@@ -352,7 +407,6 @@ var routeHandler = function (db) {
                                 email: prospect.email
                             }
                         };
-                        console.log(data);
                         res.status(200).send(data);
                     });
                 });
@@ -365,7 +419,6 @@ var routeHandler = function (db) {
                     if(err){
                         return next(err);
                     }
-                    console.log(prospects);
                     res.status(200).send(prospects);
                 });
     };
@@ -377,7 +430,6 @@ var routeHandler = function (db) {
                     if(err){
                         return next(err);
                     }
-                    console.log(prospects);
                     res.status(200).send(prospects);
                 });
     };
@@ -442,9 +494,7 @@ var routeHandler = function (db) {
         //var userId = body.userId;
         var contentId = body.contentId;
         var data = body.data;
-        console.log('contentId ' +contentId);
-        //console.log('userId ' +userId);
-        console.log('data ' +data.videoId);
+
         ContentModel.find({},function(err, found){
             console.log(found);
             res.status(200).send({
@@ -476,7 +526,7 @@ var routeHandler = function (db) {
             var formatsVideo = '.mp4 .WebM .Ogg';
             var formatsImage = '.jpg .bmp .png .ico';
             var mainVideoExt = (files['video'].originalFilename.split('.')).pop().toLowerCase();
-            console.log(mainVideoExt);
+
 
             if(!body.contact || !body.desc|| !body.name) return callback(new Error('Not  completed fields'));
             if(!files['video'] && body['video']) return callback(new Error('Main video is not found'));
@@ -632,73 +682,81 @@ var routeHandler = function (db) {
                     return next(err);
                 }
                 if(!obj){
-                    next(new Error(401,{err:'Unauthorized'}));
+                    next(new Error(401, {err:'Unauthorized'}));
                 }
-                var data = req.body;
-                var files = req.files;
-
-                var insObj = {
-                    userId: obj.id,
-                    name: data.name,
-                    contactMeInfo: data.contact,
-                    mainVideoDescription: data.desc
-                };
-
-                var content = new ContentModel(insObj);
-                content.save(function (err, result) {
-                    if (err) {
-                        return next(err);
+                ContentModel.findOne({userId: obj.id}, function (err, doc) {
+                    if(doc){
+                        var error = new Error();
+                        error.status = 401;
+                        error.message = 'You already have content';
+                        return next(error);
                     }
-                    var id = result._id;
-                    UserModel.findByIdAndUpdate(obj.id,{$set: {contentId: result._id}}, function (err, user) {
-                        if(err) return next(err);
+                    var data = req.body;
+                    var files = req.files;
 
-                        async.series([
-                            function (cb) {
-                                if (!!files['video']) {
-                                    saveMainVideo(id, files, cb);
-                                }
-                                else {
-                                    var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString();
-                                    upFile(url, files['logo'], function (err, logoUri) {
-                                        if (err) {
-                                            return callback(err);
-                                        }
-                                        var saveLogoUri = logoUri.replace('public' + sep, '');
-                                        ContentModel.findByIdAndUpdate(id, {
-                                                $set: {
-                                                    mainVideoUri: data.video,
-                                                    logoUri: saveLogoUri
-                                                }
-                                            },
-                                            function (err) {
-                                                if (err) {
-                                                    return callback(err);
-                                                }
-                                                callback(null);
-                                            });
-                                    });
-                                }
-                            },
-                            function (cb) {
-                                for (var i = data.countQuestion; i > 0; i--) {
-                                    async.applyEachSeries([saveSurveyVideo, saveSurveyFiles], i, id, files, data, function () {
-                                        if (err) return cb(err);
-                                    });
-                                }
-                                cb();
+                    var insObj = {
+                        userId: obj.id,
+                        name: data.name,
+                        contactMeInfo: data.contact,
+                        mainVideoDescription: data.desc
+                    };
 
-                            }], function (err) {
-                            if (err) {
-                                return next(err);
-                            }
-                            var url = process.env.HOME_PAGE + id + '/{{ctid}}';
-                            res.status(201).send({_id: id, url: url});
-                            console.log("url: " + url);
+                    var content = new ContentModel(insObj);
+                    content.save(function (err, result) {
+                        if (err) {
+                            return next(err);
+                        }
+                        var id = result._id;
+                        UserModel.findByIdAndUpdate(obj.id,{$set: {contentId: result._id}}, function (err, user) {
+                            if(err) return next(err);
+
+                            async.series([
+                                function (cb) {
+                                    if (!!files['video']) {
+                                        saveMainVideo(id, files, cb);
+                                    }
+                                    else {
+                                        var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString();
+                                        upFile(url, files['logo'], function (err, logoUri) {
+                                            if (err) {
+                                                return callback(err);
+                                            }
+                                            var saveLogoUri = logoUri.replace('public' + sep, '');
+                                            ContentModel.findByIdAndUpdate(id, {
+                                                    $set: {
+                                                        mainVideoUri: data.video,
+                                                        logoUri: saveLogoUri
+                                                    }
+                                                },
+                                                function (err) {
+                                                    if (err) {
+                                                        return callback(err);
+                                                    }
+                                                    callback(null);
+                                                });
+                                        });
+                                    }
+                                },
+                                function (cb) {
+                                    for (var i = data.countQuestion; i > 0; i--) {
+                                        async.applyEachSeries([saveSurveyVideo, saveSurveyFiles], i, id, files, data, function () {
+                                            if (err) return cb(err);
+                                        });
+                                    }
+                                    cb();
+
+                                }], function (err) {
+                                if (err) {
+                                    return next(err);
+                                }
+                                var url = process.env.HOME_PAGE + id + '/{{ctid}}';
+                                res.status(201).send({_id: id, url: url});
+                                console.log("url: " + url);
+                            });
                         });
                     });
+                    localFs.defaultPublicDir = 'public';
                 });
-                localFs.defaultPublicDir = 'public';
             });
         });
     };

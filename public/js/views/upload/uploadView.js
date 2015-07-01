@@ -1,5 +1,5 @@
 define([
-    'text!templates/login/LoginTemplate.html',
+    'text!templates/login/loginTemplate.html',
     'text!templates/login/collapseQuestion.html',
     'text!templates/login/videoElement.html',
 	'./progressBarView',
@@ -153,7 +153,6 @@ define([
 				if (evt.lengthComputable) {
 					self.percentComplete = evt.loaded / evt.total;
 					self.percentComplete = parseInt(self.percentComplete * 100);
-					console.log(self.percentComplete);
 
 					if (self.percentComplete === 100) {
 						//remove dialog
@@ -197,10 +196,14 @@ define([
 						self.$el.find()
 					}
 					catch(e){
-
+						App.notification(e);
 					}
 				} else {
-					alert("Error");
+					try{
+						App.notification(JSON.parse(oReq.responseText).error);
+					}catch(e){
+						App.notification();
+					}
 				}
 			};
 

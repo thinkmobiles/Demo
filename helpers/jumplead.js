@@ -13,6 +13,7 @@ var JumpleadModule = function (db) {
     var ACCESS_TOKEN_URL = CONSTANTS.ACCESS_TOKEN_URL;
     var REFRESH_TOKEN_URL = CONSTANTS.REFRESH_TOKEN_URL;
     var REDIRECT_URI = process.env.REDIRECT_URI;
+    var CHECK_USER_URL = CONSTANTS.CHECK_USER_URL;
     var AUTHORIZE_URL = CONSTANTS.AUTHORIZE_URL;
 
     var CONTACTS_URL = CONSTANTS.CONTACTS_URL;
@@ -110,9 +111,6 @@ var JumpleadModule = function (db) {
             }else if (!user) {
                 return callback(new Error(404, {err: 'User not found'}));
             }
-        var background = 'Phone: '+(contact.phone?contact.phone:'-') +"\n" +
-            "Title: " + (contact.title?contact.title:'-')+"\n" +
-            "Comments: " + (contact.comments?contact.comments:'-');
             var body = {
                 data:{
                     "first_name": contact.firstName,
@@ -132,12 +130,6 @@ var JumpleadModule = function (db) {
                 body: body
 
             }, function (error, response, body) {
-                try{
-                    body = JSON.parse(body);
-                    console.log(body);
-                }catch(e){
-                    console.log(e);
-                }
                 console.log(body);
                 if (body.status == '401') {
                     return (function(){
@@ -190,6 +182,44 @@ var JumpleadModule = function (db) {
         });
     };
 
+    this.checkUser = function (userId, callback){
+        UserModel.findById(userId, function (err, user) {
+            if (err) {
+                return callback(err);
+            }
+            request.get({
+                url: CHECK_USER_URL,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + user.accessToken
+                }
+            }, function (error, response, body) {
+                try{
+                    body = JSON.parse(body);
+                }catch(e){
+                    console.log(e);
+                }
+                console.log(body);
+                if (body.status == '401'||error) {
+                    var err = new Error();
+                    err.message = "Some trouble with jumplead";
+                    err.status = 500;
+                    return callback(error || err);
+                }
+                UserModel.findOne({email: body.data.email}, function (err, user) {
+                    if(err){
+                        return callback(err);
+                    }
+                    if(user) {
+                        return callback(null, user);
+                    }else {
+                        return callback(null, null, body.data.email);
+                    }
+                });
+
+            });
+        });
+    };
 
     this.getToken = function (code, userId, callback) {
         request.post({
@@ -205,9 +235,9 @@ var JumpleadModule = function (db) {
                 grant_type: "authorization_code"
             }
         }, function(error, response, body) {
-            try {
+            try{
                 body = JSON.parse(body);
-            }catch (e){
+            }catch(e){
                 console.log(e);
             }
             UserModel.findByIdAndUpdate(userId, {$set: {

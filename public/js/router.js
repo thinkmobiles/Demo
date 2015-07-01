@@ -7,13 +7,18 @@ define([
     appRouter = Backbone.Router.extend({
 
         wrapperView: null,
+		modalView: null,
         mainView: null,
         topBarView: null,
         view: null,
 
         routes: {
-            "upload"                     :  "upload",
-            "home(/:videoId/:userId)"           :  "home",
+            "upload"                    :  "upload",
+            "home(/:videoId/:userId)"   :  "home",
+			"chooseViewer(/:videoId/:userId)" :  "chooseViewer",
+			"watchVideo(/:videoId/:userId)" :  "watchVideo",
+			"chooseImportant(/:videoId/:userId)" :  "chooseImportant",
+			"relatedVideo(/:videoId/:userId/:indexList)" :  "relatedVideo",
             "registration"              :  "registration",
             "*any"                      :  "any"
         },
@@ -21,8 +26,6 @@ define([
         needAuthorize: [
             'upload',
             'main'
-
-
         ],
 
         redirectWhenAuthorize: [
@@ -45,7 +48,7 @@ define([
         },
 
         // load and create view if is exist
-        loadWrapperView: function (name, params) {
+        loadWrapperView: function (name, params, callback) {
             var WrongRout = null;
 			var self = this;
             // show only permitted pages
@@ -77,6 +80,7 @@ define([
             var self = this;
             require(['views/' + name + '/' + name + 'View'], function (View) {
                 self.changeWrapperView(new View(params));
+				if (callback)callback();
             });
         },
 
@@ -96,6 +100,27 @@ define([
             }
         },
 
+     showModalView: function (name, params) {
+		 var self = this;
+		   if (this.modalView) {
+                this.modalView.undelegateEvents();
+            }
+            require(['views/modal/' + name + 'View'], function (View) {
+				if (!self.wrapperView) {
+					self.loadWrapperView('home',{},function(){
+						self.modalView = new View(params);
+					});
+				}else{
+					$(".ui-dialog").remove();
+					self.modalView = new View(params);
+				}
+
+	
+            });
+			
+        },
+
+		
         main: function (page) {
             if (page) page = parseInt(page);
             this.loadWrapperView('main', {
@@ -107,14 +132,33 @@ define([
             this.loadWrapperView('home');
         },
         upload: function () {
-            this.loadWrapperView('login');
+            this.loadWrapperView('upload');
         },
         registration: function () {
             this.loadWrapperView('registration');
         },
         home: function (videoId, userId) {
-            this.loadWrapperView('home',{videoId:videoId, userId:userId});
+            this.loadWrapperView('home',{
+                videoId:videoId,
+                userId:userId
+            });
+        },
+		
+		watchVideo: function (videoId, userId) {
+            this.showModalView('watchVideo',{videoId:videoId, userId:userId});
+        },
+		
+		chooseViewer: function (videoId, userId) {
+            this.showModalView('chooseViewer',{videoId:videoId, userId:userId});
+        },
+		chooseImportant: function (videoId, userId) {
+            this.showModalView('watchVideo',{videoId:videoId, userId:userId, page:"important"});
+        },
+		relatedVideo: function (videoId, userId, indexList) {
+            this.showModalView('watchVideo',{videoId:videoId, userId:userId, indexList:indexList, page:"related"});
         }
+		
+
     });
 
     return appRouter;
