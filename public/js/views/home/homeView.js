@@ -1,8 +1,7 @@
 define([
     'text!templates/home/homeTemplate.html',
-	'views/home/modalView',
 	'custom'
-], function (HomeTemplate, ModalView, Custom) {
+], function (HomeTemplate, Custom) {
 
     var View;
 
@@ -117,12 +116,8 @@ define([
 
         render: function () {
             this.$el.html(_.template(HomeTemplate));
-			if (this.options&&this.options.videoId&&this.options.userId){
+			if (this.options&&this.options.videoId&&this.options.userId&&!this.options.showedModal){
 				Backbone.history.navigate("#/chooseViewer/"+this.videoId+"/"+this.userId, {trigger: true});
-				/*if(this.modal){
-					this.modal.undelegateEvents();
-				}
-				this.modal =new ModalView(this.options);*/
 			}
             return this;
         }

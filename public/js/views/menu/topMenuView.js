@@ -1,7 +1,6 @@
 define([
-    'text!templates/menu/topMenuTemplate.html',
-	'views/home/modalView'
-], function (topMenuTemplate, ModalView) {
+    'text!templates/menu/topMenuTemplate.html'
+], function (topMenuTemplate) {
 
     var View;
     View = Backbone.View.extend({
@@ -34,11 +33,6 @@ define([
 				$(".signIn .username .userName")[0].focus();
 			},550);
 			
-		},
-
-        
-        showModal:function(){
-			var modalView  = new ModalView();
 		},
 
         changeTab: function(event) {

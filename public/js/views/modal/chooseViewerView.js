@@ -1,9 +1,7 @@
 define([
     'text!templates/home/modalTemplate.html',
-	'views/home/registerModalView',
-	'views/home/videoModalView',
-	'models/contentModel'
-], function ( modalTemplate, ModalView, VideoModalView, ContentModel) {
+	'views/home/registerModalView'
+], function ( modalTemplate, ModalView) {
 
     var View;
 	
@@ -11,7 +9,8 @@ define([
 		el:"#wrapper",
         events: {
             "click .newViewer":"newViewer",
-            "click .sign":"sign"
+            "click .sign":"sign",
+			"click .ui-dialog-titlebar-close":"clickOnClose"
         },
 
 
@@ -49,6 +48,11 @@ define([
 			});
         },
 
+		clickOnClose: function(){
+			Backbone.history.navigate("/home/"+this.videoId+"/"+this.userId, {trigger: false});
+		},
+
+		
         // render template (once! because google maps)
         render: function () {
 			 var formString = _.template(modalTemplate)({

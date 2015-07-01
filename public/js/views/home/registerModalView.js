@@ -1,8 +1,7 @@
 define([
     'text!templates/home/registerModalTemplate.html',
-	'views/home/videoModalView',
 	 "models/prospectModel"
-], function ( modalTemplate, VideoModalView, ProspectModel) {
+], function ( modalTemplate, ProspectModel) {
 
     var View;
 	
@@ -84,9 +83,9 @@ define([
 
 					   var navUrl = url.substring(0, url.length - 24)+id.toString();
 					  // Backbone.history.navigate(navUrl, {trigger: false, replace: true});
-					   self.videoModal =new VideoModalView({
+					   /*self.videoModal =new VideoModalView({
 						   content:self.content
-					   });
+					   });*/
 
                    },
                    error: function (err) {

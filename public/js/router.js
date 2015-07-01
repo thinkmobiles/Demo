@@ -44,7 +44,6 @@ define([
 					$(".navBar").removeClass("small");
 				}
 			});
-			
         },
 
         // load and create view if is exist
@@ -107,7 +106,8 @@ define([
             }
             require(['views/modal/' + name + 'View'], function (View) {
 				if (!self.wrapperView) {
-					self.loadWrapperView('home',{},function(){
+					
+					self.loadWrapperView('home',_.extend(params,{showedModal:true}),function(){
 						self.modalView = new View(params);
 					});
 				}else{

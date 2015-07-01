@@ -14,7 +14,8 @@ define([
 			"click .questionSection table .checkbox" : "checkedQuestion",
 			"ended .mainVideo":"endedMainVideo",
 			"click .showSurvay":"showSurvay",
-			"click .listVideo li":"clickOnVideo"
+			"click .listVideo li":"clickOnVideo",
+			"click .ui-dialog-titlebar-close":"clickOnClose"
 		},
 
 
@@ -50,6 +51,10 @@ define([
 				}
 			});
 
+		},
+
+		clickOnClose: function(){
+			Backbone.history.navigate("/home/"+this.videoId+"/"+this.userId, {trigger: false});
 		},
 
 		clickOnVideo:function(e){
@@ -181,7 +186,6 @@ define([
 		},
 
 
-		// render template (once! because google maps)
 		render: function () {
 			var self = this;
 			var formString = _.template(modalTemplate)({
