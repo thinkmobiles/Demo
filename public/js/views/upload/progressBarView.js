@@ -1,5 +1,5 @@
 define([
-    'text!templates/login/modalProgressBarTemplate.html'
+    'text!templates/upload/modalProgressBarTemplate.html'
 ], function ( modalTemplate ) {
 
     var View;

@@ -1,12 +1,10 @@
 define([
-    'text!templates/login/loginTemplate.html',
-    'text!templates/login/collapseQuestion.html',
-    'text!templates/login/videoElement.html',
-	'./progressBarView',
-    'custom',
-    'validation'
+    'text!templates/upload/uploadTemplate.html',
+    'text!templates/upload/collapseQuestion.html',
+    'text!templates/upload/videoElement.html',
+	'./progressBarView'
 
-], function (RegistrationTemplate, CollapseQuestion, VideoElement, progressBarView, Custom, validation) {
+], function (RegistrationTemplate, CollapseQuestion, VideoElement, progressBarView) {
     var View = Backbone.View.extend({
 
 		el:"#wrapper",
@@ -26,24 +24,6 @@ define([
             "change .uploadContainer.file input[type='file']": "changeFile",
             "click .uploadContainer.file input[type='file']": "clickOnFile",
 			"click .ui-dialog-titlebar-close": "decline"
-        },
-
-        //reset the data
-        setDefaultData: function () {
-            var defaultData = {
-                rememberMe:false,
-                email: '',
-                password: '',
-                errors: false,
-                messages: false,
-                errObj: false
-            };
-
-            if (this.stateModel) {
-                this.stateModel.set(defaultData);
-            } else {
-                this.stateModel = new Backbone.Model(defaultData);
-            }
         },
 
 		removeQuestion: function(e){
@@ -137,10 +117,6 @@ define([
 			if (hasError){
 				return;
 			}
-			
-			
-
-
 
 			
 			var pb = new progressBarView();
@@ -218,7 +194,7 @@ define([
 		getFiles:function(files){
 			var s = "";
 			for (var i=0;i<files.length;i++){
-				s += files[0].name+" "
+				s += files[i].name+" "
 			}
 			return s;
 		},
