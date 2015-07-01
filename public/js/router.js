@@ -7,6 +7,7 @@ define([
     appRouter = Backbone.Router.extend({
 
         wrapperView: null,
+		modalView: null,
         mainView: null,
         topBarView: null,
         view: null,
@@ -14,7 +15,10 @@ define([
         routes: {
             "upload"                    :  "upload",
             "home(/:videoId/:userId)"   :  "home",
+			"chooseViewer(/:videoId/:userId)" :  "chooseViewer",
 			"watchVideo(/:videoId/:userId)" :  "watchVideo",
+			"chooseImportant(/:videoId/:userId)" :  "chooseImportant",
+			"relatedVideo(/:videoId/:userId/:indexList)" :  "relatedVideo",
             "registration"              :  "registration",
             "*any"                      :  "any"
         },
@@ -97,12 +101,18 @@ define([
         },
 
      showModalView: function (name, params) {
-			var self = this;
+		 var self = this;
+		   if (this.modalView) {
+                this.modalView.undelegateEvents();
+            }
             require(['views/modal/' + name + 'View'], function (View) {
 				if (!self.wrapperView) {
 					self.loadWrapperView('home',{},function(){
-						new View(params);
+						self.modalView = new View(params);
 					});
+				}else{
+					$(".ui-dialog").remove();
+					self.modalView = new View(params);
 				}
 
 	
@@ -133,9 +143,22 @@ define([
                 userId:userId
             });
         },
-			watchVideo: function (videoId, userId) {
+		
+		watchVideo: function (videoId, userId) {
             this.showModalView('watchVideo',{videoId:videoId, userId:userId});
+        },
+		
+		chooseViewer: function (videoId, userId) {
+            this.showModalView('chooseViewer',{videoId:videoId, userId:userId});
+        },
+		chooseImportant: function (videoId, userId) {
+            this.showModalView('watchVideo',{videoId:videoId, userId:userId, page:"important"});
+        },
+		relatedVideo: function (videoId, userId, indexList) {
+            this.showModalView('watchVideo',{videoId:videoId, userId:userId, indexList:indexList, page:"related"});
         }
+		
+
     });
 
     return appRouter;

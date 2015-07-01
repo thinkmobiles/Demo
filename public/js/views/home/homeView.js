@@ -22,6 +22,8 @@ define([
 
         initialize: function (options) {
 			this.options = options;
+			this.videoId = options&&options.videoId?options.videoId:"55800aadcb7bb82c1f000002";
+			this.userId = options&&options.userId?options.userId:"55800aadcb7bb82c1f000002";
 			this.modal = null;
             this.render();
         },
@@ -81,10 +83,11 @@ define([
 		},
 
         showModal:function(){
-			if(this.modal){
+			Backbone.history.navigate("#/chooseViewer/"+this.videoId+"/"+this.userId, {trigger: true});
+			/*if(this.modal){
 				this.modal.undelegateEvents();
 			}
-			this.modal =new ModalView(this.options);
+			this.modal =new ModalView(this.options);*/
 		},
 
 		login:function(e){
@@ -115,10 +118,11 @@ define([
         render: function () {
             this.$el.html(_.template(HomeTemplate));
 			if (this.options&&this.options.videoId&&this.options.userId){
-				if(this.modal){
+				Backbone.history.navigate("#/chooseViewer/"+this.videoId+"/"+this.userId, {trigger: true});
+				/*if(this.modal){
 					this.modal.undelegateEvents();
 				}
-				this.modal =new ModalView(this.options);
+				this.modal =new ModalView(this.options);*/
 			}
             return this;
         }
