@@ -22,7 +22,8 @@ module.exports = (function () {
             _id: false,
             video: {type: String},
             rangeWatched: [{
-                start:{ type: Number},
+                _id: false,
+                start: { type: Number},
                 end: { type: Number}
             }],
             howMuchWatched: { type: Number}

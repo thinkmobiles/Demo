@@ -25,6 +25,7 @@ define([
 			this.userId = options&&options.userId?options.userId:"55800aadcb7bb82c1f000002";
 			var page = options&&options.page?options.page:null;
 			this.currentSurvay = [];
+
 			App.getContent(this.videoId, this.userId,function(content){
 				self.content = content;
 				self.render();
@@ -46,11 +47,14 @@ define([
 					}
 					$(".relatedVideo").html(_.template(relatedVideo)({
 						videoList:self.currentSurvay
-					}
-																	));
+					}));
+
+					self.$el.find("video").on('ended',function(){
+						var videoEl =self.$el.find(".surveyVideo")[0];
+						self.trackVideo(videoEl);
+					});
 				}
 			});
-
 		},
 
 		clickOnClose: function(){
@@ -133,9 +137,10 @@ define([
 
 		trackDocument: function (e) {
 			var document = $(e.target).attr('href');
+			//var doc = document.split('/').pop();
 			data = {
 				userId: this.userId,
-				contentId: options.videoId,
+				contentId: this.videoId,
 				document: document
 			};
 			$.ajax({
@@ -160,12 +165,11 @@ define([
 
 		},
 
-		trackVideo: function(){
-			var video =this.$el.find(".mainVideo")[0];
-			var time_ranges = video.played;
+		trackVideo: function(videoEl){
+			var time_ranges = videoEl.played;
 			var ranges = [];
-			var pos = video.currentSrc.indexOf('video');
-			var videoId = decodeURI(video.currentSrc.slice(pos));
+			var pos = videoEl.currentSrc.indexOf('video');
+			var video = decodeURI(videoEl.currentSrc.slice(pos));
 
 			for (var i=0; i < time_ranges.length; i++) {
 				var range = {};
@@ -176,15 +180,15 @@ define([
 
 			var videoData = {
 				userId: this.userId,
-				contentId: options.videoId,
+				contentId: this.videoId,
 				data:{
-					video: videoId,
+					video: video,
 					rangeWatched: ranges
 				}
 			};
 			$.ajax({
 				type: "POST",
-				url: "/testTrackVideo",
+				url: "/trackVideo",
 				data: JSON.stringify(videoData),
 				contentType: "application/json",
 
@@ -222,6 +226,11 @@ define([
 				appendTo:"#wrapper",
 				dialogClass: "register-dialog",
 				width: 1180
+			});
+
+			this.$el.find("video").on('ended',function(){
+				var videoEl =self.$el.find(".mainVideo")[0];
+				self.trackVideo(videoEl);
 			});
 			this.$el.find(".mainVideo").on('ended',function(){
 				Backbone.history.navigate("#/chooseImportant/"+self.videoId+"/"+self.userId, {trigger: true});

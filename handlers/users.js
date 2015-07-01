@@ -482,7 +482,7 @@ var routeHandler = function (db) {
         TrackModel.findOneAndUpdate({
             "userId": userId,
             "contentId": contentId
-        }, {$add: {videos: data.videos}}, {upsert:true}, function (err) {
+        }, {$addToSet: {videos: body.data}}, {upsert:true}, function (err) {
             if (err) {
                 return next(err);
             }
