@@ -22,7 +22,6 @@ require.config({
     },
     shim: {
         'ajaxForm': ['jQuery'],
-        'Bootstrap': ['jQuery'],
         'Backbone': ['Underscore', 'jQuery'],
         'jQueryUI':['jQuery'],
         'app': ['Backbone', 'less','jQueryUI']
@@ -64,6 +63,32 @@ require(['app'], function (app) {
 		inter = setTimeout(function(){
 			$(".notification").hide(100);
 		},5000);
+	}
+
+
+	var cacheContent = {};
+	App.getContent = function(videoId, userId, callback){
+		if (cacheContent[videoId]&&cacheContent[videoId][userId]){
+			if (callback)callback(cacheContent[videoId][userId]);
+		}else{
+			cacheContent[videoId] = {};
+			require(["models/contentModel"], function (ContentModel) {
+				var content = new ContentModel({_id:videoId, userId:userId});
+				content.fetch({
+					error:function(collection,response,option){
+						App.notification(response.responseJSON.error);
+						console.log(response);
+					}
+				});
+				
+				content.bind('change', function(){
+					cacheContent[videoId][userId] = content;
+					if (callback)callback(content);
+				});
+
+            });
+			
+		}
 	}
 	
     App.updateUser = function (callback) {  //update user data when subscription is change
