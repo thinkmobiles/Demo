@@ -153,7 +153,6 @@ define([
 				if (evt.lengthComputable) {
 					self.percentComplete = evt.loaded / evt.total;
 					self.percentComplete = parseInt(self.percentComplete * 100);
-					console.log(self.percentComplete);
 
 					if (self.percentComplete === 100) {
 						//remove dialog
