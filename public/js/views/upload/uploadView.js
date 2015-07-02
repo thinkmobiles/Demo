@@ -8,13 +8,7 @@ define([
     var View = Backbone.View.extend({
 
 		el:"#wrapper",
-
-        initialize: function () {
-			this.countQuestion = 0;
-            this.render();
-        },
-
-        events: {
+		events: {
             "click .decline": "decline",
             "click .save": "save",
             "click .question": "question",
@@ -23,8 +17,41 @@ define([
             "click .uploadContainer.file": "browse",
             "change .uploadContainer.file input[type='file']": "changeFile",
             "click .uploadContainer.file input[type='file']": "clickOnFile",
-			"click .ui-dialog-titlebar-close": "decline"
+			"click .link-dialog .ui-dialog-titlebar-close": "decline"
         },
+
+		decline: function(e){
+			e.preventDefault()
+			Backbone.history.navigate("#/home", {trigger: true});
+
+		},
+
+		initialize: function () {
+			this.countQuestion = 0;
+			var self = this;
+			$.ajax({
+				type: "GET",
+				url: "/content",
+				contentType: "application/json",
+				success: function (data) {
+					if (!data) {
+						console.log('Successfully send')
+					} else {
+						self.$el.find(".login").hide();
+						self.$el.find(".haveContent").show();
+						self.$el.find(".haveContent :input").val(data.url);
+						console.log("You already have content");
+						console.log(data.url);
+					}
+				},
+				error: function (model, xhr) {
+					console.log(xhr);
+					console.log(model);
+
+				}
+			});
+			this.render();
+		},
 
 		removeQuestion: function(e){
 			var current = $(e.target).closest(".collapseQuestion");
@@ -81,7 +108,8 @@ define([
 
 		decline: function(e){
 			e.preventDefault()
-;            Backbone.history.navigate("#/home", {trigger: true});
+			Backbone.history.navigate("#/home", {trigger: true});
+
 		},
 
 		save: function(e){
@@ -119,11 +147,17 @@ define([
 			}
 
 			
-			var pb = new progressBarView();
+
 			var form = document.forms.namedItem("videoForm");
 
 			var oData = new FormData(form);
 			var oReq = new XMLHttpRequest();
+			this.xhr = oReq;
+			if(this.modalProgres) {
+				this.modalProgres.undelegateEvents();
+			}
+
+			this.modalProgres = new progressBarView(this.xhr);
 
 			oReq.upload.addEventListener("progress", function(evt) {
 				if (evt.lengthComputable) {
@@ -132,7 +166,7 @@ define([
 
 					if (self.percentComplete === 100) {
 						//remove dialog
-						pb.hide();
+						this.modalProgres.hide();
 					}
 				}
 			}, false);
@@ -212,5 +246,4 @@ define([
     });
 
     return View;
-
 });

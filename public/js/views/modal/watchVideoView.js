@@ -79,8 +79,44 @@ define([
 			//$(".videoSection").hide();
 			//$(".questionSection").show();
 		},
+		trackQuestion: function () {
+			var self = this;
+			var questions = [];
+			var obj;
+			$('.questionSection .checked').each(function() {
+				obj = {};
+				obj.question = $(this).parents("tr").data('question');
+				obj.item = $(this).data('item');
+				questions.push(obj);
+			});
+			data = {
+				userId: this.userId,
+				contentId: this.videoId,
+				questions: questions
+			};
+			$.ajax({
+				type: "POST",
+				url: "/trackQuestion",
+				data: JSON.stringify(data),
+				contentType: "application/json",
 
-		showSurvay:function(e){
+				success: function (msg) {
+					if (msg) {
+						console.log('Successfully send')
+					} else {
+						console.log("Cant track the video");
+					}
+				},
+				error: function (model, xhr) {
+					console.log(xhr);
+					console.log(model);
+
+				}
+			});
+
+
+		},
+		showSurvay: function(e){
 			var self = this;
 
 			$(".error").removeClass("error");
@@ -103,6 +139,7 @@ define([
 				indexList.push( $(this).closest("table").find("tr").index($(this).closest("tr"))-1);
 				//self.currentSurvay.push(self.content.toJSON().content.survey[index]);
 			});
+			this.trackQuestion();
 			Backbone.history.navigate("#/relatedVideo/"+this.videoId+"/"+this.userId+"/"+indexList.join(","), {trigger: true});
 			/*$(".questionSection").hide();
 			$(".relatedVideo").show();
