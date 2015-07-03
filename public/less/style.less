@@ -854,19 +854,34 @@ footer{
 		color:#333333;
 		margin-top:-10px;
 	}
-	input{
+	.required{
 		position:relative;
+		&:after{
+			content:'*';
+			color:#e85044;
+			font-size:18px;
+			position:absolute;
+			right:35px;
+			top:18px;
+			font-size:13px;
+		}
+		&.full{
+			&:after{
+				content:'';
+			}
+		}
+	}
+	input{
 		width:264px;
 		height:46px;
 		margin-bottom:24px;
 		padding:0 17px;
 		font-size:14px;
 		outline:none;
-		&:after{
-			
-			content:'*';
-			color:#e85044;
-			font-size:18px;
+		border:1px solid #dbdbdb;
+
+		&:focus{
+			background-color:#f7f7f7;
 		}
 	}
 	textarea{
@@ -877,6 +892,7 @@ footer{
 		height: 197px;
 		outline:none;
 		line-height: 44px;
+		border:1px solid #dbdbdb;
 	}
 	.continue{
 		.lh(50px);

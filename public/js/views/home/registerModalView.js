@@ -1,7 +1,8 @@
 define([
     'text!templates/home/registerModalTemplate.html',
-	 "models/prospectModel"
-], function ( modalTemplate, ProspectModel) {
+	"models/prospectModel",
+	"validation"
+], function ( modalTemplate, ProspectModel, validation) {
 
     var View;
 	
@@ -9,7 +10,8 @@ define([
 		el:"#wrapper",
         events: {
             "click .ui-dialog-titlebar-close":"closeDialog",
-			"click .continue":"register"
+			"click .continue":"register",
+			"keyup .required input":"changeText"
         },
 
 
@@ -19,12 +21,20 @@ define([
             this.render();
         },
 
+		changeText: function(e){
+			if($(e.target).val()){
+				$(e.target).parents(".required").addClass("full");
+			}else{
+				$(e.target).parents(".required").removeClass("full");
+			}
+		},
+		
 		register: function(){
 			var self = this;
 			var prospectModel = new ProspectModel();
 			var isError = false;
 			this.$el.find(".error").removeClass("error");
-			if (!this.$el.find("#email").val()){
+			if (!this.$el.find("#email").val()|| !validation.validEmail(this.$el.find("#email").val())){
 				this.$el.find("#email").addClass("error");
 				isError = true;
 			}
