@@ -82,10 +82,10 @@ define([
 					   var id = response.id;
 
 					   var navUrl = url.substring(0, url.length - 24)+id.toString();
-					  // Backbone.history.navigate(navUrl, {trigger: false, replace: true});
-					   /*self.videoModal =new VideoModalView({
-						   content:self.content
-					   });*/
+					   Backbone.history.navigate(navUrl, {trigger: false, replace: true});
+					  // self.videoModal =new VideoModalView({
+						//   content:self.content
+					  // });
 
                    },
                    error: function (err) {

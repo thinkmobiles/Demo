@@ -42,6 +42,7 @@ define([
 					}
 				},
 				error: function (model, xhr) {
+					self.render();
 					console.log(xhr);
 					console.log(model);
 				}
