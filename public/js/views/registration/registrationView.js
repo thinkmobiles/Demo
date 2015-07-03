@@ -21,6 +21,8 @@ define([
 			this.$el.find("#ava").click();
 		},
 
+
+		
 		showPreview: function(e){
 			var input = e.target;
 			if ( input.files && input.files[0] ) {
