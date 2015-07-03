@@ -157,6 +157,10 @@ var routeHandler = function (db) {
     };
 
     this.redirect = function (req, res, next) {
+        if(req.query.error){
+           return res.status(401).send({err: req.query.error,
+                message: req.query.error_description});
+        }
         var code = req.query.code;
         session.getUserDescription(req, function (err, obj) {
             if(err){
@@ -653,7 +657,10 @@ var routeHandler = function (db) {
         var sep = path.sep;
         var arr = [];
         if (!files[name]){
-            return cb(err);
+            var error = new Error();
+            error.message = "Some files missing";
+            error.status = 401;
+            return cb(error);
         }
         if (!files[name].length) {
             arr.push(files[name]);

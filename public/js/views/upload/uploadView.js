@@ -30,6 +30,7 @@ define([
 				url: "/content",
 				contentType: "application/json",
 				success: function (data) {
+					self.render();
 					if (!data) {
 						console.log('Successfully send')
 					} else {
@@ -45,7 +46,6 @@ define([
 					console.log(model);
 				}
 			});
-			this.render();
 		},
 
 		decline: function(e){
