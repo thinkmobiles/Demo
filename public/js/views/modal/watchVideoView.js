@@ -30,11 +30,11 @@ define([
 				self.content = content;
 				self.render();
 				if (page==="important"){
-					$(".videoSection").hide();
+					$(".videoSection").remove();
 					$(".questionSection").show();
 				}
 				if (page==="related"){
-					$(".videoSection").hide();
+					$(".videoSection").remove();
 					$(".relatedVideo").show();
 					var indexList = options&&options.indexList?options.indexList:null;
 					if (indexList){
@@ -75,6 +75,7 @@ define([
 		},
 
 		endedMainVideo:function(e){
+			this.dialog.remove();
 			Backbone.history.navigate("#/chooseImportant/"+this.videoId+"/"+this.userId, {trigger: true});
 			//$(".videoSection").hide();
 			//$(".questionSection").show();
@@ -270,6 +271,7 @@ define([
 				self.trackVideo(videoEl);
 			});
 			this.$el.find(".mainVideo").on('ended',function(){
+				self.dialog.remove();
 				Backbone.history.navigate("#/chooseImportant/"+self.videoId+"/"+self.userId, {trigger: true});
 			});
 			return this;
