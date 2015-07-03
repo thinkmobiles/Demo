@@ -567,7 +567,7 @@ html,body{
 			float:left;
 			background-color:silver;
 			margin-right:13px;
-			transition: all 0.5s linear;
+		 	 transition: background-color 0.2s cubic-bezier(0.51, -0.01, 0.21, 1.01);
 			cursor:pointer;
 
 			.circle{
@@ -578,13 +578,13 @@ html,body{
 				position:absolute;
 				left:0px;
 				top:-3px;
-				transition: all 0.5s linear;
+			  transition: left 0.15s cubic-bezier(0, 0.45, 1, 0.41);
 			}
 			&.checked{
 				background-color:#56d65e;
 				.circle{
-					left:inherit;
-					right:0px;
+					left: 15px;
+				  transition: left 0.15s cubic-bezier(0, 0.45, 1, 0.41);
 				}
 			}
 		}

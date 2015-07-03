@@ -14,7 +14,9 @@ define([
             e.stopPropagation();
             if (this.xhr && this.xhr.readystate != 4) {
                 this.xhr.abort();
+                this.hide();
             }
+
         },
 
         initialize: function (xhr) {

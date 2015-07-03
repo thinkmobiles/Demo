@@ -107,7 +107,7 @@ define([
 		},
 
 		decline: function(e){
-			e.preventDefault()
+			e.preventDefault();
 			Backbone.history.navigate("#/home", {trigger: true});
 
 		},
@@ -164,9 +164,9 @@ define([
 					self.percentComplete = evt.loaded / evt.total;
 					self.percentComplete = parseInt(self.percentComplete * 100);
 
-					if (self.percentComplete === 100) {
+					if (self.percentComplete == 100) {
 						//remove dialog
-						this.modalProgres.hide();
+						self.modalProgres.hide();
 					}
 				}
 			}, false);

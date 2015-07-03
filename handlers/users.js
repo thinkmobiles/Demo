@@ -366,11 +366,15 @@ var routeHandler = function (db) {
                 error.status = 401;
                 return next(error);
             }
-            UserModel.findById(obj.id, function (err, found) {
+            ContentModel.findOne({userId: obj.id}, function (err, found) {
                 if (err) {
                     return  next(err);
                 }
-                var url = process.env.HOME_PAGE + found.contentId + '/{{ctid}}';
+                console.log(found);
+                if(!found){
+                   return res.status(404).send({err: 'Not found'});
+                }
+                var url = process.env.HOME_PAGE + found._id + '/{{ctid}}';
                 res.status(201).send({url: url});
             });
         });
