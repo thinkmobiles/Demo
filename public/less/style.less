@@ -1094,6 +1094,25 @@ box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.18);
 	h3{
 		margin:0;
 	}
+	.required{
+		position:relative;
+		display:inline-block;
+
+		&:after{
+			content:'*';
+			color:#e85044;
+			font-size:18px;
+			position:absolute;
+			right: 25px;
+			top: 45px;
+			font-size: 17px;
+		}
+		&.full{
+			&:after{
+				content:'';
+			}
+		}
+	}
 	.inner{
 		width:1070px;
 		margin:0 auto;
@@ -1103,8 +1122,14 @@ box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.18);
 			width:270px;
 			padding:0 15px;
 			margin:24px 8px 0 8px;
+			border:1px solid #dbdbdb;
+			outline:none;
 			&.big{
 				width:595px;
+			}
+			&:focus{
+				border:1px solid #41bef0;
+
 			}
 		}
 		#ava{

@@ -1,7 +1,8 @@
 define([
     'text!templates/registration/registrationTemplate.html',
-    '../../checkPass'
-], function (RegistrationTemplate, checkPass) {
+    '../../checkPass',
+	"validation"
+], function (RegistrationTemplate, checkPass, validation) {
     var View = Backbone.View.extend({
 
 		el:"#wrapper",
@@ -10,18 +11,25 @@ define([
             "click .cancel":"cancel",
             "click .registerBtn":"register",
             "click .preview":"showFiles",
-            "change #ava":"showPreview"
+            "change #ava":"showPreview",
+			"keyup .required input":"changeText"
         },
         initialize: function () {
             $("#progressBar").progressbar({value: 5 });
             this.render();
         },
-
+		
+		changeText: function(e){
+			if($(e.target).val()){
+				$(e.target).parents(".required").addClass("full");
+			}else{
+				$(e.target).parents(".required").removeClass("full");
+			}
+		},
+		
 		showFiles: function(e){
 			this.$el.find("#ava").click();
 		},
-
-
 		
 		showPreview: function(e){
 			var input = e.target;
@@ -41,7 +49,7 @@ define([
 			
 			self.$el.find(".registration .error").removeClass("error");
 
-			if (!self.$el.find(".registration .email").val()){
+			if (!self.$el.find(".registration .email").val() || !validation.validEmail(self.$el.find(".registration .email").val())){
 				isError = true;
 				self.$el.find(".registration .email").addClass("error");
 			}
@@ -56,11 +64,6 @@ define([
 			if (!self.$el.find(".registration .userName").val()){
 				isError = true;
 				self.$el.find(".registration .userName").addClass("error");
-			}
-
-			if (!self.$el.find(".registration .organization").val()){
-				isError = true;
-				self.$el.find(".registration .organization").addClass("error");
 			}
 
 			if (!self.$el.find(".registration .pass").val()){
