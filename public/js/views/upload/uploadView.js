@@ -16,15 +16,11 @@ define([
             "click .login-button": "login",
             "click .uploadContainer.file": "browse",
             "change .uploadContainer.file input[type='file']": "changeFile",
+			"change .uploadContainer input[type='text']": "changeInput",
+			"keyup .uploadContainer input[type='text']": "changeInput",
             "click .uploadContainer.file input[type='file']": "clickOnFile",
 			"click .link-dialog .ui-dialog-titlebar-close": "decline"
         },
-
-		decline: function(e){
-			e.preventDefault()
-			Backbone.history.navigate("#/home", {trigger: true});
-
-		},
 
 		initialize: function () {
 			this.countQuestion = 0;
@@ -47,10 +43,22 @@ define([
 				error: function (model, xhr) {
 					console.log(xhr);
 					console.log(model);
-
 				}
 			});
 			this.render();
+		},
+
+		decline: function(e){
+			e.preventDefault()
+			Backbone.history.navigate("#/home", {trigger: true});
+		},
+		
+		changeInput: function(e){
+			if ($(e.target).val()){
+				$(e.target).parents(".uploadContainer").find(".right").addClass("active");
+			}else{
+				$(e.target).parents(".uploadContainer").find(".right").removeClass("active");
+			}
 		},
 
 		removeQuestion: function(e){
@@ -235,7 +243,7 @@ define([
 
 		changeFile:function(e){
 			var self = this;
-			$(e.target).closest(".uploadContainer").find("input[type='text']").val(self.getFiles($(e.target).get(0).files));
+			$(e.target).closest(".uploadContainer").find("input[type='text']").val(self.getFiles($(e.target).get(0).files)).change();
 		},
 		
         render: function () {
