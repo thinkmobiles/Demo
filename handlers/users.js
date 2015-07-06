@@ -208,15 +208,47 @@ var routeHandler = function (db) {
     };
 
     this.sendInfo = function (req, res, next){
-    var user = {
-        firstName: 'Peter',
-        lastName: 'Johnson',
-        email: 'johnnye.be@gmail.com'
-    };
+        var user = {
+            firstName: 'Peter',
+            lastName: 'Johnson',
+            email: 'johnnye.be@gmail.com'
+        };
         mailer.trackInfo(user);
         res.status(200).send('successful sended');
 
     };
+
+    this.sendContactMe = function (req, res, next){
+        var contentId = req.body.contentId;
+        var body = req.body;
+        if(!contentId){
+            var error = new Error();
+            error.message = 'Content Id is not Defined';
+            error.status = 403;
+            return next(error)
+        }
+        ContentModel.findById(contentId, function (err, content) {
+            if(err) {
+                return next(err);
+            }
+            if(!content) {
+                var error = new Error();
+                error.message = 'Content Not Found';
+                error.status = 404;
+                return next(error);
+            }
+                var data = {
+                    companyName: content.name,
+                    companyEmail: 'johnnye.be@gmail.com', //content.email,
+                    name: body.name||'NoName',
+                    email: body.email || '-',
+                    description: body.description || 'NoDescription'
+                };
+                mailer.contactMe(data);
+                res.status(200).send('Successful Send');
+        });
+    };
+
 
     this.currentUser = function (req, res, next) {
         session.getUserDescription(req, function (err, obj) {
@@ -356,7 +388,7 @@ var routeHandler = function (db) {
                     if (err) {
                         return cb(err);
                     }
-                  jumplead.setContact(options.userId, prospect, function (err, contact) {
+                  jumplead.setContact(options.ownerId, prospect, function (err, contact) {
                             if(err) {
                                 cb(err);
                             }
@@ -389,7 +421,7 @@ var routeHandler = function (db) {
                 error.status = 401;
                 return next(error);
             }
-            ContentModel.findOne({userId: obj.id}, function (err, found) {
+            ContentModel.findOne({ownerId: obj.id}, function (err, found) {
                 if (err) {
                     return  next(err);
                 }
@@ -424,7 +456,7 @@ var routeHandler = function (db) {
                 }
                 content = foundContent;
 
-                UserModel.findById(content.userId , function (err, user) {
+                UserModel.findById(content.ownerId , function (err, user) {
                     if (err) {
                         return next(err);
                     }
@@ -567,12 +599,25 @@ var routeHandler = function (db) {
             var formatsVideo = '.mp4 .WebM .Ogg';
             var formatsImage = '.jpg .bmp .png .ico';
             var mainVideoExt = (files['video'].originalFilename.split('.')).pop().toLowerCase();
+            var err = new Error();
+            err.status = 400;
 
-
-            if(!body.contact || !body.desc|| !body.name) return callback(new Error('Not  completed fields'));
-            if(!files['video'] && body['video']) return callback(new Error('Main video is not found'));
-            if(!body.countQuestion) return callback(new Error('Question  is not found'));
-            if (!!files['video'] && formatsVideo.indexOf(mainVideoExt) == -1) return callback( new Error('Main video format is not support'));
+            if(!body.contact || !body.desc|| !body.name){
+                err.message = 'Not  completed fields';
+                return callback(err);
+            }
+            if(!files['video'] && body['video']){
+                err.message = 'Main video is not found';
+                return callback(err);
+            }
+            if(!body.countQuestion){
+                err.message = 'Question  is not found';
+                return callback(err);
+            }
+            if (!!files['video'] && formatsVideo.indexOf(mainVideoExt) == -1){
+                err.message = 'Main video format is not support';
+                return callback(err);
+            }
 
             for(var i=body.countQuestion; i>0; i--){
                 var videoName = 'video' + i;
@@ -583,20 +628,36 @@ var routeHandler = function (db) {
                 async.each(files[pdfName], function (file, cb) {
                     var pdfExt = (file.originalFilename.split('.')).pop().toLowerCase();
                     if(pdfExt !='pdf'){
-                        return cb(new Error('Survey pdf files format is not support'));
+                        err.message = 'Survey pdf files format is not support';
+                        return cb(err);
                     }
                     else cb();
                 });
-                if(!files[videoName] && !body[videoName]) return callback(new Error('Survey video is not found'));
-                if(!body[questionName]) return callback(new Error('Survey question is not found'));
+                if(!files[videoName] && !body[videoName]){
+                    err.message = 'Survey video is not found';
+                    return callback(err);
+                }
+                if(!body[questionName]){
+                    err.message = 'Survey question is not found';
+                    return callback(err);
+                }
                 //typeValidation
-                if (!!files[videoName] && formatsVideo.indexOf(videoExt) == -1) return callback( new Error('Survey video format is not support'));
+                if (files[videoName] && formatsVideo.indexOf(videoExt) == -1){
+                    err.message = 'Survey video format is not support';
+                    return callback(err);
+                }
             }
 
-            if(!files['logo'])return callback(new Error('Logo is not found'));
+            if(!files['logo']){
+                err.message = 'Logo is not found';
+                return callback(err);
+            }
             var logoExt = (files['logo'].originalFilename.split('.')).pop().toLowerCase();
-            if(formatsImage.indexOf(logoExt) == -1)return callback(new Error('Logo is not found'));
-            return callback( null);
+            if(formatsImage.indexOf(logoExt) == -1){
+                err.message = 'Logo format is not support';
+                return callback(err);
+            }
+            return callback();
         };
 
 
@@ -727,7 +788,9 @@ var routeHandler = function (db) {
     //========================================================
     this.upload = function (req, res, next) {
         validation(req, function (err) {
-            if (err) return next(err);
+            if (err){
+                return next(err);
+            }
             session.getUserDescription(req, function (err, obj) {
                 if(err){
                     return next(err);
@@ -735,7 +798,7 @@ var routeHandler = function (db) {
                 if(!obj){
                     next(new Error(401, {err:'Unauthorized'}));
                 }
-                ContentModel.findOne({userId: obj.id}, function (err, doc) {
+                ContentModel.findOne({ownerId: obj.id}, function (err, doc) {
                     if(doc){
                         var error = new Error();
                         error.status = 401;
@@ -746,7 +809,7 @@ var routeHandler = function (db) {
                     var files = req.files;
 
                     var insObj = {
-                        userId: obj.id,
+                        ownerId: obj.id,
                         name: data.name,
                         contactMeInfo: data.contact,
                         mainVideoDescription: data.desc
