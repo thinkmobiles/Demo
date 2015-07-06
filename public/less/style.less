@@ -51,6 +51,9 @@
 	height:@h;
 	line-height:@h;
 }
+#wrapper{
+	//width:100%;
+}
 
 .filter(@blur){
 	-webkit-filter: blur(@blur);
@@ -74,7 +77,17 @@
 }
 html,body{
 	.mp;
+	//width:100%;
+	position:relative;
+
+		
     font-family: "LatoRegular";
+}
+body{
+	min-width: 1150px;
+}
+#topMenu{
+	width:1070px;
 }
 
 .topMenu{
@@ -446,7 +459,7 @@ html,body{
 	height:722px;
 	position:relative;
 	overflow:hidden;
-	width:100%;
+	//width:100%;
 		
 	.inner{
 		position:relative;
