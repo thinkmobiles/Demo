@@ -1,7 +1,7 @@
 define([
     'text!templates/modal/contactMeTemplate.html',
-	'views/home/registerModalView'
-], function ( modalTemplate, ModalView) {
+	"models/contactModel",
+], function ( modalTemplate, ContactModel) {
 
     var View;
 	
@@ -26,7 +26,28 @@ define([
         },
 
 		send: function(){
-			Backbone.history.navigate("#/watchVideo/"+this.videoId+"/"+this.userId, {trigger: true});
+			var self = this;
+			var contactModel = new ContactModel();
+			contactModel.save({
+				contentId : this.videoId,
+				name : this.$el.find(".name").val(),
+				email : this.$el.find(".email").val(),
+				description : this.$el.find(".desc").val()
+            },
+							  {
+								  wait: true,
+								  success: function (model, response) {
+									  Backbone.history.navigate("#/watchVideo/"+self.videoId+"/"+self.userId, {trigger: true});
+									  
+								  },
+								  error: function (err) {
+									  console.log(err);
+									  Backbone.history.navigate("#/watchVideo/"+self.videoId+"/"+self.userId, {trigger: true});
+									  
+								  }
+							  });
+
+			
 		},
 
 
