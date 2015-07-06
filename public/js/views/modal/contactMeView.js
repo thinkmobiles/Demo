@@ -19,6 +19,7 @@ define([
 			this.videoModal = null;
 			this.videoId = options&&options.videoId?options.videoId:"55800aadcb7bb82c1f000002";
 			this.userId = options&&options.userId?options.userId:"55800aadcb7bb82c1f000002";
+			this.page = options&&options.page?options.page:"watchVideo";
 			App.getContent(this.videoId, this.userId,function(content){
 				self.content = content;
 				self.render();
@@ -37,12 +38,12 @@ define([
 							  {
 								  wait: true,
 								  success: function (model, response) {
-									  Backbone.history.navigate("#/watchVideo/"+self.videoId+"/"+self.userId, {trigger: true});
+									  Backbone.history.navigate("#/"+self.page+"/"+self.videoId+"/"+self.userId, {trigger: true});
 									  
 								  },
 								  error: function (err) {
 									  console.log(err);
-									  Backbone.history.navigate("#/watchVideo/"+self.videoId+"/"+self.userId, {trigger: true});
+									  Backbone.history.navigate("#/"+self.page+"/"+self.videoId+"/"+self.userId, {trigger: true});
 									  
 								  }
 							  });
