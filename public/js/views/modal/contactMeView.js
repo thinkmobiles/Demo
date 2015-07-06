@@ -8,8 +8,7 @@ define([
     View = Backbone.View.extend({
 		el:"#wrapper",
         events: {
-            "click .newViewer":"newViewer",
-            "click .sign":"sign",
+            "click .send":"send",
 			"click .ui-dialog-titlebar-close":"clickOnClose"
         },
 
@@ -26,27 +25,10 @@ define([
 			});
         },
 
-		sign: function(){
+		send: function(){
 			Backbone.history.navigate("#/watchVideo/"+this.videoId+"/"+this.userId, {trigger: true});
-			/*this.dialog.hide();
-			if(this.videoModal){
-				this.videoModal.undelegateEvents();
-			}
-			this.videoModal = new VideoModalView({
-				content:this.content
-			});*/
-			
 		},
 
-        newViewer:function(){
-			this.dialog.hide();
-			if(this.modal){
-				this.modal.undelegateEvents();
-			}
-			this.modal =new ModalView({
-				content:this.content
-			});
-        },
 
 		clickOnClose: function(){
 			Backbone.history.navigate("/home/"+this.videoId+"/"+this.userId, {trigger: false});
@@ -55,10 +37,9 @@ define([
 		
         // render template (once! because google maps)
         render: function () {
+			console.log(this.content);
 			 var formString = _.template(modalTemplate)({
-				 name:this.content.toJSON().content.name,
 				 contact:this.content.toJSON().contact,
-				 logoUri:this.content.toJSON().content.logoUri
              });
             this.dialog = $(formString).dialog({
 				modal:true,

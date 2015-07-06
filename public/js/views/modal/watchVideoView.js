@@ -10,12 +10,12 @@ define([
 		el:"#wrapper",
 		events: {
 			"click .pdf": "trackDocument",
-			"click .ui-dialog-titlebar-close":"closeDialog",
 			"click .questionSection table .checkbox" : "checkedQuestion",
 			"ended .mainVideo":"endedMainVideo",
 			"click .showSurvay":"showSurvay",
 			"click .listVideo li":"clickOnVideo",
-			"click .ui-dialog-titlebar-close":"clickOnClose"
+			"click .ui-dialog-titlebar-close": "clickOnClose",
+			"click .contactMe": "contactMe"
 		},
 
 
@@ -57,8 +57,12 @@ define([
 			});
 		},
 
+		contactMe: function(){
+			Backbone.history.navigate("#/contactMe/"+this.videoId+"/"+this.userId, {trigger: true});
+		},
+
 		clickOnClose: function(){
-			Backbone.history.navigate("/home/"+this.videoId+"/"+this.userId, {trigger: false});
+			Backbone.history.navigate("/home/"+this.videoId+"/"+this.userId, {trigger: true});
 		},
 
 		clickOnVideo:function(e){
@@ -176,7 +180,7 @@ define([
 		trackDocument: function (e) {
 			var document = $(e.target).attr('href');
 			//var doc = document.split('/').pop();
-			data = {
+			var data = {
 				userId: this.userId,
 				contentId: this.videoId,
 				document: document
