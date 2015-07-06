@@ -51,6 +51,9 @@
 	height:@h;
 	line-height:@h;
 }
+#wrapper{
+	//width:100%;
+}
 
 .filter(@blur){
 	-webkit-filter: blur(@blur);
@@ -74,7 +77,17 @@
 }
 html,body{
 	.mp;
+	//width:100%;
+	position:relative;
+
+		
     font-family: "LatoRegular";
+}
+body{
+	min-width: 1150px;
+}
+#topMenu{
+	width:1070px;
 }
 
 .topMenu{
@@ -424,6 +437,47 @@ html,body{
 		cursor:pointer;
 	}
 }
+
+.contactMe{
+	text-align:center;
+	.container{
+		position:relative;
+		width:100%;
+		background-color: inherit;
+	}
+	input{
+		width:100%;
+		display:inline-block;
+		padding:0 5px;
+		margin:5px 0;
+		box-sizing: border-box;
+	}
+	textarea{
+		width:100%;
+		padding:0 5px;
+		margin:5px 0;
+		box-sizing: border-box;
+		height:100px;
+	}
+	.send{
+		.lh(48px);
+		width:240px;
+		color:white;
+		background-color:#44cbff;
+		border-radius:5px;
+		font-size:15px;
+		font-family: "LatoSemiBold";
+		outline: none;
+		border: none;
+		margin-top:25px;
+		margin-bottom:60px;
+		cursor:pointer;
+	}
+
+}
+
+
+
 .register{
 	.left{
 		width:50%;
@@ -446,7 +500,7 @@ html,body{
 	height:722px;
 	position:relative;
 	overflow:hidden;
-	width:100%;
+	//width:100%;
 		
 	.inner{
 		position:relative;
@@ -1094,6 +1148,25 @@ box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.18);
 	h3{
 		margin:0;
 	}
+	.required{
+		position:relative;
+		display:inline-block;
+
+		&:after{
+			content:'*';
+			color:#e85044;
+			font-size:18px;
+			position:absolute;
+			right: 25px;
+			top: 45px;
+			font-size: 17px;
+		}
+		&.full{
+			&:after{
+				content:'';
+			}
+		}
+	}
 	.inner{
 		width:1070px;
 		margin:0 auto;
@@ -1103,8 +1176,14 @@ box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.18);
 			width:270px;
 			padding:0 15px;
 			margin:24px 8px 0 8px;
+			border:1px solid #dbdbdb;
+			outline:none;
 			&.big{
 				width:595px;
+			}
+			&:focus{
+				border:1px solid #41bef0;
+
 			}
 		}
 		#ava{
