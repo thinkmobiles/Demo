@@ -24,22 +24,24 @@ module.exports = function (app, db) {
     app.post('/trackVideo', handler.trackVideo);
     //app.post('/trackProspect', handler.trackProspect);
     app.get('/content',handler.content);
-    app.post('/upload', multipart, handler.upload);
-    app.post('/pdf', multipart, handler.pdf);
-
     app.post('/prospectSignUp', handler.prospectSignUp);
+
     app.post('/signUp', handler.signUp);
     app.post('/login', handler.login);
     app.get('/logout', handler.logout);
     app.get('/currentUser', handler.currentUser);
-
     app.get('/redirect', handler.redirect);
+
     app.get('/avatar/:userName', handler.avatar);
     app.get('/allContacts/:id', handler.allContacts);
     //app.get('/:uid/:cid', handler.contact);
     app.get('/content/:contentId/:ctid', handler.getMain);
     app.get('/allUsers', handler.allUsers);
     app.get('/sendInfo', handler.sendInfo);
+    app.post('/sendContactMe', handler.sendContactMe);
+
+    app.post('/upload', multipart, handler.upload);
+    app.post('/pdf', multipart, handler.pdf);
 
 
     // ----------------------------------------------------------

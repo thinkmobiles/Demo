@@ -33,6 +33,38 @@ var MailerModule = function () {
             }
         });
     };
+
+    this.contactMe = function (options) {
+        fs.readFile('public/templates/mailer/contactMe.html', 'utf8', function (err, template) {
+            var templateOptions;
+            var mailOptions;
+
+            if (err) {
+                if (process.env.NODE_ENV !== 'production') {
+                    console.error(err);
+                }
+            } else {
+
+                templateOptions = {
+                    companyName: options.companyName,
+                    name: options.name,
+                    email: options.email,
+                    description: options.description
+                };
+
+                mailOptions = {
+                    from: FROM,
+                    to: options.companyEmail,
+                    subject: 'Info',
+                    generateTextFromHTML: true,
+                    html: _.template(template)(templateOptions)
+                };
+
+                deliver(mailOptions);
+            }
+        });
+    };
+
     this.emailConfirmation = function (options) {
         fs.readFile('public/templates/mailer/confirmEmail.html', 'utf8', function (err, template) {
             var templateOptions;
