@@ -1,16 +1,28 @@
 define([
-    'text!templates/login/modalProgressBarTemplate.html'
+    'text!templates/upload/modalProgressBarTemplate.html'
 ], function ( modalTemplate ) {
-
     var View;
 
     View = Backbone.View.extend({
         el:"#wrapper",
+        events:{
+            "click .progress-dialog .ui-dialog-titlebar-close": "decline"
+        },
 
+        decline: function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            if (this.xhr && this.xhr.readystate != 4) {
+                this.xhr.abort();
+                this.hide();
+            }
 
-        initialize: function (options) {
+        },
+
+        initialize: function (xhr) {
+            this.xhr = xhr;
             this.render();
-      },
+        },
 
         // render template (once! because google maps)
         render: function () {
@@ -27,12 +39,13 @@ define([
             });
             return this;
         },
-		
-		hide:function(){
-			this.dialog.remove();
-		}
+
+        hide:function(){
+            this.dialog.remove();
+        }
 
 
     });
+
     return View;
 });

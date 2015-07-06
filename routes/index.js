@@ -23,7 +23,7 @@ module.exports = function (app, db) {
     app.post('/trackQuestion', handler.trackQuestion);
     app.post('/trackVideo', handler.trackVideo);
     //app.post('/trackProspect', handler.trackProspect);
-   // app.get('/content/:id',handler.content);
+    app.get('/content',handler.content);
     app.post('/upload', multipart, handler.upload);
     app.post('/pdf', multipart, handler.pdf);
 

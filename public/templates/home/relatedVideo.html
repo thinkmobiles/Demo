@@ -1,11 +1,11 @@
 <div>
   <div class="videoConatiner">
-	<video controls="true" width="716" height="404" class="mainVideo" src="<%= videoList[0].videoUri %>" type="video/mp4">
+	<video controls="true" width="716" height="404" class="surveyVideo" src="<%= videoList[0].videoUri %>" autoplay="true" type="video/mp4">
 	</video>
 	<ul class="listVideo">
 	  <%_.forEach(videoList,function(video, index){%>
 	  <li <%if (index==0){%>class="current"<%}%> data-id="<%=index%>">
-		<video width="90" height="50" class="mainVideo" src="<%= video.videoUri %>" type="video/mp4" >
+		<video width="90" height="50" class="mainVideo" src="<%= video.videoUri %>" preload="metadata" type="video/mp4" >
 		</video>
 	  </li>
 	   <li class="videoTitle<%if (index==0){%> current<%}%>" data-id="<%=index%>">
@@ -19,11 +19,11 @@
   <ul class="pdfList">
 	<%_.forEach(videoList[0].pdfUri,function(url){%>
 	<li>
-	  <a href="<%=url%>" target="_blank"><%=url.split("\\").pop().split("/").pop()%></a>
+	  <a href="<%=url%>" target="_blank" class="pdf"><%=url.split("\\").pop().split("/").pop()%></a>
       <div class="preview">
         <div class="arrow">
         </div>
-		<img height="110" width="80" src="<%=url.replace('.pdf','.png')%>" alt="<%=url.split("\\").pop().split("/").pop()%>"/>
+		<img height="110" width="80" src="<%=url.replace('.pdf','.png')%>" alt="<%=url.split('\\').pop().split('/').pop()%>"/>
       </div>
 	</li>
 	<%})%>

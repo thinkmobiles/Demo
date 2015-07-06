@@ -12,24 +12,25 @@ module.exports = (function () {
           //companyId: {type: ObjectId, unique: true},
 
           userId: {type: String},
-          companyId: {type: String},
+          contentId: {type: String},
         questions:[{
             _id: false,
-            questionId: {type: String},
+            question: {type: String},
             item: {type: String, enum: ['not', 'somewhat', 'very']}
         }],
         videos: [{
             _id: false,
-            videoId: {type: String},
+            video: {type: String},
             rangeWatched: [{
-                start:{ type: Number},
+                _id: false,
+                start: { type: Number},
                 end: { type: Number}
             }],
             howMuchWatched: { type: Number}
         }],
        documents:[
            {   _id: false,
-               documentId: { type: String} }
+               document: { type: String} }
        ],
 
 

@@ -29,8 +29,14 @@ var JumpleadModule = function (db) {
             if (err) {
                 return callback(err);
             }
-            accessToken = foundUser.toJSON().accessToken;
-            refreshToken = foundUser.toJSON().refreshToken;
+            if(!foundUser){
+                var error = new Error();
+                error.message = "User not found";
+                error.status = 404;
+                return callback(error);
+            }
+            accessToken = foundUser.accessToken;
+            refreshToken = foundUser.refreshToken;
 
             request.post({
                 url: REFRESH_TOKEN_URL,
@@ -45,11 +51,18 @@ var JumpleadModule = function (db) {
                 }
             }, function (error, response, body) {
                 try {
-                    var body = JSON.parse(body);
+                        body = JSON.parse(body);
                 } catch (e) {
                     console.log(e);
                 }
                 console.log(body);
+                if(!body.access_token){
+
+                    var err = new Error();
+                    err.message = "For some reason you can refresh access token";
+                    err.status = 404;
+                    return callback(err);
+                }
                 UserModel.findByIdAndUpdate(userId, {$set: {
                     accessToken: body.access_token
                     //,refreshToken: body.refresh_token

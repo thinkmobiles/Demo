@@ -157,6 +157,10 @@ var routeHandler = function (db) {
     };
 
     this.redirect = function (req, res, next) {
+        if(req.query.error){
+           return res.status(401).send({err: req.query.error,
+                message: req.query.error_description});
+        }
         var code = req.query.code;
         session.getUserDescription(req, function (err, obj) {
             if(err){
@@ -356,13 +360,29 @@ var routeHandler = function (db) {
 
 
     this.content = function (req, res, next) {
-    var id = req.params.id;
-        ContentModel.findById(id, function (err, found) {
-            if (err) {
-               return  next(err);
+        session.getUserDescription(req, function (err, obj) {
+            if(err){
+                return next(err);
             }
-            res.status(200).send(found);
+            if(!obj){
+                var error = new Error();
+                error.message = "Unauthorized";
+                error.status = 401;
+                return next(error);
+            }
+            ContentModel.findOne({userId: obj.id}, function (err, found) {
+                if (err) {
+                    return  next(err);
+                }
+                console.log(found);
+                if(!found){
+                   return res.status(404).send({err: 'Not found'});
+                }
+                var url = process.env.HOME_PAGE + found._id + '/{{ctid}}';
+                res.status(201).send({url: url});
+            });
         });
+
     };
 
 //ToDo: use async
@@ -444,11 +464,12 @@ var routeHandler = function (db) {
     this.trackQuestion = function (req, res, next) {
         var data = req.body;
         var userId = req.body.userId;
-        var ccntentId = req.body.contentId;
+        var contentId = req.body.contentId;
+
         TrackModel.findOneAndUpdate({
             "userId": userId,
             "contentId": contentId
-        }, {$set: {questions: data.questions}}, function (err) {
+        }, {$set: {questions: data.questions}}, {upsert:true}, function (err) {
             if (err) {
                 return next(err);
             }
@@ -461,10 +482,11 @@ var routeHandler = function (db) {
         var data = req.body;
         var userId = data.userId;
         var contentId = data.contentId;
+
         TrackModel.findOneAndUpdate({
             "userId": userId,
             "contentId": contentId
-        }, {$addToSet: {"documents.documentId": data.documentId}}, function (err) {
+        }, {$addToSet: {"documents": data.document}}, {upsert:true}, function (err, doc) {
             if (err) {
                 return next(err);
             }
@@ -480,7 +502,7 @@ var routeHandler = function (db) {
         TrackModel.findOneAndUpdate({
             "userId": userId,
             "contentId": contentId
-        }, {$add: {documents: data}}, function (err) {
+        }, {$addToSet: {videos: body.data}}, {upsert:true}, function (err) {
             if (err) {
                 return next(err);
             }
@@ -591,7 +613,7 @@ var routeHandler = function (db) {
     function saveSurveyVideo(num, id, files, data, callback) {
         var question = 'question' + num;
         var name = 'video' + num;
-
+        console.log('************Uploading video '+question+ ' start');
         if (!!files[name]){
             var sep = path.sep;
             var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString() + sep + 'survey' + num;
@@ -609,6 +631,7 @@ var routeHandler = function (db) {
                 if (err) {
                     callback(err);
                 }
+                console.log('*************Uploading video '+question+ ' ended successfully');
                 callback(null)
             });
         });
@@ -634,7 +657,10 @@ var routeHandler = function (db) {
         var sep = path.sep;
         var arr = [];
         if (!files[name]){
-            return cb(err);
+            var error = new Error();
+            error.message = "Some files missing";
+            error.status = 401;
+            return cb(error);
         }
         if (!files[name].length) {
             arr.push(files[name]);
@@ -642,7 +668,9 @@ var routeHandler = function (db) {
         else {
             arr = files[name];
         }
+        console.log('---Uploading pdf '+question+ ' start');
         var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString() + sep + 'survey'+num + sep + 'pdf';
+
         async.each(arr, function (file, callback) {
             upFile(url, file, function (err, pdfUri) {
                 if (err) {
@@ -650,25 +678,29 @@ var routeHandler = function (db) {
                 }
                 var name = file.originalFilename.split(sep).pop().slice(0, -4)+'.png';
 
-                pdfutils(file.path, function(err, doc) {
-                    doc[0].asPNG({maxWidth: 500, maxHeight: 1000}).toFile(url+sep+name);
-                });
-                var savePdfUri = pdfUri.replace('public'+sep, '');
-                ContentModel.findOneAndUpdate({
-                    "_id": id,
-                    "survey.question": data[question]
-                }, {$addToSet: {"survey.$.pdfUri": savePdfUri}}, function (err, content) {
-                    if (err) {
-                        return callback(err);
-                    }
-                    callback();
-                });
+                    pdfutils(file.path, function(err, doc) {
+                        doc[0].asPNG({maxWidth: 500, maxHeight: 1000}).toFile(url+sep+name);
+                        console.log('+++++Uploading Image '+question +' of '+name+ ' ended successfully');
+                    });
+                    var savePdfUri = pdfUri.replace('public'+sep, '');
+                    ContentModel.findOneAndUpdate({
+                        "_id": id,
+                        "survey.question": data[question]
+                    }, {$addToSet: {"survey.$.pdfUri": savePdfUri}}, function (err, content) {
+                        if (err) {
+                            return callback(err);
+                        }
+                        callback();
+                    });
             });
         }, function (err) {
             if (err) {
-                return cb (err); //TODO: callback
+                return cb (err);
+            }else {
+
+                console.log('---Uploading pdf '+question+ ' ended successfully');
+                cb();
             }
-            cb();
         });
     };
 

@@ -25,15 +25,16 @@ define([
 			this.userId = options&&options.userId?options.userId:"55800aadcb7bb82c1f000002";
 			var page = options&&options.page?options.page:null;
 			this.currentSurvay = [];
+
 			App.getContent(this.videoId, this.userId,function(content){
 				self.content = content;
 				self.render();
 				if (page==="important"){
-					$(".videoSection").hide();
+					$(".videoSection").remove();
 					$(".questionSection").show();
 				}
 				if (page==="related"){
-					$(".videoSection").hide();
+					$(".videoSection").remove();
 					$(".relatedVideo").show();
 					var indexList = options&&options.indexList?options.indexList:null;
 					if (indexList){
@@ -46,11 +47,14 @@ define([
 					}
 					$(".relatedVideo").html(_.template(relatedVideo)({
 						videoList:self.currentSurvay
-					}
-																	));
+					}));
+
+					self.$el.find("video").on('ended',function(){
+						var videoEl =self.$el.find(".surveyVideo")[0];
+						self.trackVideo(videoEl);
+					});
 				}
 			});
-
 		},
 
 		clickOnClose: function(){
@@ -71,12 +75,49 @@ define([
 		},
 
 		endedMainVideo:function(e){
+			this.dialog.remove();
 			Backbone.history.navigate("#/chooseImportant/"+this.videoId+"/"+this.userId, {trigger: true});
 			//$(".videoSection").hide();
 			//$(".questionSection").show();
 		},
+		trackQuestion: function () {
+			var self = this;
+			var questions = [];
+			var obj;
+			$('.questionSection .checked').each(function() {
+				obj = {};
+				obj.question = $(this).parents("tr").data('question');
+				obj.item = $(this).data('item');
+				questions.push(obj);
+			});
+			data = {
+				userId: this.userId,
+				contentId: this.videoId,
+				questions: questions
+			};
+			$.ajax({
+				type: "POST",
+				url: "/trackQuestion",
+				data: JSON.stringify(data),
+				contentType: "application/json",
 
-		showSurvay:function(e){
+				success: function (msg) {
+					if (msg) {
+						console.log('Successfully send')
+					} else {
+						console.log("Cant track the video");
+					}
+				},
+				error: function (model, xhr) {
+					console.log(xhr);
+					console.log(model);
+
+				}
+			});
+
+
+		},
+		showSurvay: function(e){
 			var self = this;
 
 			$(".error").removeClass("error");
@@ -99,6 +140,7 @@ define([
 				indexList.push( $(this).closest("table").find("tr").index($(this).closest("tr"))-1);
 				//self.currentSurvay.push(self.content.toJSON().content.survey[index]);
 			});
+			this.trackQuestion();
 			Backbone.history.navigate("#/relatedVideo/"+this.videoId+"/"+this.userId+"/"+indexList.join(","), {trigger: true});
 			/*$(".questionSection").hide();
 			$(".relatedVideo").show();
@@ -132,16 +174,40 @@ define([
 		},
 
 		trackDocument: function (e) {
-			$(e.target).attr('href');
+			var document = $(e.target).attr('href');
+			//var doc = document.split('/').pop();
+			data = {
+				userId: this.userId,
+				contentId: this.videoId,
+				document: document
+			};
+			$.ajax({
+				type: "POST",
+				url: "/trackDocument",
+				data: JSON.stringify(data),
+				contentType: "application/json",
+
+				success: function (msg) {
+					if (msg) {
+						console.log('Successfully send')
+					} else {
+						console.log("Cant track the video");
+					}
+				},
+				error: function (model, xhr) {
+					console.log(xhr);
+					console.log(model);
+
+				}
+			});
 
 		},
 
-		sendAjax: function(){
-			var video =this.$el.find(".mainVideo")[0];
-			var time_ranges = video.played;
+		trackVideo: function(videoEl){
+			var time_ranges = videoEl.played;
 			var ranges = [];
-			//var pos = video.currentSrc.indexOf('video');
-			//var videoId = decodeURI(video.currentSrc.slice(pos));
+			var pos = videoEl.currentSrc.indexOf('video');
+			var video = decodeURI(videoEl.currentSrc.slice(pos));
 
 			for (var i=0; i < time_ranges.length; i++) {
 				var range = {};
@@ -149,17 +215,18 @@ define([
 				range.end = Math.round(time_ranges.end(i));
 				ranges.push(range);
 			}
+
 			var videoData = {
-				contentId: this.content.toJSON()._id,
-				//userId: //ToDo: user id
+				userId: this.userId,
+				contentId: this.videoId,
 				data:{
-					videoId: this.content.toJSON().mainVideoUri,
+					video: video,
 					rangeWatched: ranges
 				}
 			};
 			$.ajax({
 				type: "POST",
-				url: "/testTrackVideo",
+				url: "/trackVideo",
 				data: JSON.stringify(videoData),
 				contentType: "application/json",
 
@@ -198,7 +265,13 @@ define([
 				dialogClass: "register-dialog",
 				width: 1180
 			});
+
+			this.$el.find("video").on('ended',function(){
+				var videoEl =self.$el.find(".mainVideo")[0];
+				self.trackVideo(videoEl);
+			});
 			this.$el.find(".mainVideo").on('ended',function(){
+				self.dialog.remove();
 				Backbone.history.navigate("#/chooseImportant/"+self.videoId+"/"+self.userId, {trigger: true});
 			});
 			return this;

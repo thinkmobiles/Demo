@@ -1,22 +1,14 @@
 define([
-    'text!templates/login/loginTemplate.html',
-    'text!templates/login/collapseQuestion.html',
-    'text!templates/login/videoElement.html',
-	'./progressBarView',
-    'custom',
-    'validation'
+    'text!templates/upload/uploadTemplate.html',
+    'text!templates/upload/collapseQuestion.html',
+    'text!templates/upload/videoElement.html',
+	'./progressBarView'
 
-], function (RegistrationTemplate, CollapseQuestion, VideoElement, progressBarView, Custom, validation) {
+], function (RegistrationTemplate, CollapseQuestion, VideoElement, progressBarView) {
     var View = Backbone.View.extend({
 
 		el:"#wrapper",
-
-        initialize: function () {
-			this.countQuestion = 0;
-            this.render();
-        },
-
-        events: {
+		events: {
             "click .decline": "decline",
             "click .save": "save",
             "click .question": "question",
@@ -24,27 +16,51 @@ define([
             "click .login-button": "login",
             "click .uploadContainer.file": "browse",
             "change .uploadContainer.file input[type='file']": "changeFile",
+			"change .uploadContainer input[type='text']": "changeInput",
+			"keyup .uploadContainer input[type='text']": "changeInput",
             "click .uploadContainer.file input[type='file']": "clickOnFile",
-			"click .ui-dialog-titlebar-close": "decline"
+			"click .link-dialog .ui-dialog-titlebar-close": "decline"
         },
 
-        //reset the data
-        setDefaultData: function () {
-            var defaultData = {
-                rememberMe:false,
-                email: '',
-                password: '',
-                errors: false,
-                messages: false,
-                errObj: false
-            };
+		initialize: function () {
+			this.countQuestion = 0;
+			var self = this;
+			$.ajax({
+				type: "GET",
+				url: "/content",
+				contentType: "application/json",
+				success: function (data) {
+					self.render();
+					if (!data) {
+						console.log('Successfully send')
+					} else {
+						self.$el.find(".login").hide();
+						self.$el.find(".haveContent").show();
+						self.$el.find(".haveContent :input").val(data.url);
+						console.log("You already have content");
+						console.log(data.url);
+					}
+				},
+				error: function (model, xhr) {
+					self.render();
+					console.log(xhr);
+					console.log(model);
+				}
+			});
+		},
 
-            if (this.stateModel) {
-                this.stateModel.set(defaultData);
-            } else {
-                this.stateModel = new Backbone.Model(defaultData);
-            }
-        },
+		decline: function(e){
+			e.preventDefault()
+			Backbone.history.navigate("#/home", {trigger: true});
+		},
+		
+		changeInput: function(e){
+			if ($(e.target).val()){
+				$(e.target).parents(".uploadContainer").find(".right").addClass("active");
+			}else{
+				$(e.target).parents(".uploadContainer").find(".right").removeClass("active");
+			}
+		},
 
 		removeQuestion: function(e){
 			var current = $(e.target).closest(".collapseQuestion");
@@ -100,8 +116,9 @@ define([
 		},
 
 		decline: function(e){
-			e.preventDefault()
-;            Backbone.history.navigate("#/home", {trigger: true});
+			e.preventDefault();
+			Backbone.history.navigate("#/home", {trigger: true});
+
 		},
 
 		save: function(e){
@@ -137,26 +154,28 @@ define([
 			if (hasError){
 				return;
 			}
-			
-			
-
-
 
 			
-			var pb = new progressBarView();
+
 			var form = document.forms.namedItem("videoForm");
 
 			var oData = new FormData(form);
 			var oReq = new XMLHttpRequest();
+			this.xhr = oReq;
+			if(this.modalProgres) {
+				this.modalProgres.undelegateEvents();
+			}
+
+			this.modalProgres = new progressBarView(this.xhr);
 
 			oReq.upload.addEventListener("progress", function(evt) {
 				if (evt.lengthComputable) {
 					self.percentComplete = evt.loaded / evt.total;
 					self.percentComplete = parseInt(self.percentComplete * 100);
 
-					if (self.percentComplete === 100) {
+					if (self.percentComplete == 100) {
 						//remove dialog
-						pb.hide();
+						self.modalProgres.hide();
 					}
 				}
 			}, false);
@@ -218,14 +237,14 @@ define([
 		getFiles:function(files){
 			var s = "";
 			for (var i=0;i<files.length;i++){
-				s += files[0].name+" "
+				s += files[i].name+" "
 			}
 			return s;
 		},
 
 		changeFile:function(e){
 			var self = this;
-			$(e.target).closest(".uploadContainer").find("input[type='text']").val(self.getFiles($(e.target).get(0).files));
+			$(e.target).closest(".uploadContainer").find("input[type='text']").val(self.getFiles($(e.target).get(0).files)).change();
 		},
 		
         render: function () {
@@ -236,5 +255,4 @@ define([
     });
 
     return View;
-
 });

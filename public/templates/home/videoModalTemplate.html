@@ -1,7 +1,7 @@
 <div class="videoWatch">
   <div class="left">
     <div class="videoSection">
-	  <video controls="true" width="716" height="404" class="mainVideo">
+	  <video controls="true" width="716" height="404"  class="mainVideo">
 		<source src="<%= content.mainVideoUri %>" type="video/mp4" />
 	  </video>
     </div>
@@ -15,11 +15,11 @@
 		  <th>Very<br/>important</th>
 		</tr>
 	  <%_.forEach(content.survey,function(item){%>
-		<tr>
+		<tr data-question="<%=item.question%>">
 		  <td><%=item.question%></td>
-		  <td><div class="checkbox"></div></td>
-		  <td><div class="checkbox"></div></td>
-		  <td><div class="checkbox veryImp"></div></td>
+		  <td><div class="checkbox" data-item="not"></div></td>
+		  <td><div class="checkbox" data-item="some"></div></td>
+		  <td><div class="checkbox veryImp" data-item="very"></div></td>
 		</tr>
 	  <%})%>
 	  </table>

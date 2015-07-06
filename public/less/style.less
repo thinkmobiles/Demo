@@ -567,7 +567,7 @@ html,body{
 			float:left;
 			background-color:silver;
 			margin-right:13px;
-			transition: all 0.5s linear;
+		 	 transition: background-color 0.2s cubic-bezier(0.51, -0.01, 0.21, 1.01);
 			cursor:pointer;
 
 			.circle{
@@ -578,13 +578,13 @@ html,body{
 				position:absolute;
 				left:0px;
 				top:-3px;
-				transition: all 0.5s linear;
+			  transition: left 0.15s cubic-bezier(0, 0.45, 1, 0.41);
 			}
 			&.checked{
 				background-color:#56d65e;
 				.circle{
-					left:inherit;
-					right:0px;
+					left: 15px;
+				  transition: left 0.15s cubic-bezier(0, 0.45, 1, 0.41);
 				}
 			}
 		}
@@ -752,10 +752,16 @@ footer{
 			width:40px;
 			height:48px;
 			border-left:1px solid #dbdbdb;
+			&.active{
+				.i("folder-active.png");
+			}
 		}
 		&.link{
 			.right{
-				.i("link.png");	
+				.i("link.png");
+				&.active{
+					.i("link-active.png");
+				}
 			}	
 		}
 		&.text{
@@ -848,19 +854,34 @@ footer{
 		color:#333333;
 		margin-top:-10px;
 	}
-	input{
+	.required{
 		position:relative;
+		&:after{
+			content:'*';
+			color:#e85044;
+			font-size:18px;
+			position:absolute;
+			right:35px;
+			top:18px;
+			font-size:13px;
+		}
+		&.full{
+			&:after{
+				content:'';
+			}
+		}
+	}
+	input{
 		width:264px;
 		height:46px;
 		margin-bottom:24px;
 		padding:0 17px;
 		font-size:14px;
 		outline:none;
-		&:after{
-			
-			content:'*';
-			color:#e85044;
-			font-size:18px;
+		border:1px solid #dbdbdb;
+
+		&:focus{
+			background-color:#f7f7f7;
 		}
 	}
 	textarea{
@@ -871,6 +892,7 @@ footer{
 		height: 197px;
 		outline:none;
 		line-height: 44px;
+		border:1px solid #dbdbdb;
 	}
 	.continue{
 		.lh(50px);
@@ -1308,4 +1330,39 @@ box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.18);
 	color:white;
 	font-size:18px;
 	display:none;
+}
+
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default{
+	background:none;
+	border:none;
+}
+
+.ui-widget-header .ui-icon.ui-icon-closethick{
+	.i("close.png");
+	background-position:inherit;
+	&:focus{
+		outline:none;
+	}
+}
+.ui-dialog-titlebar-close{
+	outline:none;
+}
+.haveContent{
+  display: none;
+  margin-top: 225px;
+  text-align: center;
+  input[type="text"]{
+	width: 745px;
+	height: 34px;
+	text-align: center;
+	font-family: "LatoSemiBold";
+	font-size: 21px;
+	border: 1px solid rgba(204, 204, 204, 0.99);
+
+
+  }
+  input[type="text"]:hover {
+	box-shadow: 0 0 5px #9BDFF2;
+  }
+
 }
