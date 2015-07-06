@@ -292,10 +292,11 @@ var routeHandler = function (db) {
 
             if(user.pass === pass ){
                 session.login(req, user);
-                if(options.keepAlive){
+                console.log(typeof options.keepAlive);
+                if(options.keepAlive==='true'){
                     req.session.cookie.maxAge = 365 * 24 * 60 * 60 * 1000;
                 }else{
-                    req.session.cookie.expires = false;
+                    req.session.cookie.maxAge = 60*1000;
                 }
                return res.status(200).send({
                     success: "Login successful",
