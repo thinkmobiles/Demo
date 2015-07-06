@@ -91,11 +91,13 @@ define([
 
 		login:function(e){
 			var self = this;
+			var keepAlive = self.$el.find(".signIn .checkbox").hasClass("checked");
 			$.ajax({
                 url: "/login",
                 type: "POST",
                 dataType: 'json',
                 data: {
+					keepAlive: keepAlive,
                     userName: self.$el.find(".signIn .userName").val(),
                     pass: self.$el.find(".signIn .password").val()
                 },
