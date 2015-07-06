@@ -13,6 +13,7 @@ module.exports = (function () {
 
           userId: {type: String},
           contentId: {type: String},
+          isSend: {type: Boolean, default: false},
         questions:[{
             _id: false,
             question: {type: String},

@@ -173,37 +173,49 @@ var routeHandler = function (db) {
                 if(err){
                   return  next(err)
                 }
-                //jumplead.checkUser(obj.id, function (err, user, email) {
-                //    if(err){
-                //        return next(err);
-                //    }
-                //    if(user){
-                //        UserModel.findByIdAndRemove(obj.id, function (err, removeUser) {
-                //            if(err){
-                //                return next(err);
-                //            }
-                //            delete removeUser._id;
-                //            UserModel.findByIdAndUpdate(user._id, removeUser ,function (err, updateUser) {
-                //                if(err) {
-                //                    return next(err);
-                //                }
-                //
-                //                console.log('You update some exist user');
-                //                session.login(req, updateUser);
-                //                return res.redirect('/#/home');
-                //            });
-                //        });
-                //    } else{
-                //        UserModel.findByIdAndUpdate(obj.id, {email: email} ,function (err, updateUser) {
-                //            if(err) {
-                //                return next(err);
-                //            }
-                //            console.log('Email successfully updated');
-                //        });
+                jumplead.checkUser(obj.id, function (err, user, email) {
+                    if(err){
+                        return next(err);
+                    }
+                    if(user){
+                        UserModel.findByIdAndRemove(obj.id, function (err, removeUser) {
+                            if(err){
+                                return next(err);
+                            }
+                            removeUser = removeUser.toObject();
+                            var obj = {
+                                firstName: removeUser.firstName,
+                                lastName: removeUser.lastName,
+                                email: removeUser.email,
+                                pass: removeUser.pass,
+                                organization: removeUser.organization,
+                                accessToken: removeUser.accessToken,
+                                resreshToken: removeUser.resreshToken
+                            };
+                            //delete removeUser._id;
+                            //delete removeUser.__v;
+                            console.log(removeUser);
+                            UserModel.findByIdAndUpdate(user._id, obj ,function (err, updateUser) {
+                                if(err) {
+                                    return next(err);
+                                }
+
+                                console.log('You update some exist user');
+                                session.login(req, updateUser);
+                                return res.redirect('/#/home');
+                            });
+                        });
+                    } else{
+                        UserModel.findByIdAndUpdate(obj.id, {jumpleadEmail: email} ,function (err, updateUser) {
+                            if(err) {
+                                return next(err);
+                            }
+                            console.log('Email successfully updated');
+                        });
                         return res.redirect('/#/home');
-                    //}
+                    }
                 });
-        //    });
+            });
         });
     };
 
@@ -292,10 +304,11 @@ var routeHandler = function (db) {
 
             if(user.pass === pass ){
                 session.login(req, user);
-                if(options.keepAlive){
+                console.log(typeof options.keepAlive);
+                if(options.keepAlive==='true'){
                     req.session.cookie.maxAge = 365 * 24 * 60 * 60 * 1000;
                 }else{
-                    req.session.cookie.expires = false;
+                    req.session.cookie.maxAge = 60*1000;
                 }
                return res.status(200).send({
                     success: "Login successful",

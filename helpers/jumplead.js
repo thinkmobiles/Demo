@@ -213,13 +213,13 @@ var JumpleadModule = function (db) {
                     console.log(e);
                 }
                 console.log(body);
-                if (body.status == '401'||error) {
+                if (body.status == '401'||body.status == '404'||error) {
                     var err = new Error();
                     err.message = "Some trouble with jumplead";
                     err.status = 500;
                     return callback(error || err);
                 }
-                UserModel.findOne({email: body.data.email}, function (err, user) {
+                UserModel.findOne({jumpleadEmail: body.data.email}, function (err, user) {
                     if(err){
                         return callback(err);
                     }

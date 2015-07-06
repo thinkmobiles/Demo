@@ -15,6 +15,7 @@ module.exports = (function () {
     var userSchema = mongoose.Schema({
         avatar: {type: String},
         email: {type: String, required: true},
+        jumpleadEmail: {type: String},
         firstName: {type: String, required: true, minlength: NAME_MIN_LENGTH, maxlength: NAME_MAX_LENGTH},
         lastName: {type: String, required: true, minlength: NAME_MIN_LENGTH, maxlength: NAME_MAX_LENGTH},
         userName: {type: String, required: true,  minlength: NAME_MIN_LENGTH, maxlength: NAME_MAX_LENGTH},
