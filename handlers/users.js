@@ -18,6 +18,7 @@ var path = require('path');
 var fs = require('fs');
 var Jumplead = require('../helpers/jumplead');
 var Sessions = require('../helpers/sessions');
+var mailer = require('../helpers/mailer');
 var pdfutils = require('pdfutils').pdfutils;
 
 var routeHandler = function (db) {
@@ -133,6 +134,8 @@ var routeHandler = function (db) {
         });
     };
 
+
+
     function createUser(userData, callback) {
 
         //create user:
@@ -204,6 +207,17 @@ var routeHandler = function (db) {
         });
     };
 
+    this.sendInfo = function (req, res, next){
+    var user = {
+        firstName: 'Peter',
+        lastName: 'Johnson',
+        email: 'johnnye.be@gmail.com'
+    };
+        mailer.trackInfo(user);
+        res.status(200).send('successful sended');
+
+    };
+
     this.currentUser = function (req, res, next) {
         session.getUserDescription(req, function (err, obj) {
             if(err){
@@ -246,6 +260,11 @@ var routeHandler = function (db) {
 
             if(user.pass === pass ){
                 session.login(req, user);
+                if(options.keepAlive){
+                    req.session.cookie.maxAge = 365 * 24 * 60 * 60 * 1000;
+                }else{
+                    req.session.cookie.expires = false;
+                }
                return res.status(200).send({
                     success: "Login successful",
                     user: user

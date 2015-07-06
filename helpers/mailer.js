@@ -4,8 +4,35 @@ var MailerModule = function () {
     var _ = require('./../public/js/libs/underscore/underscore-min.js');
     var nodemailer = require("nodemailer");
     var fs = require('fs');
-    var FROM = "Minder <" + 'info@minderweb.com' + ">";
+    var FROM = "DemoRocket <" + 'info@demorocket.com' + ">";
 
+    this.trackInfo = function (options) {
+        fs.readFile('public/templates/mailer/trackInfo.html', 'utf8', function (err, template) {
+            var templateOptions;
+            var mailOptions;
+
+            if (err) {
+                if (process.env.NODE_ENV !== 'production') {
+                    console.error(err);
+                }
+            } else {
+
+                templateOptions = {
+                    name: options.firstName + ' ' + options.lastName
+                };
+
+                mailOptions = {
+                    from: FROM,
+                    to: options.email,
+                    subject: 'Info',
+                    generateTextFromHTML: true,
+                    html: _.template(template)(templateOptions)
+                };
+
+                deliver(mailOptions);
+            }
+        });
+    };
     this.emailConfirmation = function (options) {
         fs.readFile('public/templates/mailer/confirmEmail.html', 'utf8', function (err, template) {
             var templateOptions;

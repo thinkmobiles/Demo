@@ -1,7 +1,7 @@
 /**
  * Created by Roman on 12.02.2015.
  */
-var Session = function (db) {
+var Session = function () {
 
     this.login = function (req, options) {
         if(!options) return false;
