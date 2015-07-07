@@ -16,10 +16,10 @@ define([
             "upload"                    :  "upload",
             "home(/:videoId/:userId)"   :  "home",
 			"chooseViewer(/:videoId/:userId)" :  "chooseViewer",
-			"contactMe(/:videoId/:userId)" :  "contactMe",
+			"contactMe(/:videoId/:userId/:page)(/:indexList)" :  "contactMe",
 			"watchVideo(/:videoId/:userId)" :  "watchVideo",
 			"chooseImportant(/:videoId/:userId)" :  "chooseImportant",
-			"relatedVideo(/:videoId/:userId/:indexList)" :  "relatedVideo",
+			"relatedVideo(/:videoId/:userId)(/:indexList)" :  "relatedVideo",
             "registration"              :  "registration",
             "*any"                      :  "any"
         },
@@ -152,8 +152,8 @@ define([
 		chooseViewer: function (videoId, userId) {
             this.showModalView('chooseViewer',{videoId:videoId, userId:userId});
         },
-		contactMe: function (videoId, userId) {
-            this.showModalView('contactMe',{videoId:videoId, userId:userId});
+		contactMe: function (videoId, userId, page, indexList) {
+            this.showModalView('contactMe',{videoId:videoId, userId:userId, page:page, indexList:indexList});
         },
 		chooseImportant: function (videoId, userId) {
             this.showModalView('watchVideo',{videoId:videoId, userId:userId, page:"important"});
