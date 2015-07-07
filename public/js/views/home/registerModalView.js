@@ -34,7 +34,7 @@ define([
 			var prospectModel = new ProspectModel();
 			var isError = false;
 			this.$el.find(".error").removeClass("error");
-			if (!this.$el.find("#email").val()|| !validation.validEmail(this.$el.find("#email").val())){
+			if (!validation.validEmail(this.$el.find("#email").val())){
 				this.$el.find("#email").addClass("error");
 				isError = true;
 			}
@@ -43,15 +43,15 @@ define([
 				isError = true;
 			}
 
-			if (!this.$el.find("#fname").val()){
+			if (!validation.validName(this.$el.find("#fname").val())){
 				this.$el.find("#fname").addClass("error");
 				isError = true;
 			}
-			if (!this.$el.find("#lname").val()){
+			if (!validation.validName(this.$el.find("#lname").val())){
 				this.$el.find("#lname").addClass("error");
 				isError = true;
 			}
-			if (!this.$el.find("#phone").val()){
+			if (!validation.validPhone(this.$el.find("#phone").val())){
 				this.$el.find("#phone").addClass("error");
 				isError = true;
 			}
@@ -59,7 +59,7 @@ define([
 				this.$el.find("#organization").addClass("error");
 				isError = true;
 			}
-			if (!this.$el.find("#title").val()){
+			if (!validation.validName(this.$el.find("#title").val())){
 				this.$el.find("#title").addClass("error");
 				isError = true;
 			}

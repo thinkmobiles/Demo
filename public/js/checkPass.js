@@ -89,7 +89,7 @@ var isOkPass = function (pass){
         var score = scorePassword(pass);
         if (score > 70)
             return "strong";
-        if (score > 40)
+        if (score > 30)
             return "good";
         if (score >= 2)
             return "weak";
