@@ -11,9 +11,9 @@ module.exports = (function () {
           //userId: {type: ObjectId, required: true, unique: true},
           //companyId: {type: ObjectId, unique: true},
 
-          userId: {type: String},
-          contentId: {type: String},
-          isSend: {type: Boolean, default: false},
+          userId: {type: String, ref: 'Prospect'},
+          contentId: {type: String, ref: 'Content'},
+          isSent: {type: Boolean, default: false},
         questions:[{
             _id: false,
             question: {type: String},

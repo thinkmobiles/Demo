@@ -135,7 +135,6 @@ var routeHandler = function (db) {
     };
 
 
-
     function createUser(userData, callback) {
 
         //create user:
@@ -160,26 +159,28 @@ var routeHandler = function (db) {
     };
 
     this.redirect = function (req, res, next) {
-        if(req.query.error){
-           return res.status(401).send({err: req.query.error,
-                message: req.query.error_description});
+        if (req.query.error) {
+            return res.status(401).send({
+                err: req.query.error,
+                message: req.query.error_description
+            });
         }
         var code = req.query.code;
         session.getUserDescription(req, function (err, obj) {
-            if(err){
+            if (err) {
                 return next(err);
             }
             jumplead.getToken(code, obj.id, function (err) {
-                if(err){
-                  return  next(err)
+                if (err) {
+                    return next(err)
                 }
                 jumplead.checkUser(obj.id, function (err, user, email) {
-                    if(err){
+                    if (err) {
                         return next(err);
                     }
-                    if(user){
+                    if (user) {
                         UserModel.findByIdAndRemove(obj.id, function (err, removeUser) {
-                            if(err){
+                            if (err) {
                                 return next(err);
                             }
                             removeUser = removeUser.toObject();
@@ -192,22 +193,18 @@ var routeHandler = function (db) {
                                 accessToken: removeUser.accessToken,
                                 resreshToken: removeUser.resreshToken
                             };
-                            //delete removeUser._id;
-                            //delete removeUser.__v;
-                            console.log(removeUser);
-                            UserModel.findByIdAndUpdate(user._id, obj ,function (err, updateUser) {
-                                if(err) {
+                            UserModel.findByIdAndUpdate(user._id, obj, function (err, updateUser) {
+                                if (err) {
                                     return next(err);
                                 }
-
                                 console.log('You update some exist user');
                                 session.login(req, updateUser);
                                 return res.redirect('/#/home');
                             });
                         });
-                    } else{
-                        UserModel.findByIdAndUpdate(obj.id, {jumpleadEmail: email} ,function (err, updateUser) {
-                            if(err) {
+                    } else {
+                        UserModel.findByIdAndUpdate(obj.id, {jumpleadEmail: email}, function (err, updateUser) {
+                            if (err) {
                                 return next(err);
                             }
                             console.log('Email successfully updated');
@@ -219,7 +216,7 @@ var routeHandler = function (db) {
         });
     };
 
-    this.sendInfo = function (req, res, next){
+    this.sendInfo = function (req, res, next) {
         var user = {
             firstName: 'Peter',
             lastName: 'Johnson',
@@ -229,6 +226,54 @@ var routeHandler = function (db) {
         res.status(200).send('successful sended');
 
     };
+
+    this.sendTrackInfo = function (req, res, next) {
+        var time = Date.now() + 2 * 60 * 60 * 1000;
+        var conditions = {
+            'isSent': false
+            /*, 'updatedAt': {gte: time}*/
+        };
+        var update = {
+            isSent: true
+        };
+
+        TrackModel.find(conditions, function (err, tracks) {
+            if (err) {
+                return next(err);
+            }
+            if (!tracks) {
+                var error = new Error();
+                error.message = 'No data to send';
+                error.status = 304;
+                return next(error);
+            }
+
+            ContentModel.populate(tracks, {path: 'contentId'}, function (err, docs) {
+                if (err) {
+                    return next(err);
+                }
+                async.forEachSeries(docs, function (doc, cb) {
+                    var data = {
+                        companyName: doc.contentId.name,
+                        companyEmail: 'johnnye.be@gmail.com', //doc.contentId.email,
+                    };
+                    mailer.sendTrackInfo(data, cb);
+                }, function (err) {
+                    if (err) {
+                        return next(err);
+                    }
+                    TrackModel.update(conditions, update, {multi: true}, function (err, tracks) {
+                        if (err) {
+                            return next(err);
+                        }
+                        res.status(200).send('Successful Send');
+                    });
+                });
+            });
+        });
+    };
+
+
 
     this.sendContactMe = function (req, res, next){
         var contentId = req.body.contentId;
@@ -280,8 +325,7 @@ var routeHandler = function (db) {
 
     this.login = function (req, res, next) {
         var options = req.body;
-        if(!options.userName || !options.pass)
-        {
+        if (!options.userName || !options.pass) {
             var error = new Error();
             error.message = "Username and password is required";
             error.status = 401;
@@ -291,30 +335,30 @@ var routeHandler = function (db) {
         var userName = options.userName;
         var pass = getEncryptedPass(options.pass);
         UserModel.findOne({userName: userName}, function (err, user) {
-            if(err) {
+            if (err) {
                 return next(err);
             }
 
-            if(!user){
+            if (!user) {
                 var error = new Error();
                 error.message = "Can\'t find User";
                 error.status = 404;
                 return next(error);
             }
 
-            if(user.pass === pass ){
+            if (user.pass === pass) {
                 session.login(req, user);
                 console.log(typeof options.keepAlive);
-                if(options.keepAlive==='true'){
+                if (options.keepAlive === 'true') {
                     req.session.cookie.maxAge = 365 * 24 * 60 * 60 * 1000;
-                }else{
-                    req.session.cookie.maxAge = 60*1000;
+                } else {
+                    req.session.cookie.maxAge = 60 * 1000;
                 }
-               return res.status(200).send({
+                return res.status(200).send({
                     success: "Login successful",
                     user: user
-                 });
-            } else{
+                });
+            } else {
                 var error = new Error();
                 error.message = "Incorrect password";
                 error.status = 401;
@@ -322,6 +366,7 @@ var routeHandler = function (db) {
             }
         });
     };
+
     this.logout = function (req, res, next) {
         session.kill(req, function () {
             res.redirect('/#/home');
@@ -425,10 +470,10 @@ var routeHandler = function (db) {
 
     this.content = function (req, res, next) {
         session.getUserDescription(req, function (err, obj) {
-            if(err){
+            if (err) {
                 return next(err);
             }
-            if(!obj){
+            if (!obj) {
                 var error = new Error();
                 error.message = "Unauthorized";
                 error.status = 401;
@@ -436,11 +481,11 @@ var routeHandler = function (db) {
             }
             ContentModel.findOne({ownerId: obj.id}, function (err, found) {
                 if (err) {
-                    return  next(err);
+                    return next(err);
                 }
                 console.log(found);
-                if(!found){
-                   return res.status(404).send({err: 'Not found'});
+                if (!found) {
+                    return res.status(404).send({err: 'Not found'});
                 }
                 var url = process.env.HOME_PAGE + found._id + '/{{ctid}}';
                 res.status(201).send({url: url});
@@ -525,6 +570,7 @@ var routeHandler = function (db) {
             });
 
     };
+
     this.trackQuestion = function (req, res, next) {
         var data = req.body;
         var userId = req.body.userId;
@@ -532,7 +578,8 @@ var routeHandler = function (db) {
 
         TrackModel.findOneAndUpdate({
             "userId": userId,
-            "contentId": contentId
+            "contentId": contentId,
+            "isSent": false
         }, {$set: {questions: data.questions}}, {upsert:true}, function (err) {
             if (err) {
                 return next(err);
@@ -546,10 +593,10 @@ var routeHandler = function (db) {
         var data = req.body;
         var userId = data.userId;
         var contentId = data.contentId;
-
         TrackModel.findOneAndUpdate({
             "userId": userId,
-            "contentId": contentId
+            "contentId": contentId,
+            "isSent": false
         }, {$addToSet: {"documents": data.document}}, {upsert:true}, function (err, doc) {
             if (err) {
                 return next(err);
@@ -565,7 +612,8 @@ var routeHandler = function (db) {
         var contentId = body.contentId;
         TrackModel.findOneAndUpdate({
             "userId": userId,
-            "contentId": contentId
+            "contentId": contentId,
+            "isSent": false
         }, {$addToSet: {videos: body.data}}, {upsert:true}, function (err) {
             if (err) {
                 return next(err);
@@ -706,29 +754,29 @@ var routeHandler = function (db) {
     function saveSurveyVideo(num, id, files, data, callback) {
         var question = 'question' + num;
         var name = 'video' + num;
-        console.log('************Uploading video '+question+ ' start');
-        if (!!files[name]){
+        console.log('************Uploading video ' + question + ' start');
+        if (!!files[name]) {
             var sep = path.sep;
             var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString() + sep + 'survey' + num;
 
-        upFile(url, files[name], function (err, videoUri) {
-            if (err) {
-                callback(err);
-            }
-            var saveVideoUri = videoUri.replace('public'+sep, '');
-            var insSurvey = {
-                question: data[question],
-                videoUri: saveVideoUri
-            };
-            ContentModel.findByIdAndUpdate(id, {$addToSet: {survey: insSurvey}}, function (err) {
+            upFile(url, files[name], function (err, videoUri) {
                 if (err) {
                     callback(err);
                 }
-                console.log('*************Uploading video '+question+ ' ended successfully');
-                callback(null)
+                var saveVideoUri = videoUri.replace('public' + sep, '');
+                var insSurvey = {
+                    question: data[question],
+                    videoUri: saveVideoUri
+                };
+                ContentModel.findByIdAndUpdate(id, {$addToSet: {survey: insSurvey}}, function (err) {
+                    if (err) {
+                        callback(err);
+                    }
+                    console.log('*************Uploading video ' + question + ' ended successfully');
+                    callback(null)
+                });
             });
-        });
-    } else {
+        } else {
             var insSurvey = {
                 question: data[question],
                 videoUri: data[name]
@@ -745,11 +793,11 @@ var routeHandler = function (db) {
     };
 
     function saveSurveyFiles(num, id, files, data, cb) {
-        var question = 'question'+num;
-        var name = 'file'+num;
+        var question = 'question' + num;
+        var name = 'file' + num;
         var sep = path.sep;
         var arr = [];
-        if (!files[name]){
+        if (!files[name]) {
             var error = new Error();
             error.message = "Some files missing";
             error.status = 401;
@@ -761,37 +809,37 @@ var routeHandler = function (db) {
         else {
             arr = files[name];
         }
-        console.log('---Uploading pdf '+question+ ' start');
-        var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString() + sep + 'survey'+num + sep + 'pdf';
+        console.log('---Uploading pdf ' + question + ' start');
+        var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString() + sep + 'survey' + num + sep + 'pdf';
 
         async.each(arr, function (file, callback) {
             upFile(url, file, function (err, pdfUri) {
                 if (err) {
-                  return  callback(err);
+                    return callback(err);
                 }
-                var name = file.originalFilename.split(sep).pop().slice(0, -4)+'.png';
+                var name = file.originalFilename.split(sep).pop().slice(0, -4) + '.png';
 
-                    pdfutils(file.path, function(err, doc) {
-                        doc[0].asPNG({maxWidth: 500, maxHeight: 1000}).toFile(url+sep+name);
-                        console.log('+++++Uploading Image '+question +' of '+name+ ' ended successfully');
-                    });
-                    var savePdfUri = pdfUri.replace('public'+sep, '');
-                    ContentModel.findOneAndUpdate({
-                        "_id": id,
-                        "survey.question": data[question]
-                    }, {$addToSet: {"survey.$.pdfUri": savePdfUri}}, function (err, content) {
-                        if (err) {
-                            return callback(err);
-                        }
-                        callback();
-                    });
+                pdfutils(file.path, function (err, doc) {
+                    doc[0].asPNG({maxWidth: 500, maxHeight: 1000}).toFile(url + sep + name);
+                    console.log('+++++Uploading Image ' + question + ' of ' + name + ' ended successfully');
+                });
+                var savePdfUri = pdfUri.replace('public' + sep, '');
+                ContentModel.findOneAndUpdate({
+                    "_id": id,
+                    "survey.question": data[question]
+                }, {$addToSet: {"survey.$.pdfUri": savePdfUri}}, function (err, content) {
+                    if (err) {
+                        return callback(err);
+                    }
+                    callback();
+                });
             });
         }, function (err) {
             if (err) {
-                return cb (err);
-            }else {
+                return cb(err);
+            } else {
 
-                console.log('---Uploading pdf '+question+ ' ended successfully');
+                console.log('---Uploading pdf ' + question + ' ended successfully');
                 cb();
             }
         });
@@ -801,18 +849,18 @@ var routeHandler = function (db) {
     //========================================================
     this.upload = function (req, res, next) {
         validation(req, function (err) {
-            if (err){
+            if (err) {
                 return next(err);
             }
             session.getUserDescription(req, function (err, obj) {
-                if(err){
+                if (err) {
                     return next(err);
                 }
-                if(!obj){
-                    next(new Error(401, {err:'Unauthorized'}));
+                if (!obj) {
+                    next(new Error(401, {err: 'Unauthorized'}));
                 }
                 ContentModel.findOne({ownerId: obj.id}, function (err, doc) {
-                    if(doc){
+                    if (doc) {
                         var error = new Error();
                         error.status = 401;
                         error.message = 'You already have content';
@@ -834,8 +882,8 @@ var routeHandler = function (db) {
                             return next(err);
                         }
                         var id = result._id;
-                        UserModel.findByIdAndUpdate(obj.id,{$set: {contentId: result._id}}, function (err, user) {
-                            if(err) return next(err);
+                        UserModel.findByIdAndUpdate(obj.id, {$set: {contentId: result._id}}, function (err, user) {
+                            if (err) return next(err);
 
                             async.series([
                                 function (cb) {
@@ -894,20 +942,20 @@ var routeHandler = function (db) {
         var sep = path.sep;
         var url = localFs.defaultPublicDir + sep + 'video';
 
-            upFile(url, files['pdf'], function (err, pdfUri) {
-                if (err) {
-                    return  next(err);
-                }
-                //ToDo: pdf preview
+        upFile(url, files['pdf'], function (err, pdfUri) {
+            if (err) {
+                return next(err);
+            }
+            //ToDo: pdf preview
 
-                //-----------------------------------------------------------------
-                var name = files['pdf'].originalFilename.split(sep).pop().slice(0, -4)+'.png';
-                  pdfutils(files['pdf'].path, function(err, doc) {
-                 doc[0].asPNG({maxWidth: 500, maxHeight:1000}).toFile(url+sep+name);
-                 });
-                //-----------------------------------------------------------------
-               res.status(200).send('Success!!');
+            //-----------------------------------------------------------------
+            var name = files['pdf'].originalFilename.split(sep).pop().slice(0, -4) + '.png';
+            pdfutils(files['pdf'].path, function (err, doc) {
+                doc[0].asPNG({maxWidth: 500, maxHeight: 1000}).toFile(url + sep + name);
             });
+            //-----------------------------------------------------------------
+            res.status(200).send('Success!!');
+        });
     };
 
 

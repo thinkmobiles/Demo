@@ -11,7 +11,7 @@ module.exports = (function () {
     },{versionKey: false, _id: false});
 
     var contentSchema = mongoose.Schema({
-        ownerId: {type: ObjectId, required: true, unique: true},
+        ownerId: {type: ObjectId, required: true, unique: true, ref: 'User'},
         name: {type: String/*, required: true, unique: true*/},
         logoUri: {type: String},
         contactMeInfo: {type: String},
