@@ -40,8 +40,12 @@ var Schedule = function (db) {
                             var data = {
                                 companyName: doc.contentId.name,
                                 companyEmail: doc.contentId.email,
-
+                                name: doc.firstName + ' ' + lastName,
+                                email: doc.email,
                                 documents: doc.documents,
+                                videos: doc.videos,
+
+
 
                             };
                             mailer.sendTrackInfo(data, cb);

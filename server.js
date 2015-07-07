@@ -39,7 +39,8 @@ db.once('open', function() {
     var consolidate = require('consolidate');
     var app = express();
     var logWriter = require('./helpers/logWriter')();
-    var Schedule = require('./helpers/emailNotification')(db);
+    var Schedule = require('./helpers/emailNotification');
+    var scedule =new Schedule(db);
     var MemoryStore = require('connect-mongo')(session);
     var sessionConfig = {
         db: db.name,
@@ -48,7 +49,8 @@ db.once('open', function() {
         saveUninitialized: false,
         resave: false
     };
-    //Schedule.runSchedule();
+
+    scedule.runSchedule();
     var allowCrossDomain = function (req, res, next) {
         var browser = req.headers['user-agent'];
         if (/Trident/.test(browser)) {
