@@ -14,7 +14,8 @@ module.exports = (function () {
         ownerId: {type: ObjectId, required: true, unique: true, ref: 'User'},
         name: {type: String/*, required: true, unique: true*/},
         logoUri: {type: String},
-        contactMeInfo: {type: String},
+        phone: {type: String},
+        email: {type: String},
 
         mainVideoName: {type: String},
         mainVideoDescription: {type: String},

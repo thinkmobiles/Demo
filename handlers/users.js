@@ -216,16 +216,6 @@ var routeHandler = function (db) {
         });
     };
 
-    this.sendInfo = function (req, res, next) {
-        var user = {
-            firstName: 'Peter',
-            lastName: 'Johnson',
-            email: 'johnnye.be@gmail.com'
-        };
-        mailer.trackInfo(user);
-        res.status(200).send('successful sended');
-
-    };
 
     this.sendTrackInfo = function (req, res, next) {
         var time = Date.now() + 2 * 60 * 60 * 1000;
@@ -525,18 +515,35 @@ var routeHandler = function (db) {
                         return next(error);
                     }
                     jumplead.getContact(user._id, prospectId, function (err, prospect) {
-                        if(err){
+                        if (err) {
                             return next(err);
                         }
-                        data = {
-                            content: content,
-                            contact: {
-                                firstName: prospect.first_name,
-                                lastName: prospect.last_name,
-                                email: prospect.email
+
+                        TrackModel.findOneAndUpdate({
+                            "contentId": contentId,
+                            "firstName": prospect.first_name,
+                            "lastName": prospect.last_name
+                        }, {
+                            $set: {
+                                "contentId": contentId,
+                                "firstName": prospect.first_name,
+                                "lastName": prospect.last_name
                             }
-                        };
-                        res.status(200).send(data);
+                        }, {upsert: true}, function (err) {
+                            if (err) {
+                                return next(err);
+                            }
+
+                            data = {
+                                content: content,
+                                contact: {
+                                    firstName: prospect.first_name,
+                                    lastName: prospect.last_name,
+                                    email: prospect.email
+                                }
+                            };
+                            res.status(200).send(data);
+                        });
                     });
                 });
             });
@@ -623,29 +630,11 @@ var routeHandler = function (db) {
         });
     };
 
-    this.testTrackVideo = function (req, res, next) {
-        var body = req.body;
-        //var userId = body.userId;
-        var contentId = body.contentId;
-        var data = body.data;
-
-        ContentModel.find({},function(err, found){
-            console.log(found);
-            res.status(200).send({
-                body: data,
-                //userId: userId,
-                contentId:contentId
-            });
-
-        });
-
-
-    };
 
     function upFile(target, file, callback) {
         fs.readFile(file.path, function (err, data) {
             localFs.setFile(target, file.originalFilename, data, function (err) {
-                if (err){
+                if (err) {
                     return callback(err);
                 }
                 var uri = path.join(target, file.originalFilename);
@@ -654,101 +643,99 @@ var routeHandler = function (db) {
         });
     };
 
-        function validation (data, callback){
-            var files = data.files;
-            var body = data.body;
-            var formatsVideo = '.mp4 .WebM .Ogg';
-            var formatsImage = '.jpg .bmp .png .ico';
-            var mainVideoExt = (files['video'].originalFilename.split('.')).pop().toLowerCase();
-            var err = new Error();
-            err.status = 400;
+    function validation(data, callback) {
+        var files = data.files;
+        var body = data.body;
+        var formatsVideo = '.mp4 .WebM .Ogg';
+        var formatsImage = '.jpg .bmp .png .ico';
+        var mainVideoExt = (files['video'].originalFilename.split('.')).pop().toLowerCase();
+        var err = new Error();
+        err.status = 400;
 
-            if(!body.contact || !body.desc|| !body.name){
-                err.message = 'Not  completed fields';
-                return callback(err);
-            }
-            if(!files['video'] && body['video']){
-                err.message = 'Main video is not found';
-                return callback(err);
-            }
-            if(!body.countQuestion){
-                err.message = 'Question  is not found';
-                return callback(err);
-            }
-            if (!!files['video'] && formatsVideo.indexOf(mainVideoExt) == -1){
-                err.message = 'Main video format is not support';
-                return callback(err);
-            }
+        if (!body.contact || !body.desc || !body.name) {
+            err.message = 'Not  completed fields';
+            return callback(err);
+        }
+        if (!files['video'] && body['video']) {
+            err.message = 'Main video is not found';
+            return callback(err);
+        }
+        if (!body.countQuestion) {
+            err.message = 'Question  is not found';
+            return callback(err);
+        }
+        if (!!files['video'] && formatsVideo.indexOf(mainVideoExt) == -1) {
+            err.message = 'Main video format is not support';
+            return callback(err);
+        }
 
-            for(var i=body.countQuestion; i>0; i--){
-                var videoName = 'video' + i;
-                var pdfName = 'file' + i;
-                var questionName = 'question' + i;
-                var videoExt = (files[videoName].originalFilename.split('.')).pop().toLowerCase();
+        for (var i = body.countQuestion; i > 0; i--) {
+            var videoName = 'video' + i;
+            var pdfName = 'file' + i;
+            var questionName = 'question' + i;
+            var videoExt = (files[videoName].originalFilename.split('.')).pop().toLowerCase();
 
-                async.each(files[pdfName], function (file, cb) {
-                    var pdfExt = (file.originalFilename.split('.')).pop().toLowerCase();
-                    if(pdfExt !='pdf'){
-                        err.message = 'Survey pdf files format is not support';
-                        return cb(err);
-                    }
-                    else cb();
-                });
-                if(!files[videoName] && !body[videoName]){
-                    err.message = 'Survey video is not found';
-                    return callback(err);
+            async.each(files[pdfName], function (file, cb) {
+                var pdfExt = (file.originalFilename.split('.')).pop().toLowerCase();
+                if (pdfExt != 'pdf') {
+                    err.message = 'Survey pdf files format is not support';
+                    return cb(err);
                 }
-                if(!body[questionName]){
-                    err.message = 'Survey question is not found';
-                    return callback(err);
-                }
-                //typeValidation
-                if (files[videoName] && formatsVideo.indexOf(videoExt) == -1){
-                    err.message = 'Survey video format is not support';
-                    return callback(err);
-                }
-            }
-
-            if(!files['logo']){
-                err.message = 'Logo is not found';
+                else cb();
+            });
+            if (!files[videoName] && !body[videoName]) {
+                err.message = 'Survey video is not found';
                 return callback(err);
             }
-            var logoExt = (files['logo'].originalFilename.split('.')).pop().toLowerCase();
-            if(formatsImage.indexOf(logoExt) == -1){
-                err.message = 'Logo format is not support';
+            if (!body[questionName]) {
+                err.message = 'Survey question is not found';
                 return callback(err);
             }
-            return callback();
-        };
+            //typeValidation
+            if (files[videoName] && formatsVideo.indexOf(videoExt) == -1) {
+                err.message = 'Survey video format is not support';
+                return callback(err);
+            }
+        }
 
-
+        if (!files['logo']) {
+            err.message = 'Logo is not found';
+            return callback(err);
+        }
+        var logoExt = (files['logo'].originalFilename.split('.')).pop().toLowerCase();
+        if (formatsImage.indexOf(logoExt) == -1) {
+            err.message = 'Logo format is not support';
+            return callback(err);
+        }
+        return callback();
+    };
 
 
     function saveMainVideo(id, files, callback) {
-            var sep = path.sep;
-            var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString();
+        var sep = path.sep;
+        var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString();
 
-            upFile(url, files['video'], function (err, mainVideoUri) {
+        upFile(url, files['video'], function (err, mainVideoUri) {
+            if (err) {
+                return callback(err);
+            }
+
+            var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString();
+            upFile(url, files['logo'], function (err, logoUri) {
                 if (err) {
                     return callback(err);
                 }
-
-                var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString();
-                upFile(url, files['logo'], function (err, logoUri) {
-                    if (err) {
-                        return callback(err);
-                    }
-                    var saveMainVideoUri = mainVideoUri.replace('public'+sep, '');
-                    var saveLogoUri = logoUri.replace('public'+sep, '');
-                    ContentModel.findByIdAndUpdate(id, {$set: {mainVideoUri: saveMainVideoUri, logoUri: saveLogoUri}},
-                        function (err, content) {
-                            if (err) {
-                                return callback(err);
-                            }
-                            callback(null);
-                        });
-                });
+                var saveMainVideoUri = mainVideoUri.replace('public' + sep, '');
+                var saveLogoUri = logoUri.replace('public' + sep, '');
+                ContentModel.findByIdAndUpdate(id, {$set: {mainVideoUri: saveMainVideoUri, logoUri: saveLogoUri}},
+                    function (err, content) {
+                        if (err) {
+                            return callback(err);
+                        }
+                        callback(null);
+                    });
             });
+        });
     };
 
     function saveSurveyVideo(num, id, files, data, callback) {
@@ -872,7 +859,8 @@ var routeHandler = function (db) {
                     var insObj = {
                         ownerId: obj.id,
                         name: data.name,
-                        contactMeInfo: data.contact,
+                        email: data.email,
+                        phone: data.phone
                         mainVideoDescription: data.desc
                     };
 
@@ -986,9 +974,6 @@ var routeHandler = function (db) {
 
     };
     //"https://account.mooloop.com/oauth/authorize?response_type=code&client_id=FcDOCBsnZ2TtKbHTGULY&redirect_uri=http://demo.com:8838/redirect&scope=jumplead.contacts"
-
-
-
 
 
 };

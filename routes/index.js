@@ -37,7 +37,6 @@ module.exports = function (app, db) {
     //app.get('/:uid/:cid', handler.contact);
     app.get('/content/:contentId/:ctid', handler.getMain);
     app.get('/allUsers', handler.allUsers);
-    app.get('/sendInfo', handler.sendInfo);
     app.post('/sendContactMe', handler.sendContactMe);
     app.get('/sendTrackInfo', handler.sendTrackInfo);
     app.post('/upload', multipart, handler.upload);

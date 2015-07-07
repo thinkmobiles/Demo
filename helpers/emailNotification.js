@@ -9,13 +9,15 @@ var Schedule = function (db) {
     var contentSchema = mongoose.Schemas['Content'];
     var ContentModel = db.model('Content', contentSchema);
     var mailer = require('../helpers/mailer');
+
     this.runSchedule = function () {
-        var cronJob = NodeCronTab.scheduleJob('*/5 * * * * *', function () {
+        //var cronJob = NodeCronTab.scheduleJob('*/20 * * * * *', function () { //test
+        var cronJob = NodeCronTab.scheduleJob('* */2 * * * *', function () {
             this.sendTrackInfo = function (req, res, next) {
                 var time = Date.now() + 2 * 60 * 60 * 1000;
                 var conditions = {
-                    'isSent': false
-                    /*, 'updatedAt': {gte: time}*/
+                    'isSent': false,
+                    'updatedAt': {gte: time}
                 };
                 var update = {
                     isSent: true
@@ -28,7 +30,6 @@ var Schedule = function (db) {
                     if (!tracks) {
                         var error = new Error();
                         error.message = 'No data to send';
-                        error.status = 304;
                         return console.error(error);
                     }
 
@@ -39,14 +40,17 @@ var Schedule = function (db) {
                         async.each(docs, function (doc, cb) {
                             var data = {
                                 companyName: doc.contentId.name,
-                                companyEmail: 'johnnye.be@gmail.com', //doc.contentId.email,
+                                companyEmail: doc.contentId.email,
+
+                                documents: doc.documents,
+
                             };
                             mailer.sendTrackInfo(data, cb);
                         }, function (err) {
                             if (err) {
                                 return console.error(err);
                             }
-                            TrackModel.update(conditions, update, {multi: true}, function (err, tracks) {
+                            TrackModel.update(conditions, update, {multi: true}, function (err) {
                                 if (err) {
                                     return console.error(err);
                                 }
