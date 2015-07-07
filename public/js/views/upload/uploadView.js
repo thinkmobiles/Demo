@@ -126,12 +126,12 @@ define([
 				hasError = true;
 			}
 
-			if (!this.$el.find("input[name='phone']").val()||!validation.validPhone(this.$el.find("input[name='phone']").val())){
+			if (!validation.validPhone(this.$el.find("input[name='phone']").val())){
 				this.$el.find("input[name='phone']").closest(".uploadContainer").addClass("error");
 				hasError = true;
 			}
 
-			if (!this.$el.find("input[name='email']").val()||!validation.validEmail(this.$el.find("input[name='email']").val())){
+			if (!validation.validEmail(this.$el.find("input[name='email']").val())){
 				this.$el.find(".uploadContainer input[name='email']").closest(".uploadContainer").addClass("error");
 				hasError = true;
 			}

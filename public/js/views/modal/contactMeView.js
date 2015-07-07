@@ -1,7 +1,8 @@
 define([
     'text!templates/modal/contactMeTemplate.html',
 	"models/contactModel",
-], function ( modalTemplate, ContactModel) {
+	"validation"
+], function ( modalTemplate, ContactModel, validation) {
 
     var View;
 	
@@ -30,24 +31,41 @@ define([
 		send: function(){
 			var self = this;
 			var contactModel = new ContactModel();
+			var hasError = false;
+			this.$el.find(".error").removeClass("error");
+			
+			if (!validation.validName(this.$el.find(".name").val())){
+				this.$el.find(".name").addClass("error");
+				hasError = true;
+			}
+
+			if (!validation.validEmail(this.$el.find(".email").val())){
+				this.$el.find(".email").addClass("error");
+				hasError = true;
+			}
+
+			if (!this.$el.find(".desc").val()){
+				this.$el.find(".desc").addClass("error");
+				hasError = true;
+			}
+			
 			contactModel.save({
 				contentId : this.videoId,
 				name : this.$el.find(".name").val(),
 				email : this.$el.find(".email").val(),
 				description : this.$el.find(".desc").val()
-            },
-							  {
-								  wait: true,
-								  success: function (model, response) {
-									  Backbone.history.navigate("#/"+self.page+"/"+self.videoId+"/"+self.userId+(self.indexList.length?("/"+self.indexList):""), {trigger: true});
-									  
-								  },
-								  error: function (err) {
-									  console.log(err);
-									  Backbone.history.navigate("#/"+self.page+"/"+self.videoId+"/"+self.userId+(self.indexList.length?("/"+self.indexList):""), {trigger: true});
-									  
-								  }
-							  });
+            },{
+				wait: true,
+				success: function (model, response) {
+					Backbone.history.navigate("#/"+self.page+"/"+self.videoId+"/"+self.userId+(self.indexList.length?("/"+self.indexList):""), {trigger: true});
+					
+				},
+				error: function (err) {
+					console.log(err);
+					Backbone.history.navigate("#/"+self.page+"/"+self.videoId+"/"+self.userId+(self.indexList.length?("/"+self.indexList):""), {trigger: true});
+					
+				}
+			});
 
 			
 		},
@@ -60,7 +78,6 @@ define([
 		
         // render template (once! because google maps)
         render: function () {
-			console.log(this.content);
 			 var formString = _.template(modalTemplate)({
 				 contact:this.content.toJSON().contact,
              });

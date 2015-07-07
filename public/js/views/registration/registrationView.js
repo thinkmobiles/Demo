@@ -49,24 +49,27 @@ define([
 			
 			self.$el.find(".registration .error").removeClass("error");
 
-			if (!self.$el.find(".registration .email").val() || !validation.validEmail(self.$el.find(".registration .email").val())){
+			if (!validation.validEmail(self.$el.find(".registration .email").val())){
 				isError = true;
 				self.$el.find(".registration .email").addClass("error");
 			}
-			if (!self.$el.find(".registration .firstName").val()){
+			if (!validation.validName(self.$el.find(".registration .firstName").val())){
 				isError = true;
 				self.$el.find(".registration .firstName").addClass("error");
 			}
-			if (!self.$el.find(".registration .lastName").val()){
+			if (!validation.validName(self.$el.find(".registration .lastName").val())){
 				isError = true;
 				self.$el.find(".registration .lastName").addClass("error");
 			}
-			if (!self.$el.find(".registration .userName").val()){
+			if (!validation.validName(self.$el.find(".registration .userName").val())){
 				isError = true;
 				self.$el.find(".registration .userName").addClass("error");
 			}
 
-			if (!self.$el.find(".registration .pass").val()){
+			var pass = self.$el.find(".registration .pass").val();
+            var rate = checkPass.scorePassword(pass)
+			
+			if (!pass || rate<30){
 				isError = true;
 				self.$el.find(".registration .pass").addClass("error");
 			}
@@ -111,7 +114,7 @@ define([
             var pass = $("#pass").val();
             var rate = checkPass.scorePassword(pass);
             var add = checkPass.checkPassStrength(pass);
-            var remove = add=="weak"?"good strong":add=="good"?"weak strong":"good weak";
+            var remove = add==="weak"?"good strong":(add==="good"?"weak strong":"good weak");
             //console.log( $("#progressBar"));
             $("#progressBar").progressbar({value: rate});
             $(".ui-progressbar-value").addClass(add).removeClass(remove);
