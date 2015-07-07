@@ -8,7 +8,7 @@ var Schedule = function (db) {
 
     var contentSchema = mongoose.Schemas['Content'];
     var ContentModel = db.model('Content', contentSchema);
-    var mailer = require('../helpers/mailer');
+    var mailer = require('./mailer');
 
     this.runSchedule = function () {
         //var cronJob = NodeCronTab.scheduleJob('*/20 * * * * *', function () { //test
@@ -44,9 +44,7 @@ var Schedule = function (db) {
                                 email: doc.email,
                                 documents: doc.documents,
                                 videos: doc.videos,
-
-
-
+                                questions: doc.questions
                             };
                             mailer.sendTrackInfo(data, cb);
                         }, function (err) {
