@@ -6,14 +6,14 @@ var MailerModule = function () {
     var fs = require('fs');
     var FROM = "DemoRocket <" + 'info@demorocket.com' + ">";
 
-    this.trackInfo = function (options) {
+    this.trackInfo = function (options, callback) {
         fs.readFile('public/templates/mailer/trackInfo.html', 'utf8', function (err, template) {
             var templateOptions;
             var mailOptions;
-
             if (err) {
                 if (process.env.NODE_ENV !== 'production') {
                     console.error(err);
+                    return callback(err);
                 }
             } else {
 
@@ -29,7 +29,7 @@ var MailerModule = function () {
                     html: _.template(template)(templateOptions)
                 };
 
-                deliver(mailOptions);
+                deliver(mailOptions, callback);
             }
         });
     };
@@ -64,6 +64,38 @@ var MailerModule = function () {
             }
         });
     };
+    this.sendTrackInfo = function (options, callback) {
+        fs.readFile('public/templates/mailer/contactMe.html', 'utf8', function (err, template) {
+            var templateOptions;
+            var mailOptions;
+
+            if (err) {
+                if (process.env.NODE_ENV !== 'production') {
+                    console.error(err);
+                    return callback(err);
+                }
+            } else {
+
+                templateOptions = {
+                    companyName: options.companyName,
+                    name: options.name,
+                    email: options.email,
+                    description: options.description
+                };
+
+                mailOptions = {
+                    from: FROM,
+                    to: options.companyEmail,
+                    subject: 'Info',
+                    generateTextFromHTML: true,
+                    html: _.template(template)(templateOptions)
+                };
+
+                deliver(mailOptions, callback);
+            }
+        });
+    };
+
 
     this.emailConfirmation = function (options) {
         fs.readFile('public/templates/mailer/confirmEmail.html', 'utf8', function (err, template) {

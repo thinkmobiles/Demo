@@ -7,40 +7,44 @@ module.exports = (function () {
     var mongoose = require('mongoose');
     var ObjectId = mongoose.Schema.Types.ObjectId;
 
-      var trackSchema = mongoose.Schema({
-          //userId: {type: ObjectId, required: true, unique: true},
-          //companyId: {type: ObjectId, unique: true},
+    var trackSchema = mongoose.Schema({
+        userId: {type: ObjectId, ref: 'Prospect'},
+        contentId: {type: ObjectId, ref: 'Content'},
+        firstName: {type: String},
+        lastName: {type: String},
+        isSent: {type: Boolean, default: false},
 
-          userId: {type: String},
-          contentId: {type: String},
-          isSend: {type: Boolean, default: false},
-        questions:[{
+        questions: [{
             _id: false,
             question: {type: String},
             item: {type: String, enum: ['not', 'somewhat', 'very']}
         }],
+
         videos: [{
             _id: false,
             video: {type: String},
             rangeWatched: [{
                 _id: false,
-                start: { type: Number},
-                end: { type: Number}
+                start: {type: Number},
+                end: {type: Number}
             }],
-            howMuchWatched: { type: Number}
+            howMuchWatched: {type: Number}
         }],
-       documents:[
-           {   _id: false,
-               document: { type: String} }
-       ],
+
+        documents: [
+            {
+                _id: false,
+                document: {type: String}
+            }
+        ],
 
 
         createdAt: {type: Date, default: Date.now},
         updatedAt: {type: Date, default: Date.now}
     }, {collection: 'Tracks'});
 
-    trackSchema.pre('update', function() {
-        this.update({ $set: { updatedAt: Date.now() } });
+    trackSchema.pre('update', function () {
+        this.update({$set: {updatedAt: Date.now()}});
     });
 
     mongoose.model('Track', trackSchema);
