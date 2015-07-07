@@ -49,6 +49,8 @@ define([
 				hasError = true;
 			}
 			
+			if (hasError)return;
+			
 			contactModel.save({
 				contentId : this.videoId,
 				name : this.$el.find(".name").val(),
