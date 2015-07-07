@@ -286,7 +286,7 @@ var routeHandler = function (db) {
             }
                 var data = {
                     companyName: content.name,
-                    companyEmail: 'johnnye.be@gmail.com', //content.email,
+                    companyEmail: content.email,
                     name: body.name||'NoName',
                     email: body.email || '-',
                     description: body.description || 'NoDescription'
