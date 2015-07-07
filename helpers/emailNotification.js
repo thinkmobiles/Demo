@@ -1,8 +1,8 @@
 var NodeCronTab = require('node-crontab');
-
+var mongoose = require('mongoose');
+var async = require('async');
 
 var Schedule = function (db) {
-
     var trackSchema = mongoose.Schemas['Track'];
     var TrackModel = db.model('Track', trackSchema);
 
@@ -13,7 +13,6 @@ var Schedule = function (db) {
     this.runSchedule = function () {
         //var cronJob = NodeCronTab.scheduleJob('*/20 * * * * *', function () { //test
         var cronJob = NodeCronTab.scheduleJob('* */2 * * * *', function () {
-            this.sendTrackInfo = function (req, res, next) {
                 var time = Date.now() + 2 * 60 * 60 * 1000;
                 var conditions = {
                     'isSent': false,
@@ -59,8 +58,7 @@ var Schedule = function (db) {
                         });
                     });
                 });
-            };
-        });
+            });
     };
 };
 

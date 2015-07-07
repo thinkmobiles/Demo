@@ -652,7 +652,8 @@ var routeHandler = function (db) {
         var err = new Error();
         err.status = 400;
 
-        if (!body.contact || !body.desc || !body.name) {
+
+        if (!body.contact || !body.desc || !body.name || !body.email || !body.phone) {
             err.message = 'Not  completed fields';
             return callback(err);
         }
@@ -664,11 +665,14 @@ var routeHandler = function (db) {
             err.message = 'Question  is not found';
             return callback(err);
         }
-        if (!!files['video'] && formatsVideo.indexOf(mainVideoExt) == -1) {
+        if (files['video'] && formatsVideo.indexOf(mainVideoExt) == -1) {
             err.message = 'Main video format is not support';
             return callback(err);
         }
-
+        if (!REG_EXP.EMAIL_REGEXP.test(body.email)) {
+            err.message = 'Email validation failed';
+            return callback(err);
+        }
         for (var i = body.countQuestion; i > 0; i--) {
             var videoName = 'video' + i;
             var pdfName = 'file' + i;

@@ -48,7 +48,7 @@ db.once('open', function() {
         saveUninitialized: false,
         resave: false
     };
-    Schedule.runSchedule();
+    //Schedule.runSchedule();
     var allowCrossDomain = function (req, res, next) {
         var browser = req.headers['user-agent'];
         if (/Trident/.test(browser)) {
