@@ -653,7 +653,7 @@ var routeHandler = function (db) {
         err.status = 400;
 
 
-        if (!body.contact || !body.desc || !body.name || !body.email || !body.phone) {
+        if (!body.desc || !body.name || !body.email || !body.phone) {
             err.message = 'Not  completed fields';
             return callback(err);
         }
