@@ -860,7 +860,7 @@ var routeHandler = function (db) {
                         ownerId: obj.id,
                         name: data.name,
                         email: data.email,
-                        phone: data.phone
+                        phone: data.phone,
                         mainVideoDescription: data.desc
                     };
 
