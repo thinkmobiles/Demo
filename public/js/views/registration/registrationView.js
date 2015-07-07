@@ -61,7 +61,7 @@ define([
 				isError = true;
 				self.$el.find(".registration .lastName").addClass("error");
 			}
-			if (!validation.validName(self.$el.find(".registration .userName").val())){
+			if (!validation.validLogin(self.$el.find(".registration .userName").val())){
 				isError = true;
 				self.$el.find(".registration .userName").addClass("error");
 			}
