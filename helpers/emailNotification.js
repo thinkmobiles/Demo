@@ -11,12 +11,13 @@ var Schedule = function (db) {
     var mailer = require('./mailer');
 
     this.runSchedule = function () {
-        //var cronJob = NodeCronTab.scheduleJob('*/20 * * * * *', function () { //test
+        //var cronJob = NodeCronTab.scheduleJob('*/5 * * * * *', function () { //test
         var cronJob = NodeCronTab.scheduleJob('* */2 * * * *', function () {
-                var time = Date.now() + 2 * 60 * 60 * 1000;
+            var hour = 60*60*1000;
+            var time = new Date(Date.now() + 2*hour);
                 var conditions = {
                     'isSent': false,
-                    'updatedAt': {gte: time}
+                    'updatedAt': {$gte: time}
                 };
                 var update = {
                     isSent: true
@@ -26,7 +27,7 @@ var Schedule = function (db) {
                     if (err) {
                         return console.error(err);
                     }
-                    if (!tracks) {
+                    if (!tracks.length) {
                         var error = new Error();
                         error.message = 'No data to send';
                         return console.error(error);
@@ -34,7 +35,7 @@ var Schedule = function (db) {
 
                     ContentModel.populate(tracks, {path: 'contentId'}, function (err, docs) {
                         if (err) {
-                            return next(err);
+                            return console.error(err);
                         }
                         async.each(docs, function (doc, cb) {
                             var data = {

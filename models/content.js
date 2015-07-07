@@ -22,6 +22,7 @@ module.exports = (function () {
         mainVideoUri: { type: String},
 
         survey: [surveySchems],
+
         createdAt: {type: Date, default: Date.now},
         updatedAt: {type: Date, default: Date.now}
     }, {collection: 'Content'});
