@@ -26,7 +26,12 @@ define([
 			this.indexList = options&&options.indexList?options.indexList:[];
 			var page = options&&options.page?options.page:null;
 			this.currentSurvay = [];
-
+			window.addEventListener ("beforeunload", function() {
+				var videoEl =self.$el.find(".surveyVideo")[0]||self.$el.find(".mainVideo")[0];
+				self.trackVideo(videoEl, false);
+				console.log(videoEl.currentTime);
+				return 'are you sure';
+			});
 			App.getContent(this.videoId, this.userId,function(content){
 				self.content = content;
 				self.render();
@@ -52,7 +57,7 @@ define([
 
 					self.$el.find("video").on('ended',function(){
 						var videoEl =self.$el.find(".surveyVideo")[0];
-						self.trackVideo(videoEl);
+						self.trackVideo(videoEl, true);
 					});
 				}
 			});
@@ -211,14 +216,15 @@ define([
 		trackVideo: function(videoEl, isEnd){
 			var pos = videoEl.currentSrc.indexOf('video');
 			var video = decodeURI(videoEl.currentSrc.slice(pos));
-			var timeStop = videoEl.currentTime;
+			var stopTime = videoEl.currentTime;
+			console.log(stopTime);
 
 			var videoData = {
 				userId: this.userId,
 				contentId: this.videoId,
 				data: {
 					video: video,
-					timeStop: timeStop,
+					stopTime: stopTime,
 					end: isEnd || false
 				}
 			};
@@ -266,7 +272,7 @@ define([
 
 			this.$el.find("video").on('ended',function(){
 				var videoEl =self.$el.find(".mainVideo")[0];
-				self.trackVideo(videoEl);
+				self.trackVideo(videoEl, true);
 			});
 			this.$el.find(".mainVideo").on('ended',function(){
 				self.dialog.remove();

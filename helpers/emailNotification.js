@@ -11,8 +11,8 @@ var Schedule = function (db) {
     var mailer = require('./mailer');
 
     this.runSchedule = function () {
-        //var cronJob = NodeCronTab.scheduleJob('*/5 * * * * *', function () { //test
-        var cronJob = NodeCronTab.scheduleJob('* */2 * * * *', function () {
+        //var cronJob = NodeCronTab.scheduleJob('0 0 */2 * * *', function () { //production every 2 hours
+        var cronJob = NodeCronTab.scheduleJob('0 */2 * * * *', function () { //every 2 minutes
             var hour = 60*60*1000;
             var time = new Date(Date.now() + 2*hour);
                 var conditions = {
@@ -27,6 +27,8 @@ var Schedule = function (db) {
                     if (err) {
                         return console.error(err);
                     }
+                    console.log('tracks at ' + new Date(Date.now()));
+                    console.log(tracks);
                     if (!tracks.length) {
                         var error = new Error();
                         error.message = 'No data to send';

@@ -8,7 +8,7 @@ module.exports = (function () {
     var ObjectId = mongoose.Schema.Types.ObjectId;
 
     var trackSchema = mongoose.Schema({
-        userId: {type: ObjectId, ref: 'Prospect'},
+        userId: {type: String},
         contentId: {type: ObjectId, ref: 'Content'},
         firstName: {type: String},
         lastName: {type: String},
@@ -37,10 +37,6 @@ module.exports = (function () {
         createdAt: {type: Date, default: Date.now},
         updatedAt: {type: Date, default: Date.now}
     }, {collection: 'Tracks'});
-
-    trackSchema.pre('save', function () {
-        this.update({$set: {updatedAt: Date.now}});
-    });
 
     mongoose.model('Track', trackSchema);
 
