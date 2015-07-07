@@ -208,25 +208,18 @@ define([
 
 		},
 
-		trackVideo: function(videoEl){
-			var time_ranges = videoEl.played;
-			var ranges = [];
+		trackVideo: function(videoEl, isEnd){
 			var pos = videoEl.currentSrc.indexOf('video');
 			var video = decodeURI(videoEl.currentSrc.slice(pos));
-
-			for (var i=0; i < time_ranges.length; i++) {
-				var range = {};
-				range.start = Math.round(time_ranges.start(i));
-				range.end = Math.round(time_ranges.end(i));
-				ranges.push(range);
-			}
+			var timeStop = videoEl.currentTime;
 
 			var videoData = {
 				userId: this.userId,
 				contentId: this.videoId,
-				data:{
+				data: {
 					video: video,
-					rangeWatched: ranges
+					timeStop: timeStop,
+					end: isEnd || false
 				}
 			};
 			$.ajax({

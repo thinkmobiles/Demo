@@ -23,12 +23,8 @@ module.exports = (function () {
         videos: [{
             _id: false,
             video: {type: String},
-            rangeWatched: [{
-                _id: false,
-                start: {type: Number},
-                end: {type: Number}
-            }],
-            howMuchWatched: {type: Number}
+            stopTime: {type: String},
+            end: {type: Boolean, default: false}
         }],
 
         documents: [
@@ -38,13 +34,12 @@ module.exports = (function () {
             }
         ],
 
-
         createdAt: {type: Date, default: Date.now},
         updatedAt: {type: Date, default: Date.now}
     }, {collection: 'Tracks'});
 
-    trackSchema.pre('update', function () {
-        this.update({$set: {updatedAt: Date.now()}});
+    trackSchema.pre('save', function () {
+        this.update({$set: {updatedAt: Date.now}});
     });
 
     mongoose.model('Track', trackSchema);
