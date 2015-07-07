@@ -20,6 +20,7 @@ define([
 			this.videoId = options&&options.videoId?options.videoId:"55800aadcb7bb82c1f000002";
 			this.userId = options&&options.userId?options.userId:"55800aadcb7bb82c1f000002";
 			this.page = options&&options.page?options.page:"watchVideo";
+			this.indexList = options&&options.indexList?options.indexList:[];
 			App.getContent(this.videoId, this.userId,function(content){
 				self.content = content;
 				self.render();
@@ -38,12 +39,12 @@ define([
 							  {
 								  wait: true,
 								  success: function (model, response) {
-									  Backbone.history.navigate("#/"+self.page+"/"+self.videoId+"/"+self.userId, {trigger: true});
+									  Backbone.history.navigate("#/"+self.page+"/"+self.videoId+"/"+self.userId+(self.indexList.length?("/"+self.indexList):""), {trigger: true});
 									  
 								  },
 								  error: function (err) {
 									  console.log(err);
-									  Backbone.history.navigate("#/"+self.page+"/"+self.videoId+"/"+self.userId, {trigger: true});
+									  Backbone.history.navigate("#/"+self.page+"/"+self.videoId+"/"+self.userId+(self.indexList.length?("/"+self.indexList):""), {trigger: true});
 									  
 								  }
 							  });

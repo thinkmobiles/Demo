@@ -152,8 +152,8 @@ define([
 		chooseViewer: function (videoId, userId) {
             this.showModalView('chooseViewer',{videoId:videoId, userId:userId});
         },
-		contactMe: function (videoId, userId, page) {
-            this.showModalView('contactMe',{videoId:videoId, userId:userId, page});
+		contactMe: function (videoId, userId, page, indexList) {
+            this.showModalView('contactMe',{videoId:videoId, userId:userId, page:page, indexList:indexList});
         },
 		chooseImportant: function (videoId, userId) {
             this.showModalView('watchVideo',{videoId:videoId, userId:userId, page:"important"});

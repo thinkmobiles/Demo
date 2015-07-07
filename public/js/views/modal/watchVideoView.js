@@ -59,7 +59,7 @@ define([
 		},
 
 		contactMe: function(){
-			Backbone.history.navigate("#/contactMe/"+this.videoId+"/"+this.userId + "/" + window.location.hash.split("/")[1]+(this.indexList.length?"/"+this.indexList.join(","):""), {trigger: true});
+			Backbone.history.navigate("#/contactMe/"+this.videoId+"/"+this.userId + "/" + window.location.hash.split("/")[1]+(this.indexList.length?"/"+this.indexList:""), {trigger: true});
 		},
 
 		clickOnClose: function(){

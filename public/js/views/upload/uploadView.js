@@ -2,9 +2,10 @@ define([
     'text!templates/upload/uploadTemplate.html',
     'text!templates/upload/collapseQuestion.html',
     'text!templates/upload/videoElement.html',
-	'./progressBarView'
+	'./progressBarView',
+	"validation"
 
-], function (RegistrationTemplate, CollapseQuestion, VideoElement, progressBarView) {
+], function (RegistrationTemplate, CollapseQuestion, VideoElement, progressBarView, validation) {
     var View = Backbone.View.extend({
 
 		el:"#wrapper",
@@ -115,12 +116,6 @@ define([
 			}
 		},
 
-		decline: function(e){
-			e.preventDefault();
-			Backbone.history.navigate("#/home", {trigger: true});
-
-		},
-
 		save: function(e){
 			var self = this;
 			e.preventDefault();
@@ -130,10 +125,17 @@ define([
 				this.$el.find("textarea[name='desc']").addClass("error");
 				hasError = true;
 			}
-			if (!this.$el.find("textarea[name='contact']").val()){
-				this.$el.find("textarea[name='contact']").addClass("error");
+
+			if (!this.$el.find("input[name='phone']").val()||!validation.validPhone(this.$el.find("input[name='phone']").val())){
+				this.$el.find("input[name='phone']").closest(".uploadContainer").addClass("error");
 				hasError = true;
 			}
+
+			if (!this.$el.find("input[name='email']").val()||!validation.validEmail(this.$el.find("input[name='email']").val())){
+				this.$el.find(".uploadContainer input[name='email']").closest(".uploadContainer").addClass("error");
+				hasError = true;
+			}
+
 			
 			if (!this.$el.find(".uploadContainer.file input[name='video']").val()&&!this.$el.find(".uploadContainer.link input[name='video']").val()){
 				this.$el.find(".uploadContainer.file input[name='video']").closest(".uploadContainer").addClass("error");
@@ -173,7 +175,7 @@ define([
 					self.percentComplete = evt.loaded / evt.total;
 					self.percentComplete = parseInt(self.percentComplete * 100);
 
-					if (self.percentComplete == 100) {
+					if (self.percentComplete === 100) {
 						//remove dialog
 						self.modalProgres.hide();
 					}
@@ -201,7 +203,7 @@ define([
 
 			oReq.open("POST", "/upload", true);
 			oReq.onload = function(oEvent) {
-				if (oReq.status == 201) {
+				if (oReq.status === 201) {
 					try{
 						var res = JSON.parse(oReq.response);
 						$("<div><input type='text' value='"+res.url+"' readonly/></div>").dialog({
