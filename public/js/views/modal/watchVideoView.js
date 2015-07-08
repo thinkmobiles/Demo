@@ -73,6 +73,8 @@ define([
 
 		clickOnVideo:function(e){
 			var self = this;
+			var videoEl =self.$el.find(".surveyVideo")[0];
+			self.trackVideo(videoEl, false);
 			var index = $(e.target).closest("li").data("id");
 			$(e.target).closest("ul").find("li.current").removeClass("current");
 			$(e.target).closest("ul").find("li[data-id='"+index+"']").addClass("current");
@@ -216,8 +218,7 @@ define([
 		trackVideo: function(videoEl, isEnd){
 			var pos = videoEl.currentSrc.indexOf('video');
 			var video = decodeURI(videoEl.currentSrc.slice(pos));
-			var stopTime = videoEl.currentTime;
-			console.log(stopTime);
+			var stopTime = Math.round(videoEl.currentTime);
 
 			var videoData = {
 				userId: this.userId,

@@ -1,8 +1,80 @@
 <div class="info">
     <span>
-        <p>Hi Dear  <b><%=name %></b>!
-        When a Jumplead campaign begins each prospect is sent an email with a link to the demorocket video demonstration. <br/>
-        Jumplead's API will pass demorocket details pertaining to the prospect such as name,<br/>
-        email, organization etc. At this point DemoRocket takes over and collects the following for each prospect
+        <h1>Information for <%=companyName %></h1>
     </span>
+        <h2>New activity on your account </h2>
+        <p>
+            <ul>
+        <li>Name: <%=name %></li>
+        <li>Email: <%=email %></li>
+    </ul>
+        </p>
+
+        <h3>Video activity</h3>
+        <table cellspacing="0" border="1" cellpadding="0">
+            <tr>
+            <th>
+                <b>Name of video</b>
+            </th>
+            <th>
+                <b>Is watched to the end</b>
+            </th>
+            <th>
+                <b>How long watched</b>
+            </th>
+            </tr>
+            <% _.each(videos, function(item){%>
+            <tr>
+                <td>
+                    <a href="<%= process.env.HOST +'/'+ item.video%>"><%=item.video.split('/').pop() %></a>
+                </td>
+                <td>
+                    <%=item.end?'Yes':'No' %>
+                </td>
+                <td>
+
+                    <% var all = item.stopTime; %>
+                    <% var m = Math.floor(all/60); %>
+                    <% var s = all-m*60; %>
+                    <%= m+ ':' + (s<10?'0'+s:s)%>
+
+                </td>
+            </tr>
+            <% });%>
+        </table><br/>
+
+        <h3>Question activity:</h3>
+        <table cellspacing="0" border="1" cellpadding="0">
+            <tr>
+                <th>
+                    <b>Question</b>
+                </th>
+                <th>
+                    <b>Rate</b>
+                </th>
+            </tr>
+            <% _.each(questions, function(item){%>
+            <tr>
+                <td>
+                    <%=item.question %>
+                </td>
+                <td>
+                    <%= item.item%>
+
+                </td>
+            </tr>
+            <% });%>
+        </table><br/>
+
+         <h3>Download document: </h3>
+        <ul>
+            <% _.each(documents, function(item){%>
+            <li> <a href="<%= process.env.HOST +'/'+ item.document%>"><%=item.document.split('/').pop() %></a></li>
+            <% });%>
+        </ul>
+    <br/>
+    <hr/>
+         <footer>
+             Copyright DemoRocket 2015
+         </footer>
 </div>

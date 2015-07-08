@@ -12,6 +12,7 @@ module.exports = (function () {
         contentId: {type: ObjectId, ref: 'Content'},
         firstName: {type: String},
         lastName: {type: String},
+        email: {type: String},
         isSent: {type: Boolean, default: false},
 
         questions: [{
@@ -27,12 +28,10 @@ module.exports = (function () {
             end: {type: Boolean, default: false}
         }],
 
-        documents: [
-            {
+        documents: [{
                 _id: false,
                 document: {type: String}
-            }
-        ],
+            }],
 
         createdAt: {type: Date, default: Date.now},
         updatedAt: {type: Date, default: Date.now}
