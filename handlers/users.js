@@ -1005,7 +1005,151 @@ var routeHandler = function (db) {
         });
     };
 
+
     this.upload = function (req, res, next) {
+        var data = req.body;
+        var files = req.files;
+        async.waterfall([
+
+                //validation
+                function (waterfallCb) {
+                    validation(req, function (err) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        waterfallCb(null);
+
+                    });
+                },
+
+                // get current user from session
+                function (waterfallCb) {
+                    session.getUserDescription(req, function (err, obj) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        if (!obj) {
+                            return waterfallCb(new Error(401, {err: 'Unauthorized'}));
+                        }
+
+                        waterfallCb(null, obj);
+                    });
+                },
+
+                // get data about current user from DB
+                function (obj, waterfallCb) {
+                    ContentModel.findOne({ownerId: obj.id}, function (err, doc) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        if (doc) {
+                            var error = new Error();
+                            error.status = 401;
+                            error.message = 'You already have content';
+                            return waterfallCb(error);
+                        }
+                        var insObj = {
+                            ownerId: obj.id,
+                            name: data.name,
+                            email: data.email,
+                            phone: data.phone,
+                            mainVideoDescription: data.desc
+                        };
+                        waterfallCb(null, obj, insObj);
+                    });
+                },
+
+                // create content model
+                function (obj, insObj, waterfallCb) {
+                    var content = new ContentModel(insObj);
+                    content.save(function (err, result) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        waterfallCb(null, obj, result);
+                    });
+                },
+
+                // update user => set contentId
+                function (obj, result, waterfallCb) {
+                    var id = result._id;
+                    UserModel.findByIdAndUpdate(obj.id, {$set: {contentId: result._id}}, function (err, user) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        waterfallCb(null, user, id);
+                    });
+                },
+
+                // save data staff
+                function (user, id, waterfallCb) {
+                    async.series([
+                        function (seriesCb) {
+                            if (!!files['video']) {
+                                saveMainVideo(id, files, seriesCb);
+                            }
+                            else {
+                                var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString();
+                                upFile(url, files['logo'], function (err, logoUri) {
+                                    if (err) {
+                                        return seriesCb(err);
+                                    }
+                                    var saveLogoUri = logoUri.replace('public' + sep, '');
+                                    ContentModel.findByIdAndUpdate(id, {
+                                            $set: {
+                                                mainVideoUri: data.video,
+                                                logoUri: saveLogoUri
+                                            }
+                                        },
+                                        function (err) {
+                                            if (err) {
+                                                return seriesCb(err);
+                                            }
+                                            seriesCb(null);
+                                        });
+                                });
+                            }
+                        },
+
+                        function (seriesCb) {
+                            var index = [];
+                            for (var i = data.countQuestion; i > 0; i--) {
+                                index.push(i);
+                            }
+
+                            async.each(index, function (i, eachCb) {
+                                async.applyEachSeries([saveSurveyVideo, saveSurveyFiles], i, id, files, data, function (err) {
+                                    if (err) return eachCb(err);
+                                    eachCb();
+                                });
+                            }, function (err) {
+                                if (err) {
+                                    seriesCb(err);
+                                }
+                                seriesCb(null);
+                            });
+
+                        }], function (err) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        var url = process.env.HOME_PAGE + id + '/{{ctid}}';
+                        waterfallCb(null, url)
+                    });
+                    localFs.defaultPublicDir = 'public';
+                }],
+
+            function (err, url) {
+                if (err) {
+                    return next(err);
+                }
+                res.status(201).send({url: url});
+            });
+
+
+
+
+        /*//=============================================
         validation(req, function (err) {
             if (err) {
                 return next(err);
@@ -1015,7 +1159,7 @@ var routeHandler = function (db) {
                     return next(err);
                 }
                 if (!obj) {
-                    next(new Error(401, {err: 'Unauthorized'}));
+                    return next(new Error(401, {err: 'Unauthorized'}));
                 }
                 ContentModel.findOne({ownerId: obj.id}, function (err, doc) {
                     if (doc) {
@@ -1102,7 +1246,7 @@ var routeHandler = function (db) {
                     localFs.defaultPublicDir = 'public';
                 });
             });
-        });
+        });*/
     };
 
     this.pdf = function (req, res, next) {
