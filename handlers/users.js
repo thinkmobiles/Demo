@@ -923,7 +923,7 @@ var routeHandler = function (db) {
 
             upFile(url, files[name], function (err, videoUri) {
                 if (err) {
-                    callback(err);
+                    return callback(err);
                 }
                 var saveVideoUri = videoUri.replace('public' + sep, '');
                 var insSurvey = {
@@ -932,10 +932,10 @@ var routeHandler = function (db) {
                 };
                 ContentModel.findByIdAndUpdate(id, {$addToSet: {survey: insSurvey}}, function (err) {
                     if (err) {
-                        callback(err);
+                        return callback(err);
                     }
                     console.log('*************Uploading video ' + question + ' ended successfully');
-                    callback(null)
+                    return callback(null)
                 });
             });
         } else {
@@ -945,16 +945,16 @@ var routeHandler = function (db) {
             };
             ContentModel.findByIdAndUpdate(id, {$addToSet: {survey: insSurvey}}, function (err) {
                 if (err) {
-                    callback(err);
+                    return callback(err);
                 }
-                callback(null)
+                return callback(null)
             });
         }
 
 
     };
 
-    function saveSurveyFiles(num, id, files, data, cb) {
+    function saveSurveyFiles(num, id, files, data, mainCallback) {
         var question = 'question' + num;
         var name = 'file' + num;
         var sep = path.sep;
@@ -963,7 +963,7 @@ var routeHandler = function (db) {
             var error = new Error();
             error.message = "Some files missing";
             error.status = 401;
-            return cb(error);
+            return mainCallback(error);
         }
         if (!files[name].length) {
             arr.push(files[name]);
@@ -974,10 +974,10 @@ var routeHandler = function (db) {
         console.log('---Uploading pdf ' + question + ' start');
         var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString() + sep + 'survey' + num + sep + 'pdf';
 
-        async.each(arr, function (file, callback) {
+        async.each(arr, function (file, eachCb) {
             upFile(url, file, function (err, pdfUri) {
                 if (err) {
-                    return callback(err);
+                    return eachCb(err);
                 }
                 var name = file.originalFilename.split(sep).pop().slice(0, -4) + '.png';
 
@@ -991,18 +991,17 @@ var routeHandler = function (db) {
                     "survey.question": data[question]
                 }, {$addToSet: {"survey.$.pdfUri": savePdfUri}}, function (err, content) {
                     if (err) {
-                        return callback(err);
+                        return eachCb(err);
                     }
-                    callback();
+                    eachCb();
                 });
             });
         }, function (err) {
             if (err) {
-                return cb(err);
+                return mainCallback(err);
             } else {
-
                 console.log('---Uploading pdf ' + question + ' ended successfully');
-                cb();
+                mainCallback();
             }
         });
     };
@@ -1047,15 +1046,15 @@ var routeHandler = function (db) {
                             if (err) return next(err);
 
                             async.series([
-                                function (cb) {
+                                function (seriesCb) {
                                     if (!!files['video']) {
-                                        saveMainVideo(id, files, cb);
+                                        saveMainVideo(id, files, seriesCb);
                                     }
                                     else {
                                         var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString();
                                         upFile(url, files['logo'], function (err, logoUri) {
                                             if (err) {
-                                                return callback(err);
+                                                return seriesCb(err);
                                             }
                                             var saveLogoUri = logoUri.replace('public' + sep, '');
                                             ContentModel.findByIdAndUpdate(id, {
@@ -1066,20 +1065,30 @@ var routeHandler = function (db) {
                                                 },
                                                 function (err) {
                                                     if (err) {
-                                                        return callback(err);
+                                                        return seriesCb(err);
                                                     }
-                                                    callback(null);
+                                                    seriesCb(null);
                                                 });
                                         });
                                     }
                                 },
-                                function (cb) {
+                                function (seriesCb) {
+                                    var index = [];
                                     for (var i = data.countQuestion; i > 0; i--) {
+                                    index.push(i);
+                                    };
+
+                                    async.each(index, function(i, eachCb){
                                         async.applyEachSeries([saveSurveyVideo, saveSurveyFiles], i, id, files, data, function () {
-                                            if (err) return cb(err);
+                                            if (err) return eachCb(err);
+                                            eachCb();
                                         });
-                                    }
-                                    cb();
+                                    }, function(err){
+                                        if(err){
+                                            seriesCb(err);
+                                        }
+                                        seriesCb(null);
+                                    });
 
                                 }], function (err) {
                                 if (err) {
