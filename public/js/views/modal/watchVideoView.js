@@ -65,21 +65,22 @@ define([
 		},
 
 		shareOnFacebook:function(){
+			var self = this;
+			console.log(window.location.origin+"/"+self.content.toJSON().content.logoUri);
 			FB.ui(
 				{
 					method: 'feed',
 					name: 'DemoRocket Video',
-					source:"http://134.249.164.53:8838/video/559659f63e3d511c49000004/Jumplead%20Overview.mp4",
-					link: 'http://134.249.164.53:8838/#/watchVideo/559659f63e3d511c49000004/558a78fa5a709eff758b4567',
-					picture: 'http://134.249.164.53:8838/video/559659f63e3d511c49000004/g-logo.jpg',
+					link: window.location.href.replace("watchVideo","chooseImportant"),
+					picture: window.location.origin+"/"+self.content.toJSON().content.logoUri,
 					caption: 'Reference Documentation',
-					description: 'Dialogs provide a simple, consistent interface for applications to interface with users.'
+					description: self.content.toJSON().content.mainVideoDescription
 				},
 				function(response) {
 					if (response && response.post_id) {
-						alert('Post was published.');
+						console.log('Post was published.');
 					} else {
-						alert('Post was not published.');
+						console.log('Post was not published.');
 					}
 				}
 			);
@@ -95,6 +96,8 @@ define([
 
 		clickOnVideo:function(e){
 			var self = this;
+			var videoEl =self.$el.find(".surveyVideo")[0];
+			self.trackVideo(videoEl, false);
 			var index = $(e.target).closest("li").data("id");
 			$(e.target).closest("ul").find("li.current").removeClass("current");
 			$(e.target).closest("ul").find("li[data-id='"+index+"']").addClass("current");
@@ -238,8 +241,7 @@ define([
 		trackVideo: function(videoEl, isEnd){
 			var pos = videoEl.currentSrc.indexOf('video');
 			var video = decodeURI(videoEl.currentSrc.slice(pos));
-			var stopTime = videoEl.currentTime;
-			console.log(stopTime);
+			var stopTime = Math.round(videoEl.currentTime);
 
 			var videoData = {
 				userId: this.userId,

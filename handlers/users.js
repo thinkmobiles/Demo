@@ -11,8 +11,8 @@ var REG_EXP = require('../constants/regExp');
 
 var badRequests = require('../helpers/badRequests');
 
-
-var LocalFs = require( './fileStorage/localFs' )();
+var _ = require('../public/js/libs/underscore/underscore-min');
+var LocalFs = require('./fileStorage/localFs')();
 var localFs = new LocalFs();
 var path = require('path');
 var fs = require('fs');
@@ -81,7 +81,7 @@ var routeHandler = function (db) {
     function validateUserSignUp(userData, callback) { //used for signUpMobile, signUpWeb;
         var errMessage;
 
-        if (!userData || !userData.email || !userData.firstName || !userData.lastName||!userData.userName) {
+        if (!userData || !userData.email || !userData.firstName || !userData.lastName || !userData.userName) {
             return callback(badRequests.NotEnParams({reqParams: ['email', 'pass', 'firstName', 'lastName']}));
         }
 
@@ -193,7 +193,7 @@ var routeHandler = function (db) {
                                 accessToken: removeUser.accessToken,
                                 resreshToken: removeUser.resreshToken
                             };
-                            UserModel.findByIdAndUpdate(user._id, obj, function (err, updateUser) {
+                            UserModel.findByIdAndUpdate(user._id, obj, {new: true}, function (err, updateUser) {
                                 if (err) {
                                     return next(err);
                                 }
@@ -264,45 +264,44 @@ var routeHandler = function (db) {
     };
 
 
-
-    this.sendContactMe = function (req, res, next){
+    this.sendContactMe = function (req, res, next) {
         var contentId = req.body.contentId;
         var body = req.body;
-        if(!contentId){
+        if (!contentId) {
             var error = new Error();
             error.message = 'Content Id is not Defined';
             error.status = 403;
             return next(error)
         }
         ContentModel.findById(contentId, function (err, content) {
-            if(err) {
+            if (err) {
                 return next(err);
             }
-            if(!content) {
+            if (!content) {
                 var error = new Error();
                 error.message = 'Content Not Found';
                 error.status = 404;
                 return next(error);
             }
-                var data = {
-                    companyName: content.name,
-                    companyEmail: content.email,
-                    name: body.name||'NoName',
-                    email: body.email || '-',
-                    description: body.description || 'NoDescription'
-                };
-                mailer.contactMe(data);
-                res.status(200).send('Successful Send');
+            var data = {
+                companyName: content.name,
+                companyEmail: content.email,
+                name: body.name || 'NoName',
+                email: body.email || '-',
+                description: body.description || 'NoDescription'
+            };
+            mailer.contactMe(data);
+            res.status(200).send('Successful Send');
         });
     };
 
 
     this.currentUser = function (req, res, next) {
         session.getUserDescription(req, function (err, obj) {
-            if(err){
+            if (err) {
                 return next(err);
             }
-            if(!obj){
+            if (!obj) {
                 var error = new Error();
                 error.message = "Unauthorized";
                 error.status = 401;
@@ -366,20 +365,20 @@ var routeHandler = function (db) {
     this.avatar = function (req, res, next) {
         var userName = req.params.userName;
         if (!userName) {
-        var error = new Error();
-        error.message = "UserName is required";
-        error.status = 401;
-        return next(error);
-    }
+            var error = new Error();
+            error.message = "UserName is required";
+            error.status = 401;
+            return next(error);
+        }
 
         UserModel.findOne({userName: userName}, function (err, user) {
-            if(err) {
+            if (err) {
                 return next(err);
             }
-            if(!user){
-                return  res.status(200).send({avatar: ""});
+            if (!user) {
+                return res.status(200).send({avatar: ""});
             }
-                return res.status(200).send({avatar: user.avatar});
+            return res.status(200).send({avatar: user.avatar});
         });
     };
 
@@ -436,13 +435,13 @@ var routeHandler = function (db) {
                     if (err) {
                         return cb(err);
                     }
-                  jumplead.setContact(options.ownerId, prospect, function (err, contact) {
-                            if(err) {
-                                cb(err);
-                            }
+                    jumplead.setContact(options.ownerId, prospect, function (err, contact) {
+                        if (err) {
+                            cb(err);
+                        }
 
-                            cb(null, contact);
-                        });
+                        cb(null, contact);
+                    });
 
                 });
             }
@@ -452,7 +451,7 @@ var routeHandler = function (db) {
             }
             var contact = rezult[1];
             res.status(201).send({
-               id: contact.id
+                id: contact.id
             });
         });
     };
@@ -492,89 +491,93 @@ var routeHandler = function (db) {
         var content;
         var data;
 
-            ContentModel.findById(contentId, function (err, foundContent) {
+        ContentModel.findById(contentId, function (err, foundContent) {
+            if (err) {
+                return next(err);
+            }
+            if (!foundContent) {
+                var error = new Error();
+                error.message = 'Content Not Found';
+                error.status = 404;
+                return next(error);
+            }
+            content = foundContent;
+
+            UserModel.findById(content.ownerId, function (err, user) {
                 if (err) {
                     return next(err);
                 }
-                if(!foundContent){
+                if (!user) {
                     var error = new Error();
-                    error.message = 'Content Not Found';
+                    error.message = 'User Not Found';
                     error.status = 404;
                     return next(error);
                 }
-                content = foundContent;
-
-                UserModel.findById(content.ownerId , function (err, user) {
+                jumplead.getContact(user._id, prospectId, function (err, prospect) {
                     if (err) {
                         return next(err);
                     }
-                    if(!user){
-                        var error = new Error();
-                        error.message = 'User Not Found';
-                        error.status = 404;
-                        return next(error);
-                    }
-                    jumplead.getContact(user._id, prospectId, function (err, prospect) {
+
+                    TrackModel.findOneAndUpdate({
+                        "contentId": contentId,
+                        "firstName": prospect.first_name,
+                        "lastName": prospect.last_name
+                    }, {
+                        $set: {
+                            "contentId": contentId,
+                            "userId": prospect.id,
+                            "firstName": prospect.first_name,
+                            "lastName": prospect.last_name,
+                            "email": prospect.email,
+                            "isSent": false,
+                            "updatedAt": Date.now()
+                        }
+                    }, {upsert: true}, function (err) {
                         if (err) {
                             return next(err);
                         }
 
-                        TrackModel.findOneAndUpdate({
-                            "contentId": contentId,
-                            "firstName": prospect.first_name,
-                            "lastName": prospect.last_name
-                        }, {
-                            $set: {
-                                "contentId": contentId,
-                                "firstName": prospect.first_name,
-                                "lastName": prospect.last_name
+                        data = {
+                            content: content,
+                            contact: {
+                                firstName: prospect.first_name,
+                                lastName: prospect.last_name,
+                                email: prospect.email
                             }
-                        }, {upsert: true}, function (err) {
-                            if (err) {
-                                return next(err);
-                            }
-
-                            data = {
-                                content: content,
-                                contact: {
-                                    firstName: prospect.first_name,
-                                    lastName: prospect.last_name,
-                                    email: prospect.email
-                                }
-                            };
-                            res.status(200).send(data);
-                        });
+                        };
+                        res.status(200).send(data);
                     });
                 });
             });
-        };
+        });
+    };
 
     this.allContacts = function (req, res, next) {
         var usrId = req.params.id;
-       jumplead.getAllContacts(usrId, function (err, prospects) {
-                    if(err){
-                        return next(err);
-                    }
-                    res.status(200).send(prospects);
-                });
+        jumplead.getAllContacts(usrId, function (err, prospects) {
+            if (err) {
+                return next(err);
+            }
+            res.status(200).send(prospects);
+        });
     };
 
     this.contact = function (req, res, next) {
         var uId = mongoose.Types.ObjectId(req.params.uid);
         var cId = mongoose.Types.ObjectId(req.params.cid);
-       jumplead.getContact(uId, cId, function (err, prospects) {
-                    if(err){
-                        return next(err);
-                    }
-                    res.status(200).send(prospects);
-                });
+        jumplead.getContact(uId, cId, function (err, prospects) {
+            if (err) {
+                return next(err);
+            }
+            res.status(200).send(prospects);
+        });
     };
 
     this.allUsers = function (req, res, next) {
-            UserModel.find({}, function (err, users) {
-                if(err) next(err);
-                res.status(200).send(users);
-            });
+        UserModel.find({}, function (err, users) {
+            if (err) next(err);
+            res.status(200).send(users);
+        });
 
     };
 
@@ -587,49 +590,218 @@ var routeHandler = function (db) {
             "userId": userId,
             "contentId": contentId,
             "isSent": false
-        }, {$set: {questions: data.questions}}, {upsert:true}, function (err) {
+        }, {$set: {questions: data.questions}}, {upsert: true}, function (err) {
             if (err) {
                 return next(err);
             }
-            res.status(200).send("Successful update");
-
+            TrackModel.findOneAndUpdate({
+                "userId": userId,
+                "contentId": contentId,
+                "isSent": false
+            }, {
+                $set: {
+                    updatedAt: Date.now()
+                }
+            }, function (err) {
+                if (err) {
+                    return next(err);
+                }
+                res.status(200).send("Successful update");
+            });
         });
     };
 
+    /*    this.trackDocument = function (req, res, next) {
+     var data = req.body;
+     var userId = data.userId;
+     var contentId = data.contentId;
+
+     TrackModel.findOneAndUpdate({
+     "userId": userId,
+     "contentId": contentId,
+     "isSent": false
+     }, {
+     $addToSet: {
+     "documents": {
+     document: data.document
+     }
+     }
+     }, {upsert: true}, function (err, doc) {
+     if (err) {
+     return next(err);
+     }
+     TrackModel.findOneAndUpdate({
+     "userId": userId,
+     "contentId": contentId,
+     "isSent": false
+     }, {
+     $set: {
+     updatedAt: Date.now()
+     }
+     }, function (err) {
+     if (err) {
+     return next(err);
+     }
+     res.status(200).send("Successful update");
+     });
+     });
+     };*/
+    //=======================/
     this.trackDocument = function (req, res, next) {
-        var data = req.body;
-        var userId = data.userId;
-        var contentId = data.contentId;
-        TrackModel.findOneAndUpdate({
+        var body = req.body;
+        if (!body.document || !body.userId || !body.contentId) {
+            return res.status(200).send("Invalid parameters");
+        }
+        var userId = body.userId;
+        var contentId = body.contentId;
+        var document = {
+            document: body.document
+        };
+        var obj = {
             "userId": userId,
             "contentId": contentId,
-            "isSent": false
-        }, {$addToSet: {"documents": data.document}}, {upsert:true}, function (err, doc) {
+            "isSent": false,
+            "documents.document": document
+        };
+
+        TrackModel.findOne(obj, function (err, doc) {
             if (err) {
                 return next(err);
             }
-            res.status(200).send("Successful update");
+            if (!doc) {
+                TrackModel.findOneAndUpdate({
+                    "userId": userId,
+                    "contentId": contentId,
+                    "isSent": false
+                }, {
+                    $addToSet: {
+                        "documents": {
+                            document: body.document
+                        }
+                    }
+                }, {upsert: true, new: true}, function (err, doc) {
+                    if (err) {
+                        return next(err);
+                    }
+                    TrackModel.findByIdAndUpdate(doc._id, {
+                        $set: {
+                            updatedAt: Date.now()
+                        }
+                    }, function (err) {
+                        if (err) {
+                            return next(err);
+                        }
+                        return res.status(200).send("Successful create");
+                    });
+                });
+            } else {
+                var findDocument = _.findWhere(doc.documents, {document: document});
 
+                if (!findDocument) {
+                    TrackModel.findOneAndUpdate({
+                        "userId": userId,
+                        "contentId": contentId,
+                        "isSent": false,
+                    }, {
+                        $addToSet: {
+                            "documents": {
+                                document: body.document
+                            }
+                        }
+                    }, function (err) {
+                        if (err) {
+                            return next(err);
+                        }
+                        TrackModel.findByIdAndUpdate(doc._id, {
+                            $set: {
+                                updatedAt: Date.now()
+                            }
+                        }, function (err) {
+                            if (err) {
+                                return next(err);
+                            }
+                            return res.status(200).send("Successful create");
+                        });
+                    });
+                } else {
+                    res.status(200).send("User already download this document");
+                }
+            }
         });
     };
+    // ======================
 
     this.trackVideo = function (req, res, next) {
         var body = req.body;
+        var data = body.data;
+        if (!data.video || !data.stopTime || !body.userId || !body.contentId) {
+            return res.status(403).send("Invalid parameters");
+        }
         var userId = body.userId;
         var contentId = body.contentId;
-        TrackModel.findOneAndUpdate({
+        var obj = {
             "userId": userId,
             "contentId": contentId,
-            "isSent": false
-        }, {$addToSet: {videos: body.data}}, {upsert:true}, function (err) {
+            "isSent": false,
+            "videos.video": body.data.video
+        };
+
+        TrackModel.findOne(obj, function (err, doc) {
             if (err) {
                 return next(err);
             }
-            res.status(200).send("Successful update");
+            if (!doc) {
+                TrackModel.findOneAndUpdate({
+                    "userId": userId,
+                    "contentId": contentId,
+                    "isSent": false
+                }, {
+                    "userId": userId,
+                    "contentId": contentId,
+                    "isSent": false,
+                    "updatedAt": Date.now()
+                }, {upsert: true, new: true}, function (err, doc) {
+                    if (err) {
+                        return next(err);
+                    }
+                    TrackModel.findByIdAndUpdate(doc._id, {
+                        $addToSet: {
+                            "videos": body.data
+                        }
+                    }, function (err) {
+                        if (err) {
+                            return next(err);
+                        }
+                        return res.status(200).send("Successful create");
+                    });
+                });
+            } else {
+                var fvideo = _.findWhere(doc.videos, {video: body.data.video});
 
+                if (!fvideo.end && fvideo.stopTime < body.data.stopTime) {
+                    TrackModel.findOneAndUpdate({
+                        "userId": userId,
+                        "contentId": contentId,
+                        "isSent": false,
+                        "videos.video": body.data.video
+                    }, {
+                        $set: {
+                            "videos.$.stopTime": body.data.stopTime,
+                            "videos.$.end": body.data.end,
+                            updatedAt: Date.now()
+                        }
+                    }, function (err) {
+                        if (err) {
+                            return next(err);
+                        }
+                        return res.status(200).send("Successful update");
+                    });
+                } else {
+                    res.status(200).send("User already watched this video longer time");
+                }
+            }
         });
     };
-
 
     function upFile(target, file, callback) {
         fs.readFile(file.path, function (err, data) {
@@ -673,6 +845,7 @@ var routeHandler = function (db) {
             err.message = 'Email validation failed';
             return callback(err);
         }
+
         for (var i = body.countQuestion; i > 0; i--) {
             var videoName = 'video' + i;
             var pdfName = 'file' + i;
@@ -695,7 +868,7 @@ var routeHandler = function (db) {
                 err.message = 'Survey question is not found';
                 return callback(err);
             }
-            //typeValidation
+
             if (files[videoName] && formatsVideo.indexOf(videoExt) == -1) {
                 err.message = 'Survey video format is not support';
                 return callback(err);
@@ -723,8 +896,6 @@ var routeHandler = function (db) {
             if (err) {
                 return callback(err);
             }
-
-            var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString();
             upFile(url, files['logo'], function (err, logoUri) {
                 if (err) {
                     return callback(err);
@@ -836,8 +1007,6 @@ var routeHandler = function (db) {
         });
     };
 
-
-    //========================================================
     this.upload = function (req, res, next) {
         validation(req, function (err) {
             if (err) {
