@@ -166,6 +166,80 @@ var routeHandler = function (db) {
             });
         }
         var code = req.query.code;
+
+        async.waterfall([
+            function (waterfallCb) {
+                session.getUserDescription(req, function (err, obj) {
+                    if (err) {
+                        return waterfallCb(err);
+                    }
+                    waterfallCb(null, obj);
+                });
+            },
+
+            function (obj, waterfallCb) {
+                jumplead.getToken(code, obj.id, function (err) {
+                    if (err) {
+                        return waterfallCb(err)
+                    }
+                    waterfallCb(null, obj)
+                });
+            },
+
+            function (obj, waterfallCb) {
+                jumplead.checkUser(obj.id, function (err, user, email) {
+                    if (err) {
+                        return waterfallCb(err);
+                    }
+                    waterfallCb(null, obj, user, email);
+                });
+            },
+
+            function (obj, user, email, waterfallCb) {
+                if (user) {
+                    UserModel.findByIdAndRemove(obj.id, function (err, removeUser) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        removeUser = removeUser.toObject();
+                        var upObj = {
+                            firstName: removeUser.firstName,
+                            lastName: removeUser.lastName,
+                            email: removeUser.email,
+                            pass: removeUser.pass,
+                            organization: removeUser.organization,
+                            accessToken: removeUser.accessToken,
+                            resreshToken: removeUser.resreshToken
+                        };
+                        UserModel.findByIdAndUpdate(user._id, upObj, {new: true}, function (err, updateUser) {
+                            if (err) {
+                                return waterfallCb(err);
+                            }
+                            console.log('You update some exist user');
+                            session.login(req, updateUser);
+                            return waterfallCb(null);
+
+                        });
+                    });
+                } else {
+                    UserModel.findByIdAndUpdate(obj.id, {jumpleadEmail: email}, function (err, updateUser) {
+                        if (err) {
+                            return next(err);
+                        }
+                        console.log('Email successfully updated');
+                    });
+                    return waterfallCb(null);
+                }
+            }], function (err) {
+            if (err) {
+                return next(err);
+            }
+            return res.redirect('/#/home');
+        });
+
+
+      /*  //=================================
+
         session.getUserDescription(req, function (err, obj) {
             if (err) {
                 return next(err);
@@ -213,56 +287,8 @@ var routeHandler = function (db) {
                     }
                 });
             });
-        });
+        });*/
     };
-
-
-    this.sendTrackInfo = function (req, res, next) {
-        var time = Date.now() + 2 * 60 * 60 * 1000;
-        var conditions = {
-            'isSent': false
-            /*, 'updatedAt': {gte: time}*/
-        };
-        var update = {
-            isSent: true
-        };
-
-        TrackModel.find(conditions, function (err, tracks) {
-            if (err) {
-                return next(err);
-            }
-            if (!tracks) {
-                var error = new Error();
-                error.message = 'No data to send';
-                error.status = 304;
-                return next(error);
-            }
-
-            ContentModel.populate(tracks, {path: 'contentId'}, function (err, docs) {
-                if (err) {
-                    return next(err);
-                }
-                async.forEachSeries(docs, function (doc, cb) {
-                    var data = {
-                        companyName: doc.contentId.name,
-                        companyEmail: 'johnnye.be@gmail.com', //doc.contentId.email,
-                    };
-                    mailer.sendTrackInfo(data, cb);
-                }, function (err) {
-                    if (err) {
-                        return next(err);
-                    }
-                    TrackModel.update(conditions, update, {multi: true}, function (err, tracks) {
-                        if (err) {
-                            return next(err);
-                        }
-                        res.status(200).send('Successful Send');
-                    });
-                });
-            });
-        });
-    };
-
 
     this.sendContactMe = function (req, res, next) {
         var contentId = req.body.contentId;
@@ -437,7 +463,7 @@ var routeHandler = function (db) {
                     }
                     jumplead.setContact(options.ownerId, prospect, function (err, contact) {
                         if (err) {
-                            cb(err);
+                           return cb(err);
                         }
 
                         cb(null, contact);
@@ -474,7 +500,7 @@ var routeHandler = function (db) {
                 }
                 console.log(found);
                 if (!found) {
-                    return res.status(404).send({err: 'Not found'});
+                    return res.status(404).send({err: 'Content Not Found'});
                 }
                 var url = process.env.HOME_PAGE + found._id + '/{{ctid}}';
                 res.status(201).send({url: url});
@@ -483,7 +509,6 @@ var routeHandler = function (db) {
 
     };
 
-//ToDo: use async
     // url = '/:contentId/:ctid'
     this.getMain = function (req, res, next) {
         var contentId = req.params.contentId;
@@ -611,42 +636,6 @@ var routeHandler = function (db) {
         });
     };
 
-    /*    this.trackDocument = function (req, res, next) {
-     var data = req.body;
-     var userId = data.userId;
-     var contentId = data.contentId;
-
-     TrackModel.findOneAndUpdate({
-     "userId": userId,
-     "contentId": contentId,
-     "isSent": false
-     }, {
-     $addToSet: {
-     "documents": {
-     document: data.document
-     }
-     }
-     }, {upsert: true}, function (err, doc) {
-     if (err) {
-     return next(err);
-     }
-     TrackModel.findOneAndUpdate({
-     "userId": userId,
-     "contentId": contentId,
-     "isSent": false
-     }, {
-     $set: {
-     updatedAt: Date.now()
-     }
-     }, function (err) {
-     if (err) {
-     return next(err);
-     }
-     res.status(200).send("Successful update");
-     });
-     });
-     };*/
-    //=======================/
     this.trackDocument = function (req, res, next) {
         var body = req.body;
         if (!body.document || !body.userId || !body.contentId) {
@@ -729,7 +718,6 @@ var routeHandler = function (db) {
             }
         });
     };
-    // ======================
 
     this.trackVideo = function (req, res, next) {
         var body = req.body;
@@ -1173,37 +1161,6 @@ var routeHandler = function (db) {
             res.status(200).send('Success!!');
         });
     };
-
-
-    this.confirmEmail = function (req, res, next) {
-        var confirmToken = req.params.confirmToken;
-        var condition = {
-            confirmToken: confirmToken
-        };
-        var update = {
-            confirmToken: null
-        };
-
-        ProspectModel.findOneAndUpdate(condition, update, function (err, userModel) {
-            if (err) {
-                //return self.renderError(err, req, res);
-                return next(err);
-            }
-
-            if (!userModel) {
-                //return self.renderError(badRequests.NotFound(), req, res);
-                return next(badRequests.NotFound());
-            }
-
-            //res.render('successConfirm');
-            res.status(200).send({success: 'success confirmed'});
-
-        });
-
-    };
-    //"https://account.mooloop.com/oauth/authorize?response_type=code&client_id=FcDOCBsnZ2TtKbHTGULY&redirect_uri=http://demo.com:8838/redirect&scope=jumplead.contacts"
-
-
 };
 
 module.exports = routeHandler;

@@ -57,7 +57,6 @@ var JumpleadModule = function (db) {
                 }
                 console.log(body);
                 if(!body.access_token){
-
                     var err = new Error();
                     err.message = "For some reason you can refresh access token";
                     err.status = 404;
@@ -65,7 +64,6 @@ var JumpleadModule = function (db) {
                 }
                 UserModel.findByIdAndUpdate(userId, {$set: {
                     accessToken: body.access_token
-                    //,refreshToken: body.refresh_token
                 }}, function (err) {
                     if (err) {
                         return callback(err);
@@ -78,51 +76,16 @@ var JumpleadModule = function (db) {
         });//findById
     };
 
-    this.getContact = function (userId, contactId, callback) {
-        UserModel.findById(userId, function (err, user) {
-            if (err) {
-                return callback(err);
-            }else if (!user) {
-                return callback(new Error(404, {err: 'User not found'}));
-            }
-
-            request.get({
-                url: CONTACTS_URL + '/' + contactId,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + user.accessToken
-                }
-            }, function (error, response, body) {
-                console.log(body);
-                try{
-                    body = JSON.parse(body);
-                    console.log(body);
-                }catch(e){
-                    console.log(e);
-                }
-                if (body.status == '401') {
-                    return (function(){
-                        self.refToken(userId, function (err) {
-                            if (err) {
-                                return callback(err)
-                            }
-                            return self.getContact(userId, contactId, callback)
-                    });
-                })();
-                } else if (error) {
-                    return callback(error);
-                }
-                return callback(null, body.data)
-            });
-        });
-    };
 
     this.setContact = function (userId, contact, callback) {
         UserModel.findById(userId, function (err, user) {
             if (err) {
                 return callback(err);
             }else if (!user) {
-                return callback(new Error(404, {err: 'User not found'}));
+                var error = new Error();
+                error.message = 'User not found';
+                error.status = 404;
+                return callback(error);
             }
             var body = {
                 data:{
@@ -161,6 +124,44 @@ var JumpleadModule = function (db) {
         });
     };
 
+    this.getContact = function (userId, contactId, callback) {
+        UserModel.findById(userId, function (err, user) {
+            if (err) {
+                return callback(err);
+            }else if (!user) {
+                return callback(new Error(404, {err: 'User not found'}));
+            }
+
+            request.get({
+                url: CONTACTS_URL + '/' + contactId,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + user.accessToken
+                }
+            }, function (error, response, body) {
+                console.log(body);
+                try{
+                    body = JSON.parse(body);
+                    console.log(body);
+                }catch(e){
+                    console.log(e);
+                }
+                if (body.status == '401') {
+                    return (function(){
+                        self.refToken(userId, function (err) {
+                            if (err) {
+                                return callback(err)
+                            }
+                            return self.getContact(userId, contactId, callback)
+                        });
+                    })();
+                } else if (error) {
+                    return callback(error);
+                }
+                return callback(null, body.data)
+            });
+        });
+    };
 
     this.getAllContacts = function (userId, callback) {
 
@@ -175,18 +176,22 @@ var JumpleadModule = function (db) {
                     'Authorization': 'Bearer ' + user.accessToken
                 }
             }, function (error, response, body) {
+                console.log(body);
                 try{
                     body = JSON.parse(body);
+                    console.log(body);
                 }catch(e){
                     console.log(e);
                 }
                 if (body.status == '401') {
-                    self.refToken(userId, function (err) {
-                        if (err) {
-                            return callback(err)
-                        }
-                        return self.getContact(userId, callback)
-                    });
+                    return (function(){
+                        self.refToken(userId, function (err) {
+                            if (err) {
+                                return callback(err)
+                            }
+                            return self.getAllContacts(userId, callback)
+                        });
+                    })();
                 } else if (err) {
                     return callback(err);
                 }

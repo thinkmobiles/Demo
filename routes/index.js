@@ -22,7 +22,6 @@ module.exports = function (app, db) {
     app.post('/trackDocument', handler.trackDocument);
     app.post('/trackQuestion', handler.trackQuestion);
     app.post('/trackVideo', handler.trackVideo);
-    //app.post('/trackProspect', handler.trackProspect);
     app.get('/content', handler.content);
     app.post('/prospectSignUp', handler.prospectSignUp);
 
@@ -38,7 +37,6 @@ module.exports = function (app, db) {
     app.get('/content/:contentId/:ctid', handler.getMain);
     app.get('/allUsers', handler.allUsers);
     app.post('/sendContactMe', handler.sendContactMe);
-    app.get('/sendTrackInfo', handler.sendTrackInfo);
     app.post('/upload', multipart, handler.upload);
     app.post('/pdf', multipart, handler.pdf);
 
