@@ -1,7 +1,7 @@
 'use strict';
 
 var MailerModule = function () {
-    var _ = require('./../public/js/libs/underscore/underscore-min.js');
+    var _ = require('./../public/js/libs/underscore/underscore.js');
     var nodemailer = require("nodemailer");
     var fs = require('fs');
     var FROM = "DemoRocket <" + 'info@demorocket.com' + ">";
@@ -65,7 +65,7 @@ var MailerModule = function () {
         });
     };
     this.sendTrackInfo = function (options, callback) {
-        fs.readFile('public/templates/mailer/contactMe.html', 'utf8', function (err, template) {
+        fs.readFile('public/templates/mailer/trackInfo.html', 'utf8', function (err, template) {
             var templateOptions;
             var mailOptions;
 
@@ -80,7 +80,9 @@ var MailerModule = function () {
                     companyName: options.companyName,
                     name: options.name,
                     email: options.email,
-                    description: options.description
+                    videos: options.videos,
+                    documents: options.documents,
+                    questions: options.questions
                 };
 
                 mailOptions = {
