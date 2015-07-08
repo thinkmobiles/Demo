@@ -1,7 +1,8 @@
 define([
     'text!templates/modal/contactMeTemplate.html',
 	"models/contactModel",
-], function ( modalTemplate, ContactModel) {
+	"validation"
+], function ( modalTemplate, ContactModel, validation) {
 
     var View;
 	
@@ -19,6 +20,8 @@ define([
 			this.videoModal = null;
 			this.videoId = options&&options.videoId?options.videoId:"55800aadcb7bb82c1f000002";
 			this.userId = options&&options.userId?options.userId:"55800aadcb7bb82c1f000002";
+			this.page = options&&options.page?options.page:"watchVideo";
+			this.indexList = options&&options.indexList?options.indexList:[];
 			App.getContent(this.videoId, this.userId,function(content){
 				self.content = content;
 				self.render();
@@ -28,24 +31,43 @@ define([
 		send: function(){
 			var self = this;
 			var contactModel = new ContactModel();
+			var hasError = false;
+			this.$el.find(".error").removeClass("error");
+			
+			if (!validation.validName(this.$el.find(".name").val())){
+				this.$el.find(".name").addClass("error");
+				hasError = true;
+			}
+
+			if (!validation.validEmail(this.$el.find(".email").val())){
+				this.$el.find(".email").addClass("error");
+				hasError = true;
+			}
+
+			if (!this.$el.find(".desc").val()){
+				this.$el.find(".desc").addClass("error");
+				hasError = true;
+			}
+			
+			if (hasError)return;
+			
 			contactModel.save({
 				contentId : this.videoId,
 				name : this.$el.find(".name").val(),
 				email : this.$el.find(".email").val(),
 				description : this.$el.find(".desc").val()
-            },
-							  {
-								  wait: true,
-								  success: function (model, response) {
-									  Backbone.history.navigate("#/watchVideo/"+self.videoId+"/"+self.userId, {trigger: true});
-									  
-								  },
-								  error: function (err) {
-									  console.log(err);
-									  Backbone.history.navigate("#/watchVideo/"+self.videoId+"/"+self.userId, {trigger: true});
-									  
-								  }
-							  });
+            },{
+				wait: true,
+				success: function (model, response) {
+					Backbone.history.navigate("#/"+self.page+"/"+self.videoId+"/"+self.userId+(self.indexList.length?("/"+self.indexList):""), {trigger: true});
+					
+				},
+				error: function (err) {
+					console.log(err);
+					Backbone.history.navigate("#/"+self.page+"/"+self.videoId+"/"+self.userId+(self.indexList.length?("/"+self.indexList):""), {trigger: true});
+					
+				}
+			});
 
 			
 		},
@@ -58,7 +80,6 @@ define([
 		
         // render template (once! because google maps)
         render: function () {
-			console.log(this.content);
 			 var formString = _.template(modalTemplate)({
 				 contact:this.content.toJSON().contact,
              });

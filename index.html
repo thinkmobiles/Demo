@@ -2,6 +2,9 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta property="og:title" content="title" />
+  <meta property="og:description" content="description" />
+  <meta property="og:image" content="thumbnail_image" />
   <title>DemoRocket</title>
   <meta name="viewport" content="width=device-width">
   <link href="js/libs/jqueryui/themes/base/all.css" rel="stylesheet" type="text/css">
@@ -10,6 +13,24 @@
   <link rel="icon" href="i/favicon.ico">
 </head>
 <body>
+  <script>
+	window.fbAsyncInit = function() {
+    FB.init({
+    appId      : '402907036567222',
+    xfbml      : true,
+    version    : 'v2.3'
+    });
+	};
+
+	(function(d, s, id){
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) {return;}
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+	}(document, 'script', 'facebook-jssdk'));
+  </script>
+
   <div class="notification">
   </div>
   <div id="topMenu"></div>

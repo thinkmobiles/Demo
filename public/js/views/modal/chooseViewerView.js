@@ -64,9 +64,14 @@ define([
 				modal:true,
                 closeOnEscape: false,
 				appendTo:"#wrapper",
+				position:{
+					my: "center bottom",
+					at: "center bottom",
+					of: ".homeContainer"
+				},
                 dialogClass: "watch-dialog",
                 width: 425
-            });
+            })
             return this;
         }
 

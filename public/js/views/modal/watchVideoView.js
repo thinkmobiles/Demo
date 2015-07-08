@@ -15,7 +15,8 @@ define([
 			"click .showSurvay":"showSurvay",
 			"click .listVideo li":"clickOnVideo",
 			"click .ui-dialog-titlebar-close": "clickOnClose",
-			"click .contactMe": "contactMe"
+			"click .contactMe": "contactMe",
+			"click .social .fb": "shareOnFacebook"
 		},
 
 
@@ -23,9 +24,15 @@ define([
 			var self = this;
 			this.videoId = options&&options.videoId?options.videoId:"55800aadcb7bb82c1f000002";
 			this.userId = options&&options.userId?options.userId:"55800aadcb7bb82c1f000002";
+			this.indexList = options&&options.indexList?options.indexList:[];
 			var page = options&&options.page?options.page:null;
 			this.currentSurvay = [];
-
+			window.addEventListener ("beforeunload", function() {
+				var videoEl =self.$el.find(".surveyVideo")[0]||self.$el.find(".mainVideo")[0];
+				self.trackVideo(videoEl, false);
+				console.log(videoEl.currentTime);
+				return 'are you sure';
+			});
 			App.getContent(this.videoId, this.userId,function(content){
 				self.content = content;
 				self.render();
@@ -51,14 +58,35 @@ define([
 
 					self.$el.find("video").on('ended',function(){
 						var videoEl =self.$el.find(".surveyVideo")[0];
-						self.trackVideo(videoEl);
+						self.trackVideo(videoEl, true);
 					});
 				}
 			});
 		},
 
+		shareOnFacebook:function(){
+			FB.ui(
+				{
+					method: 'feed',
+					name: 'DemoRocket Video',
+					source:"http://134.249.164.53:8838/video/559659f63e3d511c49000004/Jumplead%20Overview.mp4",
+					link: 'http://134.249.164.53:8838/#/watchVideo/559659f63e3d511c49000004/558a78fa5a709eff758b4567',
+					picture: 'http://134.249.164.53:8838/video/559659f63e3d511c49000004/g-logo.jpg',
+					caption: 'Reference Documentation',
+					description: 'Dialogs provide a simple, consistent interface for applications to interface with users.'
+				},
+				function(response) {
+					if (response && response.post_id) {
+						alert('Post was published.');
+					} else {
+						alert('Post was not published.');
+					}
+				}
+			);
+		},
+		
 		contactMe: function(){
-			Backbone.history.navigate("#/contactMe/"+this.videoId+"/"+this.userId, {trigger: true});
+			Backbone.history.navigate("#/contactMe/"+this.videoId+"/"+this.userId + "/" + window.location.hash.split("/")[1]+(this.indexList.length?"/"+this.indexList:""), {trigger: true});
 		},
 
 		clickOnClose: function(){
@@ -207,25 +235,19 @@ define([
 
 		},
 
-		trackVideo: function(videoEl){
-			var time_ranges = videoEl.played;
-			var ranges = [];
+		trackVideo: function(videoEl, isEnd){
 			var pos = videoEl.currentSrc.indexOf('video');
 			var video = decodeURI(videoEl.currentSrc.slice(pos));
-
-			for (var i=0; i < time_ranges.length; i++) {
-				var range = {};
-				range.start = Math.round(time_ranges.start(i));
-				range.end = Math.round(time_ranges.end(i));
-				ranges.push(range);
-			}
+			var stopTime = videoEl.currentTime;
+			console.log(stopTime);
 
 			var videoData = {
 				userId: this.userId,
 				contentId: this.videoId,
-				data:{
+				data: {
 					video: video,
-					rangeWatched: ranges
+					stopTime: stopTime,
+					end: isEnd || false
 				}
 			};
 			$.ajax({
@@ -272,7 +294,7 @@ define([
 
 			this.$el.find("video").on('ended',function(){
 				var videoEl =self.$el.find(".mainVideo")[0];
-				self.trackVideo(videoEl);
+				self.trackVideo(videoEl, true);
 			});
 			this.$el.find(".mainVideo").on('ended',function(){
 				self.dialog.remove();
