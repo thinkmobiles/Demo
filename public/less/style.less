@@ -1049,8 +1049,42 @@ footer{
 		img.logo{
 			margin:85px auto 0 auto;
 		}
-		img.social{
+		div.social{
 			margin-top:40px;
+			>span{
+				.i("socials.png");
+				display:inline-block;
+				width:27px;
+				height:26px;
+				margin:0 5px;
+				cursor:pointer;
+
+			}
+			.fb{
+				background-position:0 0;
+				&:hover{
+					background-position:0 -28px;
+				}
+			}
+			.tw{
+				background-position:-50px 0;
+				&:hover{
+					background-position:-50px -28px;
+				}
+			}
+			.gp{
+				background-position:-99px 0;
+				&:hover{
+					background-position:-99px -28px;
+				}
+			}
+			.in{
+				background-position:-149px 0;
+				&:hover{
+					background-position:-149px -28px;
+				}
+			}
+			
 		}
 		button{
 			.lh(50px);

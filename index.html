@@ -2,21 +2,15 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta property="og:title" content="title" />
+  <meta property="og:description" content="description" />
+  <meta property="og:image" content="thumbnail_image" />
   <title>DemoRocket</title>
   <meta name="viewport" content="width=device-width">
   <link href="js/libs/jqueryui/themes/base/all.css" rel="stylesheet" type="text/css">
   <link rel="stylesheet/less" href="less/style.less">
   <script data-main="js/main" src="js/libs/requirejs/require.js"></script>
   <link rel="icon" href="i/favicon.ico">
-
-
-
-  <meta property="og:type" content="video"> <!-- site/page type more information http://ogp.me/ -->
-  <meta property="og:video:type" content="application/x-shockwave-flash"> <!-- you need this because your player is a SWF player -->
-  <meta property="og:video:width" content="Width in Pixels"> <!-- player width -->
-  <meta property="og:video:height" content="Height in Pixels"> <!-- player height -->
-  <meta property="og:video" content="http://example.com/{path_to}/{swf_player}.swf?url={video_soure}"> <!-- You will need to echo/print the video source (*.mp4) with server-side code -->
-  <meta property="og:video:secure_url" content="https://example.com/{path_to}/{swf_player}.swf?url={video_soure}"> <!-- required for users whom use SSL (actually Facebook forces everyone to use SSL so you're required to use og:video:secure_url) so get a one -->
 </head>
 <body>
   <script>
@@ -41,11 +35,5 @@
   </div>
   <div id="topMenu"></div>
   <div id="wrapper"></div>
-    <div
-  class="fb-like"
-  data-share="true"
-  data-width="450"
-  data-show-faces="true">
-</div>
 </body>
 </html>
