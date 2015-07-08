@@ -1029,7 +1029,10 @@ var routeHandler = function (db) {
                             return waterfallCb(err);
                         }
                         if (!obj) {
-                            return waterfallCb(new Error(401, {err: 'Unauthorized'}));
+                            var error = new Error();
+                            error.status = 401;
+                            error.message = 'Unauthorized';
+                            return waterfallCb(error);
                         }
 
                         waterfallCb(null, obj);
@@ -1119,12 +1122,14 @@ var routeHandler = function (db) {
 
                             async.each(index, function (i, eachCb) {
                                 async.applyEachSeries([saveSurveyVideo, saveSurveyFiles], i, id, files, data, function (err) {
-                                    if (err) return eachCb(err);
+                                    if (err) {
+                                        return eachCb(err);
+                                    }
                                     eachCb();
                                 });
                             }, function (err) {
                                 if (err) {
-                                    seriesCb(err);
+                                    return seriesCb(err);
                                 }
                                 seriesCb(null);
                             });
@@ -1145,108 +1150,6 @@ var routeHandler = function (db) {
                 }
                 res.status(201).send({url: url});
             });
-
-
-
-
-        /*//=============================================
-        validation(req, function (err) {
-            if (err) {
-                return next(err);
-            }
-            session.getUserDescription(req, function (err, obj) {
-                if (err) {
-                    return next(err);
-                }
-                if (!obj) {
-                    return next(new Error(401, {err: 'Unauthorized'}));
-                }
-                ContentModel.findOne({ownerId: obj.id}, function (err, doc) {
-                    if (doc) {
-                        var error = new Error();
-                        error.status = 401;
-                        error.message = 'You already have content';
-                        return next(error);
-                    }
-                    var data = req.body;
-                    var files = req.files;
-
-                    var insObj = {
-                        ownerId: obj.id,
-                        name: data.name,
-                        email: data.email,
-                        phone: data.phone,
-                        mainVideoDescription: data.desc
-                    };
-
-                    var content = new ContentModel(insObj);
-                    content.save(function (err, result) {
-                        if (err) {
-                            return next(err);
-                        }
-                        var id = result._id;
-                        UserModel.findByIdAndUpdate(obj.id, {$set: {contentId: result._id}}, function (err, user) {
-                            if (err) return next(err);
-
-                            async.series([
-                                function (seriesCb) {
-                                    if (!!files['video']) {
-                                        saveMainVideo(id, files, seriesCb);
-                                    }
-                                    else {
-                                        var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString();
-                                        upFile(url, files['logo'], function (err, logoUri) {
-                                            if (err) {
-                                                return seriesCb(err);
-                                            }
-                                            var saveLogoUri = logoUri.replace('public' + sep, '');
-                                            ContentModel.findByIdAndUpdate(id, {
-                                                    $set: {
-                                                        mainVideoUri: data.video,
-                                                        logoUri: saveLogoUri
-                                                    }
-                                                },
-                                                function (err) {
-                                                    if (err) {
-                                                        return seriesCb(err);
-                                                    }
-                                                    seriesCb(null);
-                                                });
-                                        });
-                                    }
-                                },
-                                function (seriesCb) {
-                                    var index = [];
-                                    for (var i = data.countQuestion; i > 0; i--) {
-                                    index.push(i);
-                                    };
-
-                                    async.each(index, function(i, eachCb){
-                                        async.applyEachSeries([saveSurveyVideo, saveSurveyFiles], i, id, files, data, function () {
-                                            if (err) return eachCb(err);
-                                            eachCb();
-                                        });
-                                    }, function(err){
-                                        if(err){
-                                            seriesCb(err);
-                                        }
-                                        seriesCb(null);
-                                    });
-
-                                }], function (err) {
-                                if (err) {
-                                    return next(err);
-                                }
-                                var url = process.env.HOME_PAGE + id + '/{{ctid}}';
-                                res.status(201).send({_id: id, url: url});
-                                console.log("url: " + url);
-                            });
-                        });
-                    });
-                    localFs.defaultPublicDir = 'public';
-                });
-            });
-        });*/
     };
 
     this.pdf = function (req, res, next) {
