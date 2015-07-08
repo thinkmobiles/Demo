@@ -15,7 +15,8 @@ define([
 			"click .showSurvay":"showSurvay",
 			"click .listVideo li":"clickOnVideo",
 			"click .ui-dialog-titlebar-close": "clickOnClose",
-			"click .contactMe": "contactMe"
+			"click .contactMe": "contactMe",
+			"click .social .fb": "shareOnFacebook"
 		},
 
 
@@ -63,6 +64,27 @@ define([
 			});
 		},
 
+		shareOnFacebook:function(){
+			FB.ui(
+				{
+					method: 'feed',
+					name: 'DemoRocket Video',
+					source:"http://134.249.164.53:8838/video/559659f63e3d511c49000004/Jumplead%20Overview.mp4",
+					link: 'http://134.249.164.53:8838/#/watchVideo/559659f63e3d511c49000004/558a78fa5a709eff758b4567',
+					picture: 'http://134.249.164.53:8838/video/559659f63e3d511c49000004/g-logo.jpg',
+					caption: 'Reference Documentation',
+					description: 'Dialogs provide a simple, consistent interface for applications to interface with users.'
+				},
+				function(response) {
+					if (response && response.post_id) {
+						alert('Post was published.');
+					} else {
+						alert('Post was not published.');
+					}
+				}
+			);
+		},
+		
 		contactMe: function(){
 			Backbone.history.navigate("#/contactMe/"+this.videoId+"/"+this.userId + "/" + window.location.hash.split("/")[1]+(this.indexList.length?"/"+this.indexList:""), {trigger: true});
 		},
