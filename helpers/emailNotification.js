@@ -27,44 +27,62 @@ var Schedule = function (db) {
                 if (err) {
                     return console.error(err);
                 }
-                console.log('tracks at ' + new Date(Date.now()));
-                console.log(tracks);
-                if (!tracks.length) {
-                    var error = new Error();
-                    error.message = 'No data to send';
-                    return console.error(error);
-                }
-
-                ContentModel.populate(tracks, {path: 'contentId'}, function (err, docs) {
-                    if (err) {
-                        return console.error(err);
+                async.each(tracks, function (track, eachCb) {
+                    if(!track.firstName || !track.lastName || !track.email){
+                        TrackModel.findOne({userId: track.userId}, function (err, doc) {
+                            if(err) {
+                                return eachCb(err);
+                            }
+                            track.firstName = doc.firstName;
+                            track.lastName = doc.lastName;
+                            track.email = doc.email;
+                            eachCb(null);
+                        })
                     }
-                    async.each(docs, function (doc, cb) {
-                        var name = (doc.firstName && doc.lastName) ? doc.firstName + ' ' + doc.lastName : 'Some User';
-                        var data = {
-                            companyName: doc.contentId.name,
-                            companyEmail: doc.contentId.email,
-                            name: name,
-                            email: doc.email || "noEmail",
-                            documents: doc.documents,
-                            videos: doc.videos,
-                            questions: doc.questions
-                        };
-                        mailer.sendTrackInfo(data, cb);
-                    }, function (err) {
+                }, function (err) {
+                        if(err){
+                            return console.error(err);
+                        }
+
+                    console.log('tracks at ' + new Date(Date.now()));
+                    console.log(tracks);
+                    if (!tracks.length) {
+                        var error = new Error();
+                        error.message = 'No data to send';
+                        return console.error(error);
+                    }
+
+                    ContentModel.populate(tracks, {path: 'contentId'}, function (err, docs) {
                         if (err) {
                             return console.error(err);
                         }
-                        TrackModel.update(conditions, update, {multi: true}, function (err) {
+                        async.each(docs, function (doc, cb) {
+                            var name = doc.firstName + ' ' + doc.lastName;
+                            var data = {
+                                companyName: doc.contentId.name,
+                                companyEmail: doc.contentId.email,
+                                name: name,
+                                email: doc.email,
+                                documents: doc.documents,
+                                videos: doc.videos,
+                                questions: doc.questions
+                            };
+                            mailer.sendTrackInfo(data, cb);
+                        }, function (err) {
                             if (err) {
                                 return console.error(err);
                             }
-                            console.log('Notifications successfully sended');
-                        });
-                    });
-                });
-            });
-        });
+                            TrackModel.update(conditions, update, {multi: true}, function (err) {
+                                if (err) {
+                                    return console.error(err);
+                                }
+                                console.log('Notifications successfully sended');
+                            }); //TrackModel.update
+                        }); //  async.each(docs
+                    }); // ContentModel.populate
+                }); // async.each(tracks
+            }); // TrackModel.find
+        }); //cronJob
     };
 };
 

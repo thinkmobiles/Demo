@@ -777,7 +777,6 @@ var routeHandler = function (db) {
                 });
             } else {
                 var fvideo = _.findWhere(doc.videos, {video: body.data.video});
-
                 if (!fvideo.end && fvideo.stopTime < body.data.stopTime) {
                     TrackModel.findOneAndUpdate({
                         "userId": userId,
