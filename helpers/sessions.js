@@ -25,7 +25,7 @@ var Session = function () {
                 lastName: req.session.lastName,
                 userName: req.session.userName,
                 avatar: req.session.avatar
-            }
+            };
             return callback(null, obj);
         } else {
             var err = new Error('UnAuthorized');
