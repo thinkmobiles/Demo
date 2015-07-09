@@ -119,10 +119,22 @@ var JumpleadModule = function (db) {
                             return self.setContact(userId, contact, callback)
                         });
                     })();
-                } else if (error) {
-                    return callback(error);
+                } else if (body.error) {
+                    return callback(body.error);
                 }
-                return callback(null, body.data)
+                var data = body.data;
+                ProspectModel.create({
+                    jumpleadId: data.id,
+                    email: data.email,
+                    firstName: data.first_name,
+                    lastName: data.last_name,
+                    isNewViwer: true
+                }, {upsert: true}, function (err) {
+                    if (err) {
+                        return console.error(err);
+                    }
+                });
+                return callback(null, data)
             });
         });
     };
@@ -153,10 +165,10 @@ var JumpleadModule = function (db) {
                 if (body.status == '404') {
                     var error = new Error();
                     error.status = 404;
-                    error.message = 'User not found'
+                    error.message = 'User not found';
                     return callback(error)
                 }
-                if (body.status == '401' || error) {
+                if (body.status == '401') {
                     return (function () {
                         self.refToken(userId, function (err) {
                             if (err) {
@@ -172,7 +184,7 @@ var JumpleadModule = function (db) {
                     jumpleadId: body.data.id,
                     email: body.data.email,
                     firstName: body.data.first_name,
-                    lastName: body.data.last_name
+                    lastName: body.data.last_name,
                 }, {upsert: true}, function (err) {
                     if (err) {
                         return console.error(err);
@@ -200,6 +212,11 @@ var JumpleadModule = function (db) {
                     body = JSON.parse(body);
                 } catch (e) {
                     console.log(e);
+                } if (body.status == '404') {
+                    var error = new Error();
+                    error.status = 404;
+                    error.message = 'Contacts not found'
+                    return callback(error)
                 }
                 if (body.status == '401') {
                     return (function () {

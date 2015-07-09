@@ -249,7 +249,8 @@ var routeHandler = function (db) {
                     jumpleadId: contact.id,
                     firstName: contact.first_name,
                     lastName: contact.last_name,
-                    email: contact.email
+                    email: contact.email,
+                    isNewViwer: false
                 };
                 arrToSave.push(obj);
                 callback(null);
