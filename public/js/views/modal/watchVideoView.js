@@ -69,7 +69,12 @@ define([
 			console.log(window.location.origin+"/"+self.content.toJSON().content.logoUri);
 			FB.ui(
 				{
-					method: 'feed'
+					method: 'feed',
+					name: 'DemoRocket Video',
+					link: window.location.href.replace("watchVideo","chooseImportant"),
+					picture: window.location.origin+"/"+self.content.toJSON().content.logoUri,
+					caption: 'Reference Documentation',
+					description: self.content.toJSON().content.mainVideoDescription
 				},
 				function(response) {
 					if (response && response.post_id) {
