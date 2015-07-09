@@ -236,58 +236,6 @@ var routeHandler = function (db) {
             }
             return res.redirect('/#/home');
         });
-
-
-      /*  //=================================
-
-        session.getUserDescription(req, function (err, obj) {
-            if (err) {
-                return next(err);
-            }
-            jumplead.getToken(code, obj.id, function (err) {
-                if (err) {
-                    return next(err)
-                }
-                jumplead.checkUser(obj.id, function (err, user, email) {
-                    if (err) {
-                        return next(err);
-                    }
-                    if (user) {
-                        UserModel.findByIdAndRemove(obj.id, function (err, removeUser) {
-                            if (err) {
-                                return next(err);
-                            }
-                            removeUser = removeUser.toObject();
-                            var obj = {
-                                firstName: removeUser.firstName,
-                                lastName: removeUser.lastName,
-                                email: removeUser.email,
-                                pass: removeUser.pass,
-                                organization: removeUser.organization,
-                                accessToken: removeUser.accessToken,
-                                resreshToken: removeUser.resreshToken
-                            };
-                            UserModel.findByIdAndUpdate(user._id, obj, {new: true}, function (err, updateUser) {
-                                if (err) {
-                                    return next(err);
-                                }
-                                console.log('You update some exist user');
-                                session.login(req, updateUser);
-                                return res.redirect('/#/home');
-                            });
-                        });
-                    } else {
-                        UserModel.findByIdAndUpdate(obj.id, {jumpleadEmail: email}, function (err, updateUser) {
-                            if (err) {
-                                return next(err);
-                            }
-                            console.log('Email successfully updated');
-                        });
-                        return res.redirect('/#/home');
-                    }
-                });
-            });
-        });*/
     };
 
     this.sendContactMe = function (req, res, next) {
@@ -599,7 +547,7 @@ var routeHandler = function (db) {
     };
 
     this.allUsers = function (req, res, next) {
-        UserModel.find({}, function (err, users) {
+        UserModel.find({}, {avatar:0}, function (err, users) {
             if (err) next(err);
             res.status(200).send(users);
         });
