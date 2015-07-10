@@ -284,7 +284,11 @@ define([
 		render: function () {
 			var self = this;
 			var formString = _.template(modalTemplate)({
-				content:this.content.toJSON().content
+				content:this.content.toJSON().content,
+				host:"http://134.249.164.53:8838/",
+				videoId:self.videoId,
+				prospectId:self.userId,
+				page:window.location.hash.split("/")[1]
 			});
 			this.dialog = $(formString).dialog({
 				modal:true,
@@ -302,7 +306,6 @@ define([
 				self.dialog.remove();
 				Backbone.history.navigate("#/chooseImportant/"+self.videoId+"/"+self.userId, {trigger: true});
 			});
-			$("meta[property='og:title']").attr("content","my conytent");
 			FB.XFBML.parse();
 			return this;
 		}

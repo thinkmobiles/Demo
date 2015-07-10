@@ -158,564 +158,577 @@ var routeHandler = function (db) {
         return shaSum.digest('hex');
     };
 
-    this.redirect = function (req, res, next) {
-        if (req.query.error) {
-            return res.status(401).send({
-                err: req.query.error,
-                message: req.query.error_description
+    this.share = function (req, res, next) {
+        fs.readFile('public/templates/share.html', 'utf8', function (err, template) {
+            var contentId = req.query.contentId;
+            var prospectId = req.query.prospectId;
+            var page = req.query.page;
+            var userId;
+            var content;
+
+            ContentModel.findById(contentId, function (err, foundContent) {
+                if (err) {
+                    return waterfallCb(err);
+                }
+                if (!foundContent) {
+                    var error = new Error();
+                    error.message = 'Content Not Found';
+                    error.status = 404;
+                    return waterfallCb(error);
+                }
+                content = foundContent;
+
+                var redirectUrl = process.env.HOST + '/#/' + page + '/' + contentId + '/' + prospectId;
+                var currentUtl = process.env.HOST + '/share?contentId=' + contentId + '&prospectId=' + prospectId + '&page=' + page;
+                var logoUtl = process.env.HOST + '/' + content.logoUri;
+                var description = content.mainVideoDescription;
+
+                var templateOptions = {
+                    currentUrl: currentUtl,
+                    redirectUrl: redirectUrl,
+                    logoUrl: logoUtl,
+                    description: description
+                };
+                var html = _.template(template)(templateOptions);
+                //res.write();
+                res.end(html);
             });
-        }
-        var code = req.query.code;
+        });
+    };
 
-        async.waterfall([
-            function (waterfallCb) {
-                session.getUserDescription(req, function (err, obj) {
-                    if (err) {
-                        return waterfallCb(err);
-                    }
-                    waterfallCb(null, obj);
+
+        this.redirect = function (req, res, next) {
+            if (req.query.error) {
+                return res.status(401).send({
+                    err: req.query.error,
+                    message: req.query.error_description
                 });
-            },
+            }
+            var code = req.query.code;
 
-            function (obj, waterfallCb) {
-                jumplead.getToken(code, obj.id, function (err) {
-                    if (err) {
-                        return waterfallCb(err)
-                    }
-                    saveAllContacts(obj.id);
-                    waterfallCb(null, obj);
-                });
-            },
-
-            function (obj, waterfallCb) {
-                jumplead.checkUser(obj.id, function (err, user, email) {
-                    if (err) {
-                        return waterfallCb(err);
-                    }
-                    waterfallCb(null, obj, user, email);
-                });
-            },
-
-            function (obj, user, email, waterfallCb) {
-                if (user) {
-                    UserModel.findByIdAndRemove(obj.id, function (err, removeUser) {
+            async.waterfall([
+                function (waterfallCb) {
+                    session.getUserDescription(req, function (err, obj) {
                         if (err) {
                             return waterfallCb(err);
                         }
-                        removeUser = removeUser.toObject();
-                        var upObj = {
-                            firstName: removeUser.firstName,
-                            lastName: removeUser.lastName,
-                            email: removeUser.email,
-                            pass: removeUser.pass,
-                            organization: removeUser.organization,
-                            accessToken: removeUser.accessToken,
-                            resreshToken: removeUser.resreshToken
-                        };
-                        UserModel.findByIdAndUpdate(user._id, upObj, {new: true}, function (err, updateUser) {
+                        waterfallCb(null, obj);
+                    });
+                },
+
+                function (obj, waterfallCb) {
+                    jumplead.getToken(code, obj.id, function (err) {
+                        if (err) {
+                            return waterfallCb(err)
+                        }
+                        saveAllContacts(obj.id);
+                        waterfallCb(null, obj);
+                    });
+                },
+
+                function (obj, waterfallCb) {
+                    jumplead.checkUser(obj.id, function (err, user, email) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        waterfallCb(null, obj, user, email);
+                    });
+                },
+
+                function (obj, user, email, waterfallCb) {
+                    if (user) {
+                        UserModel.findByIdAndRemove(obj.id, function (err, removeUser) {
                             if (err) {
                                 return waterfallCb(err);
                             }
-                            console.log('You update some exist user');
-                            session.login(req, updateUser);
-                            return waterfallCb(null);
+                            removeUser = removeUser.toObject();
+                            var upObj = {
+                                firstName: removeUser.firstName,
+                                lastName: removeUser.lastName,
+                                email: removeUser.email,
+                                pass: removeUser.pass,
+                                organization: removeUser.organization,
+                                accessToken: removeUser.accessToken,
+                                resreshToken: removeUser.resreshToken
+                            };
+                            UserModel.findByIdAndUpdate(user._id, upObj, {new: true}, function (err, updateUser) {
+                                if (err) {
+                                    return waterfallCb(err);
+                                }
+                                console.log('You update some exist user');
+                                session.login(req, updateUser);
+                                return waterfallCb(null);
 
+                            });
                         });
+                    } else {
+                        UserModel.findByIdAndUpdate(obj.id, {jumpleadEmail: email}, function (err, updateUser) {
+                            if (err) {
+                                return next(err);
+                            }
+                            console.log('Email successfully updated');
+                            return waterfallCb(null);
+                        });
+                    }
+                }], function (err) {
+                if (err) {
+                    return next(err);
+                }
+                return res.redirect('/#/home');
+            });
+        };
+        function saveAllContacts(userId) {
+            var arrToSave = [];
+            jumplead.getAllContacts(userId, function (err, contacts) {
+                if (err) {
+                    return console.error(err);
+                }
+                async.each(contacts, function (contact, callback) {
+                    var obj = {
+                        jumpleadId: contact.id,
+                        firstName: contact.first_name,
+                        lastName: contact.last_name,
+                        email: contact.email,
+                        isNewViwer: false
+                    };
+                    arrToSave.push(obj);
+                    callback(null);
+                }, function (err) {
+                    if (err) {
+                        return console.error(err);
+                    }
+                    ProspectModel.create(arrToSave, function (err) {
+                        if (err) {
+                            return console.error(err);
+                        }
+                    });
+                });
+            });
+
+        };
+        this.sendContactMe = function (req, res, next) {
+            var contentId = req.body.contentId;
+            var body = req.body;
+            if (!contentId) {
+                var error = new Error();
+                error.message = 'Content Id is not Defined';
+                error.status = 403;
+                return next(error)
+            }
+            ContentModel.findById(contentId, function (err, content) {
+                if (err) {
+                    return next(err);
+                }
+                if (!content) {
+                    var error = new Error();
+                    error.message = 'Content Not Found';
+                    error.status = 404;
+                    return next(error);
+                }
+                var data = {
+                    companyName: content.name,
+                    companyEmail: content.email,
+                    name: body.name || 'NoName',
+                    email: body.email || '-',
+                    description: body.description || 'NoDescription'
+                };
+                mailer.contactMe(data);
+                res.status(200).send('Successful Send');
+            });
+        };
+
+
+        this.currentUser = function (req, res, next) {
+            session.getUserDescription(req, function (err, obj) {
+                if (err) {
+                    return next(err);
+                }
+                if (!obj) {
+                    var error = new Error();
+                    error.message = "Unauthorized";
+                    error.status = 401;
+                    return next(error);
+                }
+                res.status(200).send(obj);
+
+            });
+        };
+
+        this.login = function (req, res, next) {
+            var options = req.body;
+            if (!options.userName || !options.pass) {
+                var error = new Error();
+                error.message = "Username and password is required";
+                error.status = 401;
+                return next(error);
+            }
+
+            var userName = options.userName;
+            var pass = getEncryptedPass(options.pass);
+            UserModel.findOne({userName: userName}, function (err, user) {
+                if (err) {
+                    return next(err);
+                }
+
+                if (!user) {
+                    var error = new Error();
+                    error.message = "Can\'t find User";
+                    error.status = 404;
+                    return next(error);
+                }
+
+                if (user.pass === pass) {
+                    session.login(req, user);
+                    console.log(typeof options.keepAlive);
+                    if (options.keepAlive === 'true') {
+                        req.session.cookie.maxAge = 365 * 24 * 60 * 60 * 1000;
+                    } else {
+                        req.session.cookie.maxAge = 60 * 1000;
+                    }
+                    return res.status(200).send({
+                        success: "Login successful",
+                        user: user
                     });
                 } else {
-                    UserModel.findByIdAndUpdate(obj.id, {jumpleadEmail: email}, function (err, updateUser) {
+                    var error = new Error();
+                    error.message = "Incorrect password";
+                    error.status = 401;
+                    return next(error);
+                }
+            });
+        };
+
+        this.logout = function (req, res, next) {
+            session.kill(req, function () {
+                res.redirect('/#/home');
+            })
+        };
+
+        this.avatar = function (req, res, next) {
+            var userName = req.params.userName;
+            if (!userName) {
+                var error = new Error();
+                error.message = "UserName is required";
+                error.status = 401;
+                return next(error);
+            }
+
+            UserModel.findOne({userName: userName}, function (err, user) {
+                if (err) {
+                    return next(err);
+                }
+                if (!user) {
+                    return res.status(200).send({avatar: ""});
+                }
+                return res.status(200).send({avatar: user.avatar});
+            });
+        };
+
+        this.signUp = function (req, res, next) {
+            var options = req.body;
+            var pass = options.pass;
+            options.pass = getEncryptedPass(pass);
+            async.series([
+
+                //validation:
+                function (cb) {
+                    validateUserSignUp(options, function (err) {
                         if (err) {
-                            return next(err);
+                            return cb(err);
                         }
-                        console.log('Email successfully updated');
-                        return waterfallCb(null);
+                        cb();
+                    });
+                },
+                //create user:
+                function (cb) {
+                    createUser(options, function (err, user) {
+                        if (err) {
+                            return cb(err);
+                        }
+                        session.login(req, user);
+                        cb(null, user);
+                    });
+                }], function (err) {
+                if (err) {
+                    return next(err);
+                }
+                res.status(201).send('User created');
+            });
+        };
+
+        this.prospectSignUp = function (req, res, next) {
+            var options = req.body;
+
+            async.series([
+
+                //validation:
+                function (cb) {
+                    validateProspectSignUp(options, function (err) {
+                        if (err) {
+                            return cb(err);
+                        }
+                        cb(null, true);
+                    });
+                },
+
+                //create prospect:
+                function (cb) {
+                    jumplead.setContact(options.ownerId, options, function (err, contact) {
+                        if (err) {
+                            return cb(err);
+                        }
+                        cb(null, contact);
+
                     });
                 }
-            }], function (err) {
-            if (err) {
-                return next(err);
-            }
-            return res.redirect('/#/home');
-        });
-    };
-    function saveAllContacts (userId) {
-        var arrToSave = [];
-        jumplead.getAllContacts(userId, function (err, contacts) {
-            if(err){
-                return console.error(err);
-            }
-            async.each(contacts, function (contact, callback) {
-                var obj = {
-                    jumpleadId: contact.id,
-                    firstName: contact.first_name,
-                    lastName: contact.last_name,
-                    email: contact.email,
-                    isNewViwer: false
+            ], function (err, rezult) {
+                if (err) {
+                    return next(err);
+                }
+                var contact = rezult[1];
+                res.status(201).send({
+                    id: contact.id
+                });
+            });
+        };
+
+        this.content = function (req, res, next) {
+            session.getUserDescription(req, function (err, obj) {
+                if (err) {
+                    return next(err);
+                }
+                if (!obj) {
+                    var error = new Error();
+                    error.message = "Unauthorized";
+                    error.status = 401;
+                    return next(error);
+                }
+                ContentModel.findOne({ownerId: obj.id}, function (err, found) {
+                    if (err) {
+                        return next(err);
+                    }
+                    console.log(found);
+                    if (!found) {
+                        return res.status(404).send({err: 'Content Not Found'});
+                    }
+                    var url = process.env.HOME_PAGE + found._id + '/{{ctid}}';
+                    res.status(201).send({url: url});
+                });
+            });
+
+        };
+
+        // url = '/:contentId/:ctid'
+        this.getMain = function (req, res, next) {
+            var contentId = req.params.contentId;
+            var prospectId = req.params.ctid;
+            var userId;
+            var content;
+            var data;
+            async.waterfall([
+
+                function (waterfallCb) {
+                    ContentModel.findById(contentId, function (err, foundContent) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        if (!foundContent) {
+                            var error = new Error();
+                            error.message = 'Content Not Found';
+                            error.status = 404;
+                            return waterfallCb(error);
+                        }
+                        content = foundContent;
+                        waterfallCb(null, foundContent);
+                    });
+                },
+
+                function (content, waterfallCb) {
+                    UserModel.findById(content.ownerId, function (err, user) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        if (!user) {
+                            var error = new Error();
+                            error.message = 'User Not Found';
+                            error.status = 404;
+                            return waterfallCb(error);
+                        }
+                        userId = user._id;
+                        waterfallCb(null, user);
+                    });
+                },
+
+                function (user, waterfallCb) {
+                    ProspectModel.findOne({jumpleadId: prospectId}, function (err, doc) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        if (!doc) {
+                            jumplead.getContact(user._id, prospectId, function (err, prospect) {
+                                if (err) {
+                                    return waterfallCb(err);
+                                }
+                                var obj = {
+                                    firstName: prospect.first_name,
+                                    lastName: prospect.last_name,
+                                    email: prospect.email
+                                };
+                                return waterfallCb(null, obj);
+                            });
+                        }
+                        else {
+
+                            updateProspect(userId, doc.jumpleadId);
+                            return waterfallCb(null, doc);
+                        }
+                    });
+                }], function (err, prospect) {
+                if (err) {
+                    return next(err);
+                }
+                data = {
+                    content: content,
+                    contact: prospect
                 };
-                arrToSave.push(obj);
-                callback(null);
-            }, function (err) {
+                createTrackDoc(contentId, prospect);
+                res.status(200).send(data);
+            });
+        };
+
+        function updateProspect(userId, contactId) {
+            jumplead.getContact(userId, contactId, function (err, data) {
                 if(err){
                     return console.error(err);
                 }
-                ProspectModel.create(arrToSave, function (err) {
+                ProspectModel.findOneAndUpdate({jumpleadId: contactId}, {
+                    email: data.email,
+                    firstName: data.first_name,
+                    lastName: data.last_name
+                }, function (err) {
                     if (err) {
                         return console.error(err);
                     }
                 });
             });
-        });
-
-    };
-    this.sendContactMe = function (req, res, next) {
-        var contentId = req.body.contentId;
-        var body = req.body;
-        if (!contentId) {
-            var error = new Error();
-            error.message = 'Content Id is not Defined';
-            error.status = 403;
-            return next(error)
-        }
-        ContentModel.findById(contentId, function (err, content) {
-            if (err) {
-                return next(err);
-            }
-            if (!content) {
-                var error = new Error();
-                error.message = 'Content Not Found';
-                error.status = 404;
-                return next(error);
-            }
-            var data = {
-                companyName: content.name,
-                companyEmail: content.email,
-                name: body.name || 'NoName',
-                email: body.email || '-',
-                description: body.description || 'NoDescription'
-            };
-            mailer.contactMe(data);
-            res.status(200).send('Successful Send');
-        });
-    };
-
-
-    this.currentUser = function (req, res, next) {
-        session.getUserDescription(req, function (err, obj) {
-            if (err) {
-                return next(err);
-            }
-            if (!obj) {
-                var error = new Error();
-                error.message = "Unauthorized";
-                error.status = 401;
-                return next(error);
-            }
-            res.status(200).send(obj);
-
-        });
-    };
-
-    this.login = function (req, res, next) {
-        var options = req.body;
-        if (!options.userName || !options.pass) {
-            var error = new Error();
-            error.message = "Username and password is required";
-            error.status = 401;
-            return next(error);
         }
 
-        var userName = options.userName;
-        var pass = getEncryptedPass(options.pass);
-        UserModel.findOne({userName: userName}, function (err, user) {
-            if (err) {
-                return next(err);
-            }
-
-            if (!user) {
-                var error = new Error();
-                error.message = "Can\'t find User";
-                error.status = 404;
-                return next(error);
-            }
-
-            if (user.pass === pass) {
-                session.login(req, user);
-                console.log(typeof options.keepAlive);
-                if (options.keepAlive === 'true') {
-                    req.session.cookie.maxAge = 365 * 24 * 60 * 60 * 1000;
-                } else {
-                    req.session.cookie.maxAge = 60 * 1000;
-                }
-                return res.status(200).send({
-                    success: "Login successful",
-                    user: user
-                });
-            } else {
-                var error = new Error();
-                error.message = "Incorrect password";
-                error.status = 401;
-                return next(error);
-            }
-        });
-    };
-
-    this.logout = function (req, res, next) {
-        session.kill(req, function () {
-            res.redirect('/#/home');
-        })
-    };
-
-    this.avatar = function (req, res, next) {
-        var userName = req.params.userName;
-        if (!userName) {
-            var error = new Error();
-            error.message = "UserName is required";
-            error.status = 401;
-            return next(error);
-        }
-
-        UserModel.findOne({userName: userName}, function (err, user) {
-            if (err) {
-                return next(err);
-            }
-            if (!user) {
-                return res.status(200).send({avatar: ""});
-            }
-            return res.status(200).send({avatar: user.avatar});
-        });
-    };
-
-    this.signUp = function (req, res, next) {
-        var options = req.body;
-        var pass = options.pass;
-        options.pass = getEncryptedPass(pass);
-        async.series([
-
-            //validation:
-            function (cb) {
-                validateUserSignUp(options, function (err) {
-                    if (err) {
-                        return cb(err);
-                    }
-                    cb();
-                });
-            },
-            //create user:
-            function (cb) {
-                createUser(options, function (err, user) {
-                    if (err) {
-                        return cb(err);
-                    }
-                    session.login(req, user);
-                    cb(null, user);
-                });
-            }], function (err) {
-            if (err) {
-                return next(err);
-            }
-            res.status(201).send('User created');
-        });
-    };
-
-    this.prospectSignUp = function (req, res, next) {
-        var options = req.body;
-
-        async.series([
-
-            //validation:
-            function (cb) {
-                validateProspectSignUp(options, function (err) {
-                    if (err) {
-                        return cb(err);
-                    }
-                    cb(null, true);
-                });
-            },
-
-            //create prospect:
-            function (cb) {
-                    jumplead.setContact(options.ownerId, options, function (err, contact) {
-                        if (err) {
-                           return cb(err);
-                        }
-                        cb(null, contact);
-
-                });
-            }
-        ], function (err, rezult) {
-            if (err) {
-                return next(err);
-            }
-            var contact = rezult[1];
-            res.status(201).send({
-                id: contact.id
-            });
-        });
-    };
-
-    this.content = function (req, res, next) {
-        session.getUserDescription(req, function (err, obj) {
-            if (err) {
-                return next(err);
-            }
-            if (!obj) {
-                var error = new Error();
-                error.message = "Unauthorized";
-                error.status = 401;
-                return next(error);
-            }
-            ContentModel.findOne({ownerId: obj.id}, function (err, found) {
-                if (err) {
-                    return next(err);
-                }
-                console.log(found);
-                if (!found) {
-                    return res.status(404).send({err: 'Content Not Found'});
-                }
-                var url = process.env.HOME_PAGE + found._id + '/{{ctid}}';
-                res.status(201).send({url: url});
-            });
-        });
-
-    };
-
-    // url = '/:contentId/:ctid'
-    this.getMain = function (req, res, next) {
-        var contentId = req.params.contentId;
-        var prospectId = req.params.ctid;
-        var userId;
-        var content;
-        var data;
-        async.waterfall([
-
-            function (waterfallCb) {
-                ContentModel.findById(contentId, function (err, foundContent) {
-                    if (err) {
-                        return waterfallCb(err);
-                    }
-                    if (!foundContent) {
-                        var error = new Error();
-                        error.message = 'Content Not Found';
-                        error.status = 404;
-                        return waterfallCb(error);
-                    }
-                    content = foundContent;
-                    waterfallCb(null, foundContent);
-                });
-            },
-
-            function (content, waterfallCb) {
-                UserModel.findById(content.ownerId, function (err, user) {
-                    if (err) {
-                        return waterfallCb(err);
-                    }
-                    if (!user) {
-                        var error = new Error();
-                        error.message = 'User Not Found';
-                        error.status = 404;
-                        return waterfallCb(error);
-                    }
-                    userId = user._id;
-                    waterfallCb(null, user);
-                });
-            },
-
-            function (user, waterfallCb) {
-                ProspectModel.findOne({jumpleadId: prospectId}, function (err, doc) {
-                    if (err) {
-                        return waterfallCb(err);
-                    }
-                    if (!doc) {
-                        jumplead.getContact(user._id, prospectId, function (err, prospect) {
-                            if (err) {
-                                return waterfallCb(err);
-                            }
-                            var obj = {
-                                firstName: prospect.first_name,
-                                lastName: prospect.last_name,
-                                email: prospect.email
-                            };
-                            return waterfallCb(null, obj);
-                        });
-                    }
-                    else {
-
-                        updateProspect(userId, doc.jumpleadId);
-                        return waterfallCb(null, doc);
-                    }
-                });
-            }], function (err, prospect) {
-            if (err) {
-                return next(err);
-            }
-            data = {
-                content: content,
-                contact: prospect
-            };
-            createTrackDoc(contentId, prospect);
-            res.status(200).send(data);
-        });
-    };
-
-    function updateProspect(userId, contactId){
-        jumplead.getContact(userId, contactId, function (err, data) {
-            ProspectModel.findOneAndUpdate({jumpleadId:contactId}, {
-                email: data.email,
-                firstName: data.first_name,
-                lastName: data.last_name
-            }, function (err) {
-                if(err){
-                    return console.error(err);
-                }
-            });
-        });
-    }
-
-    function createTrackDoc (contentId, prospect){
-        TrackModel.findOneAndUpdate({
-            "contentId": contentId,
-            "firstName": prospect.firstName,
-            "lastName": prospect.lastName,
-            "isSent": false,
-            "email": prospect.email
-        }, {
-            $set: {
+        function createTrackDoc(contentId, prospect) {
+            TrackModel.findOneAndUpdate({
                 "contentId": contentId,
                 "firstName": prospect.firstName,
                 "lastName": prospect.lastName,
-                "email": prospect.email,
                 "isSent": false,
-                "updatedAt": Date.now()
-            }
-        }, {upsert: true}, function (err) {
-            if (err) {
-                return console.err(err);
-            }
-            return true;
-        });
-    };
+                "email": prospect.email
+            }, {
+                $set: {
+                    "contentId": contentId,
+                    "firstName": prospect.firstName,
+                    "lastName": prospect.lastName,
+                    "email": prospect.email,
+                    "isSent": false,
+                    "updatedAt": Date.now()
+                }
+            }, {upsert: true}, function (err) {
+                if (err) {
+                    return console.err(err);
+                }
+                return true;
+            });
+        };
 
-    this.allContacts = function (req, res, next) {
-        var usrId = req.params.id;
-        jumplead.getAllContacts(usrId, function (err, prospects) {
-            if (err) {
-                return next(err);
-            }
-            res.status(200).send(prospects);
-        });
-    };
+        this.allContacts = function (req, res, next) {
+            var usrId = req.params.id;
+            jumplead.getAllContacts(usrId, function (err, prospects) {
+                if (err) {
+                    return next(err);
+                }
+                res.status(200).send(prospects);
+            });
+        };
 
-    this.contact = function (req, res, next) {
-        var uId = mongoose.Types.ObjectId(req.params.uid);
-        var cId = mongoose.Types.ObjectId(req.params.cid);
-        jumplead.getContact(uId, cId, function (err, prospects) {
-            if (err) {
-                return next(err);
-            }
-            res.status(200).send(prospects);
-        });
-    };
+        this.contact = function (req, res, next) {
+            var uId = mongoose.Types.ObjectId(req.params.uid);
+            var cId = mongoose.Types.ObjectId(req.params.cid);
+            jumplead.getContact(uId, cId, function (err, prospects) {
+                if (err) {
+                    return next(err);
+                }
+                res.status(200).send(prospects);
+            });
+        };
 
-    this.allUsers = function (req, res, next) {
-        UserModel.find({}, {avatar:0}, function (err, users) {
-            if (err) next(err);
-            res.status(200).send(users);
-        });
+        this.allUsers = function (req, res, next) {
+            UserModel.find({}, {avatar: 0}, function (err, users) {
+                if (err) next(err);
+                res.status(200).send(users);
+            });
 
-    };
+        };
 
-    this.trackQuestion = function (req, res, next) {
-        var data = req.body;
-        var userId = req.body.userId;
-        var contentId = req.body.contentId;
+        this.trackQuestion = function (req, res, next) {
+            var data = req.body;
+            var userId = req.body.userId;
+            var contentId = req.body.contentId;
 
-        TrackModel.findOneAndUpdate({
-            "userId": userId,
-            "contentId": contentId,
-            "isSent": false
-        }, {$set: {questions: data.questions}}, {upsert: true}, function (err) {
-            if (err) {
-                return next(err);
-            }
             TrackModel.findOneAndUpdate({
                 "userId": userId,
                 "contentId": contentId,
                 "isSent": false
-            }, {
-                $set: {
-                    updatedAt: Date.now()
-                }
-            }, function (err) {
+            }, {$set: {questions: data.questions}}, {upsert: true}, function (err) {
                 if (err) {
                     return next(err);
                 }
-                res.status(200).send("Successful update");
-            });
-        });
-    };
-
-    this.trackDocument = function (req, res, next) {
-        var body = req.body;
-        if (!body.document || !body.userId || !body.contentId) {
-            return res.status(200).send("Invalid parameters");
-        }
-        var userId = body.userId;
-        var contentId = body.contentId;
-        var document = {
-            document: body.document
-        };
-        var obj = {
-            "userId": userId,
-            "contentId": contentId,
-            "isSent": false,
-            "documents.document": document
-        };
-
-        TrackModel.findOne(obj, function (err, doc) {
-            if (err) {
-                return next(err);
-            }
-            if (!doc) {
                 TrackModel.findOneAndUpdate({
                     "userId": userId,
                     "contentId": contentId,
                     "isSent": false
                 }, {
-                    $addToSet: {
-                        "documents": {
-                            document: body.document
-                        }
+                    $set: {
+                        updatedAt: Date.now()
                     }
-                }, {upsert: true, new: true}, function (err, doc) {
+                }, function (err) {
                     if (err) {
                         return next(err);
                     }
-                    TrackModel.findByIdAndUpdate(doc._id, {
-                        $set: {
-                            updatedAt: Date.now()
-                        }
-                    }, function (err) {
-                        if (err) {
-                            return next(err);
-                        }
-                        return res.status(200).send("Successful create");
-                    });
+                    res.status(200).send("Successful update");
                 });
-            } else {
-                var findDocument = _.findWhere(doc.documents, {document: document});
+            });
+        };
 
-                if (!findDocument) {
+        this.trackDocument = function (req, res, next) {
+            var body = req.body;
+            if (!body.document || !body.userId || !body.contentId) {
+                return res.status(200).send("Invalid parameters");
+            }
+            var userId = body.userId;
+            var contentId = body.contentId;
+            var document = {
+                document: body.document
+            };
+            var obj = {
+                "userId": userId,
+                "contentId": contentId,
+                "isSent": false,
+                "documents.document": document
+            };
+
+            TrackModel.findOne(obj, function (err, doc) {
+                if (err) {
+                    return next(err);
+                }
+                if (!doc) {
                     TrackModel.findOneAndUpdate({
                         "userId": userId,
                         "contentId": contentId,
-                        "isSent": false,
+                        "isSent": false
                     }, {
                         $addToSet: {
                             "documents": {
                                 document: body.document
                             }
                         }
-                    }, function (err) {
+                    }, {upsert: true, new: true}, function (err, doc) {
                         if (err) {
                             return next(err);
                         }
@@ -731,454 +744,483 @@ var routeHandler = function (db) {
                         });
                     });
                 } else {
-                    res.status(200).send("User already download this document");
-                }
-            }
-        });
-    };
+                    var findDocument = _.findWhere(doc.documents, {document: document});
 
-    this.trackVideo = function (req, res, next) {
-        var body = req.body;
-        var data = body.data;
-        if (!data.video || !data.stopTime || !body.userId || !body.contentId) {
-            return res.status(403).send("Invalid parameters");
-        }
-        var userId = body.userId;
-        var contentId = body.contentId;
-        var obj = {
-            "userId": userId,
-            "contentId": contentId,
-            "isSent": false,
-            "videos.video": body.data.video
+                    if (!findDocument) {
+                        TrackModel.findOneAndUpdate({
+                            "userId": userId,
+                            "contentId": contentId,
+                            "isSent": false,
+                        }, {
+                            $addToSet: {
+                                "documents": {
+                                    document: body.document
+                                }
+                            }
+                        }, function (err) {
+                            if (err) {
+                                return next(err);
+                            }
+                            TrackModel.findByIdAndUpdate(doc._id, {
+                                $set: {
+                                    updatedAt: Date.now()
+                                }
+                            }, function (err) {
+                                if (err) {
+                                    return next(err);
+                                }
+                                return res.status(200).send("Successful create");
+                            });
+                        });
+                    } else {
+                        res.status(200).send("User already download this document");
+                    }
+                }
+            });
         };
 
-        TrackModel.findOne(obj, function (err, doc) {
-            if (err) {
-                return next(err);
+        this.trackVideo = function (req, res, next) {
+            var body = req.body;
+            var data = body.data;
+            if (!data.video || !data.stopTime || !body.userId || !body.contentId) {
+                return res.status(403).send("Invalid parameters");
             }
-            if (!doc) {
-                TrackModel.findOneAndUpdate({
-                    "userId": userId,
-                    "contentId": contentId,
-                    "isSent": false
-                }, {
-                    "userId": userId,
-                    "contentId": contentId,
-                    "isSent": false,
-                    "updatedAt": Date.now()
-                }, {upsert: true, new: true}, function (err, doc) {
-                    if (err) {
-                        return next(err);
-                    }
-                    TrackModel.findByIdAndUpdate(doc._id, {
-                        $addToSet: {
-                            "videos": body.data
-                        }
-                    }, function (err) {
-                        if (err) {
-                            return next(err);
-                        }
-                        return res.status(200).send("Successful create");
-                    });
-                });
-            } else {
-                var fvideo = _.findWhere(doc.videos, {video: body.data.video});
-                if (!fvideo.end && fvideo.stopTime < body.data.stopTime) {
+            var userId = body.userId;
+            var contentId = body.contentId;
+            var obj = {
+                "userId": userId,
+                "contentId": contentId,
+                "isSent": false,
+                "videos.video": body.data.video
+            };
+
+            TrackModel.findOne(obj, function (err, doc) {
+                if (err) {
+                    return next(err);
+                }
+                if (!doc) {
                     TrackModel.findOneAndUpdate({
                         "userId": userId,
                         "contentId": contentId,
-                        "isSent": false,
-                        "videos.video": body.data.video
+                        "isSent": false
                     }, {
-                        $set: {
-                            "videos.$.stopTime": body.data.stopTime,
-                            "videos.$.end": body.data.end,
-                            updatedAt: Date.now()
-                        }
-                    }, function (err) {
+                        "userId": userId,
+                        "contentId": contentId,
+                        "isSent": false,
+                        "updatedAt": Date.now()
+                    }, {upsert: true, new: true}, function (err, doc) {
                         if (err) {
                             return next(err);
                         }
-                        return res.status(200).send("Successful update");
+                        TrackModel.findByIdAndUpdate(doc._id, {
+                            $addToSet: {
+                                "videos": body.data
+                            }
+                        }, function (err) {
+                            if (err) {
+                                return next(err);
+                            }
+                            return res.status(200).send("Successful create");
+                        });
                     });
                 } else {
-                    res.status(200).send("User already watched this video longer time");
+                    var fvideo = _.findWhere(doc.videos, {video: body.data.video});
+                    if (!fvideo.end && fvideo.stopTime < body.data.stopTime) {
+                        TrackModel.findOneAndUpdate({
+                            "userId": userId,
+                            "contentId": contentId,
+                            "isSent": false,
+                            "videos.video": body.data.video
+                        }, {
+                            $set: {
+                                "videos.$.stopTime": body.data.stopTime,
+                                "videos.$.end": body.data.end,
+                                updatedAt: Date.now()
+                            }
+                        }, function (err) {
+                            if (err) {
+                                return next(err);
+                            }
+                            return res.status(200).send("Successful update");
+                        });
+                    } else {
+                        res.status(200).send("User already watched this video longer time");
+                    }
+                }
+            });
+        };
+
+        function upFile(target, file, callback) {
+            fs.readFile(file.path, function (err, data) {
+                localFs.setFile(target, file.originalFilename, data, function (err) {
+                    if (err) {
+                        return callback(err);
+                    }
+                    var uri = path.join(target, file.originalFilename);
+                    return callback(null, uri);
+                });
+            });
+        };
+
+        function validation(data, callback) {
+            var files = data.files;
+            var body = data.body;
+            var formatsVideo = '.mp4 .WebM .Ogg';
+            var formatsImage = '.jpg .bmp .png .ico';
+            var mainVideoExt = (files['video'].originalFilename.split('.')).pop().toLowerCase();
+            var err = new Error();
+            err.status = 400;
+
+
+            if (!body.desc || !body.name || !body.email || !body.phone) {
+                err.message = 'Not  completed fields';
+                return callback(err);
+            }
+            if (!files['video'] && body['video']) {
+                err.message = 'Main video is not found';
+                return callback(err);
+            }
+            if (!body.countQuestion) {
+                err.message = 'Question  is not found';
+                return callback(err);
+            }
+            if (files['video'] && formatsVideo.indexOf(mainVideoExt) == -1) {
+                err.message = 'Main video format is not support';
+                return callback(err);
+            }
+            if (!REG_EXP.EMAIL_REGEXP.test(body.email)) {
+                err.message = 'Email validation failed';
+                return callback(err);
+            }
+
+            for (var i = body.countQuestion; i > 0; i--) {
+                var videoName = 'video' + i;
+                var pdfName = 'file' + i;
+                var questionName = 'question' + i;
+                var videoExt = (files[videoName].originalFilename.split('.')).pop().toLowerCase();
+
+                async.each(files[pdfName], function (file, cb) {
+                    var pdfExt = (file.originalFilename.split('.')).pop().toLowerCase();
+                    if (pdfExt != 'pdf') {
+                        err.message = 'Survey pdf files format is not support';
+                        return cb(err);
+                    }
+                    else cb();
+                });
+                if (!files[videoName] && !body[videoName]) {
+                    err.message = 'Survey video is not found';
+                    return callback(err);
+                }
+                if (!body[questionName]) {
+                    err.message = 'Survey question is not found';
+                    return callback(err);
+                }
+
+                if (files[videoName] && formatsVideo.indexOf(videoExt) == -1) {
+                    err.message = 'Survey video format is not support';
+                    return callback(err);
                 }
             }
-        });
-    };
 
-    function upFile(target, file, callback) {
-        fs.readFile(file.path, function (err, data) {
-            localFs.setFile(target, file.originalFilename, data, function (err) {
+            if (!files['logo']) {
+                err.message = 'Logo is not found';
+                return callback(err);
+            }
+            var logoExt = (files['logo'].originalFilename.split('.')).pop().toLowerCase();
+            if (formatsImage.indexOf(logoExt) == -1) {
+                err.message = 'Logo format is not support';
+                return callback(err);
+            }
+            return callback();
+        };
+
+
+        function saveMainVideo(id, files, callback) {
+            var sep = path.sep;
+            var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString();
+
+            upFile(url, files['video'], function (err, mainVideoUri) {
                 if (err) {
                     return callback(err);
                 }
-                var uri = path.join(target, file.originalFilename);
-                return callback(null, uri);
+                upFile(url, files['logo'], function (err, logoUri) {
+                    if (err) {
+                        return callback(err);
+                    }
+                    var saveMainVideoUri = mainVideoUri.replace('public' + sep, '');
+                    var saveLogoUri = logoUri.replace('public' + sep, '');
+                    ContentModel.findByIdAndUpdate(id, {$set: {mainVideoUri: saveMainVideoUri, logoUri: saveLogoUri}},
+                        function (err, content) {
+                            if (err) {
+                                return callback(err);
+                            }
+                            callback(null);
+                        });
+                });
             });
-        });
-    };
+        };
 
-    function validation(data, callback) {
-        var files = data.files;
-        var body = data.body;
-        var formatsVideo = '.mp4 .WebM .Ogg';
-        var formatsImage = '.jpg .bmp .png .ico';
-        var mainVideoExt = (files['video'].originalFilename.split('.')).pop().toLowerCase();
-        var err = new Error();
-        err.status = 400;
+        function saveSurveyVideo(num, id, files, data, callback) {
+            var question = 'question' + num;
+            var name = 'video' + num;
+            console.log('************Uploading video ' + question + ' start');
+            if (!!files[name]) {
+                var sep = path.sep;
+                var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString() + sep + 'survey' + num;
 
-
-        if (!body.desc || !body.name || !body.email || !body.phone) {
-            err.message = 'Not  completed fields';
-            return callback(err);
-        }
-        if (!files['video'] && body['video']) {
-            err.message = 'Main video is not found';
-            return callback(err);
-        }
-        if (!body.countQuestion) {
-            err.message = 'Question  is not found';
-            return callback(err);
-        }
-        if (files['video'] && formatsVideo.indexOf(mainVideoExt) == -1) {
-            err.message = 'Main video format is not support';
-            return callback(err);
-        }
-        if (!REG_EXP.EMAIL_REGEXP.test(body.email)) {
-            err.message = 'Email validation failed';
-            return callback(err);
-        }
-
-        for (var i = body.countQuestion; i > 0; i--) {
-            var videoName = 'video' + i;
-            var pdfName = 'file' + i;
-            var questionName = 'question' + i;
-            var videoExt = (files[videoName].originalFilename.split('.')).pop().toLowerCase();
-
-            async.each(files[pdfName], function (file, cb) {
-                var pdfExt = (file.originalFilename.split('.')).pop().toLowerCase();
-                if (pdfExt != 'pdf') {
-                    err.message = 'Survey pdf files format is not support';
-                    return cb(err);
-                }
-                else cb();
-            });
-            if (!files[videoName] && !body[videoName]) {
-                err.message = 'Survey video is not found';
-                return callback(err);
-            }
-            if (!body[questionName]) {
-                err.message = 'Survey question is not found';
-                return callback(err);
-            }
-
-            if (files[videoName] && formatsVideo.indexOf(videoExt) == -1) {
-                err.message = 'Survey video format is not support';
-                return callback(err);
-            }
-        }
-
-        if (!files['logo']) {
-            err.message = 'Logo is not found';
-            return callback(err);
-        }
-        var logoExt = (files['logo'].originalFilename.split('.')).pop().toLowerCase();
-        if (formatsImage.indexOf(logoExt) == -1) {
-            err.message = 'Logo format is not support';
-            return callback(err);
-        }
-        return callback();
-    };
-
-
-    function saveMainVideo(id, files, callback) {
-        var sep = path.sep;
-        var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString();
-
-        upFile(url, files['video'], function (err, mainVideoUri) {
-            if (err) {
-                return callback(err);
-            }
-            upFile(url, files['logo'], function (err, logoUri) {
-                if (err) {
-                    return callback(err);
-                }
-                var saveMainVideoUri = mainVideoUri.replace('public' + sep, '');
-                var saveLogoUri = logoUri.replace('public' + sep, '');
-                ContentModel.findByIdAndUpdate(id, {$set: {mainVideoUri: saveMainVideoUri, logoUri: saveLogoUri}},
-                    function (err, content) {
+                upFile(url, files[name], function (err, videoUri) {
+                    if (err) {
+                        return callback(err);
+                    }
+                    var saveVideoUri = videoUri.replace('public' + sep, '');
+                    var insSurvey = {
+                        question: data[question],
+                        videoUri: saveVideoUri
+                    };
+                    ContentModel.findByIdAndUpdate(id, {$addToSet: {survey: insSurvey}}, function (err) {
                         if (err) {
                             return callback(err);
                         }
-                        callback(null);
+                        console.log('*************Uploading video ' + question + ' ended successfully');
+                        return callback(null)
                     });
-            });
-        });
-    };
-
-    function saveSurveyVideo(num, id, files, data, callback) {
-        var question = 'question' + num;
-        var name = 'video' + num;
-        console.log('************Uploading video ' + question + ' start');
-        if (!!files[name]) {
-            var sep = path.sep;
-            var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString() + sep + 'survey' + num;
-
-            upFile(url, files[name], function (err, videoUri) {
-                if (err) {
-                    return callback(err);
-                }
-                var saveVideoUri = videoUri.replace('public' + sep, '');
+                });
+            } else {
                 var insSurvey = {
                     question: data[question],
-                    videoUri: saveVideoUri
+                    videoUri: data[name]
                 };
                 ContentModel.findByIdAndUpdate(id, {$addToSet: {survey: insSurvey}}, function (err) {
                     if (err) {
                         return callback(err);
                     }
-                    console.log('*************Uploading video ' + question + ' ended successfully');
                     return callback(null)
                 });
-            });
-        } else {
-            var insSurvey = {
-                question: data[question],
-                videoUri: data[name]
-            };
-            ContentModel.findByIdAndUpdate(id, {$addToSet: {survey: insSurvey}}, function (err) {
-                if (err) {
-                    return callback(err);
-                }
-                return callback(null)
-            });
-        }
+            }
 
 
-    };
+        };
 
-    function saveSurveyFiles(num, id, files, data, mainCallback) {
-        var question = 'question' + num;
-        var name = 'file' + num;
-        var sep = path.sep;
-        var arr = [];
-        if (!files[name]) {
-            var error = new Error();
-            error.message = "Some files missing";
-            error.status = 401;
-            return mainCallback(error);
-        }
-        if (!files[name].length) {
-            arr.push(files[name]);
-        }
-        else {
-            arr = files[name];
-        }
-        console.log('---Uploading pdf ' + question + ' start');
-        var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString() + sep + 'survey' + num + sep + 'pdf';
+        function saveSurveyFiles(num, id, files, data, mainCallback) {
+            var question = 'question' + num;
+            var name = 'file' + num;
+            var sep = path.sep;
+            var arr = [];
+            if (!files[name]) {
+                var error = new Error();
+                error.message = "Some files missing";
+                error.status = 401;
+                return mainCallback(error);
+            }
+            if (!files[name].length) {
+                arr.push(files[name]);
+            }
+            else {
+                arr = files[name];
+            }
+            console.log('---Uploading pdf ' + question + ' start');
+            var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString() + sep + 'survey' + num + sep + 'pdf';
 
-        async.each(arr, function (file, eachCb) {
-            upFile(url, file, function (err, pdfUri) {
-                if (err) {
-                    return eachCb(err);
-                }
-                var name = file.originalFilename.split(sep).pop().slice(0, -4) + '.png';
-
-                pdfutils(file.path, function (err, doc) {
-                    doc[0].asPNG({maxWidth: 500, maxHeight: 1000}).toFile(url + sep + name);
-                    console.log('+++++Uploading Image ' + question + ' of ' + name + ' ended successfully');
-                });
-                var savePdfUri = pdfUri.replace('public' + sep, '');
-                ContentModel.findOneAndUpdate({
-                    "_id": id,
-                    "survey.question": data[question]
-                }, {$addToSet: {"survey.$.pdfUri": savePdfUri}}, function (err, content) {
+            async.each(arr, function (file, eachCb) {
+                upFile(url, file, function (err, pdfUri) {
                     if (err) {
                         return eachCb(err);
                     }
-                    eachCb();
+                    var name = file.originalFilename.split(sep).pop().slice(0, -4) + '.png';
+
+                    pdfutils(file.path, function (err, doc) {
+                        doc[0].asPNG({maxWidth: 500, maxHeight: 1000}).toFile(url + sep + name);
+                        console.log('+++++Uploading Image ' + question + ' of ' + name + ' ended successfully');
+                    });
+                    var savePdfUri = pdfUri.replace('public' + sep, '');
+                    ContentModel.findOneAndUpdate({
+                        "_id": id,
+                        "survey.question": data[question]
+                    }, {$addToSet: {"survey.$.pdfUri": savePdfUri}}, function (err, content) {
+                        if (err) {
+                            return eachCb(err);
+                        }
+                        eachCb();
+                    });
                 });
+            }, function (err) {
+                if (err) {
+                    return mainCallback(err);
+                } else {
+                    console.log('---Uploading pdf ' + question + ' ended successfully');
+                    mainCallback();
+                }
             });
-        }, function (err) {
-            if (err) {
-                return mainCallback(err);
-            } else {
-                console.log('---Uploading pdf ' + question + ' ended successfully');
-                mainCallback();
-            }
-        });
-    };
+        };
 
 
-    this.upload = function (req, res, next) {
-        var data = req.body;
-        var files = req.files;
-        async.waterfall([
+        this.upload = function (req, res, next) {
+            var data = req.body;
+            var files = req.files;
+            async.waterfall([
 
-                //validation
-                function (waterfallCb) {
-                    validation(req, function (err) {
-                        if (err) {
-                            return waterfallCb(err);
-                        }
-                        waterfallCb(null);
-
-                    });
-                },
-
-                // get current user from session
-                function (waterfallCb) {
-                    session.getUserDescription(req, function (err, obj) {
-                        if (err) {
-                            return waterfallCb(err);
-                        }
-                        if (!obj) {
-                            var error = new Error();
-                            error.status = 401;
-                            error.message = 'Unauthorized';
-                            return waterfallCb(error);
-                        }
-
-                        waterfallCb(null, obj);
-                    });
-                },
-
-                // get data about current user from DB
-                function (obj, waterfallCb) {
-                    ContentModel.findOne({ownerId: obj.id}, function (err, doc) {
-                        if (err) {
-                            return waterfallCb(err);
-                        }
-                        if (doc) {
-                            var error = new Error();
-                            error.status = 401;
-                            error.message = 'You already have content';
-                            return waterfallCb(error);
-                        }
-                        var insObj = {
-                            ownerId: obj.id,
-                            name: data.name,
-                            email: data.email,
-                            phone: data.phone,
-                            mainVideoDescription: data.desc
-                        };
-                        waterfallCb(null, obj, insObj);
-                    });
-                },
-
-                // create content model
-                function (obj, insObj, waterfallCb) {
-                    var content = new ContentModel(insObj);
-                    content.save(function (err, result) {
-                        if (err) {
-                            return waterfallCb(err);
-                        }
-                        waterfallCb(null, obj, result);
-                    });
-                },
-
-                // update user => set contentId
-                function (obj, result, waterfallCb) {
-                    var id = result._id;
-                    UserModel.findByIdAndUpdate(obj.id, {$set: {contentId: result._id}}, function (err, user) {
-                        if (err) {
-                            return waterfallCb(err);
-                        }
-                        waterfallCb(null, user, id);
-                    });
-                },
-
-                // save data staff
-                function (user, id, waterfallCb) {
-                    async.series([
-                        function (seriesCb) {
-                            if (!!files['video']) {
-                                saveMainVideo(id, files, seriesCb);
+                    //validation
+                    function (waterfallCb) {
+                        validation(req, function (err) {
+                            if (err) {
+                                return waterfallCb(err);
                             }
-                            else {
-                                var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString();
-                                upFile(url, files['logo'], function (err, logoUri) {
+                            waterfallCb(null);
+
+                        });
+                    },
+
+                    // get current user from session
+                    function (waterfallCb) {
+                        session.getUserDescription(req, function (err, obj) {
+                            if (err) {
+                                return waterfallCb(err);
+                            }
+                            if (!obj) {
+                                var error = new Error();
+                                error.status = 401;
+                                error.message = 'Unauthorized';
+                                return waterfallCb(error);
+                            }
+
+                            waterfallCb(null, obj);
+                        });
+                    },
+
+                    // get data about current user from DB
+                    function (obj, waterfallCb) {
+                        ContentModel.findOne({ownerId: obj.id}, function (err, doc) {
+                            if (err) {
+                                return waterfallCb(err);
+                            }
+                            if (doc) {
+                                var error = new Error();
+                                error.status = 401;
+                                error.message = 'You already have content';
+                                return waterfallCb(error);
+                            }
+                            var insObj = {
+                                ownerId: obj.id,
+                                name: data.name,
+                                email: data.email,
+                                phone: data.phone,
+                                mainVideoDescription: data.desc
+                            };
+                            waterfallCb(null, obj, insObj);
+                        });
+                    },
+
+                    // create content model
+                    function (obj, insObj, waterfallCb) {
+                        var content = new ContentModel(insObj);
+                        content.save(function (err, result) {
+                            if (err) {
+                                return waterfallCb(err);
+                            }
+                            waterfallCb(null, obj, result);
+                        });
+                    },
+
+                    // update user => set contentId
+                    function (obj, result, waterfallCb) {
+                        var id = result._id;
+                        UserModel.findByIdAndUpdate(obj.id, {$set: {contentId: result._id}}, function (err, user) {
+                            if (err) {
+                                return waterfallCb(err);
+                            }
+                            waterfallCb(null, user, id);
+                        });
+                    },
+
+                    // save data staff
+                    function (user, id, waterfallCb) {
+                        async.series([
+                            function (seriesCb) {
+                                if (!!files['video']) {
+                                    saveMainVideo(id, files, seriesCb);
+                                }
+                                else {
+                                    var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString();
+                                    upFile(url, files['logo'], function (err, logoUri) {
+                                        if (err) {
+                                            return seriesCb(err);
+                                        }
+                                        var saveLogoUri = logoUri.replace('public' + sep, '');
+                                        ContentModel.findByIdAndUpdate(id, {
+                                                $set: {
+                                                    mainVideoUri: data.video,
+                                                    logoUri: saveLogoUri
+                                                }
+                                            },
+                                            function (err) {
+                                                if (err) {
+                                                    return seriesCb(err);
+                                                }
+                                                seriesCb(null);
+                                            });
+                                    });
+                                }
+                            },
+
+                            function (seriesCb) {
+                                var index = [];
+                                for (var i = data.countQuestion; i > 0; i--) {
+                                    index.push(i);
+                                }
+
+                                async.each(index, function (i, eachCb) {
+                                    async.applyEachSeries([saveSurveyVideo, saveSurveyFiles], i, id, files, data, function (err) {
+                                        if (err) {
+                                            return eachCb(err);
+                                        }
+                                        eachCb();
+                                    });
+                                }, function (err) {
                                     if (err) {
                                         return seriesCb(err);
                                     }
-                                    var saveLogoUri = logoUri.replace('public' + sep, '');
-                                    ContentModel.findByIdAndUpdate(id, {
-                                            $set: {
-                                                mainVideoUri: data.video,
-                                                logoUri: saveLogoUri
-                                            }
-                                        },
-                                        function (err) {
-                                            if (err) {
-                                                return seriesCb(err);
-                                            }
-                                            seriesCb(null);
-                                        });
+                                    seriesCb(null);
                                 });
+
+                            }], function (err) {
+                            if (err) {
+                                return waterfallCb(err);
                             }
-                        },
+                            var url = process.env.HOME_PAGE + id + '/{{ctid}}';
+                            waterfallCb(null, url)
+                        });
+                        localFs.defaultPublicDir = 'public';
+                    }],
 
-                        function (seriesCb) {
-                            var index = [];
-                            for (var i = data.countQuestion; i > 0; i--) {
-                                index.push(i);
-                            }
+                function (err, url) {
+                    if (err) {
+                        return next(err);
+                    }
+                    res.status(201).send({url: url});
+                });
+        };
 
-                            async.each(index, function (i, eachCb) {
-                                async.applyEachSeries([saveSurveyVideo, saveSurveyFiles], i, id, files, data, function (err) {
-                                    if (err) {
-                                        return eachCb(err);
-                                    }
-                                    eachCb();
-                                });
-                            }, function (err) {
-                                if (err) {
-                                    return seriesCb(err);
-                                }
-                                seriesCb(null);
-                            });
+        this.pdf = function (req, res, next) {
+            var data = req.body;
+            var files = req.files;
+            var sep = path.sep;
+            var url = localFs.defaultPublicDir + sep + 'video';
 
-                        }], function (err) {
-                        if (err) {
-                            return waterfallCb(err);
-                        }
-                        var url = process.env.HOME_PAGE + id + '/{{ctid}}';
-                        waterfallCb(null, url)
-                    });
-                    localFs.defaultPublicDir = 'public';
-                }],
-
-            function (err, url) {
+            upFile(url, files['pdf'], function (err, pdfUri) {
                 if (err) {
                     return next(err);
                 }
-                res.status(201).send({url: url});
+                //ToDo: pdf preview
+
+                //-----------------------------------------------------------------
+                var name = files['pdf'].originalFilename.split(sep).pop().slice(0, -4) + '.png';
+                pdfutils(files['pdf'].path, function (err, doc) {
+                    doc[0].asPNG({maxWidth: 500, maxHeight: 1000}).toFile(url + sep + name);
+                });
+                //-----------------------------------------------------------------
+                res.status(200).send('Success!!');
             });
+        };
     };
 
-    this.pdf = function (req, res, next) {
-        var data = req.body;
-        var files = req.files;
-        var sep = path.sep;
-        var url = localFs.defaultPublicDir + sep + 'video';
-
-        upFile(url, files['pdf'], function (err, pdfUri) {
-            if (err) {
-                return next(err);
-            }
-            //ToDo: pdf preview
-
-            //-----------------------------------------------------------------
-            var name = files['pdf'].originalFilename.split(sep).pop().slice(0, -4) + '.png';
-            pdfutils(files['pdf'].path, function (err, doc) {
-                doc[0].asPNG({maxWidth: 500, maxHeight: 1000}).toFile(url + sep + name);
-            });
-            //-----------------------------------------------------------------
-            res.status(200).send('Success!!');
-        });
-    };
-};
-
-module.exports = routeHandler;
+    module.exports = routeHandler;
