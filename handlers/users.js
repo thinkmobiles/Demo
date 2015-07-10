@@ -158,6 +158,17 @@ var routeHandler = function (db) {
         return shaSum.digest('hex');
     };
 
+    this.share = function (req, res, next) {
+        fs.readFile('public/templates/share.html', 'utf8', function (err, template) {
+            var templateOptions;
+            var mailOptions;
+            var html = _.template(template)({});
+            //res.write();
+            res.end(html);
+        });
+    };
+
+
     this.redirect = function (req, res, next) {
         if (req.query.error) {
             return res.status(401).send({
