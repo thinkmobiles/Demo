@@ -1051,7 +1051,7 @@ footer{
 		}
 		div.social{
 			margin-top:40px;
-			>span{
+			>span, >a>span{
 				.i("socials.png");
 				display:inline-block;
 				width:27px;
@@ -1065,6 +1065,9 @@ footer{
 				&:hover{
 					background-position:0 -28px;
 				}
+			  span{
+				display: none;
+			  }
 			}
 			.tw{
 				background-position:-50px 0;
@@ -1084,6 +1087,9 @@ footer{
 					background-position:-149px -28px;
 				}
 			}
+		  a:focus{
+			outline: none;
+		  }
 			
 		}
 		button{
