@@ -1,10 +1,7 @@
 <!doctype html>
-<head>
+<head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# video: http://ogp.me/ns/video#">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <meta property="og:title" content="title" />
-  <meta property="og:description" content="description" />
-  <meta property="og:image" content="thumbnail_image" />
   <title>DemoRocket</title>
   <meta name="viewport" content="width=device-width">
   <link href="js/libs/jqueryui/themes/base/all.css" rel="stylesheet" type="text/css">
@@ -12,11 +9,17 @@
   <script data-main="js/main" src="js/libs/requirejs/require.js"></script>
   <link rel="icon" href="i/favicon.ico">
 
+  <meta property="fb:app_id" content="402907036567222" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Some Title1" />
+  <meta property="og:image" content="http://134.249.164.53:8838/video/559659f63e3d511c49000004/g-logo.jpg" />
+  <meta property="og:url"
+        content="http://134.249.164.53:8838/#/watchVideo/559659f63e3d511c49000004/558a78fa5a709eff758b4567" />
+  <meta property="og:description" content="Some Description" />
 
-  <meta property="og:title" content="My Shared Article Title" />
-  <meta property="og:description" content="Description of shared article" />
-  <meta property="og:url" content="http://example.com/my_article.html" />
-  <meta property="og:image" content="http://example.com/foo.jpg" />
+
+
+
 </head>
 <body>
   <script>
@@ -36,11 +39,14 @@
     fjs.parentNode.insertBefore(js, fjs);
 	}(document, 'script', 'facebook-jssdk'));
   </script>
+  <!-- Вставьте этот тег в заголовке страницы или непосредственно перед закрывающим тегом основной части. -->
+  <script src="https://apis.google.com/js/platform.js" async defer>
+    {lang: 'ru'}
+  </script>
 
   <div class="notification">
   </div>
   <div id="topMenu"></div>
   <div id="wrapper"></div>
-  <div class="fb-share-button"></div>
 </body>
 </html>
