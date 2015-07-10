@@ -177,9 +177,9 @@ var routeHandler = function (db) {
                 }
                 content = foundContent;
 
-                var redirectUrl = process.env.HOST + '/#/' + page + '/' + contentId + '/' + prospectId;
-                var currentUtl = process.env.HOST + '/share?contentId=' + contentId + '&prospectId=' + prospectId + '&page=' + page;
-                var logoUtl = process.env.HOST + '/' + content.logoUri;
+                var redirectUrl = process.env.WEB_HOST + '/#/' + page + '/' + contentId + '/' + prospectId;
+                var currentUtl = process.env.WEB_HOST + '/share?contentId=' + contentId + '&prospectId=' + prospectId + '&page=' + page;
+                var logoUtl = process.env.WEB_HOST + '/' + content.logoUri;
                 var description = content.mainVideoDescription;
 
                 var templateOptions = {

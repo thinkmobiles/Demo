@@ -1,4 +1,5 @@
 process.env.HOST = 'http://127.0.0.1:8838';
+process.env.WEB_HOST = 'http://134.249.164.53:8838';
 process.env.PORT = 8838;
 //process.env.HOST = 'http://localhost:8838';
 //process.env.PORT = 8838;
