@@ -288,7 +288,7 @@ define([
 				host:"http://134.249.164.53:8838/",
 				videoId:self.videoId,
 				prospectId:self.userId,
-				page:window.location.hash.split("/")[1]
+				page:window.location.hash.split("/")[1].replace("chooseImportant","watchVideo")
 			});
 			this.dialog = $(formString).dialog({
 				modal:true,
