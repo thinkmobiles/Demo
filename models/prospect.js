@@ -15,13 +15,15 @@ module.exports = (function () {
     var mongoose = require('mongoose');
 
     var prospectSchema = mongoose.Schema({
-        email: {type: String, required: true, unique: true},
+        jumpleadId: {type: String},
+        email: {type: String, required: true},
         firstName: {type: String, required: true, minlength: NAME_MIN_LENGTH, maxlength: NAME_MAX_LENGTH},
         lastName: {type: String, required: true, minlength: NAME_MIN_LENGTH, maxlength: NAME_MAX_LENGTH},
-        phone: {type: String, required: true,  minlength: PHONE_MIN_LENGTH, maxlength: PHONE_MAX_LENGTH},
-        organization: {type: String, required: true, minlength: ORGANIZATION_MIN_LENGTH, maxlength: ORGANIZATION_MAX_LENGTH},
-        title: {type: String, required: true, minlength: TITLE_MIN_LENGTH, maxlength: TITLE_MAX_LENGTH},
-        comments: {type: String, default: "", maxlength:  COMMENTS_MAX_LENGTH},
+        isNewViwer: {type: Boolean, default: false},
+       /* phone: {type: String, default: "", minlength: PHONE_MIN_LENGTH, maxlength: PHONE_MAX_LENGTH},
+        organization: {type: String, default: "", minlength: ORGANIZATION_MIN_LENGTH, maxlength: ORGANIZATION_MAX_LENGTH},
+        title: {type: String, default: "", minlength: TITLE_MIN_LENGTH, maxlength: TITLE_MAX_LENGTH},
+        comments: {type: String, default: "", maxlength:  COMMENTS_MAX_LENGTH},*/
         createdAt: {type: Date, default: Date.now},
         updatedAt: {type: Date, default: Date.now}
 

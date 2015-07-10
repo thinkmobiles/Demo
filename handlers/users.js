@@ -182,7 +182,8 @@ var routeHandler = function (db) {
                     if (err) {
                         return waterfallCb(err)
                     }
-                    waterfallCb(null, obj)
+                    saveAllContacts(obj.id);
+                    waterfallCb(null, obj);
                 });
             },
 
@@ -227,8 +228,8 @@ var routeHandler = function (db) {
                             return next(err);
                         }
                         console.log('Email successfully updated');
+                        return waterfallCb(null);
                     });
-                    return waterfallCb(null);
                 }
             }], function (err) {
             if (err) {
@@ -237,7 +238,35 @@ var routeHandler = function (db) {
             return res.redirect('/#/home');
         });
     };
+    function saveAllContacts (userId) {
+        var arrToSave = [];
+        jumplead.getAllContacts(userId, function (err, contacts) {
+            if(err){
+                return console.error(err);
+            }
+            async.each(contacts, function (contact, callback) {
+                var obj = {
+                    jumpleadId: contact.id,
+                    firstName: contact.first_name,
+                    lastName: contact.last_name,
+                    email: contact.email,
+                    isNewViwer: false
+                };
+                arrToSave.push(obj);
+                callback(null);
+            }, function (err) {
+                if(err){
+                    return console.error(err);
+                }
+                ProspectModel.create(arrToSave, function (err) {
+                    if (err) {
+                        return console.error(err);
+                    }
+                });
+            });
+        });
 
+    };
     this.sendContactMe = function (req, res, next) {
         var contentId = req.body.contentId;
         var body = req.body;
@@ -405,17 +434,11 @@ var routeHandler = function (db) {
 
             //create prospect:
             function (cb) {
-                createProspect(options, function (err, prospect) {
-                    if (err) {
-                        return cb(err);
-                    }
-                    jumplead.setContact(options.ownerId, prospect, function (err, contact) {
+                    jumplead.setContact(options.ownerId, options, function (err, contact) {
                         if (err) {
                            return cb(err);
                         }
-
                         cb(null, contact);
-                    });
 
                 });
             }
@@ -429,7 +452,6 @@ var routeHandler = function (db) {
             });
         });
     };
-
 
     this.content = function (req, res, next) {
         session.getUserDescription(req, function (err, obj) {
@@ -461,67 +483,115 @@ var routeHandler = function (db) {
     this.getMain = function (req, res, next) {
         var contentId = req.params.contentId;
         var prospectId = req.params.ctid;
+        var userId;
         var content;
         var data;
+        async.waterfall([
 
-        ContentModel.findById(contentId, function (err, foundContent) {
-            if (err) {
-                return next(err);
-            }
-            if (!foundContent) {
-                var error = new Error();
-                error.message = 'Content Not Found';
-                error.status = 404;
-                return next(error);
-            }
-            content = foundContent;
-
-            UserModel.findById(content.ownerId, function (err, user) {
-                if (err) {
-                    return next(err);
-                }
-                if (!user) {
-                    var error = new Error();
-                    error.message = 'User Not Found';
-                    error.status = 404;
-                    return next(error);
-                }
-                jumplead.getContact(user._id, prospectId, function (err, prospect) {
+            function (waterfallCb) {
+                ContentModel.findById(contentId, function (err, foundContent) {
                     if (err) {
-                        return next(err);
+                        return waterfallCb(err);
                     }
+                    if (!foundContent) {
+                        var error = new Error();
+                        error.message = 'Content Not Found';
+                        error.status = 404;
+                        return waterfallCb(error);
+                    }
+                    content = foundContent;
+                    waterfallCb(null, foundContent);
+                });
+            },
 
-                    TrackModel.findOneAndUpdate({
-                        "contentId": contentId,
-                        "firstName": prospect.first_name,
-                        "lastName": prospect.last_name
-                    }, {
-                        $set: {
-                            "contentId": contentId,
-                            "userId": prospect.id,
-                            "firstName": prospect.first_name,
-                            "lastName": prospect.last_name,
-                            "email": prospect.email,
-                            "isSent": false,
-                            "updatedAt": Date.now()
-                        }
-                    }, {upsert: true}, function (err) {
-                        if (err) {
-                            return next(err);
-                        }
+            function (content, waterfallCb) {
+                UserModel.findById(content.ownerId, function (err, user) {
+                    if (err) {
+                        return waterfallCb(err);
+                    }
+                    if (!user) {
+                        var error = new Error();
+                        error.message = 'User Not Found';
+                        error.status = 404;
+                        return waterfallCb(error);
+                    }
+                    userId = user._id;
+                    waterfallCb(null, user);
+                });
+            },
 
-                        data = {
-                            content: content,
-                            contact: {
+            function (user, waterfallCb) {
+                ProspectModel.findOne({jumpleadId: prospectId}, function (err, doc) {
+                    if (err) {
+                        return waterfallCb(err);
+                    }
+                    if (!doc) {
+                        jumplead.getContact(user._id, prospectId, function (err, prospect) {
+                            if (err) {
+                                return waterfallCb(err);
+                            }
+                            var obj = {
                                 firstName: prospect.first_name,
                                 lastName: prospect.last_name,
                                 email: prospect.email
-                            }
-                        };
-                        res.status(200).send(data);
-                    });
+                            };
+                            return waterfallCb(null, obj);
+                        });
+                    }
+                    else {
+
+                        updateProspect(userId, doc.jumpleadId);
+                        return waterfallCb(null, doc);
+                    }
                 });
+            }], function (err, prospect) {
+            if (err) {
+                return next(err);
+            }
+            data = {
+                content: content,
+                contact: prospect
+            };
+            createTrackDoc(contentId, prospect);
+            res.status(200).send(data);
+        });
+    };
+
+    function updateProspect(userId, contactId){
+        jumplead.getContact(userId, contactId, function (err, data) {
+            ProspectModel.findOneAndUpdate({jumpleadId:contactId}, {
+                email: data.email,
+                firstName: data.first_name,
+                lastName: data.last_name
+            }, function (err) {
+                if(err){
+                    return console.error(err);
+                }
             });
+        });
+    }
+
+    function createTrackDoc (contentId, prospect){
+        TrackModel.findOneAndUpdate({
+            "contentId": contentId,
+            "firstName": prospect.firstName,
+            "lastName": prospect.lastName,
+            "isSent": false,
+            "email": prospect.email
+        }, {
+            $set: {
+                "contentId": contentId,
+                "firstName": prospect.firstName,
+                "lastName": prospect.lastName,
+                "email": prospect.email,
+                "isSent": false,
+                "updatedAt": Date.now()
+            }
+        }, {upsert: true}, function (err) {
+            if (err) {
+                return console.err(err);
+            }
+            return true;
         });
     };
 
