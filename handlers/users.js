@@ -165,16 +165,15 @@ var routeHandler = function (db) {
             var page = req.query.page;
             var userId;
             var content;
-
+            if(!contentId || !prospectId || !page){
+                return res.redirect(process.env.HOME_PAGE);
+            }
             ContentModel.findById(contentId, function (err, foundContent) {
                 if (err) {
                     return next(err);
                 }
                 if (!foundContent) {
-                    var error = new Error();
-                    error.message = 'Content Not Found';
-                    error.status = 404;
-                    return next(error);
+                return res.redirect(process.env.HOME_PAGE);
                 }
                 content = foundContent;
 
@@ -190,7 +189,6 @@ var routeHandler = function (db) {
                     description: description
                 };
                 var html = _.template(template)(templateOptions);
-                //res.write();
                 res.end(html);
             });
         });
