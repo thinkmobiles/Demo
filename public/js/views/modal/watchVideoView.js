@@ -302,6 +302,7 @@ define([
 				self.dialog.remove();
 				Backbone.history.navigate("#/chooseImportant/"+self.videoId+"/"+self.userId, {trigger: true});
 			});
+			$("meta[property='og:title']").attr("content","my conytent");
 			FB.XFBML.parse();
 			return this;
 		}
