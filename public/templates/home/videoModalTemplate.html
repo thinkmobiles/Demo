@@ -33,13 +33,11 @@
   <div class="right">
 	<img src="<%= content.logoUri %>" height="80" class="logo"/><br/>
 	<div class="social">
-	  <span class="fb"></span>
+		<span class="fb-share-button fb" data-href="<%=host%>share?contentId=<%=videoId%>&page=<%=page%>&prospectId=<%=prospectId%>" data-layout="icon"></span>
 	  <span class="tw"></span>
-	  <span class="gp"></span>
+		<a href="https://plus.google.com/share?url=<%= encodeURIComponent(host+'share?contentId='+videoId+'&page='+page+'&prospectId='+prospectId) %>" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><span class="gp"></span></a>
 	  <span class="in"></span>
 	</div>
-	  <a href="https://plus.google.com/share?url=<%= encodeURIComponent(host+'share?contentId='+videoId+'&page='+page+'&prospectId='+prospectId) %>" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><img src="https://www.gstatic.com/images/icons/gplus-64.png" alt="Share on Google+"/></a>
-	  <div class="fb-share-button" data-href="<%=host%>share?contentId=<%=videoId%>&page=<%=page%>&prospectId=<%=prospectId%>" data-layout="icon"></div>
 	  <br/><br/><br/>
 
 	<span>OR CALL US: <%= content.phone %></span>
