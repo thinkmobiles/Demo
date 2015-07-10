@@ -46,7 +46,7 @@ var Schedule = function (db) {
                     function (docs, waterfallCb) {
                         async.each(docs, function (track, eachCb) {
                             if (!track.firstName || !track.lastName || !track.email) {
-                                TrackModel.findOne({userId: track.userId}, function (err, doc) {
+                                TrackModel.findOne({jumpleadId: track.jumpleadId}, function (err, doc) {
                                     if (err) {
                                         return eachCb(err);
                                     }

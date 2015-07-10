@@ -8,7 +8,7 @@ module.exports = (function () {
     var ObjectId = mongoose.Schema.Types.ObjectId;
 
     var trackSchema = mongoose.Schema({
-        userId: {type: String},
+        jumpleadId: {type: String},
         contentId: {type: ObjectId, ref: 'Content'},
         firstName: {type: String},
         lastName: {type: String},

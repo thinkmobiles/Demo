@@ -168,13 +168,13 @@ var routeHandler = function (db) {
 
             ContentModel.findById(contentId, function (err, foundContent) {
                 if (err) {
-                    return waterfallCb(err);
+                    return next(err);
                 }
                 if (!foundContent) {
                     var error = new Error();
                     error.message = 'Content Not Found';
                     error.status = 404;
-                    return waterfallCb(error);
+                    return next(error);
                 }
                 content = foundContent;
 
@@ -570,6 +570,7 @@ var routeHandler = function (db) {
                                     return waterfallCb(err);
                                 }
                                 var obj = {
+                                    jumpleadId: prospect.id,
                                     firstName: prospect.first_name,
                                     lastName: prospect.last_name,
                                     email: prospect.email
@@ -616,13 +617,12 @@ var routeHandler = function (db) {
         function createTrackDoc(contentId, prospect) {
             TrackModel.findOneAndUpdate({
                 "contentId": contentId,
-                "firstName": prospect.firstName,
-                "lastName": prospect.lastName,
+                "jumpleadId": prospect.jumpleadId,
                 "isSent": false,
-                "email": prospect.email
             }, {
                 $set: {
                     "contentId": contentId,
+                    "jumpleadId": prospect.jumpleadId,
                     "firstName": prospect.firstName,
                     "lastName": prospect.lastName,
                     "email": prospect.email,
@@ -668,11 +668,11 @@ var routeHandler = function (db) {
 
         this.trackQuestion = function (req, res, next) {
             var data = req.body;
-            var userId = req.body.userId;
+            var jumpleadId = req.body.userId;
             var contentId = req.body.contentId;
 
             TrackModel.findOneAndUpdate({
-                "userId": userId,
+                "jumpleadId": jumpleadId,
                 "contentId": contentId,
                 "isSent": false
             }, {$set: {questions: data.questions}}, {upsert: true}, function (err) {
@@ -680,7 +680,7 @@ var routeHandler = function (db) {
                     return next(err);
                 }
                 TrackModel.findOneAndUpdate({
-                    "userId": userId,
+                    "jumpleadId": jumpleadId,
                     "contentId": contentId,
                     "isSent": false
                 }, {
@@ -701,13 +701,13 @@ var routeHandler = function (db) {
             if (!body.document || !body.userId || !body.contentId) {
                 return res.status(200).send("Invalid parameters");
             }
-            var userId = body.userId;
+            var jumpleadId = body.userId;
             var contentId = body.contentId;
             var document = {
                 document: body.document
             };
             var obj = {
-                "userId": userId,
+                "jumpleadId": jumpleadId,
                 "contentId": contentId,
                 "isSent": false,
                 "documents.document": document
@@ -719,7 +719,7 @@ var routeHandler = function (db) {
                 }
                 if (!doc) {
                     TrackModel.findOneAndUpdate({
-                        "userId": userId,
+                        "jumpleadId": jumpleadId,
                         "contentId": contentId,
                         "isSent": false
                     }, {
@@ -748,9 +748,9 @@ var routeHandler = function (db) {
 
                     if (!findDocument) {
                         TrackModel.findOneAndUpdate({
-                            "userId": userId,
+                            "jumpleadId": jumpleadId,
                             "contentId": contentId,
-                            "isSent": false,
+                            "isSent": false
                         }, {
                             $addToSet: {
                                 "documents": {
@@ -785,10 +785,10 @@ var routeHandler = function (db) {
             if (!data.video || !data.stopTime || !body.userId || !body.contentId) {
                 return res.status(403).send("Invalid parameters");
             }
-            var userId = body.userId;
+            var jumpleadId = body.userId;
             var contentId = body.contentId;
             var obj = {
-                "userId": userId,
+                "jumpleadId": jumpleadId,
                 "contentId": contentId,
                 "isSent": false,
                 "videos.video": body.data.video
@@ -800,11 +800,11 @@ var routeHandler = function (db) {
                 }
                 if (!doc) {
                     TrackModel.findOneAndUpdate({
-                        "userId": userId,
+                        "jumpleadId": jumpleadId,
                         "contentId": contentId,
                         "isSent": false
                     }, {
-                        "userId": userId,
+                        "jumpleadId": jumpleadId,
                         "contentId": contentId,
                         "isSent": false,
                         "updatedAt": Date.now()
@@ -827,7 +827,7 @@ var routeHandler = function (db) {
                     var fvideo = _.findWhere(doc.videos, {video: body.data.video});
                     if (!fvideo.end && fvideo.stopTime < body.data.stopTime) {
                         TrackModel.findOneAndUpdate({
-                            "userId": userId,
+                            "jumpleadId": jumpleadId,
                             "contentId": contentId,
                             "isSent": false,
                             "videos.video": body.data.video
