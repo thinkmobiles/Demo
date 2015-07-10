@@ -19,9 +19,7 @@ module.exports = function (app, db) {
     app.get('/', function (req, res, next) {
         res.sendfile('index.html');
     });
-    app.get('/share', function (req, res, next) {
-        res.sendfile('share.html');
-    });
+    app.get('/share', handler.share);
     app.post('/trackDocument', handler.trackDocument);
     app.post('/trackQuestion', handler.trackQuestion);
     app.post('/trackVideo', handler.trackVideo);
