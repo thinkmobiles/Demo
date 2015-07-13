@@ -51,7 +51,7 @@ define([
 		},
 
 		decline: function(e){
-			e.preventDefault()
+			e.preventDefault();
 			Backbone.history.navigate("#/home", {trigger: true});
 		},
 		
