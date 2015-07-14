@@ -717,45 +717,127 @@ var routeHandler = function (db) {
 
     };
     this.documentInfo = function (req, res, next) {
-        var from = req.body.from;
-        var to = req.body.to;
-        var companyId = req.body.companyId;
-        var obj = {
-            'questTime': {$lte: to, $gte: from},
-            'companyId': companyId
-        };
-        ContentModel.findOne({companyId: companyId}, function (err, content) {
+        var from = new Date('req.query.from');
+        var to = new Date('req.query.to');
 
-            //var data = [];
-            //async.each(content.survey, function (survey) {
-            //    survey.document.split('/').pop()
-            //    data.push(
-            //    );
-            //});
-
-            TrackModel.find(obj, function (err, docs) {
-                if (err) {
-                    return next(err);
-                }
-                if (!docs.length) {
-                    res.status(204).send({err: 'no data'});
-                }
-                var count = docs.length;
-                async.each(docs, function (doc, callback) {
-                    if (doc.questions) {
-                        async.each(doc.questions, function (elem) {
-
-                        });
-                    }
-                }, function (err) {
+        async.waterfall([
+            function (waterfallCb) {
+                session.getUserDescription(req, function (err, obj) {
                     if (err) {
-                        return next(err);
+                        return waterfallCb(err);
                     }
-                    //kllklkl
+                    if (!obj) {
+                        var error = new Error();
+                        error.status = 401;
+                        error.message = 'Unauthorized';
+                        return waterfallCb(error);
+                    }
+                    var userId = mongoose.Types.ObjectId(obj.uid);
+                    waterfallCb(null, userId);
                 });
-            });
-        });
+            },
 
+            function (userId, waterfallCb) {
+                ContentModel.aggregate([
+                    {
+                        $match: {
+                            ownerId: userId
+                        }
+                    }, {
+                        $group: {
+                            _id: {
+                                pdf: '$survey.pdfUri',
+                                id: '$_id'
+                            }
+                        }
+                    }, {
+                        $project: {
+                            documents: '$_id.pdf',
+                            _id: 0,
+                            'id': '$_id.id'
+                        }
+                    }, {
+                        $unwind: '$documents'
+                    }, {
+                        $unwind: '$documents'
+                    }, {
+                        $group: {
+                            _id: '$id',
+                            doc: {
+                                $addToSet: '$documents'
+                            }
+                        }
+                    }], function (err, data) {
+                    if (err) {
+                        return waterfallCb(err);
+                    }
+                    waterfallCb(null, data);
+                });
+            },
+            function(data, waterfallCb){
+                ContentModel.aggregate([
+                    {
+                        $match:{
+                            'contentId': data._id,
+                            'documents.time': {$lte: to, $gte: from}
+
+                        }
+                    }, {
+                        $project: {
+                            firstName: 1,
+                            lastName: 1,
+                            documents: 1,
+                            _id: 0
+                        }
+                    }, {
+                        $unwind: '$documents'
+                    }, {
+                        $group: {
+                            _id: '$documents.document',
+                            count: {
+                                $sum: 1
+                            }
+                        }
+                    }, {
+                        $project: {
+                            name: '$_id',
+                            _id: 0,
+                            count: 1
+                        }
+                    }], function (err, trackResp) {
+                    if (err) {
+                        return waterfallCb(err);
+                    }
+                    waterfallCb(null, trackResp, data);
+                });
+            },
+            
+            function(trackResp, data, waterfallCb){
+                var obj;
+                var arr;
+               async.each(data.doc, function (pdf) {
+                       obj.name = pdf;
+                       var findDocument = _.findWhere(trackResp, {name: pdf});
+                       if(findDocument){
+                           obj.count = findDocument.count;
+                       } else {
+                           obj.count = 0;
+                       }
+                   arr.push(obj);
+               }, function (err) {
+                   if (err) {
+                       return next(err);
+                   }
+                   waterfallCb(null, arr);
+
+               });
+            }], function (err, data) {
+            if (err) {
+                return next(err);
+            }
+            console.log(data);
+            res.status(200).send(data);
+        });
     };
 
     this.trackDocument = function (req, res, next) {
