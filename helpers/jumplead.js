@@ -131,6 +131,7 @@ var JumpleadModule = function (db) {
                 ProspectModel.create({
                     jumpleadId: data.id,
                     email: data.email,
+                    domain: data.email.split('@').pop(),
                     firstName: data.first_name,
                     lastName: data.last_name,
                     isNewViwer: true
@@ -188,6 +189,7 @@ var JumpleadModule = function (db) {
                 ProspectModel.findOneAndUpdate({jumpleadId: contactId}, {
                     jumpleadId: body.data.id,
                     email: body.data.email,
+                    domain: body.data.email.split('@').pop(),
                     firstName: body.data.first_name,
                     lastName: body.data.last_name,
                 }, {upsert: true}, function (err) {

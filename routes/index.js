@@ -22,9 +22,11 @@ module.exports = function (app, db) {
     app.get('/share', handler.share);
     app.post('/trackDocument', handler.trackDocument);
     app.post('/trackQuestion', handler.trackQuestion);
+    app.post('/trackVideo', handler.trackVideo);
     app.get('/questionInfo', handler.questionInfo);
     app.get('/documentInfo', handler.documentInfo);
-    app.post('/trackVideo', handler.trackVideo);
+    app.get('/videoInfo', handler.videoInfo);
+
     app.get('/content', handler.content);
     app.post('/prospectSignUp', handler.prospectSignUp);
 

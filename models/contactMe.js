@@ -2,15 +2,15 @@
 
 module.exports = (function () {
       var mongoose = require('mongoose');
-
+    var ObjectId = mongoose.Schema.Types.ObjectId;
     var contactMeSchema = mongoose.Schema({
+        companyId: {type:ObjectId},
         email: {type: String},
-        phone: {type: String},
+        //phone: {type: String},
         name: {type: String},
-        description: {type: String},
-
-        createdAt: {type: Date, default: Date.now}
-    }, {collection: 'Prospects'});
+        message: {type: String},
+        sandedAt: {type: Date, default: Date.now}
+    }, {collection: 'ContactMe'});
 
     mongoose.model('ContactMe', contactMeSchema);
 
