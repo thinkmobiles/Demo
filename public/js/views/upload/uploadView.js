@@ -75,6 +75,8 @@ define([
 				}
 			});
 			this.$el.find(".videoContainer .videoElement").eq(n).remove();
+			this.countQuestion--;
+			$(this.$el).find(".countQuestion").val(this.countQuestion);
 			current.remove();
 		},
 
@@ -87,7 +89,6 @@ define([
 			var self = this;
 			var hasError = false;
 			e.preventDefault();
-			this.countQuestion++;
 			$(".error").removeClass("error");
 
 			var videoName = $(e.target).closest(".videoElement").find(".right .uploadContainer input[type='file']").get(0).files.length?self.getFiles($(e.target).closest(".videoElement").find(".right .uploadContainer input[type='file']").get(0).files):$(e.target).closest(".videoElement").find(".right .uploadContainer.link input[type='text']").val();
@@ -105,6 +106,8 @@ define([
 				hasError = !0;
 			}
 			if (!hasError){
+				this.countQuestion++;
+
 				$(this.$el).find(".collapseQuestions").append(_.template(CollapseQuestion)({
 					question:$(e.target).closest(".videoElement").find(".questionText").val(),
 					video:videoName,
