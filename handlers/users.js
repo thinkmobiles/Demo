@@ -1009,9 +1009,10 @@ var routeHandler = function (db) {
     };
 
     this.questionInfo = function (req, res, next) {
-        var from = new Date(req.query.from);
-        var date = new Date(req.query.to);
-        var to = new Date(date.setHours(date.getHours()+ 24));
+        var reqFrom = new Date(req.query.from);
+        var reqTo = new Date(req.query.to);
+        var from = new Date(reqFrom.setHours(0));
+        var to = new Date(reqTo.setHours(24));
 
         async.waterfall([
             function (waterfallCb) {
