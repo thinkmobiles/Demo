@@ -133,7 +133,7 @@ var JumpleadModule = function (db) {
                     email: data.email,
                     firstName: data.first_name,
                     lastName: data.last_name,
-                    isNewViwer: true
+                    isNewViewer: true
                 }, {upsert: true}, function (err) {
                     if (err) {
                         return console.error(err);

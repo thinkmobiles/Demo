@@ -272,7 +272,7 @@ var routeHandler = function (db) {
                     firstName: contact.first_name,
                     lastName: contact.last_name,
                     email: contact.email,
-                    isNewViwer: false
+                    isNewViewer: false
                 };
                 arrToSave.push(obj);
                 callback(null);
@@ -616,7 +616,7 @@ var routeHandler = function (db) {
         TrackModel.findOneAndUpdate({
             "contentId": contentId,
             "jumpleadId": prospect.jumpleadId,
-            "isSent": false,
+            "isSent": false
         }, {
             $set: {
                 "contentId": contentId,
@@ -625,11 +625,11 @@ var routeHandler = function (db) {
                 "lastName": prospect.lastName,
                 "email": prospect.email,
                 "domain": prospect.email.split('@').pop(),
-                "isNewViwer": prospect.isNewViwer,
+                "isNewViewer": prospect.isNewViewer,
                 "isSent": false,
                 "updatedAt": Date.now()
             }
-        }, {upsert: true}, function (err) {
+        }, {upsert: true}, function (err, doc) {
             if (err) {
                 return console.err(err);
             }
@@ -861,7 +861,8 @@ var routeHandler = function (db) {
 
     this.videoInfo = function (req, res, next) {
         var from = new Date(req.query.from);
-        var to = new Date(req.query.to);
+        var date = new Date(req.query.to);
+        var to = new Date(date.setHours(date.getHours()+ 24));
 
         async.waterfall([
                 function (waterfallCb) {
@@ -1009,7 +1010,8 @@ var routeHandler = function (db) {
 
     this.questionInfo = function (req, res, next) {
         var from = new Date(req.query.from);
-        var to = new Date(req.query.to);
+        var date = new Date(req.query.to);
+        var to = new Date(date.setHours(date.getHours()+ 24));
 
         async.waterfall([
             function (waterfallCb) {
@@ -1108,7 +1110,8 @@ var routeHandler = function (db) {
 
     this.documentInfo = function (req, res, next) {
         var from = new Date(req.query.from);
-        var to = new Date(req.query.to);
+        var date = new Date(req.query.to);
+        var to = new Date(date.setHours(date.getHours()+ 24));
 
         async.waterfall([
             function (waterfallCb) {
