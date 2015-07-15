@@ -16,10 +16,8 @@ module.exports = (function () {
     var ObjectId = mongoose.Schema.Types.ObjectId;
 
     var prospectSchema = mongoose.Schema({
-        ownerId: {type: ObjectId},
         jumpleadId: {type: String},
         email: {type: String, required: true},
-        domain: {type: String},
         firstName: {type: String, required: true, minlength: NAME_MIN_LENGTH, maxlength: NAME_MAX_LENGTH},
         lastName: {type: String, required: true, minlength: NAME_MIN_LENGTH, maxlength: NAME_MAX_LENGTH},
         isNewViwer: {type: Boolean, default: false},

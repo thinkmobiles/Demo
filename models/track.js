@@ -14,6 +14,7 @@ module.exports = (function () {
         lastName: {type: String},
         email: {type: String},
         domain: {type: String},
+        isNewViewer: {type: Boolean, default: false},
         isSent: {type: Boolean, default: false},
 
         questTime: {type: Date, default: Date.now},

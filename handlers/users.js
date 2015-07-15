@@ -268,11 +268,9 @@ var routeHandler = function (db) {
             }
             async.each(contacts, function (contact, callback) {
                 var obj = {
-                    ownerId: userId,
                     jumpleadId: contact.id,
                     firstName: contact.first_name,
                     lastName: contact.last_name,
-                    domain: contact.email.split('@').pop(),
                     email: contact.email,
                     isNewViwer: false
                 };
@@ -604,7 +602,6 @@ var routeHandler = function (db) {
             }
             ProspectModel.findOneAndUpdate({jumpleadId: contactId}, {
                 email: data.email,
-                domain: data.email.split('@').pop(),
                 firstName: data.first_name,
                 lastName: data.last_name
             }, function (err) {
@@ -628,6 +625,7 @@ var routeHandler = function (db) {
                 "lastName": prospect.lastName,
                 "email": prospect.email,
                 "domain": prospect.email.split('@').pop(),
+                "isNewViwer": prospect.isNewViwer,
                 "isSent": false,
                 "updatedAt": Date.now()
             }

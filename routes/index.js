@@ -23,10 +23,10 @@ module.exports = function (app, db) {
     app.post('/trackDocument', handler.trackDocument);
     app.post('/trackQuestion', handler.trackQuestion);
     app.post('/trackVideo', handler.trackVideo);
-    app.get('/questionInfo', handler.questionInfo);
-    app.get('/documentInfo', handler.documentInfo);
-    app.get('/videoInfo', handler.videoInfo);
-    app.get('/visitsInfo', handler.visitsInfo);
+    app.get('/analytic/question', handler.questionInfo);
+    app.get('/analytic/document', handler.documentInfo);
+    app.get('/analytic/video', handler.videoInfo);
+    app.get('/analytic/visits', handler.visitsInfo);
     app.get('/contactByDomain', handler.getContactByDomain);
     app.get('/allDomain', handler.getAllDomain);
 
