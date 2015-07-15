@@ -1,0 +1,6 @@
+<%_.each(questions,function(item,index){%>
+<li>
+  <div>Question<%=index+1%>: <%=item.name%></div>
+  <svg id="question<%=index%>" width="1000" height="500"></svg>
+</li>
+<%})%>
