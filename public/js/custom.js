@@ -185,7 +185,9 @@ define([],function () {
 		var w = 200,                        //width
 			h = 200,                            //height
 			r = 100,                            //radius
-			color = d3.scale.category20c();     //builtin range of colors
+			color =[
+				"#333333","#00ffff","#cf2a27"
+			];     //builtin range of colors
 
 		
 		for (var i=0;i<questions.length;i++){
@@ -212,7 +214,7 @@ define([],function () {
 				.attr("class", "slice");    //allow us to style things in the slices (like text)
 
 			arcs.append("svg:path")
-				.attr("fill", function(d, i) { return color(i); } ) //set the color for each slice to be chosen from the color function defined above
+				.attr("fill", function(d, i) { return color[i]; } ) //set the color for each slice to be chosen from the color function defined above
 				.attr("d", arc);                                    //this creates the actual SVG path using the associated data (pie) with the arc drawing function
 
 			arcs.append("svg:text")                                     //add a label to each slice
