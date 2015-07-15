@@ -679,7 +679,8 @@ var routeHandler = function (db) {
 
     this.visitsInfo = function (req, res, next) {
         var from = new Date(req.query.from);
-        var to = new Date(req.query.to);
+        var date = new Date(req.query.to);
+        var to = new Date(date.setHours(date.getHours() + 24));
 
         async.waterfall([
             function (waterfallCb) {
@@ -702,34 +703,50 @@ var routeHandler = function (db) {
                 TrackModel.aggregate([
                     {
                         $match: {
-                            'contentId': data.id,
-                            'updatedAt': {$gte: from, $lte: to}
-
-                        }
-                    }, {
-                        $project: {
-                            firstName: 1,
-                            lastName: 1,
-                            videos: 1,
-                            _id: 0
-                        }
-                    }, {
-                        $unwind: '$videos'
-                    }, {
-                        $group: {
-                            _id: '$videos.video',
-                            count: {
-                                $sum: 1
+                            updatedAt: {
+                                $gte: from, $lte: to
                             }
                         }
+                    },
+                    {
+                        $project: {
+                            date: {
+                                $add: [{$dayOfYear: '$updatedAt'}, {$multiply: [1000, {$year: '$updatedAt'}]}]
+                            },
+                            isNewViewer: 1
+                        }
+                    }, {
+                        $group: {
+                            _id: {
+                                date: '$date',
+                                isNewViewer: '$isNewViewer'
+                            }, count: {$sum: 1}
+                        }
+                    },
+                    {
+                        $project: {
+                            _id: 0,
+                            count: 1,
+                            date: '$_id.date',
+                            new: {$cond: [{$eq: ['$_id.isNewViewer', true]}, '$count', 0]},
+                            old: {$cond: [{$eq: ['$_id.isNewViewer', false]}, '$count', 0]}
+                        }
+                    }, {
+                        $group: {
+                            _id: '$date',
+                            total: {$sum: '$count'},
+                            old: {$sum: '$old'},
+                            new: {$sum: '$new'}
+                        }
                     }, {
                         $project: {
-                            name: '$_id',
-                            _id: 0,
-                            count: 1
+                            date: '$_id',
+                            total: 1,
+                            old: 1,
+                            new: 1,
+                            _id: 0
                         }
-                    }
-                ], function (err, response) {
+                    }], function (err, response) {
                     if (err) {
                         return waterfallCb(err);
                     }
@@ -737,7 +754,7 @@ var routeHandler = function (db) {
                 });
             }
 
-        ], function (err) {
+        ], function (err, docs) {
             if (err) {
                 return next(err);
             }
