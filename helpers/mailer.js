@@ -49,7 +49,7 @@ var MailerModule = function () {
                     companyName: options.companyName,
                     name: options.name,
                     email: options.email,
-                    description: options.description
+                    message: options.message
                 };
 
                 mailOptions = {
