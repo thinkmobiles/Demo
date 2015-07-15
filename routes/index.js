@@ -26,7 +26,7 @@ module.exports = function (app, db) {
     app.get('/questionInfo', handler.questionInfo);
     app.get('/documentInfo', handler.documentInfo);
     app.get('/videoInfo', handler.videoInfo);
-    app.get('/videoInfo', handler.visitsInfo);
+    app.get('/visitsInfo', handler.visitsInfo);
     app.get('/contactByDomain', handler.getContactByDomain);
     app.get('/allDomain', handler.getAllDomain);
 
