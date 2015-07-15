@@ -13,6 +13,7 @@ module.exports = (function () {
         firstName: {type: String},
         lastName: {type: String},
         email: {type: String},
+        domain: {type: String},
         isSent: {type: Boolean, default: false},
 
         questTime: {type: Date, default: Date.now},

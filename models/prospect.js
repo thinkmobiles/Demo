@@ -13,8 +13,10 @@ module.exports = (function () {
     var COMMENTS_MAX_LENGTH = CONSTANTS. COMMENTS_MAX_LENGTH;
 
     var mongoose = require('mongoose');
+    var ObjectId = mongoose.Schema.Types.ObjectId;
 
     var prospectSchema = mongoose.Schema({
+        ownerId: {type: ObjectId},
         jumpleadId: {type: String},
         email: {type: String, required: true},
         domain: {type: String},

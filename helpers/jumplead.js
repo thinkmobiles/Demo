@@ -129,6 +129,7 @@ var JumpleadModule = function (db) {
                 }
                 var data = body.data;
                 ProspectModel.create({
+                    ownerId: userId,
                     jumpleadId: data.id,
                     email: data.email,
                     domain: data.email.split('@').pop(),
@@ -187,11 +188,12 @@ var JumpleadModule = function (db) {
                     return callback(error);
                 }
                 ProspectModel.findOneAndUpdate({jumpleadId: contactId}, {
+                    ownerId: userId,
                     jumpleadId: body.data.id,
                     email: body.data.email,
                     domain: body.data.email.split('@').pop(),
                     firstName: body.data.first_name,
-                    lastName: body.data.last_name,
+                    lastName: body.data.last_name
                 }, {upsert: true}, function (err) {
                     if (err) {
                         return console.error(err);
