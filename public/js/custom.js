@@ -112,7 +112,7 @@ define([],function () {
 			MARGINS = {
 				top: 20,
 				right: 20,
-				bottom: 20,
+				bottom: 300,
 				left: 50
 			},
 			xRange = d3.scale.ordinal().rangeRoundBands([MARGINS.left, WIDTH - MARGINS.right], 0.1).domain(barData.map(function (d) {
@@ -120,7 +120,7 @@ define([],function () {
 			})),
 
 
-			yRange = d3.scale.linear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain([0,
+			yRange = d3.scale.linear().range([HEIGHT -MARGINS.bottom, MARGINS.top]).domain([0,
 																							 d3.max(barData, function (d) {
 																								 return d.count;
 																							 })
@@ -129,13 +129,15 @@ define([],function () {
 			xAxis = d3.svg.axis()
 			.scale(xRange)
 			.tickSize(5)
-			.tickSubdivide(true),
+			.tickSubdivide(true)
+			.tickFormat(function(d){return  d.split("/").pop()}),
 
 			yAxis = d3.svg.axis()
 			.scale(yRange)
 			.tickSize(5)
 			.orient("left")
-			.tickSubdivide(true);
+			.tickSubdivide(true)
+			.tickFormat(d3.format("d"));
 
 
 		vis.append('svg:g')
@@ -170,9 +172,9 @@ define([],function () {
 				d3.select(this)
 					.attr('fill','blue');
 			})
-			.on('mouseout',function(d){
+			.on('mouseout',function(d, i){
 				d3.select(this)
-					.attr('fill','grey');
+					.attr('fill',colors(i));
 			});
 	};
 	
@@ -188,7 +190,7 @@ define([],function () {
 		
 		for (var i=0;i<questions.length;i++){
 			var data = [{"label":"not", "value":questions[i].not}, 
-						{"label":"somewhat", "value":questions[i].somewhat}, 
+						{"label":"some", "value":questions[i].some}, 
 						{"label":"very", "value":questions[i].very}];
 			var vis = d3.select("#question"+i)
 				.data([data])                   //associate our data with the document
