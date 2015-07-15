@@ -116,7 +116,7 @@ define([],function () {
 				left: 50
 			},
 			xRange = d3.scale.ordinal().rangeRoundBands([MARGINS.left, WIDTH - MARGINS.right], 0.1).domain(barData.map(function (d) {
-				return d.name;
+				return d.name.split("/").pop();
 			})),
 
 
@@ -188,7 +188,7 @@ define([],function () {
 		
 		for (var i=0;i<questions.length;i++){
 			var data = [{"label":"not", "value":questions[i].not}, 
-						{"label":"somewhat", "value":questions[i].somewhat}, 
+						{"label":"some", "value":questions[i].some}, 
 						{"label":"very", "value":questions[i].very}];
 			var vis = d3.select("#question"+i)
 				.data([data])                   //associate our data with the document

@@ -1,9 +1,12 @@
 define([
     'text!templates/analitics/analiticsTemplate.html',
+	'text!templates/analitics/questionTemplate.html',
+	"collections/documentAnalyticCollection",
+	"collections/questionAnalyticCollection",
 	'custom',
 	'd3',
 	'moment'
-], function (AnaliticsTemplate, Custom, d3, moment) {
+], function (AnaliticsTemplate, QuestionTemplate, DocumentAnalyticCollection, QuestionAnalyticCollection, Custom, d3, moment) {
 
     var View;
 
@@ -15,53 +18,61 @@ define([
 
 
         initialize: function () {
+			var self = this;
+			this.documentAnalyticCollection = new DocumentAnalyticCollection({
+					from:moment().subtract(7, 'days').valueOf(),
+					to:new Date().valueOf()
+			});
+			this.questionAnalyticCollection = new QuestionAnalyticCollection({
+				from:moment().subtract(7, 'days').valueOf(),
+				to:new Date().valueOf()
+			});
+			this.documentAnalyticCollection.bind('reset', self.renderDocumentChart, self);
+			this.questionAnalyticCollection.bind('reset', self.renderQuestionChart, self);
+			
             this.render();
         },
 
 
+
+		renderDocumentChart: function(){
+			Custom.drawBarChart(this.documentAnalyticCollection.toJSON(), '#docDownload');
+		},
+
+		renderQuestionChart: function(){
+			this.$el.find(".questionsPie").html(_.template(QuestionTemplate)({questions:this.questionAnalyticCollection.toJSON()}));
+			Custom.drawQuestionsPie(this.questionAnalyticCollection.toJSON());
+		},
+		
         render: function () {
 						var questions =[
 				{
 					name:"question 1",
 					"not":80,
-					"somewhat":120,
+					"some":120,
 					"very":100
 				},
 				{
 					name:"question 2",
 					"not":10,
-					"somewhat":140,
+					"some":140,
 					"very":10
 				},
 				{
 					name:"question 3",
 					"not":180,
-					"somewhat":20,
+					"some":20,
 					"very":60
 				}
 				
 			] 
-            this.$el.html(_.template(AnaliticsTemplate)({questions:questions}));
+            this.$el.html(_.template(AnaliticsTemplate));
 
 
 			$("#startDate").datepicker();
 			$("#startDate").datepicker('setDate', moment().subtract(7, 'days')._d);
 			$("#endDate").datepicker();
 			$("#endDate").datepicker('setDate', new Date());
-			var barData = [{
-				'count': 1,
-				'name': 'my.pdf'
-			},{
-				'count': 5,
-				'name': 'my1.pdf'
-			},{
-				'count': 3,
-				'name': 'my2.pdf'
-			},{
-				'count': 6,
-				'name': 'my3.pdf'
-			}
-						  ];
 
 
 			var data = [{
@@ -105,9 +116,7 @@ define([
 
 
 
-			Custom.drawBarChart(barData, '#docDownload');
 			Custom.drawSitesVisits(data, '#siteVisits');
-			Custom.drawQuestionsPie(questions);
             return this;
         }
 
