@@ -21,6 +21,7 @@ define([
 			"chooseImportant(/:videoId/:userId)" :  "chooseImportant",
 			"relatedVideo(/:videoId/:userId)(/:indexList)" :  "relatedVideo",
             "registration"              :  "registration",
+			"analitics"              :  "analitics",
             "*any"                      :  "any"
         },
 
@@ -134,6 +135,9 @@ define([
         },
         upload: function () {
             this.loadWrapperView('upload');
+        },
+		analitics: function () {
+            this.loadWrapperView('analitics');
         },
         registration: function () {
             this.loadWrapperView('registration');

@@ -34,10 +34,11 @@
 	<img src="<%= content.logoUri %>" height="80" class="logo"/><br/>
 	<div class="social">
 		<span class="fb-share-button fb" data-href="<%=host%>share?contentId=<%=videoId%>&page=<%=page%>&prospectId=<%=prospectId%>" data-layout="icon"></span>
-	  <span class="tw"></span>
+		<a href="https://twitter.com/share?url=<%= encodeURIComponent('http://134.249.164.53:8838/#/chooseViewer/559659f63e3d511c49000004/558a78fa5a709eff758b4567') %>&text=DemoRocket Video: <%= encodeURIComponent(content.mainVideoDescription) %>" target="_blank"><span class="tw"></span></a>
 		<a href="https://plus.google.com/share?url=<%= encodeURIComponent(host+'share?contentId='+videoId+'&page='+page+'&prospectId='+prospectId) %>" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><span class="gp"></span></a>
 	  <span class="in"></span>
 	</div>
+
 	  <br/><br/><br/>
 	<span>OR CALL US: <%= content.phone %></span>
 	<button class="contactMe">CONTACT ME</button>
