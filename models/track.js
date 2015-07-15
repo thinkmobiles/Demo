@@ -13,8 +13,10 @@ module.exports = (function () {
         firstName: {type: String},
         lastName: {type: String},
         email: {type: String},
+        domain: {type: String},
         isSent: {type: Boolean, default: false},
 
+        questTime: {type: Date, default: Date.now},
         questions: [{
             _id: false,
             question: {type: String},
@@ -23,6 +25,7 @@ module.exports = (function () {
 
         videos: [{
             _id: false,
+            time: {type: Date, default: Date.now},
             video: {type: String},
             stopTime: {type: String},
             end: {type: Boolean, default: false}
@@ -30,6 +33,7 @@ module.exports = (function () {
 
         documents: [{
                 _id: false,
+                time: {type: Date, default: Date.now},
                 document: {type: String}
             }],
 

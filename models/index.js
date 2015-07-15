@@ -5,4 +5,5 @@ module.exports = (function () {
     require('./content.js');
     require('./track.js');
     require('./user.js');
+    require('./contactMe.js');
 })();

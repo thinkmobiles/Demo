@@ -64,16 +64,21 @@ var JumpleadModule = function (db) {
                     err.status = 404;
                     return callback(err);
                 }
-                UserModel.findByIdAndUpdate(userId, {
-                    $set: {
-                        accessToken: body.access_token
-                    }
-                }, function (err) {
-                    if (err) {
-                        return callback(err);
-                    }
-                    return callback(null);
-                });//findByIdAndUpdate
+                UserModel.findById(userId, function (err, user) {
+                    UserModel.update({jumpleadEmail: user.jumpleadEmail}, {
+                            $set: {
+                                accessToken: body.access_token
+                            }
+                        }, {multi: true}, function (err) {
+                            if (err) {
+                                return callback(err);
+                            }
+                            return callback(null);
+                        }
+                    )
+                    ;//findByIdAndUpdate
+                });
+
 
             });//request
 
@@ -124,8 +129,10 @@ var JumpleadModule = function (db) {
                 }
                 var data = body.data;
                 ProspectModel.create({
+                    ownerId: userId,
                     jumpleadId: data.id,
                     email: data.email,
+                    domain: data.email.split('@').pop(),
                     firstName: data.first_name,
                     lastName: data.last_name,
                     isNewViwer: true
@@ -181,10 +188,12 @@ var JumpleadModule = function (db) {
                     return callback(error);
                 }
                 ProspectModel.findOneAndUpdate({jumpleadId: contactId}, {
+                    ownerId: userId,
                     jumpleadId: body.data.id,
                     email: body.data.email,
+                    domain: body.data.email.split('@').pop(),
                     firstName: body.data.first_name,
-                    lastName: body.data.last_name,
+                    lastName: body.data.last_name
                 }, {upsert: true}, function (err) {
                     if (err) {
                         return console.error(err);
@@ -212,7 +221,8 @@ var JumpleadModule = function (db) {
                     body = JSON.parse(body);
                 } catch (e) {
                     console.log(e);
-                } if (body.status == '404') {
+                }
+                if (body.status == '404') {
                     var error = new Error();
                     error.status = 404;
                     error.message = 'Contacts not found'
@@ -258,17 +268,7 @@ var JumpleadModule = function (db) {
                     err.status = 500;
                     return callback(error || err);
                 }
-                UserModel.findOne({jumpleadEmail: body.data.email}, function (err, user) {
-                    if (err) {
-                        return callback(err);
-                    }
-                    if (user) {
-                        return callback(null, user);
-                    } else {
-                        return callback(null, null, body.data.email);
-                    }
-                });
-
+                return callback(null, body.data.email);
             });
         });
     };
@@ -292,18 +292,18 @@ var JumpleadModule = function (db) {
             } catch (e) {
                 console.log(e);
             }
+
             UserModel.findByIdAndUpdate(userId, {
                 $set: {
                     accessToken: body.access_token,
                     refreshToken: body.refresh_token
                 }
-            }, function (err) {
+            }, {new: true}, function (err, user) {
                 if (err) {
                     return callback(err);
                 }
-                return callback(null);
+                return callback(null, user);
             });//findByIdAndUpdate
-
         });//request.post
     };
 
