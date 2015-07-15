@@ -16,6 +16,8 @@ require.config({
         Underscore: './libs/underscore/underscore-min',
         Backbone: './libs/backbone/backbone-min',
         less: './libs/less/dist/less.min',
+		d3: './libs/d3/d3.min',
+		moment: './libs/moment/min/moment.min',
         templates: '../templates', // templates dir not error
         text: './libs/text/text',
         common: 'common'
