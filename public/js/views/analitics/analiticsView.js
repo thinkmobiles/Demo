@@ -20,12 +20,12 @@ define([
         initialize: function () {
 			var self = this;
 			this.documentAnalyticCollection = new DocumentAnalyticCollection({
-					from:moment().subtract(7, 'days').valueOf(),
-					to:new Date().valueOf()
+				from:moment().subtract(7, 'days').format("MM/DD/YYYY"),
+				to:moment().format("MM/DD/YYYY")
 			});
 			this.questionAnalyticCollection = new QuestionAnalyticCollection({
-				from:moment().subtract(7, 'days').valueOf(),
-				to:new Date().valueOf()
+				from:moment().subtract(7, 'days').format("MM/DD/YYYY"),
+				to:moment().format("MM/DD/YYYY")
 			});
 			this.documentAnalyticCollection.bind('reset', self.renderDocumentChart, self);
 			this.questionAnalyticCollection.bind('reset', self.renderQuestionChart, self);
