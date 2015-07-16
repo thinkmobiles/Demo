@@ -1,5 +1,5 @@
 define([
-    'models/questionAnalyticModel'
+    'models/contactTrackModel'
 ], function (model) {
     var Collection = Backbone.Collection.extend({
         model: model,
@@ -16,7 +16,7 @@ define([
                 }
             });
         },
-				update:function (options) {
+		update:function (options) {
             var that = this;
             this.fetch({
                 data: options,
@@ -30,7 +30,7 @@ define([
             });
         },
         url: function () {
-            return "/analytic/question"
+            return "/analytic/contactsByDomain"
         },
         parse: function (response) {
             return response;

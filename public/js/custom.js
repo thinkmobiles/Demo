@@ -48,18 +48,19 @@ define([],function () {
 
 		var yAxis = d3.svg.axis()
 			.scale(y)
-			.orient("left");
+			.orient("left")
+			.tickFormat(d3.format("d"));
 
 		var line = d3.svg.line()
 			.x(function(d) { return x(d.date); })
-			.y(function(d) { return y(d.count); });
+			.y(function(d) { return y(d.old); });
 		var lineNew = d3.svg.line()
 			.x(function(d) { return x(d.date); })
-			.y(function(d) { return y(d.newCount); });
+			.y(function(d) { return y(d.new); });
 		var lineTotal = d3.svg.line()
 			.x(function(d) { return x(d.date); })
 			.y(function(d) { return y(d.total); });
-
+		d3.select(el).selectAll("*").remove();
 		var svg = d3.select(el)
 			.attr("width", width + margin.left + margin.right)
 			.attr("height", height + margin.top + margin.bottom)
@@ -67,8 +68,7 @@ define([],function () {
 			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 			data.forEach(function(d) {
-				d.date = parseDate(d.date);
-				d.close = +d.close;
+				d.date = new Date(d.date);
 			});
 
 		x.domain(d3.extent(data, function(d) { return d.date; }));
@@ -106,6 +106,7 @@ define([],function () {
 	}
 			   
 	var drawBarChart = function(barData, el){
+		d3.select(el).selectAll("*").remove();
 		var vis = d3.select(el),
 			WIDTH = 1000,
 			HEIGHT = 500,
@@ -120,7 +121,7 @@ define([],function () {
 			})),
 
 
-			yRange = d3.scale.linear().range([HEIGHT -MARGINS.bottom, MARGINS.top]).domain([0,
+			yRange = d3.scale.linear().range([HEIGHT - MARGINS.bottom, MARGINS.top]).domain([0,
 																							 d3.max(barData, function (d) {
 																								 return d.count;
 																							 })

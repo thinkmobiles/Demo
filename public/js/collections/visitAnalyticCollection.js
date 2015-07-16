@@ -1,8 +1,8 @@
 define([
-    'models/questionAnalyticModel'
-], function (model) {
+    'models/visitAnalyticModel'
+], function (deviceModel) {
     var Collection = Backbone.Collection.extend({
-        model: model,
+        model: deviceModel,
 		initialize: function (options) {
             var that = this;
             this.fetch({
@@ -16,7 +16,7 @@ define([
                 }
             });
         },
-				update:function (options) {
+		update:function (options) {
             var that = this;
             this.fetch({
                 data: options,
@@ -30,7 +30,7 @@ define([
             });
         },
         url: function () {
-            return "/analytic/question"
+            return "/analytic/visits"
         },
         parse: function (response) {
             return response;
