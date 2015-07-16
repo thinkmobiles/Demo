@@ -1,15 +1,17 @@
 define([
     'text!templates/analitics/analiticsTemplate.html',
 	'text!templates/analitics/questionTemplate.html',
+	'text!templates/analitics/prospectTemplate.html',
 	"collections/documentAnalyticCollection",
 	"collections/questionAnalyticCollection",
 	"collections/videoAnalyticCollection",
 	"collections/visitAnalyticCollection",
+	"collections/contactTrackCollection",
 	"models/domainModel",
 	'custom',
 	'd3',
 	'moment'
-], function (AnaliticsTemplate, QuestionTemplate, DocumentAnalyticCollection, QuestionAnalyticCollection, VideoAnalyticCollection, VisitAnalyticCollection, DomainModel, Custom, d3, moment) {
+], function (AnaliticsTemplate, QuestionTemplate, ProspectTemplate, DocumentAnalyticCollection, QuestionAnalyticCollection, VideoAnalyticCollection, VisitAnalyticCollection, ContactTrackCollection, DomainModel, Custom, d3, moment) {
 
     var View;
 
@@ -17,7 +19,8 @@ define([
         className: "mainPage",
 		el:"#wrapper",
         events: {
-			"change #startDate, #endDate":"updateDate"
+			"change #startDate, #endDate":"updateDate",
+			"change #domain":"updateProspect"
 			
         },
 
@@ -69,6 +72,10 @@ define([
 			});	
 		},
 
+		updateProspect: function(e){
+			this.contactTrackCollection.update({domain:this.$el.find("#domain").find("option:selected").text()});
+		},
+
 		renderDocumentChart: function(){
 			Custom.drawBarChart(this.documentAnalyticCollection.toJSON(), '#docDownload');
 		},
@@ -87,14 +94,23 @@ define([
 		
 
 		renderDomainList: function(){
+			var self = this;
+			if (!this.domainModel)return;
 			var domains = this.domainModel.toJSON();
 			var s = "";
 			for (var i in domains){
 				s+="<option>"+domains[i]+"</option>";
 			}
+			this.contactTrackCollection = new ContactTrackCollection({domain:domains[0]});
+			this.contactTrackCollection.bind('reset', self.renderContactTable, self);
 			this.$el.find("#domain").html(s);
 		},
 
+		renderContactTable:function(){
+			console.log(this.contactTrackCollection);
+			this.$el.find("#prospectTable").html(_.template(ProspectTemplate)({prospects:this.contactTrackCollection.toJSON()}));
+		},
+		
 		renderQuestionChart: function(){
 			this.$el.find(".questionsPie").html(_.template(QuestionTemplate)({questions:this.questionAnalyticCollection.toJSON()}));
 			Custom.drawQuestionsPie(this.questionAnalyticCollection.toJSON());

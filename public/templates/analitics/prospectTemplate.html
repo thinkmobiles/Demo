@@ -1,0 +1,12 @@
+<table>
+  <tr>
+	<th>Name</th>
+	<th>Email</th>
+  </tr>
+  <%_.each(prospects,function(prospect){%>
+  <tr>
+	<td><%=prospect.name%></td>
+	<td><%=prospect.email%></td>
+  </tr>
+  <%})%>
+</table>
