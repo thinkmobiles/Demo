@@ -5,10 +5,11 @@ define([
 	"collections/questionAnalyticCollection",
 	"collections/videoAnalyticCollection",
 	"collections/visitAnalyticCollection",
+	"models/domainModel",
 	'custom',
 	'd3',
 	'moment'
-], function (AnaliticsTemplate, QuestionTemplate, DocumentAnalyticCollection, QuestionAnalyticCollection, VideoAnalyticCollection, VisitAnalyticCollection, Custom, d3, moment) {
+], function (AnaliticsTemplate, QuestionTemplate, DocumentAnalyticCollection, QuestionAnalyticCollection, VideoAnalyticCollection, VisitAnalyticCollection, DomainModel, Custom, d3, moment) {
 
     var View;
 
@@ -39,10 +40,12 @@ define([
 				from:moment().subtract(7, 'days').format("MM/DD/YYYY"),
 				to:moment().format("MM/DD/YYYY")
 			});
+			this.domainModel = new DomainModel();
 			this.documentAnalyticCollection.bind('reset', self.renderDocumentChart, self);
 			this.questionAnalyticCollection.bind('reset', self.renderQuestionChart, self);
 			this.videoAnalyticCollection.bind('reset', self.renderVideoChart, self);
 			this.visitAnalyticCollection.bind('reset', self.renderVisitChart, self);
+			this.domainModel.bind('change', self.renderDomainList, self);
 			
             this.render();
         },
@@ -80,6 +83,16 @@ define([
 			this.videoAnalyticCollection.toJSON()[0].mainVideo.name="Main Video";
 			mas.unshift(this.videoAnalyticCollection.toJSON()[0].mainVideo);
 			Custom.drawBarChart(mas, '#videoView');
+		},
+		
+
+		renderDomainList: function(){
+			var domains = this.domainModel.toJSON();
+			var s = "";
+			for (var i in domains){
+				s+="<option>"+domains[i]+"</option>";
+			}
+			this.$el.find("#domain").html(s);
 		},
 
 		renderQuestionChart: function(){
