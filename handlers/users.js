@@ -665,14 +665,68 @@ var routeHandler = function (db) {
             });
 
         };
-        this.getContactByDomain = function (req, res, next) {
-            var domain = req.query.domain;
 
-            TrackModel.find({domain: domain}, function (err, docs) {
+
+        this.getContactsByDomain = function (req, res, next) {
+            var domain = req.query.domain;
+            async.waterfall([
+                function (waterfallCb) {
+                    session.getUserDescription(req, function (err, obj) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        if (!obj) {
+                            var error = new Error();
+                            error.status = 401;
+                            error.message = 'Unauthorized';
+                            return waterfallCb(error);
+                        }
+                        var userId = mongoose.Types.ObjectId(obj.id);
+                        waterfallCb(null, userId)
+                    });
+                },
+
+                function (userId, waterfallCb) {
+                    ContentModel.findOne({ownerId: userId}, function (err, doc) {
+                        if (err) {
+                            return waterfallCb(err);
+                        } else if (!doc) {
+                            var error = new Error();
+                            error.status = 404;
+                            error.message = 'No Data';
+                            return waterfallCb(error);
+                        }
+                        waterfallCb(null, doc._id)
+                    });
+                },
+
+                function (contentId, waterfallCb) {
+                    TrackModel.aggregate([{
+                        $match: {
+                            contentId: contentId,
+                            domain: domain
+                        }
+                    }, {
+                        $project: {
+                            name:{$concat: ['$firstName', " ", '$lastName']},
+                            email: '$email',
+                            _id:0
+                        }
+                    },{
+                        $sort: {
+                            'name':1
+                        }
+                    }], function (err, docs) {
+                        if (err) {
+                            return next(err);
+                        }
+                        waterfallCb(null, docs);
+                    });
+                }], function (err, docs) {
                 if (err) {
                     return next(err);
                 }
-                res.status(200).send(docs);
+                res.status(200).send(docs)
             });
         };
 
