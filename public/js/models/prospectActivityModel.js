@@ -1,41 +1,43 @@
-define([
-    'models/questionAnalyticModel'
-], function (model) {
-    var Collection = Backbone.Collection.extend({
-        model: model,
-		initialize: function (options) {
-            var that = this;
-            this.fetch({
-                data: options,
-                reset: true,
-                success: function () {
-
-                },
-                error: function (models, xhr) {
-                    if (xhr.status === 401) Backbone.history.navigate('#login', { trigger: true });
-                }
-            });
-        },
-				update:function (options) {
-            var that = this;
-            this.fetch({
-                data: options,
-                reset: true,
-                success: function () {
-
-                },
-                error: function (models, xhr) {
-                    if (xhr.status === 401) Backbone.history.navigate('#login', { trigger: true });
-                }
-            });
-        },
+/**
+ * Created by slavik on 16.06.2015.
+ */
+define(['validation'], function (validation) {
+    var Model = Backbone.Model.extend({
+        idAttribute: "_id",
         url: function () {
-            return "/analytic/question"
+            return "/analytic/contact";
         },
-        parse: function (response) {
-            return response;
-        }
-    });
+        initialize: function (options) {
+			this.fetch({
+                data: options,
+                reset: true,
+                success: function () {
 
-    return Collection;
+                },
+                error: function (models, xhr) {
+                    if (xhr.status === 401) Backbone.history.navigate('#login', { trigger: true });
+                }
+            });
+            this.on('invalid', function (model, errors) {
+                if (errors.length > 0) {
+                    var msg = errors.join('\n');
+                    alert(msg);
+                }
+            });
+        },
+		 update: function (options) {
+			this.fetch({
+                data: options,
+                reset: true,
+                success: function () {
+
+                },
+                error: function (models, xhr) {
+                    if (xhr.status === 401) Backbone.history.navigate('#login', { trigger: true });
+                }
+            });
+        },
+		
+    });
+    return Model;
 });
