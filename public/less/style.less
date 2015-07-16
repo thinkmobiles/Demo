@@ -51,6 +51,19 @@
 	height:@h;
 	line-height:@h;
 }
+.rotate(@deg: 90) {
+  /* Safari */
+  -webkit-transform: rotate(@deg * 1deg);
+  /* Firefox */
+  -moz-transform: rotate(@deg * 1deg);
+  /* IE10+ */
+  transform: rotate(@deg * 1deg);
+  /* Opera */
+  -o-transform: rotate(@deg * 1deg);
+  /* Internet Explorer */
+  @IEdeg: round(@deg / 90, 0);
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=@IEdeg);
+}
 #wrapper{
 	//width:100%;
 }
@@ -1567,11 +1580,21 @@ box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.18);
 
 
 #docDownload .x.axis text {
+  .rotate(-45);
     text-anchor: end !important;
-    transform: rotate(-45deg);
 }
 #videoView .x.axis text {
+  .rotate(-45);
     text-anchor: end !important;
-    transform: rotate(-45deg);
 }
 
+
+.contactMe{
+	width:100%;
+	tr{
+		cursor:pointer;
+		&:hover{
+			background-color:blue;
+		}
+	}
+}

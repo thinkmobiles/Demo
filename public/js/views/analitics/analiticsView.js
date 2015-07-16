@@ -15,6 +15,8 @@ define([
         className: "mainPage",
 		el:"#wrapper",
         events: {
+			"change #startDate, #endDate":"updateDate"
+			
         },
 
 
@@ -39,7 +41,20 @@ define([
             this.render();
         },
 
-
+		updateDate: function(e){
+			this.documentAnalyticCollection.update({
+				from:$("#startDate").val(),
+				to: $("#endDate").val()
+			});
+			this.questionAnalyticCollection.update({
+				from:$("#startDate").val(),
+				to: $("#endDate").val()
+			});
+			this.videoAnalyticCollection.update({
+				from:$("#startDate").val(),
+				to: $("#endDate").val()
+			});	
+		},
 
 		renderDocumentChart: function(){
 			Custom.drawBarChart(this.documentAnalyticCollection.toJSON(), '#docDownload');
@@ -59,12 +74,78 @@ define([
 		},
 		
         render: function () {
-            this.$el.html(_.template(AnaliticsTemplate));
+			var self = this;
+
+			var contactList = [
+				{
+					name:"Peter Hickey",
+					email:"peter@sdasd.sss",
+					date:new Date(),
+					message:"This is a message for DemoRocket. Blah blah blah"
+				},
+				{
+					name:"Peter Hickey",
+					email:"peter@sdasd.sss",
+					date:new Date(),
+					message:"This is a message for DemoRocket. Blah blah blah"
+				},
+				{
+					name:"Peter Hickey",
+					email:"peter@sdasd.sss",
+					date:new Date(),
+					message:"This is a message for DemoRocket. Blah blah blah"
+				},
+				{
+					name:"Peter Hickey",
+					email:"peter@sdasd.sss",
+					date:new Date(),
+					message:"This is a message for DemoRocket. Blah blah blah"
+				},
+				{
+					name:"Peter Hickey",
+					email:"peter@sdasd.sss",
+					date:new Date(),
+					message:"This is a message for DemoRocket. Blah blah blah"
+				},
+				{
+					name:"Peter Hickey",
+					email:"peter@sdasd.sss",
+					date:new Date(),
+					message:"This is a message for DemoRocket. Blah blah blah"
+				},
+				{
+					name:"Peter Hickey",
+					email:"peter@sdasd.sss",
+					date:new Date(),
+					message:"This is a message for DemoRocket. Blah blah blah"
+				},
+				{
+					name:"Peter Hickey",
+					email:"peter@sdasd.sss",
+					date:new Date(),
+					message:"This is a message for DemoRocket. Blah blah blah"
+				},
+			];
+
+			
+            this.$el.html(_.template(AnaliticsTemplate)({contactList:contactList}));
 
 
-			$("#startDate").datepicker();
+			$("#startDate").datepicker({
+				onSelect: function(selected) {
+					$("#endDate").datepicker("option","minDate", selected);
+					self.updateDate();
+				},
+				maxDate:  new Date()
+			});
 			$("#startDate").datepicker('setDate', moment().subtract(7, 'days')._d);
-			$("#endDate").datepicker();
+			$("#endDate").datepicker({
+				onSelect: function(selected) {
+					$("#startDate").datepicker("option","maxDate", selected);
+					self.updateDate();
+				},
+				minDate:moment().subtract(7, 'days')._d
+			});
 			$("#endDate").datepicker('setDate', new Date());
 
 
@@ -77,6 +158,7 @@ define([
 				'count': 1,
 				'newCount':3,
 				'total':4,
+				
 				'date': '02/01/2015'
 			},{
 				'count': 6,
@@ -105,11 +187,12 @@ define([
 				'date': '07/01/2015'
 			}
 					   ];
-
-
-
-
 			Custom.drawSitesVisits(data, '#siteVisits');
+
+
+
+			
+			
             return this;
         }
 
