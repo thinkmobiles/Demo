@@ -296,7 +296,7 @@ var routeHandler = function (db) {
                     if (err) {
                         return waterfallCb(err);
                     }
-                    waterfallCb(null, doc);
+                    waterfallCb(null, doc[0]);
                 });
             }], function (err, doc) {
             if (err) {
