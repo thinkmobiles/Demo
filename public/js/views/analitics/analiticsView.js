@@ -4,10 +4,11 @@ define([
 	"collections/documentAnalyticCollection",
 	"collections/questionAnalyticCollection",
 	"collections/videoAnalyticCollection",
+	"collections/visitAnalyticCollection",
 	'custom',
 	'd3',
 	'moment'
-], function (AnaliticsTemplate, QuestionTemplate, DocumentAnalyticCollection, QuestionAnalyticCollection, VideoAnalyticCollection, Custom, d3, moment) {
+], function (AnaliticsTemplate, QuestionTemplate, DocumentAnalyticCollection, QuestionAnalyticCollection, VideoAnalyticCollection, VisitAnalyticCollection, Custom, d3, moment) {
 
     var View;
 
@@ -34,9 +35,14 @@ define([
 				from:moment().subtract(7, 'days').format("MM/DD/YYYY"),
 				to:moment().format("MM/DD/YYYY")
 			});
+			this.visitAnalyticCollection = new VisitAnalyticCollection({
+				from:moment().subtract(7, 'days').format("MM/DD/YYYY"),
+				to:moment().format("MM/DD/YYYY")
+			});
 			this.documentAnalyticCollection.bind('reset', self.renderDocumentChart, self);
 			this.questionAnalyticCollection.bind('reset', self.renderQuestionChart, self);
 			this.videoAnalyticCollection.bind('reset', self.renderVideoChart, self);
+			this.visitAnalyticCollection.bind('reset', self.renderVisitChart, self);
 			
             this.render();
         },
@@ -53,11 +59,19 @@ define([
 			this.videoAnalyticCollection.update({
 				from:$("#startDate").val(),
 				to: $("#endDate").val()
+			});
+			this.visitAnalyticCollection.update({
+				from:$("#startDate").val(),
+				to: $("#endDate").val()
 			});	
 		},
 
 		renderDocumentChart: function(){
 			Custom.drawBarChart(this.documentAnalyticCollection.toJSON(), '#docDownload');
+		},
+		
+		renderVisitChart: function(){
+			Custom.drawSitesVisits(this.visitAnalyticCollection.toJSON(), '#siteVisits');
 		},
 		
 		renderVideoChart: function(){
@@ -187,7 +201,6 @@ define([
 				'date': '07/01/2015'
 			}
 					   ];
-			Custom.drawSitesVisits(data, '#siteVisits');
 
 
 
