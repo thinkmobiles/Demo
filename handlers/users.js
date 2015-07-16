@@ -992,6 +992,42 @@ var routeHandler = function (db) {
                 res.status(200).send(doc);
             });
         };
+        this.contactMe = function (req, res, next) {
+            var from = new Date(req.query.from);
+            var date = new Date(req.query.to);
+            var to = new Date(date.setHours(date.getHours() + 24));
+            async.waterfall([
+                function (waterfallCb) {
+                    session.getUserDescription(req, function (err, obj) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        if (!obj) {
+                            var error = new Error();
+                            error.status = 401;
+                            error.message = 'Unauthorized';
+                            return waterfallCb(error);
+                        }
+                        //var userId = mongoose.Types.ObjectId(obj.id);
+                        var userId = obj.id;
+                        waterfallCb(null, userId)
+                    });
+                },
+
+                function (userId, waterfallCb) {
+                    ContactMeModel.find({companyId: userId, sandedAt: {$gte: from, $lte: to}},'-_id -__v -companyId' ,function (err, doc) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        waterfallCb(null,doc);
+                    });
+                }], function (err, doc) {
+                if (err) {
+                    return next(err);
+                }
+                res.status(200).send(doc);
+            });
+        };
 
 
         this.trackQuestion = function (req, res, next) {
