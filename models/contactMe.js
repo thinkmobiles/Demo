@@ -6,7 +6,7 @@ module.exports = (function () {
     var contactMeSchema = mongoose.Schema({
         companyId: {type:ObjectId},
         email: {type: String},
-        //phone: {type: String},
+        phone: {type: String},
         name: {type: String},
         message: {type: String},
         sandedAt: {type: Date, default: Date.now}

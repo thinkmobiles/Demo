@@ -132,7 +132,7 @@ define([
 			};
 			$.ajax({
 				type: "POST",
-				url: "/trackQuestion",
+				url: "/track/question",
 				data: JSON.stringify(data),
 				contentType: "application/json",
 
@@ -218,7 +218,7 @@ define([
 			};
 			$.ajax({
 				type: "POST",
-				url: "/trackDocument",
+				url: "/track/document",
 				data: JSON.stringify(data),
 				contentType: "application/json",
 
@@ -254,7 +254,7 @@ define([
 			};
 			$.ajax({
 				type: "POST",
-				url: "/trackVideo",
+				url: "/track/video",
 				data: JSON.stringify(videoData),
 				contentType: "application/json",
 
