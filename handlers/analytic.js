@@ -19,7 +19,7 @@ var routeHandler = function (db) {
         var domain = req.query.domain;
         async.waterfall([
             function (waterfallCb) {
-                var userId = mongoose.Types.ObjectId(req.session.uid);
+                var userId = mongoose.Types.ObjectId(req.session.uId);
                 ContentModel.findOne({ownerId: userId}, function (err, doc) {
                     if (err) {
                         return waterfallCb(err);
@@ -71,7 +71,7 @@ var routeHandler = function (db) {
 
         async.waterfall([
                 function (waterfallCb) {
-                var userId = mongoose.Types.ObjectId(req.session.uid);
+                var userId = mongoose.Types.ObjectId(req.session.uId);
                 ContentModel.findOne({ownerId: userId}, function (err, doc) {
                     if (err) {
                         return waterfallCb(err);
@@ -172,7 +172,7 @@ var routeHandler = function (db) {
     this.allDomain = function (req, res, next) {
         async.waterfall([
             function (waterfallCb) {
-                var userId = mongoose.Types.ObjectId(req.session.uid);
+                var userId = mongoose.Types.ObjectId(req.session.uId);
                 ContentModel.findOne({ownerId: userId}, function (err, doc) {
                     if (err) {
                         return waterfallCb(err);
@@ -228,7 +228,7 @@ var routeHandler = function (db) {
         var email = req.query.email;
         async.waterfall([
             function (waterfallCb) {
-                var userId = mongoose.Types.ObjectId(req.session.uid);
+                var userId = mongoose.Types.ObjectId(req.session.uId);
                 ContentModel.findOne({ownerId: userId}, function (err, doc) {
                     if (err) {
                         return waterfallCb(err);
@@ -312,7 +312,7 @@ var routeHandler = function (db) {
         var to = new Date(date.setHours(date.getHours() + 24));
         async.waterfall([
             function (waterfallCb) {
-                var userId = mongoose.Types.ObjectId(req.session.uid);
+                var userId = mongoose.Types.ObjectId(req.session.uId);
                 ContactMeModel.find({
                     companyId: userId,
                     sandedAt: {$gte: from, $lte: to}
@@ -338,7 +338,7 @@ var routeHandler = function (db) {
         async.waterfall([
 
                 function (waterfallCb) {
-                    var userId = mongoose.Types.ObjectId(req.session.uid);
+                    var userId = mongoose.Types.ObjectId(req.session.uId);
                     ContentModel.aggregate([{
                         $match: {
                             ownerId: userId
@@ -473,7 +473,7 @@ var routeHandler = function (db) {
 
         async.waterfall([
             function (waterfallCb) {
-                var userId = mongoose.Types.ObjectId(req.session.uid);
+                var userId = mongoose.Types.ObjectId(req.session.uId);
                 ContentModel.aggregate([
                     {
                         $match: {
@@ -558,7 +558,7 @@ var routeHandler = function (db) {
 
         async.waterfall([
            function (waterfallCb) {
-               var userId = mongoose.Types.ObjectId(req.session.uid);
+               var userId = mongoose.Types.ObjectId(req.session.uId);
                 ContentModel.aggregate([
                     {
                         $match: {
