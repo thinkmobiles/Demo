@@ -7,11 +7,12 @@ define([
 	"collections/videoAnalyticCollection",
 	"collections/visitAnalyticCollection",
 	"collections/contactTrackCollection",
+	"models/prospectActivityModel",
 	"models/domainModel",
 	'custom',
 	'd3',
 	'moment'
-], function (AnaliticsTemplate, QuestionTemplate, ProspectTemplate, DocumentAnalyticCollection, QuestionAnalyticCollection, VideoAnalyticCollection, VisitAnalyticCollection, ContactTrackCollection, DomainModel, Custom, d3, moment) {
+], function (AnaliticsTemplate, QuestionTemplate, ProspectTemplate, DocumentAnalyticCollection, QuestionAnalyticCollection, VideoAnalyticCollection, VisitAnalyticCollection, ContactTrackCollection, ProspectActivityModel, DomainModel, Custom, d3, moment) {
 
     var View;
 
@@ -20,7 +21,8 @@ define([
 		el:"#wrapper",
         events: {
 			"change #startDate, #endDate":"updateDate",
-			"change #domain":"updateProspect"
+			"change #domain":"updateProspect",
+			"click #prospectTable table tr": "showContactInfo"
 			
         },
 
@@ -72,6 +74,18 @@ define([
 			});	
 		},
 
+
+		showContactInfo: function(e){
+			var self = this;
+			var email = $(e.target).closest("tr").data("email");
+			this.prospectActivityModel = new ProspectActivityModel({email:email});
+			this.prospectActivityModel.bind('change', self.showProspectActivity, self);
+		},
+
+		showProspectActivity: function(e){
+			console.log(this.prospectActivityModel.toJSON());
+			
+		},
 		updateProspect: function(e){
 			this.contactTrackCollection.update({domain:this.$el.find("#domain").find("option:selected").text()});
 		},

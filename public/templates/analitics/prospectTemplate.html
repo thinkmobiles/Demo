@@ -4,7 +4,7 @@
 	<th>Email</th>
   </tr>
   <%_.each(prospects,function(prospect){%>
-  <tr>
+  <tr data-email="<%=prospect.email%>">
 	<td><%=prospect.name%></td>
 	<td><%=prospect.email%></td>
   </tr>

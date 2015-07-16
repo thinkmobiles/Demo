@@ -17,7 +17,7 @@ define([
             });
         },
         url: function () {
-            return "/allDomain"
+            return "/analytic/allDomain"
         },
         parse: function (response) {
             return response;

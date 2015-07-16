@@ -989,7 +989,7 @@ var routeHandler = function (db) {
                 if (err) {
                     return next(err);
                 }
-                res.status(200).send(doc);
+                res.status(200).send(doc[0]);
             });
         };
         this.contactMe = function (req, res, next) {

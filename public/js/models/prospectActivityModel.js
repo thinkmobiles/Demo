@@ -5,7 +5,7 @@ define(['validation'], function (validation) {
     var Model = Backbone.Model.extend({
         idAttribute: "_id",
         url: function () {
-            return "/analytic/allDomain";
+            return "/analytic/contact";
         },
         initialize: function (options) {
 			this.fetch({

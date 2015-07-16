@@ -1,8 +1,8 @@
 define([
-    'models/contactTrackModel'
-], function (model) {
+    'models/videoAnalyticModel'
+], function (deviceModel) {
     var Collection = Backbone.Collection.extend({
-        model: model,
+        model: deviceModel,
 		initialize: function (options) {
             var that = this;
             this.fetch({
@@ -30,7 +30,7 @@ define([
             });
         },
         url: function () {
-            return "/analytic/contactsByDomain"
+            return "/analytic/contact"
         },
         parse: function (response) {
             return response;
