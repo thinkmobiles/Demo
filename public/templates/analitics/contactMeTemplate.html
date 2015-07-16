@@ -1,0 +1,16 @@
+  <table class="contactMe" cellspacing="0" cellpadding="0">
+	<tr>
+	  <th>Name</th>
+	  <th>Email</th>
+	  <th>Date</th>
+	  <th>Message</th>
+	</tr>
+	<%_.each(contactList,function(item){%>
+	<tr>
+	  <td><%=item.name%></td>
+	  <td><%=item.email%></td>
+	  <td><%=item.sandedAt%></td>
+	  <td><%=item.message%></td>
+	</tr>
+	<%})%>
+  </table>
