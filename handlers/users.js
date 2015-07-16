@@ -668,7 +668,7 @@ var routeHandler = function (db) {
         this.getContactByDomain = function (req, res, next) {
             var domain = req.query.domain;
 
-            ProspectModel.find({domain: domain}, function (err, docs) {
+            TrackModel.find({domain: domain}, function (err, docs) {
                 if (err) {
                     return next(err);
                 }
@@ -799,7 +799,7 @@ var routeHandler = function (db) {
                     });
                 },
 
-                function (waterfallCb) {
+                function (userId, waterfallCb) {
                     ContentModel.findOne({ownerId: userId}, function (err, doc) {
                         if (err) {
                             return waterfallCb(err);
@@ -818,47 +818,36 @@ var routeHandler = function (db) {
                         $match: {
                             contentId: contentId
                         }
-                    },
-                        {
-                            $group: {
-                                _id: '$domain',
-                                count: {
-                                    $sum: 1
-                                }
-                            }
-                        }, {
-                            $project: {
-                                domain: '$_id',
-                                _id: 0,
-                                field: {
-                                    $add: [1]
-                                },
-                                count: 1
-                            }
-                        }, {
-                            $group: {
-                                _id: '$field', domains: {
-                                    $push: {
-                                        domain: '$domain', count: '$count'
-                                    }
-                                }
-                            }
-                        }, {
-                            $project: {
-                                domains: '$domains',
-                                _id: 0
-                            }
-                        }], function (err, docs) {
-                        if (err) {
-                            return waterfallCb(err);
+                    }, {
+                        $group: {
+                            _id: '$domain'
                         }
-                        waterfallCb(null, docs)
+                    }, {
+                        $project: {domain: '$_id', _id: 0}
+
+                }, {
+                    $group: {
+                        _id: null,
+                        domains: {
+                            $push: {domain: '$domain'}
+                        }
+                    }
+                }, {
+                    $project: {
+                        domains: '$domains.domain',
+                        _id: 0
+                    }
+                }], function (err, docs) {
+                if (err) {
+                    return waterfallCb(err);
+                }
+                        waterfallCb(null, docs[0])
                     });
                 }], function (err, docs) {
                 if (err) {
                     return next(err);
                 }
-                res.status(200).send(docs)
+                res.status(200).send(docs.domains)
             });
         };
 
@@ -1749,10 +1738,11 @@ var routeHandler = function (db) {
                             },
 
                             function (seriesCb) {
-                                var index = [];
-                                for (var i = data.countQuestion; i > 0; i--) {
-                                    index.push(i);
-                                }
+                                //var index = [];
+                                //for (var i = data.countQuestion; i > 0; i--) {
+                                //    index.push(i);
+                                //}
+                               var index = _.range(1,data.countQuestion+1);
 
                                 async.each(index, function (i, eachCb) {
                                     async.applyEachSeries([saveSurveyVideo, saveSurveyFiles], i, id, files, data, function (err) {
