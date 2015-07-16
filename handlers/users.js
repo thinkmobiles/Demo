@@ -270,8 +270,8 @@ var routeHandler = function (db) {
         var body = req.body;
         var error = new Error();
 
-        if (!contentId) {
-            error.message = 'Content Id is not Defined';
+        if (!contentId || !body.name ||!body.email || !body.message) {
+            error.message = 'Some field is empty';
             error.status = 403;
             return next(error)
         }
