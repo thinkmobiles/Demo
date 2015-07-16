@@ -647,16 +647,7 @@ var routeHandler = function (db) {
             });
         };
 
-        this.contact = function (req, res, next) {
-            var uId = mongoose.Types.ObjectId(req.params.uid);
-            var cId = mongoose.Types.ObjectId(req.params.cid);
-            jumplead.getContact(uId, cId, function (err, prospects) {
-                if (err) {
-                    return next(err);
-                }
-                res.status(200).send(prospects);
-            });
-        };
+
 
         this.allUsers = function (req, res, next) {
             UserModel.find({}, {avatar: 0}, function (err, users) {
@@ -902,6 +893,103 @@ var routeHandler = function (db) {
                     return next(err);
                 }
                 res.status(200).send(docs.domains)
+            });
+        };
+
+        this.contact = function (req, res, next) {
+            var email = req.query.email;
+            async.waterfall([
+                function (waterfallCb) {
+                    session.getUserDescription(req, function (err, obj) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        if (!obj) {
+                            var error = new Error();
+                            error.status = 401;
+                            error.message = 'Unauthorized';
+                            return waterfallCb(error);
+                        }
+                        var userId = mongoose.Types.ObjectId(obj.id);
+                        waterfallCb(null, userId)
+                    });
+                },
+
+                function (userId, waterfallCb) {
+                    ContentModel.findOne({ownerId: userId}, function (err, doc) {
+                        if (err) {
+                            return waterfallCb(err);
+                        } else if (!doc) {
+                            var error = new Error();
+                            error.status = 404;
+                            error.message = 'No Data';
+                            return waterfallCb(error);
+                        }
+                        waterfallCb(null, doc._id)
+                    });
+                },
+
+                function (contentId, waterfallCb) {
+                    TrackModel.aggregate([{
+                        $match: {
+                            contentId: contentId,
+                            email: email
+                        }
+                    }, {
+                        $project: {
+                            name: {$concat: ['$firstName', " ", '$lastName']},
+                            questions: '$questions',
+                            _id: 1, videos: '$videos',
+                            documents: '$documents'
+                        }
+                    }, {
+                        $unwind: '$videos'
+                    }, {
+                        $unwind: '$documents'
+                    }, {
+                        $project: {
+                            videos: {
+                                video: '$videos.video',
+                                time: '$videos.stopTime'
+                            },
+                            _id: 1,
+                            questions: 1,
+                            document: '$documents.document',
+                            name: 1
+                        }
+                    }, {
+                        $group: {
+                            _id: {
+                                id: '$_id',
+                                name: '$name',
+                                questions: '$questions'
+                            },
+                            videos: {
+                                $push: '$videos'
+                            },
+                            documents: {
+                                $push: '$document'
+                            }
+                        }
+                    }, {
+                        $project: {
+                            name: '$_id.name',
+                            questions: '$_id.questions',
+                            documents: 1,
+                            videos: 1,
+                            _id: 0
+                        }
+                    }], function (err, doc) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                       waterfallCb(null,doc);
+                    });
+                }], function (err, doc) {
+                if (err) {
+                    return next(err);
+                }
+                res.status(200).send(doc);
             });
         };
 
