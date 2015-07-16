@@ -2,6 +2,7 @@ define([
     'text!templates/analitics/analiticsTemplate.html',
 	'text!templates/analitics/questionTemplate.html',
 	'text!templates/analitics/prospectTemplate.html',
+	'text!templates/analitics/prospectActivityTemplate.html',
 	"collections/documentAnalyticCollection",
 	"collections/questionAnalyticCollection",
 	"collections/videoAnalyticCollection",
@@ -12,7 +13,7 @@ define([
 	'custom',
 	'd3',
 	'moment'
-], function (AnaliticsTemplate, QuestionTemplate, ProspectTemplate, DocumentAnalyticCollection, QuestionAnalyticCollection, VideoAnalyticCollection, VisitAnalyticCollection, ContactTrackCollection, ProspectActivityModel, DomainModel, Custom, d3, moment) {
+], function (AnaliticsTemplate, QuestionTemplate, ProspectTemplate, prospectActivityTemplate, DocumentAnalyticCollection, QuestionAnalyticCollection, VideoAnalyticCollection, VisitAnalyticCollection, ContactTrackCollection, ProspectActivityModel, DomainModel, Custom, d3, moment) {
 
     var View;
 
@@ -78,12 +79,11 @@ define([
 		showContactInfo: function(e){
 			var self = this;
 			var email = $(e.target).closest("tr").data("email");
-			this.prospectActivityModel = new ProspectActivityModel({email:email});
-			this.prospectActivityModel.bind('change', self.showProspectActivity, self);
+			this.prospectActivityModel.update({email:email});
 		},
 
 		showProspectActivity: function(e){
-			console.log(this.prospectActivityModel.toJSON());
+			this.$el.find("#prospectActivity").html(_.template(prospectActivityTemplate)(this.prospectActivityModel.toJSON()));
 			
 		},
 		updateProspect: function(e){
@@ -99,7 +99,6 @@ define([
 		},
 		
 		renderVideoChart: function(){
-			console.log(this.videoAnalyticCollection.toJSON());
 			var mas = this.videoAnalyticCollection.toJSON()[0].survey;
 			this.videoAnalyticCollection.toJSON()[0].mainVideo.name="Main Video";
 			mas.unshift(this.videoAnalyticCollection.toJSON()[0].mainVideo);
@@ -121,8 +120,12 @@ define([
 		},
 
 		renderContactTable:function(){
-			console.log(this.contactTrackCollection);
-			this.$el.find("#prospectTable").html(_.template(ProspectTemplate)({prospects:this.contactTrackCollection.toJSON()}));
+			var self = this;
+			var prospects = this.contactTrackCollection.toJSON();
+			this.$el.find("#prospectTable").html(_.template(ProspectTemplate)({prospects:prospects}));
+
+			this.prospectActivityModel = new ProspectActivityModel({email:prospects[0].email});
+			this.prospectActivityModel.bind('change', self.showProspectActivity, self);
 		},
 		
 		renderQuestionChart: function(){
@@ -204,51 +207,7 @@ define([
 				minDate:moment().subtract(7, 'days')._d
 			});
 			$("#endDate").datepicker('setDate', new Date());
-
-
-			var data = [{
-				'count': 1,
-				'newCount':2,
-				'total':3,
-				'date': '01/01/2015'
-			},{
-				'count': 1,
-				'newCount':3,
-				'total':4,
-				
-				'date': '02/01/2015'
-			},{
-				'count': 6,
-				'newCount':4,
-				'total':10,
-				'date': '03/01/2015'
-			},{
-				'count': 7,
-				'newCount':23,
-				'total':30,
-				'date': '04/01/2015'
-			},{
-				'count': 15,
-				'newCount':1,
-				'total':16,
-				'date': '05/01/2015'
-			},{
-				'count': 4,
-				'newCount':2,
-				'total':6,
-				'date': '06/01/2015'
-			},{
-				'count': 16,
-				'newCount':6,
-				'total':22,
-				'date': '07/01/2015'
-			}
-					   ];
-
-
-
-			
-			
+		
             return this;
         }
 

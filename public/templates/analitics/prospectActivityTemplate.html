@@ -1,0 +1,28 @@
+<div class="innerContainer">
+  <h2><%=name%></h2>
+  <h3>Survey Result</h3>
+  <ul>
+	<%_.each(questions,function(question,index){%>
+	<li>
+	  Question <%=index+1%>: <%=question.question%>   <%=question.item%>
+	</li>
+	<%})%>
+  </ul>
+  <h3>Videos Watched</h3>
+  <ul>
+	<%_.each(videos,function(video){%>
+	<li>
+	  <%=video.video.split("/").pop()%>   <%=video.time%>
+	</li>
+	<%})%>
+  </ul>
+  <h3>Documents Downloaded</h3>
+  <ul>
+	<%_.each(documents,function(item){%>
+	<li>
+	  <%=item.split("/").pop()%>
+	</li>
+	<%})%>
+  </ul>
+</div>
+
