@@ -71,7 +71,7 @@ define([
 				},
                 dialogClass: "watch-dialog",
                 width: 425
-            })
+            });
             return this;
         }
 

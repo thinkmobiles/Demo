@@ -9,7 +9,7 @@ module.exports = (function () {
         phone: {type: String},
         name: {type: String},
         message: {type: String},
-        sandedAt: {type: Date, default: Date.now}
+        sentAt: {type: Date, default: Date.now}
     }, {collection: 'ContactMe'});
 
     mongoose.model('ContactMe', contactMeSchema);

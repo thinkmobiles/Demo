@@ -114,6 +114,110 @@ var Schedule = function (db) {
                     console.log('Notifications successfully sended');
                 });
         }); //cronJob
+        //==============================================================================================================
+        var cronJobWeekly = NodeCronTab.scheduleJob('0 0 */2 * * *', function () { //production every 2 hours
+            //    var cronJob = NodeCronTab.scheduleJob('*/10 * * * * *', function () { //every 2 minutes
+            var hour = 60 * 60 * 1000;
+            var time = new Date(Date.now() - 2 * hour);
+            var conditions = {
+                'isSent': false,
+                'updatedAt': {$lte: time}
+            };
+            var update = {
+                isSent: true
+            };
+
+            async.waterfall([
+
+                    //find all docs older than 2 hour & 'isSent'=false
+                    function (waterfallCb) {
+                        TrackModel.find(conditions, function (err, docs) {
+                            if (err) {
+                                return waterfallCb(err);
+                            }
+                            if (!docs.length) {
+                                var error = new Error();
+                                error.message = 'No data to send';
+                                return waterfallCb(error);
+                            }
+                            console.log('tracks at ' + new Date(Date.now()));
+                            console.log(docs);
+                            waterfallCb(null, docs)
+                        });
+                    },
+
+                    // supplement name & email field if they missing
+                    function (docs, waterfallCb) {
+                        async.each(docs, function (track, eachCb) {
+                            if (!track.firstName || !track.lastName || !track.email) {
+                                TrackModel.findOne({jumpleadId: track.jumpleadId}, function (err, doc) {
+                                    if (err) {
+                                        return eachCb(err);
+                                    }
+                                    track.firstName = doc.firstName;
+                                    track.lastName = doc.lastName;
+                                    track.email = doc.email;
+                                    eachCb(null);
+                                })
+                            } else {
+                                return eachCb(null);
+                            }
+                        }, function (err) {
+                            if (err) {
+                                return waterfallCb(err);
+                            }
+                            waterfallCb(null, docs)
+                        });
+                    },
+
+                    //Populate contentId field
+                    function (docs, waterfallCb) {
+                        ContentModel.populate(docs, {path: 'contentId'}, function (err, popDocs) {
+                            if (err) {
+                                return waterfallCb(err);
+                            }
+                            waterfallCb(null, popDocs);
+                        });
+                    },
+
+                    //send notification to company email
+                    function (docs, waterfallCb) {
+                        async.each(docs, function (doc, cb) {
+                            var name = doc.firstName + ' ' + doc.lastName;
+                            var data = {
+                                companyName: doc.contentId.name,
+                                companyEmail: doc.contentId.email,
+                                name: name,
+                                email: doc.email,
+                                documents: doc.documents,
+                                videos: doc.videos,
+                                questions: doc.questions
+                            };
+                            mailer.sendTrackInfo(data, cb);
+                        }, function (err) {
+                            if (err) {
+                                return waterfallCb(err)
+                            }
+                            waterfallCb(null, docs);
+                        });
+                    },
+
+                    //update 'isSent' field to 'true'
+                    function (tracks, waterfallCb) {
+                        TrackModel.update(conditions, update, {multi: true}, function (err) {
+                            if (err) {
+                                return waterfallCb(err);
+                            }
+                            waterfallCb(null);
+                        });
+                    }],
+                function (err) {
+                    if (err) {
+                        return console.error(err);
+                    }
+                    console.log('Notifications successfully sended');
+                });
+        }); //cronJob
     };
 };
 

@@ -262,7 +262,6 @@ var routeHandler = function (db) {
                 });
             });
         });
-
     };
 
     this.sendContactMe = function (req, res, next) {
@@ -297,7 +296,7 @@ var routeHandler = function (db) {
                 name: body.name || 'NoName',
                 email: body.email || '-',
                 message: body.description || 'NoDescription',
-                sandedAt: Date.now()
+                sentAt: Date.now()
             });
             saveObj.save(function (err, doc) {
                 if (err) {
