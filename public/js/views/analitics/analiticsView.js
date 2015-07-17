@@ -3,17 +3,19 @@ define([
 	'text!templates/analitics/questionTemplate.html',
 	'text!templates/analitics/prospectTemplate.html',
 	'text!templates/analitics/prospectActivityTemplate.html',
+	'text!templates/analitics/contactMeTemplate.html',
 	"collections/documentAnalyticCollection",
 	"collections/questionAnalyticCollection",
 	"collections/videoAnalyticCollection",
 	"collections/visitAnalyticCollection",
 	"collections/contactTrackCollection",
+	"collections/contactMeCollection",
 	"models/prospectActivityModel",
 	"models/domainModel",
 	'custom',
 	'd3',
 	'moment'
-], function (AnaliticsTemplate, QuestionTemplate, ProspectTemplate, prospectActivityTemplate, DocumentAnalyticCollection, QuestionAnalyticCollection, VideoAnalyticCollection, VisitAnalyticCollection, ContactTrackCollection, ProspectActivityModel, DomainModel, Custom, d3, moment) {
+], function (AnaliticsTemplate, QuestionTemplate, ProspectTemplate, ProspectActivityTemplate, ContactMeTemplate,  DocumentAnalyticCollection, QuestionAnalyticCollection, VideoAnalyticCollection, VisitAnalyticCollection, ContactTrackCollection, ContactMeCollection, ProspectActivityModel, DomainModel, Custom, d3, moment) {
 
     var View;
 
@@ -46,11 +48,16 @@ define([
 				from:moment().subtract(7, 'days').format("MM/DD/YYYY"),
 				to:moment().format("MM/DD/YYYY")
 			});
+			this.contactMeCollection = new ContactMeCollection({
+				from:moment().subtract(7, 'days').format("MM/DD/YYYY"),
+				to:moment().format("MM/DD/YYYY")
+			});
 			this.domainModel = new DomainModel();
 			this.documentAnalyticCollection.bind('reset', self.renderDocumentChart, self);
 			this.questionAnalyticCollection.bind('reset', self.renderQuestionChart, self);
 			this.videoAnalyticCollection.bind('reset', self.renderVideoChart, self);
 			this.visitAnalyticCollection.bind('reset', self.renderVisitChart, self);
+			this.contactMeCollection.bind('reset', self.renderContactMe, self);
 			this.domainModel.bind('change', self.renderDomainList, self);
 			
             this.render();
@@ -83,7 +90,7 @@ define([
 		},
 
 		showProspectActivity: function(e){
-			this.$el.find("#prospectActivity").html(_.template(prospectActivityTemplate)(this.prospectActivityModel.toJSON()));
+			this.$el.find("#prospectActivity").html(_.template(ProspectActivityTemplate)(this.prospectActivityModel.toJSON()));
 			
 		},
 		updateProspect: function(e){
@@ -104,7 +111,10 @@ define([
 			mas.unshift(this.videoAnalyticCollection.toJSON()[0].mainVideo);
 			Custom.drawBarChart(mas, '#videoView');
 		},
-		
+
+		renderContactMe:function(){
+			this.$el.find("#contactMe").html(_.template(ContactMeTemplate)({contactList:this.contactMeCollection.toJSON()}));
+		},
 
 		renderDomainList: function(){
 			var self = this;
@@ -188,7 +198,7 @@ define([
 			];
 
 			
-            this.$el.html(_.template(AnaliticsTemplate)({contactList:contactList}));
+            this.$el.html(_.template(AnaliticsTemplate));
 
 
 			$("#startDate").datepicker({
