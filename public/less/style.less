@@ -1502,14 +1502,16 @@ box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.18);
 .container.analitics{
 	padding-top:200px;
 	background-color:white;
-  text-align:center;
-  h2{
-	text-align: center;
-  }
-  svg{
-	margin: 0 auto;
-	display: block;
-  }
+	text-align:center;
+	width:820px;
+	margin:0 auto;
+	h2{
+		text-align: center;
+	}
+	svg{
+		margin: 0 auto;
+		display: block;
+	}
 }
 
 .questionsPie{
@@ -1520,71 +1522,69 @@ box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.18);
 		div{
 			text-align:center;
 		}
-	  svg{
-		margin: 0 auto;
-		display: block;
-	  }
+		svg{
+			margin: 0 auto;
+			display: block;
+		}
 	}
 }
 
 
 /*chart*/
-        .axis path, .axis line
-        {
-            fill: none;
-            stroke: #777;
-            shape-rendering: crispEdges;
-        }
-        
-        .axis text
-        {
-            font-family: 'Arial';
-            font-size: 13px;
-        }
-        .tick
-        {
-            stroke-dasharray: 1, 2;
-        }
-        .bar
-        {
-            fill: FireBrick;
-        }
-        
-       
-.axis path,
-.axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
+.axis path, .axis line
+			 {
+				 fill: none;
+				 stroke: #e0e8eb;
+				 shape-rendering: crispEdges;
+			 }
+
+.axis text
+{
+    font-family: 'Arial';
+    font-size: 13px;
+}
+.tick
+{
+    stroke-dasharray: 1, 2;
+}
+.bar
+{
+    fill: FireBrick;
 }
 
-.x.axis path {
-  display: none;
+.y.axis .tick line{
+	display:none;
 }
+
+
 
 .line {
-  fill: none;
-  stroke: steelblue;
-  stroke-width: 1.5px;
+	fill: none;
+	stroke: #f56a3f;
+	stroke-width: 1.5px;
 }
 .lineTotal {
-  fill: none;
-  stroke: black;
-  stroke-width: 1.5px;
+	fill: none;
+	stroke: #42b9f5;
+	stroke-width: 1.5px;
 }
 .lineNew {
-  fill: none;
-  stroke: red;
-  stroke-width: 1.5px;
+	fill: none;
+	stroke: #00c982;
+	stroke-width: 1.5px;
+}
+.area {
+    fill: #f4fbfe;
+    stroke-width: 0;
 }
 
 
 #docDownload .x.axis text {
-  .rotate(-45);
+	.rotate(-45);
     text-anchor: end !important;
 }
 #videoView .x.axis text {
-  .rotate(-45);
+	.rotate(-45);
     text-anchor: end !important;
 }
 
