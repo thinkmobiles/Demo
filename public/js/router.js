@@ -16,11 +16,13 @@ define([
             "upload"                    :  "upload",
             "home(/:videoId/:userId)"   :  "home",
 			"chooseViewer(/:videoId/:userId)" :  "chooseViewer",
+			"registerViewer(/:videoId/:userId)" :  "registerViewer",
 			"contactMe(/:videoId/:userId/:page)(/:indexList)" :  "contactMe",
 			"watchVideo(/:videoId/:userId)" :  "watchVideo",
 			"chooseImportant(/:videoId/:userId)" :  "chooseImportant",
 			"relatedVideo(/:videoId/:userId)(/:indexList)" :  "relatedVideo",
             "registration"              :  "registration",
+            //ToDo: analitic )))))))))))))haha)
 			"analitics"              :  "analitics",
             "*any"                      :  "any"
         },
@@ -155,6 +157,10 @@ define([
 		
 		chooseViewer: function (videoId, userId) {
             this.showModalView('chooseViewer',{videoId:videoId, userId:userId});
+        },
+
+        registerViewer: function (videoId, userId) {
+            this.showModalView('registerViewer',{videoId:videoId, userId:userId});
         },
 		contactMe: function (videoId, userId, page, indexList) {
             this.showModalView('contactMe',{videoId:videoId, userId:userId, page:page, indexList:indexList});

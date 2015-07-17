@@ -1,7 +1,7 @@
 define([
     'text!templates/home/modalTemplate.html',
-	'views/home/registerModalView'
-], function ( modalTemplate, ModalView) {
+	//'views/home/registerModalView'
+], function ( modalTemplate) {
 
     var View;
 	
@@ -39,13 +39,14 @@ define([
 		},
 
         newViewer:function(){
-			this.dialog.hide();
-			if(this.modal){
-				this.modal.undelegateEvents();
-			}
-			this.modal =new ModalView({
-				content:this.content
-			});
+			Backbone.history.navigate("//registerViewer/"+this.videoId+"/"+this.userId, {trigger: false});
+			//this.dialog.hide();
+			//if(this.modal){
+			//	this.modal.undelegateEvents();
+			//}
+			//this.modal =new ModalView({
+			//	content:this.content
+			//});
         },
 
 		clickOnClose: function(){
@@ -71,7 +72,7 @@ define([
 				},
                 dialogClass: "watch-dialog",
                 width: 425
-            })
+            });
             return this;
         }
 

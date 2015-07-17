@@ -262,7 +262,6 @@ var routeHandler = function (db) {
                 });
             });
         });
-
     };
 
     this.sendContactMe = function (req, res, next) {
@@ -270,8 +269,8 @@ var routeHandler = function (db) {
         var body = req.body;
         var error = new Error();
 
-        if (!contentId) {
-            error.message = 'Content Id is not Defined';
+        if (!contentId || !body.name ||!body.email || !body.message) {
+            error.message = 'Some field is empty';
             error.status = 403;
             return next(error)
         }
@@ -297,7 +296,7 @@ var routeHandler = function (db) {
                 name: body.name || 'NoName',
                 email: body.email || '-',
                 message: body.description || 'NoDescription',
-                sandedAt: Date.now()
+                sentAt: Date.now()
             });
             saveObj.save(function (err, doc) {
                 if (err) {

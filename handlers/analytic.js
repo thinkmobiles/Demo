@@ -453,8 +453,7 @@ var routeHandler = function (db) {
                         waterfallCb(null, info);
 
                     });
-                }
-            ],
+                }],
             function (err, data) {
                 if (err) {
                     return next(err);
@@ -601,7 +600,6 @@ var routeHandler = function (db) {
                     waterfallCb(null, data[0]);
                 });
             },
-
 
             function (data, waterfallCb) {
                 TrackModel.aggregate([

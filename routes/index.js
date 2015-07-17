@@ -27,7 +27,6 @@ module.exports = function (app, db) {
     app.post('/prospectSignUp', handler.prospectSignUp);
     app.get('/share', handler.share);
     app.post('/sendContactMe', handler.sendContactMe);
-
     app.post('/signUp', handler.signUp);
     app.post('/login', handler.login);
     app.get('/avatar/:userName', handler.avatar);
