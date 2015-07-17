@@ -29,6 +29,7 @@ define([
         },
 
 		send: function(){
+
 			var self = this;
 			var contactModel = new ContactModel();
 			var hasError = false;

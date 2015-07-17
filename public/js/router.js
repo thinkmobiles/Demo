@@ -156,6 +156,10 @@ define([
 		chooseViewer: function (videoId, userId) {
             this.showModalView('chooseViewer',{videoId:videoId, userId:userId});
         },
+
+        registerViewer: function (videoId, userId) {
+            this.showModalView('registerViewer',{videoId:videoId, userId:userId});
+        },
 		contactMe: function (videoId, userId, page, indexList) {
             this.showModalView('contactMe',{videoId:videoId, userId:userId, page:page, indexList:indexList});
         },

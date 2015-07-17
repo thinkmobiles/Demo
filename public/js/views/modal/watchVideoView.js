@@ -91,6 +91,9 @@ define([
 		},
 
 		clickOnClose: function(){
+			var videoEl =this.$el.find(".surveyVideo")[0]||this.$el.find(".mainVideo")[0];
+			this.trackVideo(videoEl, false);
+			console.log(videoEl.currentTime);
 			Backbone.history.navigate("/home/"+this.videoId+"/"+this.userId, {trigger: true});
 		},
 
