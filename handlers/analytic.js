@@ -2,17 +2,23 @@ var async = require('async');
 var mongoose = require('mongoose');
 var _ = require('../public/js/libs/underscore/underscore-min');
 var moment = require('moment');
+var Analytic = require('../helpers/analytic');
 
 var routeHandler = function (db) {
 
     var trackSchema = mongoose.Schemas['Track'];
     var TrackModel = db.model('Track', trackSchema);
 
+    var userSchema = mongoose.Schemas['User'];
+    var UserModel = db.model('User', userSchema);
+
     var contentSchema = mongoose.Schemas['Content'];
     var ContentModel = db.model('Content', contentSchema);
 
     var contactMeSchema = mongoose.Schemas['ContactMe'];
     var ContactMeModel = db.model('ContactMe', contactMeSchema);
+
+    var analytic = new Analytic(db);
 
     this.contactsByDomain = function (req, res, next) {
         var domain = req.query.domain;
@@ -309,12 +315,26 @@ var routeHandler = function (db) {
         var from = new Date(req.query.from);
         var date = new Date(req.query.to);
         var to = new Date(date.setHours(date.getHours() + 24));
+        var userId = req.session.uId;
         async.waterfall([
             function (waterfallCb) {
-                var userId = mongoose.Types.ObjectId(req.session.uId);
+                UserModel.findById(userId, function (err, user) {
+                    if (err) {
+                        return next(err);
+                    } else if (!user) {
+                        var error = new Error();
+                        error.status = 404;
+                        error.message = 'No Data';
+                        return waterfallCb(error);
+                    }
+                    waterfallCb(null, user.contentId)
+                });
+            },
+            function (contentId, waterfallCb) {
+
                 ContactMeModel.find({
-                    companyId: userId,
-                    sandedAt: {$gte: from, $lte: to}
+                    //contentId: contentId,
+                    sentAt: {$gte: from, $lte: to}
                 }, '-_id -__v -companyId', function (err, doc) {
                     if (err) {
                         return waterfallCb(err);
@@ -608,166 +628,14 @@ var routeHandler = function (db) {
         var from = new Date(req.query.from);
         var date = new Date(req.query.to);
         var to = new Date(date.setHours(date.getHours() + 24));
-
-        async.waterfall([
-            function (waterfallCb) {
-                var userId = mongoose.Types.ObjectId(req.session.uId);
-                ContentModel.aggregate([
-                    {
-                        $match: {
-                            ownerId: userId
-                        }
-                    }, {
-                        $group: {
-                            _id: {
-                                pdf: '$survey.pdfUri',
-                                id: '$_id'
-                            }
-                        }
-                    }, {
-                        $project: {
-                            documents: '$_id.pdf',
-                            _id: 0,
-                            'id': '$_id.id'
-                        }
-                    }, {
-                        $unwind: '$documents'
-                    }, {
-                        $unwind: '$documents'
-                    }, {
-                        $group: {
-                            _id: '$id',
-                            doc: {
-                                $addToSet: '$documents'
-                            }
-                        }
-                    }], function (err, data) {
-                    if (err) {
-                        return waterfallCb(err);
-                    }
-                    if (!data.length) {
-                        var error = new Error();
-                        error.status = 404;
-                        error.message = 'No Data';
-                        return waterfallCb(error);
-                    }
-                    waterfallCb(null, data[0]);
-                });
-            },
-
-            function (data, waterfallCb) {
-                TrackModel.aggregate([
-                    {
-                        $match: {
-                            'contentId': data._id,
-                            'documents.time': {$gte: from, $lte: to}
-
-                        }
-                    }, {
-                        $project: {
-                            firstName: 1,
-                            lastName: 1,
-                            documents: 1,
-                            _id: 0
-                        }
-                    }, {
-                        $unwind: '$documents'
-                    }, {
-                        $group: {
-                            _id: '$documents.document',
-                            count: {
-                                $sum: 1
-                            }
-                        }
-                    }, {
-                        $project: {
-                            name: '$_id',
-                            _id: 0,
-                            count: 1
-                        }
-                    }], function (err, trackResp) {
-                    if (err) {
-                        return waterfallCb(err);
-                    }
-                    waterfallCb(null, trackResp, data);
-                });
-            },
-
-            function (trackResp, data, waterfallCb) {
-                TrackModel.aggregate([{
-                    $match: {
-                        'contentId': data._id,
-                        'questTime': {$gte: from, $lte: to}
-
-                    }
-                }, {
-                    $project: {
-                        documents: 1,
-                        _id: 1
-                    }
-                }, {
-                    $unwind: '$documents'
-                }, {
-                    $group: {
-                        _id: '$_id',
-                        count: {$sum: 1}
-                    }
-                }, {
-                    $project: {
-                        download: {$cond: [{$gt: ['$count', 1]}, {$add: [1]}, {$add: [0]}]}
-                    }
-                },
-                    {
-                        $group: {
-                            _id: null,
-                            all: {$sum: 1},
-                            download: {$sum: '$download'}
-                        }
-                    }, {
-                        $project: {
-                            _id: 0,
-                            all: 1,
-                            download: 1
-                        }
-                    }], function (err, downloadRes) {
-                    if (err) {
-                        return waterfallCb(err);
-                    }
-                    waterfallCb(null, trackResp, data, downloadRes[0]);
-                });
-
-            },
-            function (trackResp, data, downloadRes, waterfallCb) {
-                var arr = [];
-                async.each(data.doc, function (pdf, eachCb) {
-                    var obj = {};
-                    obj.name = pdf;
-                    var findDocument = _.findWhere(trackResp, {name: pdf});
-                    if (findDocument) {
-                        obj.count = findDocument.count;
-                    } else {
-                        obj.count = 0;
-                    }
-                    arr.push(obj);
-                    eachCb(null);
-                }, function (err) {
-                    if (err) {
-                        return next(err);
-                    }
-                    var data = {
-                        docs: arr,
-                        all: downloadRes.all,
-                        download: downloadRes.download
-                    };
-                    waterfallCb(null, data);
-
-                });
-            }], function (err, data) {
-            if (err) {
+        var userId = req.session.uId;
+        analytic.documents(userId, from, to, function(err, data){
+            if(err){
                 return next(err);
             }
             res.status(200).send(data);
         });
+
     };
 };
 
