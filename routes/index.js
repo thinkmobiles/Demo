@@ -33,7 +33,7 @@ module.exports = function (app, db) {
     app.get('/logout', session.kill);
     app.get('/currentUser',session.isAuthenticated, handler.currentUser);
     app.get('/redirect', session.isAuthenticated, handler.redirect);
-    app.post('/upload', session.isAuthenticated, multipart, handler.upload);
+    app.post('/upload',multipart, session.isAuthenticated, handler.upload);
     app.get('/content', session.isAuthenticated, handler.content);
 
     analyticRouter = require('./analytic')(db);

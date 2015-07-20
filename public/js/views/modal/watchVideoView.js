@@ -309,7 +309,7 @@ define([
 				self.dialog.remove();
 				Backbone.history.navigate("#/chooseImportant/"+self.videoId+"/"+self.userId, {trigger: true});
 			});
-			FB.XFBML.parse();
+			//FB.XFBML.parse();
 			return this;
 		}
 
