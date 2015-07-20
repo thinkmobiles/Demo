@@ -295,7 +295,7 @@ var routeHandler = function (db) {
                 companyId: content.ownerId,
                 name: body.name || 'NoName',
                 email: body.email || '-',
-                message: body.description || 'NoDescription',
+                message: body.message || 'NoDescription',
                 sentAt: Date.now()
             });
             saveObj.save(function (err, doc) {
