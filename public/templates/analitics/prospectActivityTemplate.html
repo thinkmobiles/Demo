@@ -4,18 +4,19 @@
   <ul>
 	<%_.each(questions,function(question,index){%>
 	<li>
-	  Question <%=index+1%>: <%=question.question%>   <%=question.item%>
+	  <span class="silver">Question <%=index+1%>:</span> <%=question.question%>
+
+	  <span class="result <%=question.item%>"><%=question.item=="some"?"Somewhat interested":(question.item=="very"?"Very interested":"Not interested")%></span>
+	  
 	</li>
 	<%})%>
   </ul>
   <h3>Videos Watched</h3>
-  <ul>
-	<%_.each(videos,function(video){%>
-	<li>
-	  <%=video.video.split("/").pop()%>   <%=video.time%>
-	</li>
+	<%_.each(videos,function(video,index){%>
+	<span>
+	  <%=video.video.split("/").pop()%>   (<%=video.time%>)<%=index==videos.length-1?"":","%>
+	</span>
 	<%})%>
-  </ul>
   <h3>Documents Downloaded</h3>
   <ul>
 	<%_.each(documents,function(item){%>

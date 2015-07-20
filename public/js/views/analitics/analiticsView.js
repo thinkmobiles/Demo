@@ -90,6 +90,15 @@ define([
 		},
 
 		showProspectActivity: function(e){
+			var activity = this.prospectActivityModel.toJSON();
+			activity.videos = _.map(activity.videos,function(video){
+				var sec = video.time%60;
+				if (sec<10){
+					sec = "0"+sec;
+				}
+				video.time = Math.floor(video.time/60)+":"+sec;
+				return video
+			});
 			this.$el.find("#prospectActivity").html(_.template(ProspectActivityTemplate)(this.prospectActivityModel.toJSON()));
 			
 		},
