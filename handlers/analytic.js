@@ -402,11 +402,11 @@ var routeHandler = function (db) {
                             watchedEnd: {$sum: '$watchedEnd'}
                         }
                     }, {
-                        $project:{
+                        $project: {
                             name: '$_id',
-                            count:1,
-                            watchedEnd:1,
-                            _id:0
+                            count: 1,
+                            watchedEnd: 1,
+                            _id: 0
                         }
                     }], function (err, videoRes) {
                         if (err) {
@@ -694,6 +694,50 @@ var routeHandler = function (db) {
             },
 
             function (trackResp, data, waterfallCb) {
+                TrackModel.aggregate([{
+                    $match: {
+                        'contentId': data._id,
+                        'questTime': {$gte: from, $lte: to}
+
+                    }
+                }, {
+                    $project: {
+                        documents: 1,
+                        _id: 1
+                    }
+                }, {
+                    $unwind: '$documents'
+                }, {
+                    $group: {
+                        _id: '$_id',
+                        count: {$sum: 1}
+                    }
+                }, {
+                    $project: {
+                        download: {$cond: [{$gt: ['$count', 1]}, {$add: [1]}, {$add: [0]}]}
+                    }
+                },
+                    {
+                        $group: {
+                            _id: null,
+                            all: {$sum: 1},
+                            download: {$sum: '$download'}
+                        }
+                    }, {
+                        $project: {
+                            _id: 0,
+                            all: 1,
+                            download: 1
+                        }
+                    }], function (err, downloadRes) {
+                    if (err) {
+                        return waterfallCb(err);
+                    }
+                    waterfallCb(null, trackResp, data, downloadRes[0]);
+                });
+
+            },
+            function (trackResp, data, downloadRes, waterfallCb) {
                 var arr = [];
                 async.each(data.doc, function (pdf, eachCb) {
                     var obj = {};
@@ -710,7 +754,12 @@ var routeHandler = function (db) {
                     if (err) {
                         return next(err);
                     }
-                    waterfallCb(null, arr);
+                    var data = {
+                        docs: arr,
+                        all: downloadRes.all,
+                        download: downloadRes.download
+                    };
+                    waterfallCb(null, data);
 
                 });
             }], function (err, data) {
