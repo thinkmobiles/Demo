@@ -68,112 +68,6 @@ var routeHandler = function (db) {
         });
     };
 
-
-    this.visits = function (req, res, next) {
-        var from = new Date(req.query.from);
-        var date = new Date(req.query.to);
-        var to = new Date(date.setHours(date.getHours() + 24));
-
-        async.waterfall([
-                function (waterfallCb) {
-                    var userId = mongoose.Types.ObjectId(req.session.uId);
-                    ContentModel.findOne({ownerId: userId}, function (err, doc) {
-                        if (err) {
-                            return waterfallCb(err);
-                        } else if (!doc) {
-                            var error = new Error();
-                            error.status = 404;
-                            error.message = 'No Data';
-                            return waterfallCb(error);
-                        }
-                        waterfallCb(null, doc._id)
-                    });
-                },
-                function (contentId, waterfallCb) {
-
-                    TrackModel.aggregate([
-                        {
-
-                            $match: {
-                                contentId: contentId,
-                                updatedAt: {
-                                    $gte: from, $lte: to
-                                }
-                            }
-                        },
-                        {
-                            $project: {
-                                date: {
-                                    $add: [{$dayOfYear: '$updatedAt'}, {$multiply: [1000, {$year: '$updatedAt'}]}]
-                                },
-                                isNewViewer: 1
-                            }
-                        }, {
-                            $group: {
-                                _id: {
-                                    date: '$date',
-                                    isNewViewer: '$isNewViewer'
-                                }, count: {$sum: 1}
-                            }
-                        },
-                        {
-                            $project: {
-                                _id: 0,
-                                count: 1,
-                                date: '$_id.date',
-                                new: {$cond: [{$eq: ['$_id.isNewViewer', true]}, '$count', 0]},
-                                old: {$cond: [{$eq: ['$_id.isNewViewer', false]}, '$count', 0]}
-                            }
-                        }, {
-                            $group: {
-                                _id: '$date',
-                                total: {$sum: '$count'},
-                                old: {$sum: '$old'},
-                                new: {$sum: '$new'}
-                            }
-                        }, {
-                            $project: {
-                                date: '$_id',
-                                total: 1,
-                                old: 1,
-                                new: 1,
-                                _id: 0
-                            }
-                        }], function (err, response) {
-                        if (err) {
-                            return waterfallCb(err);
-                        }
-                        waterfallCb(null, response);
-                    });
-                },
-
-                function (data, waterfallCb) {
-                    var dataObj = _.indexBy(data, 'date');
-                    var analytics = [];
-                    while (from <= to) {
-                        var numberDate = moment(from).dayOfYear() + (1000 * moment(from).year());
-                        var obj = {
-                            date: from,
-                            old: dataObj[numberDate] ? dataObj[numberDate].old : 0,
-                            new: dataObj[numberDate] ? dataObj[numberDate].new : 0,
-                            total: dataObj[numberDate] ? dataObj[numberDate].total : 0
-                        };
-                        analytics.push(obj);
-                        from = moment(from).add(1, 'days');
-                    }
-                    waterfallCb(null, analytics);
-                }],
-            function (err, docs) {
-                if (err) {
-                    return next(err);
-                }
-                res.status(200).send(docs);
-            }
-        )
-        ;
-    };
-
-
     this.allDomain = function (req, res, next) {
         async.waterfall([
             function (waterfallCb) {
@@ -346,6 +240,20 @@ var routeHandler = function (db) {
                 return next(err);
             }
             res.status(200).send(doc);
+        });
+    };
+
+    this.visits = function (req, res, next) {
+        var from = new Date(req.query.from);
+        var date = new Date(req.query.to);
+        var to = new Date(date.setHours(date.getHours() + 24));
+        var userId =req.session.uId;
+
+        analytic.visits(userId, from, to, function (err, data) {
+            if (err) {
+                return next(err);
+            }
+            res.status(200).send(data);
         });
     };
 
