@@ -1,4 +1,3 @@
-
 var async = require('async');
 var mongoose = require('mongoose');
 var _ = require('../public/js/libs/underscore/underscore-min');
@@ -71,19 +70,19 @@ var routeHandler = function (db) {
 
         async.waterfall([
                 function (waterfallCb) {
-                var userId = mongoose.Types.ObjectId(req.session.uId);
-                ContentModel.findOne({ownerId: userId}, function (err, doc) {
-                    if (err) {
-                        return waterfallCb(err);
-                    } else if (!doc) {
-                        var error = new Error();
-                        error.status = 404;
-                        error.message = 'No Data';
-                        return waterfallCb(error);
-                    }
-                    waterfallCb(null, doc._id)
-                });
-            },
+                    var userId = mongoose.Types.ObjectId(req.session.uId);
+                    ContentModel.findOne({ownerId: userId}, function (err, doc) {
+                        if (err) {
+                            return waterfallCb(err);
+                        } else if (!doc) {
+                            var error = new Error();
+                            error.status = 404;
+                            error.message = 'No Data';
+                            return waterfallCb(error);
+                        }
+                        waterfallCb(null, doc._id)
+                    });
+                },
                 function (contentId, waterfallCb) {
 
                     TrackModel.aggregate([
@@ -372,45 +371,94 @@ var routeHandler = function (db) {
                 },
 
                 function (data, waterfallCb) {
-                    TrackModel.aggregate([
-                        {
-                            $match: {
-                                'contentId': data.id,
-                                'questTime': {$gte: from, $lte: to}
+                    TrackModel.aggregate([{
+                        $match: {
+                            'contentId': data.id,
+                            'questTime': {$gte: from, $lte: to}
 
-                            }
-                        }, {
-                            $project: {
-                                firstName: 1,
-                                lastName: 1,
-                                videos: 1,
-                                _id: 0
-                            }
-                        }, {
-                            $unwind: '$videos'
-                        }, {
-                            $group: {
-                                _id: '$videos.video',
-                                count: {
-                                    $sum: 1
-                                }
-                            }
-                        }, {
-                            $project: {
-                                name: '$_id',
-                                _id: 0,
-                                count: 1
-                            }
                         }
-                    ], function (err, videoRes) {
+                    }, {
+                        $project: {
+                            firstName: 1,
+                            lastName: 1,
+                            videos: 1,
+                            _id: 0
+                        }
+                    }, {
+                        $unwind: '$videos'
+                    }, {
+                        $project: {
+                            watchedEnd: {
+                                $cond: [{$eq: ['$videos.end', true]}, {$add: [1]}, {$add: [0]}]
+                            },
+                            firstName: 1,
+                            lastName: 1,
+                            videos: 1
+                        }
+                    }, {
+                        $group: {
+                            _id: '$videos.video',
+                            count: {$sum: 1},
+                            watchedEnd: {$sum: '$watchedEnd'}
+                        }
+                    }, {
+                        $project: {
+                            name: '$_id',
+                            count: 1,
+                            watchedEnd: 1,
+                            _id: 0
+                        }
+                    }], function (err, videoRes) {
                         if (err) {
                             return waterfallCb(err);
                         }
                         waterfallCb(null, videoRes, data);
                     });
                 },
-
                 function (videoRes, data, waterfallCb) {
+                    TrackModel.aggregate([{
+                        $match: {
+                            'contentId': data.id,
+                            'questTime': {$gte: from, $lte: to}
+
+                        }
+                    }, {
+                        $project: {
+                            videos: 1,
+                            _id: 1
+                        }
+                    }, {
+                        $unwind: '$videos'
+                    }, {
+                        $group: {
+                            _id: '$_id',
+                            count: {$sum: 1}
+                        }
+                    }, {
+                        $project: {
+                            survey: {$cond: [{$gt: ['$count', 1]}, {$add: [1]}, {$add: [0]}]}
+                        }
+                    },
+                        {
+                            $group: {
+                                _id: null,
+                                all: {$sum: 1},
+                                survey: {$sum: '$survey'}
+                            }
+                        }, {
+                            $project: {
+                                _id: 0,
+                                all: 1,
+                                survey: 1
+                            }
+                        }], function (err, surveyRes) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        waterfallCb(null, videoRes, data, surveyRes[0]);
+                    });
+                },
+                function (videoRes, data, surveyRes, waterfallCb) {
                     var arr = [];
                     if (!data) {
                         var error = new Error();
@@ -423,11 +471,14 @@ var routeHandler = function (db) {
                     var mainVideo = {
                         name: data.mainVideo
                     };
+                    var watchedEnd;
                     var fd = _.findWhere(videoRes, {name: data.mainVideo});
                     if (fd) {
                         mainVideo.count = fd.count;
+                        watchedEnd = fd.watchedEnd;
                     } else {
                         mainVideo.count = 0;
+                        watchedEnd = 0;
                     }
 
                     //============Survey Video Info===========
@@ -448,7 +499,10 @@ var routeHandler = function (db) {
                         }
                         var info = {
                             survey: arr,
-                            mainVideo: mainVideo
+                            mainVideo: mainVideo,
+                            watchedEnd: watchedEnd,
+                            watchedSurvey: surveyRes.survey,
+                            all: surveyRes.all
                         };
                         waterfallCb(null, info);
 
@@ -556,8 +610,8 @@ var routeHandler = function (db) {
         var to = new Date(date.setHours(date.getHours() + 24));
 
         async.waterfall([
-           function (waterfallCb) {
-               var userId = mongoose.Types.ObjectId(req.session.uId);
+            function (waterfallCb) {
+                var userId = mongoose.Types.ObjectId(req.session.uId);
                 ContentModel.aggregate([
                     {
                         $match: {
@@ -640,6 +694,50 @@ var routeHandler = function (db) {
             },
 
             function (trackResp, data, waterfallCb) {
+                TrackModel.aggregate([{
+                    $match: {
+                        'contentId': data._id,
+                        'questTime': {$gte: from, $lte: to}
+
+                    }
+                }, {
+                    $project: {
+                        documents: 1,
+                        _id: 1
+                    }
+                }, {
+                    $unwind: '$documents'
+                }, {
+                    $group: {
+                        _id: '$_id',
+                        count: {$sum: 1}
+                    }
+                }, {
+                    $project: {
+                        download: {$cond: [{$gt: ['$count', 1]}, {$add: [1]}, {$add: [0]}]}
+                    }
+                },
+                    {
+                        $group: {
+                            _id: null,
+                            all: {$sum: 1},
+                            download: {$sum: '$download'}
+                        }
+                    }, {
+                        $project: {
+                            _id: 0,
+                            all: 1,
+                            download: 1
+                        }
+                    }], function (err, downloadRes) {
+                    if (err) {
+                        return waterfallCb(err);
+                    }
+                    waterfallCb(null, trackResp, data, downloadRes[0]);
+                });
+
+            },
+            function (trackResp, data, downloadRes, waterfallCb) {
                 var arr = [];
                 async.each(data.doc, function (pdf, eachCb) {
                     var obj = {};
@@ -656,7 +754,12 @@ var routeHandler = function (db) {
                     if (err) {
                         return next(err);
                     }
-                    waterfallCb(null, arr);
+                    var data = {
+                        docs: arr,
+                        all: downloadRes.all,
+                        download: downloadRes.download
+                    };
+                    waterfallCb(null, data);
 
                 });
             }], function (err, data) {
