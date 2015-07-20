@@ -292,7 +292,7 @@ var routeHandler = function (db) {
             };
 
             var saveObj = new ContactMeModel({
-                companyId: content.ownerId,
+                contentId: content.ownerId,
                 name: body.name || 'NoName',
                 email: body.email || '-',
                 message: body.message || 'NoDescription',
