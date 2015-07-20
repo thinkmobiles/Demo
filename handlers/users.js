@@ -288,14 +288,14 @@ var routeHandler = function (db) {
                 companyEmail: content.email,
                 name: body.name || 'NoName',
                 email: body.email || '-',
-                message: body.description || 'NoDescription'
+                message: body.message || 'NoDescription'
             };
 
             var saveObj = new ContactMeModel({
                 companyId: content.ownerId,
                 name: body.name || 'NoName',
                 email: body.email || '-',
-                message: body.description || 'NoDescription',
+                message: body.message || 'NoDescription',
                 sentAt: Date.now()
             });
             saveObj.save(function (err, doc) {

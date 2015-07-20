@@ -17,7 +17,7 @@ define([
 
         initialize: function (options) {
             this.videoModal = null;
-            this.content = options.content;
+            this.content = options;
             this.render();
         },
 
@@ -78,7 +78,7 @@ define([
                     organization: this.$el.find("#organization").val(),
                     title: this.$el.find("#title").val(),
                     comments: this.$el.find("#comments").val(),
-                    ownerId: self.content.toJSON().content.ownerId
+                    ownerId: self.content.videoId
                 },
                 {
                     wait: true,
@@ -88,45 +88,28 @@ define([
                             self.videoModal.undelegateEvents();
                         }
 
-                        var url = window.location.hash;
+                        //var url = window.location.hash;
                         var id = response.id;
+                        Backbone.history.navigate("//chooseViewer/"+self.content.videoId+"/"+id.toString(), {trigger: false});
+                        //var navUrl = url.substring(0, url.length - 24) + id.toString();
+                        //var navUrl = url.substring(0, url.length - 24) + id.toString();
+                        //Backbone.history.navigate(navUrl, {trigger: true, replace: true});
 
-                        var navUrl = url.substring(0, url.length - 24) + id.toString();
-                        Backbone.history.navigate(navUrl, {trigger: false, replace: true});
-                        // self.videoModal =new VideoModalView({
-                        //   content:self.content
-                        // });
 
                     },
                     error: function (err) {
                         console.log(JSON.stringify(err));
                     }
                 });
-            /*$.ajax({
-             type: "POST",
-             url: "/trackUser",
-             data: JSON.stringify(videoData),
-             contentType: "application/json",
-             success: function (msg) {
-             if (msg) {
-             console.log('Successfully send')
-             } else {
-             console.log("Cant track the video");
-             }
-             },
-             error: function (model, xhr) {
-             console.log(xhr);
-             console.log(model);
 
-             }
-             });*/
         },
 
         closeDialog: function (e) {
             e.preventDefault();
-            $(".register-dialog").remove();
-            $(".watch-dialog").show();
-            $(".watchDemo").show();
+            //$(".register-dialog").remove();
+            //$(".watch-dialog").show();
+            //$(".watchDemo").show();
+            Backbone.history.navigate("//chooseViewer/"+this.content.videoId+"/"+this.content.userId, {trigger: false});
         },
 
 

@@ -16,11 +16,13 @@ define([
             "upload"                    :  "upload",
             "home(/:videoId/:userId)"   :  "home",
 			"chooseViewer(/:videoId/:userId)" :  "chooseViewer",
+			"registerViewer(/:videoId/:userId)" :  "registerViewer",
 			"contactMe(/:videoId/:userId/:page)(/:indexList)" :  "contactMe",
 			"watchVideo(/:videoId/:userId)" :  "watchVideo",
 			"chooseImportant(/:videoId/:userId)" :  "chooseImportant",
 			"relatedVideo(/:videoId/:userId)(/:indexList)" :  "relatedVideo",
             "registration"              :  "registration",
+            //ToDo: analitic )))))))))))))haha)
 			"analitics"              :  "analitics",
             "*any"                      :  "any"
         },

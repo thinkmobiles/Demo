@@ -86,8 +86,8 @@ var JumpleadModule = function (db) {
     };
 
 
-    this.setContact = function (userId, contact, callback) {
-        UserModel.findById(userId, function (err, user) {
+    this.setContact = function (contentId, contact, callback) {
+        UserModel.findOne({contentId:contentId}, function (err, user) {
             if (err) {
                 return callback(err);
             } else if (!user) {
