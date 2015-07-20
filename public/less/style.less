@@ -1667,3 +1667,75 @@ box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.18);
 		}
 	}
 }
+
+.customSelect{
+	.lh(25px);
+	border:1px solid #dbdbdb;
+	border-radius:5px;
+	position:relative;
+	width:200px;
+	text-align:left;
+	cursor:pointer;
+	span.current{
+		padding:0 20px;
+		display:block;
+	}
+	span.arrow{
+		.i("arrow.png");
+		background-position:50% 50%;
+		width: 28px;
+		border-left: 1px solid #DBDBDB;
+		position: absolute;
+		right: 0px;
+		top: 0px;
+		height: 25px;
+	}
+	ul{
+		.mp;
+		position:absolute;
+		list-style:none;
+		background-color:white;
+		border:1px solid #dbdbdb;
+		border-top:none;
+		top:26px;
+		left: 0px;
+		min-width: 198px;
+		display:none;
+		li{
+			padding: 0 20px;
+			cursor:pointer;
+			&:hover{
+				background-color:silver;
+			}
+		}
+	}
+}
+
+#prospectTable{
+	margin-top:30px;
+	table{
+		width:100%;
+		border:1px solid #dbdbdb;
+		border-radius:5px;
+		tr{
+			td, th{
+				text-align:left;
+				border-left:1px solid #dbdbdb;
+				height:36px;
+				&:first-child{
+					border-left:none;
+				}
+				span{
+					padding:0 15px;
+				}
+			}
+			th{
+				background-color:#fbfbfb;
+			}
+			td{
+				border-top:1px solid #dbdbdb;
+				
+			}
+		}
+	}
+}

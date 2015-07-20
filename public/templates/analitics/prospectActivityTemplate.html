@@ -12,17 +12,17 @@
 	<%})%>
   </ul>
   <h3>Videos Watched</h3>
-	<%_.each(videos,function(video,index){%>
+	<%_.each(videos,function(video, index){%>
 	<span>
 	  <%=video.video.split("/").pop()%>   (<%=video.time%>)<%=index==videos.length-1?"":","%>
 	</span>
 	<%})%>
   <h3>Documents Downloaded</h3>
   <ul>
-	<%_.each(documents,function(item){%>
-	<li>
-	  <%=item.split("/").pop()%>
-	</li>
+	<%_.each(documents,function(item, index){%>
+	<span>
+	  <%=item.split("/").pop()%><%=index==documents.length-1?"":","%>
+	</span>
 	<%})%>
   </ul>
 </div>

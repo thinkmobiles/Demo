@@ -24,8 +24,9 @@ define([
 		el:"#wrapper",
         events: {
 			"change #startDate, #endDate":"updateDate",
-			"change #domain":"updateProspect",
-			"click #prospectTable table tr": "showContactInfo"
+			"click #prospectTable table tr": "showContactInfo",
+			"click .customSelect ul li": "updateProspect",
+			"click .customSelect .current": "showList"
 			
         },
 
@@ -103,11 +104,21 @@ define([
 			
 		},
 		updateProspect: function(e){
-			this.contactTrackCollection.update({domain:this.$el.find("#domain").find("option:selected").text()});
+			var current = $(e.target).text();
+			this.$el.find(".customSelect .current").text(current);
+			this.$el.find(".customSelect ul").hide();
+			this.contactTrackCollection.update({domain:current});
+		},
+
+		showList:function(e){
+			e.stopPropagation();
+			this.$el.find(".customSelect ul").show();
 		},
 
 		renderDocumentChart: function(){
-			Custom.drawBarChart(this.documentAnalyticCollection.toJSON(), '#docDownload');
+			var result = this.documentAnalyticCollection.toJSON()[0];
+			console.log(result);
+			Custom.drawBarChart(result.docs, '#docDownload');
 		},
 		
 		renderVisitChart: function(){
@@ -131,11 +142,12 @@ define([
 			var domains = this.domainModel.toJSON();
 			var s = "";
 			for (var i in domains){
-				s+="<option>"+domains[i]+"</option>";
+				s+="<li>"+domains[i]+"</li>";
 			}
 			this.contactTrackCollection = new ContactTrackCollection({domain:domains[0]});
 			this.contactTrackCollection.bind('reset', self.renderContactTable, self);
-			this.$el.find("#domain").html(s);
+			this.$el.find(".customSelect ul").html(s);
+			this.$el.find(".customSelect .current").text(domains[0]);
 		},
 
 		renderContactTable:function(){
@@ -154,62 +166,8 @@ define([
 		
         render: function () {
 			var self = this;
-
-			var contactList = [
-				{
-					name:"Peter Hickey",
-					email:"peter@sdasd.sss",
-					date:new Date(),
-					message:"This is a message for DemoRocket. Blah blah blah"
-				},
-				{
-					name:"Peter Hickey",
-					email:"peter@sdasd.sss",
-					date:new Date(),
-					message:"This is a message for DemoRocket. Blah blah blah"
-				},
-				{
-					name:"Peter Hickey",
-					email:"peter@sdasd.sss",
-					date:new Date(),
-					message:"This is a message for DemoRocket. Blah blah blah"
-				},
-				{
-					name:"Peter Hickey",
-					email:"peter@sdasd.sss",
-					date:new Date(),
-					message:"This is a message for DemoRocket. Blah blah blah"
-				},
-				{
-					name:"Peter Hickey",
-					email:"peter@sdasd.sss",
-					date:new Date(),
-					message:"This is a message for DemoRocket. Blah blah blah"
-				},
-				{
-					name:"Peter Hickey",
-					email:"peter@sdasd.sss",
-					date:new Date(),
-					message:"This is a message for DemoRocket. Blah blah blah"
-				},
-				{
-					name:"Peter Hickey",
-					email:"peter@sdasd.sss",
-					date:new Date(),
-					message:"This is a message for DemoRocket. Blah blah blah"
-				},
-				{
-					name:"Peter Hickey",
-					email:"peter@sdasd.sss",
-					date:new Date(),
-					message:"This is a message for DemoRocket. Blah blah blah"
-				},
-			];
-
-			
+		
             this.$el.html(_.template(AnaliticsTemplate));
-
-
 			$("#startDate").datepicker({
 				onSelect: function(selected) {
 					$("#endDate").datepicker("option","minDate", selected);
