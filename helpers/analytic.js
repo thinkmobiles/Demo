@@ -8,23 +8,198 @@ var async = require('async');
 
 var AnalyticModule = function (db) {
 
-    var prospectSchema = mongoose.Schemas['Prospect'];
-    var ProspectModel = db.model('Prospect', prospectSchema);
-
     var trackSchema = mongoose.Schemas['Track'];
     var TrackModel = db.model('Track', trackSchema);
 
     var contentSchema = mongoose.Schemas['Content'];
     var ContentModel = db.model('Content', contentSchema);
 
-    var userSchema = mongoose.Schemas['User'];
-    var UserModel = db.model('User', userSchema);
-
-    var contactMeSchema = mongoose.Schemas['ContactMe'];
-    var ContactMeModel = db.model('ContactMe', contactMeSchema);
-
-
     var self = this;
+
+    this.video = function (userId, from, to, callback) {
+        var uId = mongoose.Types.ObjectId(userId);
+
+        async.waterfall([
+                function (waterfallCb) {
+                    ContentModel.aggregate([{
+                        $match: {
+                            ownerId: uId
+                        }
+                    }, {
+                        $group: {
+                            _id: {
+                                video: '$survey.videoUri', id: '$_id', mainVideo: '$mainVideoUri'
+                            }
+                        }
+                    }, {
+                        $project: {
+                            videos: '$_id.video',
+                            mainVideo: '$_id.mainVideo',
+                            _id: 0, 'id': '$_id.id'
+
+                        }
+                    }], function (err, data) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        if (!data.length) {
+                            var error = new Error();
+                            error.status = 404;
+                            error.message = 'No Data';
+                            return waterfallCb(error);
+                        }
+
+                        waterfallCb(null, data[0]);
+                    });
+                },
+
+                function (data, waterfallCb) {
+                    TrackModel.aggregate([{
+                        $match: {
+                            'contentId': data.id,
+                            'questTime': {$gte: from, $lte: to}
+
+                        }
+                    }, {
+                        $project: {
+                            firstName: 1,
+                            lastName: 1,
+                            videos: 1,
+                            _id: 0
+                        }
+                    }, {
+                        $unwind: '$videos'
+                    }, {
+                        $project: {
+                            watchedEnd: {
+                                $cond: [{$eq: ['$videos.end', true]}, {$add: [1]}, {$add: [0]}]
+                            },
+                            firstName: 1,
+                            lastName: 1,
+                            videos: 1
+                        }
+                    }, {
+                        $group: {
+                            _id: '$videos.video',
+                            count: {$sum: 1},
+                            watchedEnd: {$sum: '$watchedEnd'}
+                        }
+                    }, {
+                        $project: {
+                            name: '$_id',
+                            count: 1,
+                            watchedEnd: 1,
+                            _id: 0
+                        }
+                    }], function (err, videoRes) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        waterfallCb(null, videoRes, data);
+                    });
+                },
+                function (videoRes, data, waterfallCb) {
+                    TrackModel.aggregate([{
+                        $match: {
+                            'contentId': data.id,
+                            'questTime': {$gte: from, $lte: to}
+
+                        }
+                    }, {
+                        $project: {
+                            videos: 1,
+                            _id: 1
+                        }
+                    }, {
+                        $unwind: '$videos'
+                    }, {
+                        $group: {
+                            _id: '$_id',
+                            count: {$sum: 1}
+                        }
+                    }, {
+                        $project: {
+                            survey: {$cond: [{$gt: ['$count', 1]}, {$add: [1]}, {$add: [0]}]}
+                        }
+                    },
+                        {
+                            $group: {
+                                _id: null,
+                                all: {$sum: 1},
+                                survey: {$sum: '$survey'}
+                            }
+                        }, {
+                            $project: {
+                                _id: 0,
+                                all: 1,
+                                survey: 1
+                            }
+                        }], function (err, surveyRes) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        waterfallCb(null, videoRes, data, surveyRes[0]);
+                    });
+                },
+                function (videoRes, data, surveyRes, waterfallCb) {
+                    var arr = [];
+                    if (!data) {
+                        var error = new Error();
+                        error.status = 404;
+                        error.message = 'No Data';
+                        return waterfallCb(error);
+                    }
+
+                    //============Main Video Info===========
+                    var mainVideo = {
+                        name: data.mainVideo
+                    };
+                    var watchedEnd;
+                    var fd = _.findWhere(videoRes, {name: data.mainVideo});
+                    if (fd) {
+                        mainVideo.count = fd.count;
+                        watchedEnd = fd.watchedEnd;
+                    } else {
+                        mainVideo.count = 0;
+                        watchedEnd = 0;
+                    }
+
+                    //============Survey Video Info===========
+                    async.each(data.videos, function (video, eachCb) {
+                        var obj = {};
+                        obj.name = video;
+                        var findDocument = _.findWhere(videoRes, {name: video});
+                        if (findDocument) {
+                            obj.count = findDocument.count;
+                        } else {
+                            obj.count = 0;
+                        }
+                        arr.push(obj);
+                        eachCb(null);
+                    }, function (err) {
+                        if (err) {
+                            return next(err);
+                        }
+                        var info = {
+                            survey: arr,
+                            mainVideo: mainVideo,
+                            watchedEnd: watchedEnd,
+                            watchedSurvey: surveyRes.survey,
+                            all: surveyRes.all
+                        };
+                        waterfallCb(null, info);
+
+                    });
+                }],
+            function (err, data) {
+                if (err) {
+                    return callback(err);
+                }
+                callback(null, data);
+            }
+        )
+        ;
+    };
 
     this.question = function (userId, from, to, callback) {
         var uId = mongoose.Types.ObjectId(userId);
