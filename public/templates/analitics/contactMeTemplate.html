@@ -5,8 +5,8 @@
 	  <th><span>Date</span></th>
 	  <th><span>Message</span></th>
 	</tr>
-	<%_.each(contactList,function(item){%>
-	<tr>
+	<%_.each(contactList,function(item, index){%>
+	<tr class='<%=!index?"current":""%>'>
 	  <td><span><%=item.name%></span></td>
 	  <td><span><%=item.email%></span></td>
 	  <td><span><%=item.sentAt%></span></td>
@@ -14,3 +14,7 @@
 	</tr>
 	<%})%>
   </table>
+
+  <h2>Message</h2>
+<p class="textMessage"><%=contactList[0].message%></p>
+  

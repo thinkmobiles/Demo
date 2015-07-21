@@ -23,10 +23,11 @@ define([
         className: "mainPage",
 		el:"#wrapper",
         events: {
-			"change #startDate, #endDate":"updateDate",
+			"change #startDate input, #endDate input":"updateDate",
 			"click #prospectTable table tr": "showContactInfo",
 			"click .customSelect ul li": "updateProspect",
-			"click .customSelect .current": "showList"
+			"click .customSelect .current": "showList",
+			"click .contactMe tr": "showMessage"
 			
         },
 
@@ -66,20 +67,20 @@ define([
 
 		updateDate: function(e){
 			this.documentAnalyticCollection.update({
-				from:$("#startDate").val(),
-				to: $("#endDate").val()
+				from:$("#startDate input").val(),
+				to: $("#endDate input").val()
 			});
 			this.questionAnalyticCollection.update({
-				from:$("#startDate").val(),
-				to: $("#endDate").val()
+				from:$("#startDate input").val(),
+				to: $("#endDate input").val()
 			});
 			this.videoAnalyticCollection.update({
-				from:$("#startDate").val(),
-				to: $("#endDate").val()
+				from:$("#startDate input").val(),
+				to: $("#endDate input").val()
 			});
 			this.visitAnalyticCollection.update({
-				from:$("#startDate").val(),
-				to: $("#endDate").val()
+				from:$("#startDate input").val(),
+				to: $("#endDate input").val()
 			});	
 		},
 
@@ -99,7 +100,7 @@ define([
 				if (sec<10){
 					sec = "0"+sec;
 				}
-				video.time = Math.floor(video.time/60)+":"+sec;
+				video.time = Math.floor(video.time/60)+","+sec;
 				return video
 			});
 			this.$el.find("#prospectActivity").html(_.template(ProspectActivityTemplate)(this.prospectActivityModel.toJSON()));
@@ -115,6 +116,15 @@ define([
 		showList:function(e){
 			e.stopPropagation();
 			this.$el.find(".customSelect ul").show();
+		},
+
+		showMessage:function(e){
+			var index = $(e.target).closest("table").find("tr").index($(e.target).closest("tr"));
+			if (index){
+				$(e.target).closest("table").find(".current").removeClass("current");
+				$(e.target).closest("tr").addClass("current");
+				this.$el.find(".textMessage").text(this.contactMeCollection.toJSON()[index-1].message);
+			}
 		},
 
 		renderDocumentChart: function(){
@@ -176,22 +186,22 @@ define([
 			var self = this;
 		
             this.$el.html(_.template(AnaliticsTemplate));
-			$("#startDate").datepicker({
+			$("#startDate input").datepicker({
 				onSelect: function(selected) {
-					$("#endDate").datepicker("option","minDate", selected);
+					$("#endDate input").datepicker("option","minDate", selected);
 					self.updateDate();
 				},
 				maxDate:  new Date()
 			});
-			$("#startDate").datepicker('setDate', moment().subtract(7, 'days')._d);
-			$("#endDate").datepicker({
+			$("#startDate input").datepicker('setDate', moment().subtract(7, 'days')._d);
+			$("#endDate input").datepicker({
 				onSelect: function(selected) {
-					$("#startDate").datepicker("option","maxDate", selected);
+					$("#startDate input").datepicker("option","maxDate", selected);
 					self.updateDate();
 				},
 				minDate:moment().subtract(7, 'days')._d
 			});
-			$("#endDate").datepicker('setDate', new Date());
+			$("#endDate input").datepicker('setDate', new Date());
 		
             return this;
         }
