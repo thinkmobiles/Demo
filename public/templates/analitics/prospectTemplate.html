@@ -1,12 +1,12 @@
-<table>
+<table cellspacing="0" cellpadding="0">
   <tr>
-	<th>Name</th>
-	<th>Email</th>
+	<th><span>Name</span></th>
+	<th><span>Email</span></th>
   </tr>
   <%_.each(prospects,function(prospect){%>
   <tr data-email="<%=prospect.email%>">
-	<td><%=prospect.name%></td>
-	<td><%=prospect.email%></td>
+	<td><span><%=prospect.name%></span></td>
+	<td><span><%=prospect.email%></span></td>
   </tr>
   <%})%>
 </table>
