@@ -1514,15 +1514,15 @@ box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.18);
 		width:92px;
 		height:23px;
 		padding:0 10px;
-		float:left;
 		border-radius:4px;
 		border:1px solid #dbdbdb;
+		display:inline-block;
 		position:relative;
 		>input{
 			outline:none;
 			border:none;
 			width:92px;
-			height:23px;
+			height:21px;
 			
 		}
 		&:after{
@@ -1547,7 +1547,7 @@ box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.18);
 			li{
 				float:left;
 				padding:0 10px;
-				&.invitedPr, &.newPr, &.totalPr{
+				&.invitedPr, &.newPr, &.totalPr, &.very, &.some, &.not{
 					span{
 						display:block;
 						float:left;
@@ -1571,6 +1571,22 @@ box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.18);
 				&.totalPr{
 					span{
 						background-color:#42B9F5;
+					}
+				}
+
+				&.very{
+					span{
+						background-color:#00c982;
+					}
+				}
+				&.some{
+					span{
+						background-color:#44cbff;
+					}
+				}
+				&.not{
+					span{
+						background-color:#f5fcff;
 					}
 				}
 			}
@@ -1768,4 +1784,8 @@ box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.18);
 			}
 		}
 	}
+}
+
+.textMessage{
+	text-align:left;
 }
