@@ -100,7 +100,7 @@ define([
 				if (sec<10){
 					sec = "0"+sec;
 				}
-				video.time = Math.floor(video.time/60)+","+sec;
+				video.time = Math.floor(video.time/60)+":"+sec;
 				return video
 			});
 			this.$el.find("#prospectActivity").html(_.template(ProspectActivityTemplate)(this.prospectActivityModel.toJSON()));
@@ -129,7 +129,7 @@ define([
 
 		renderDocumentChart: function(){
 			var result = this.documentAnalyticCollection.toJSON()[0];
-			console.log(result);
+			this.$el.find(".info .countDownload").text(result.download);
 			Custom.drawBarChart(result.docs, '#docDownload');
 		},
 		
@@ -138,16 +138,22 @@ define([
 		},
 		
 		renderVideoChart: function(){
-			var mas = this.videoAnalyticCollection.toJSON()[0].survey;
-			this.videoAnalyticCollection.toJSON()[0].mainVideo.name="Main Video";
-			mas.unshift(this.videoAnalyticCollection.toJSON()[0].mainVideo);
+			var data = this.videoAnalyticCollection.toJSON()[0];
+			var mas = data.survey;
+			data.mainVideo.name="Main Video";
+			mas.unshift(data.mainVideo);
 			Custom.drawBarChart(mas, '#videoView');
+			this.$el.find(".info .watchedEnd").text(data.watchedEnd);
+			this.$el.find(".info .watchedSurvey").text(data.watchedSurvey);
+			this.$el.find(".info .allVideo").text(data.all);
+			
 		},
 
 		renderContactMe:function(){
 			var contactMe = this.contactMeCollection.toJSON();
 			contactMe = _.map(contactMe,function(item){
 				item.sentAt = moment(item.sentAt).format("DD MMMM YYYY");
+				item.fullMessage = item.message;
 				item.message = item.message.length>25?(item.message.substring(0,24)+"..."):item.message;
 				return item;
 			});

@@ -620,34 +620,10 @@ var AnalyticModule = function (db) {
                         'questTime': {$gte: from, $lte: to}
 
                     }
-                }, {
-                    $project: {
-                        documents: 1,
-                        _id: 1
-                    }
-                }, {
-                    $unwind: '$documents'
-                }, {
-                    $group: {
-                        _id: '$_id',
-                        count: {$sum: 1}
-                    }
-                }, {
-                    $project: {
-                        download: {$cond: [{$gt: ['$count', 1]}, {$add: [1]}, {$add: [0]}]}
-                    }
-                },
-                    {
-                        $group: {
-                            _id: null,
-                            download: {$sum: '$download'}
-                        }
-                    }, {
-                        $project: {
-                            _id: 0,
-                            download: 1
-                        }
-                    }], function (err, downloadRes) {
+                }, {$project: {documents: 1,_id: 1}}, {
+                    $unwind: '$documents'}, {$group:{_id: null, doc: {$addToSet: '$_id'}, count:{$sum:1}}},{
+                    $project:{_id: 0,download:{$size: '$doc'}}
+                }], function (err, downloadRes) {
                     if (err) {
                         return waterfallCb(err);
                     }

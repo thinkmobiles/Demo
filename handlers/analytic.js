@@ -124,6 +124,12 @@ var routeHandler = function (db) {
     };
 
     this.contact = function (req, res, next) {
+        if (!req.query.email) {
+            var error = new Error();
+            error.status = 400;
+            error.message = 'Bad Request';
+            return next(error);
+        }
         var email = req.query.email;
         async.waterfall([
             function (waterfallCb) {
@@ -206,6 +212,12 @@ var routeHandler = function (db) {
     };
 
     this.contactMe = function (req, res, next) {
+        if (!req.query.from || !req.query.to) {
+            var error = new Error();
+            error.status = 400;
+            error.message = 'Bad Request';
+            return next(error);
+        }
         var from = new Date(req.query.from);
         var date = new Date(req.query.to);
         var to = new Date(date.setHours(date.getHours() + 24));
@@ -248,8 +260,8 @@ var routeHandler = function (db) {
         if (!req.query.from || !req.query.to) {
             var error = new Error();
             error.status = 400;
-            error.message = 'Bad Request'
-            return
+            error.message = 'Bad Request';
+            return next(error);
         }
         var from = new Date(req.query.from);
         var date = new Date(req.query.to);
@@ -269,8 +281,8 @@ var routeHandler = function (db) {
         if (!req.query.from || !req.query.to) {
             var error = new Error();
             error.status = 400;
-            error.message = 'Bad Request'
-            return
+            error.message = 'Bad Request';
+            return next(error);
         }
         var from = new Date(req.query.from);
         var date = new Date(req.query.to);
@@ -289,8 +301,8 @@ var routeHandler = function (db) {
         if (!req.query.from || !req.query.to) {
             var error = new Error();
             error.status = 400;
-            error.message = 'Bad Request'
-            return
+            error.message = 'Bad Request';
+            return next(error);
         }
         var from = new Date(req.query.from);
         var date = new Date(req.query.to);
@@ -309,7 +321,7 @@ var routeHandler = function (db) {
             var error = new Error();
             error.status = 400;
             error.message = 'Bad Request';
-            return
+            return next(error);
         }
         var reqFrom = new Date(req.query.from);
         var reqTo = new Date(req.query.to);
@@ -329,7 +341,7 @@ var routeHandler = function (db) {
             var error = new Error();
             error.status = 400;
             error.message = 'Bad Request';
-            return
+            return next(error);
         }
         var from = new Date(req.query.from);
         var date = new Date(req.query.to);
