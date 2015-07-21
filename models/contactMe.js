@@ -4,7 +4,7 @@ module.exports = (function () {
       var mongoose = require('mongoose');
     var ObjectId = mongoose.Schema.Types.ObjectId;
     var contactMeSchema = mongoose.Schema({
-        companyId: {type:ObjectId},
+        contentId: {type:ObjectId},
         email: {type: String},
         phone: {type: String},
         name: {type: String},

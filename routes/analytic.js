@@ -13,6 +13,9 @@ module.exports = function (db) {
     router.get('/document', session.isAuthenticated, handler.document);
     router.get('/video', session.isAuthenticated, handler.video);
     router.get('/visits', session.isAuthenticated, handler.visits);
+
+    router.get('/totalVisits', session.isAuthenticated, handler.totalVisits);
+
     router.get('/allDomain', session.isAuthenticated, handler.allDomain);
     router.get('/contactsByDomain', session.isAuthenticated, handler.contactsByDomain);
     router.get('/contactMe', session.isAuthenticated, handler.contactMe);

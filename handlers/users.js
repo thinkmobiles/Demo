@@ -288,14 +288,14 @@ var routeHandler = function (db) {
                 companyEmail: content.email,
                 name: body.name || 'NoName',
                 email: body.email || '-',
-                message: body.description || 'NoDescription'
+                message: body.message || 'NoDescription'
             };
 
             var saveObj = new ContactMeModel({
-                companyId: content.ownerId,
+                contentId: contentId,
                 name: body.name || 'NoName',
                 email: body.email || '-',
-                message: body.description || 'NoDescription',
+                message: body.message || 'NoMessage',
                 sentAt: Date.now()
             });
             saveObj.save(function (err, doc) {
@@ -839,6 +839,8 @@ var routeHandler = function (db) {
                         if (err) {
                             return waterfallCb(err);
                         }
+                        var url = process.env.HOME_PAGE + result._id + '/{{ctid}}';
+                        res.status(201).send({url: url});
                         waterfallCb(null, result);
                     });
                 },
@@ -915,9 +917,11 @@ var routeHandler = function (db) {
 
             function (err, url) {
                 if (err) {
-                    return next(err);
+                    //return next(err);
+                    return console.error(err);
                 }
-                res.status(201).send({url: url});
+                //res.status(201).send({url: url});
+                console.log('success upload. url '+ url);
             });
     };
 };

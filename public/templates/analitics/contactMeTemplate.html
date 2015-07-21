@@ -1,16 +1,20 @@
   <table class="contactMe" cellspacing="0" cellpadding="0">
 	<tr>
-	  <th>Name</th>
-	  <th>Email</th>
-	  <th>Date</th>
-	  <th>Message</th>
+	  <th><span>Name</span></th>
+	  <th><span>Email</span></th>
+	  <th><span>Date</span></th>
+	  <th><span>Message</span></th>
 	</tr>
-	<%_.each(contactList,function(item){%>
-	<tr>
-	  <td><%=item.name%></td>
-	  <td><%=item.email%></td>
-	  <td><%=item.sentAt%></td>
-	  <td><%=item.message%></td>
+	<%_.each(contactList,function(item, index){%>
+	<tr class='<%=!index?"current":""%>'>
+	  <td><span><%=item.name%></span></td>
+	  <td><span><%=item.email%></span></td>
+	  <td><span><%=item.sentAt%></span></td>
+	  <td><span><%=item.message%></span></td>
 	</tr>
 	<%})%>
   </table>
+
+  <h2>Message</h2>
+<p class="textMessage"><%=contactList[0].message%></p>
+  

@@ -56,7 +56,7 @@ define([
 				contentId : this.videoId,
 				name : this.$el.find(".name").val(),
 				email : this.$el.find(".email").val(),
-				description : this.$el.find(".desc").val()
+				message : this.$el.find(".desc").val()
             },{
 				wait: true,
 				success: function (model, response) {
