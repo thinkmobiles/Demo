@@ -177,10 +177,10 @@ var routeHandler = function (db) {
                             questions: '$questions'
                         },
                         videos: {
-                            $push: '$videos'
+                            $addToSet: '$videos'
                         },
                         documents: {
-                            $push: '$document'
+                            $addToSet: '$document'
                         }
                     }
                 }, {
