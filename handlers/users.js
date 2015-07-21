@@ -292,10 +292,10 @@ var routeHandler = function (db) {
             };
 
             var saveObj = new ContactMeModel({
-                contentId: content.ownerId,
+                contentId: contentId,
                 name: body.name || 'NoName',
                 email: body.email || '-',
-                message: body.message || 'NoDescription',
+                message: body.message || 'NoMessage',
                 sentAt: Date.now()
             });
             saveObj.save(function (err, doc) {

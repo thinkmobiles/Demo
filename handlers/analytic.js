@@ -229,7 +229,7 @@ var routeHandler = function (db) {
                 ContactMeModel.find({
                     contentId: contentId,
                     sentAt: {$gte: from, $lte: to}
-                }, '-_id -__v -companyId', function (err, doc) {
+                }, '-_id -__v -contentId', function (err, doc) {
                     if (err) {
                         return waterfallCb(err);
                     }
