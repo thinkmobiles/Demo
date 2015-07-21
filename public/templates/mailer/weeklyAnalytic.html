@@ -42,8 +42,8 @@
             <% });%>
         </table><br/>
     <b>
-    <%=videos.watchedEnd %> of  <%=documents.all %> watched the entire Main Video
-    <%=videos.watchedSurvey %> of  <%=documents.all %> watched the additional videos
+    <%=videos.watchedEnd %> of  <%=visits.total %> watched the entire Main Video
+    <%=videos.watchedSurvey %> of  <%=visits.total %> watched the additional videos
 
     </b>
     <br/>
@@ -68,13 +68,14 @@
                     <%=item.name %>
                 </td>
                 <td>
-                    <%=Math.floor(item.not/videos.all*100)%>
+                    <%var sum =item.not+item.some+item.very%>
+                    <%=Math.floor(item.not/sum*100)%>
                 </td>
                 <td>
-                    <%= Math.floor(item.some/videos.all*100)%>
+                    <%= Math.floor(item.some/sum*100)%>
                 </td>
                 <td>
-                    <%= Math.floor(item.very/videos.all*100)%>
+                    <%=100-(Math.floor(item.not/sum*100)+ Math.floor(item.some/sum*100))%>
                 </td>
             </tr>
             <% });%>
@@ -101,7 +102,7 @@
         </tr>
         <% });%>
     </table><br/>
-    <%=documents.download %> of  <%=documents.all %> prospects downloaded documents
+    <%=documents.download %> of  <%=visits.total %> prospects downloaded documents
 
     <br/>
     <hr/>
