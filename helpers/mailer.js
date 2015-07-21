@@ -64,6 +64,43 @@ var MailerModule = function () {
             }
         });
     };
+
+    this.sendWeeklyAnalytic = function (options, callback) {
+        fs.readFile('public/templates/mailer/weeklyAnalytic.html', 'utf8', function (err, template) {
+            var templateOptions;
+            var mailOptions;
+
+            if (err) {
+                if (process.env.NODE_ENV !== 'production') {
+                    console.error(err);
+                    return callback(err);
+                }
+            } else {
+
+                templateOptions = {
+                    companyName: options.companyName,
+                    companyLogo: options.companyLogo,
+                    name: options.name,
+                    email: options.email,
+                    videos: options.videos,
+                    visits: options.visits,
+                    documents: options.documents,
+                    questions: options.questions
+                };
+
+                mailOptions = {
+                    from: FROM,
+                    to: options.companyEmail,
+                    subject: 'Info',
+                    generateTextFromHTML: true,
+                    html: _.template(template)(templateOptions)
+                };
+
+                deliver(mailOptions, callback);
+            }
+        });
+    };
+
     this.sendTrackInfo = function (options, callback) {
         fs.readFile('public/templates/mailer/trackInfo.html', 'utf8', function (err, template) {
             var templateOptions;
