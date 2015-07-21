@@ -87,6 +87,8 @@ define([
 		showContactInfo: function(e){
 			var self = this;
 			var email = $(e.target).closest("tr").data("email");
+			$(e.target).closest("table").find("tr.current").removeClass("current");
+			$(e.target).closest("tr").addClass("current");
 			this.prospectActivityModel.update({email:email});
 		},
 
@@ -133,7 +135,13 @@ define([
 		},
 
 		renderContactMe:function(){
-			this.$el.find("#contactMe").html(_.template(ContactMeTemplate)({contactList:this.contactMeCollection.toJSON()}));
+			var contactMe = this.contactMeCollection.toJSON();
+			contactMe = _.map(contactMe,function(item){
+				item.sentAt = moment(item.sentAt).format("DD MMMM YYYY");
+				item.message = item.message.length>25?(item.message.substring(0,24)+"..."):item.message;
+				return item;
+			});
+			this.$el.find("#contactMe").html(_.template(ContactMeTemplate)({contactList:contactMe}));
 		},
 
 		renderDomainList: function(){
@@ -154,7 +162,7 @@ define([
 			var self = this;
 			var prospects = this.contactTrackCollection.toJSON();
 			this.$el.find("#prospectTable").html(_.template(ProspectTemplate)({prospects:prospects}));
-
+			this.$el.find("#prospectTable tr").eq(1).addClass("current");
 			this.prospectActivityModel = new ProspectActivityModel({email:prospects[0].email});
 			this.prospectActivityModel.bind('change', self.showProspectActivity, self);
 		},

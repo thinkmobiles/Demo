@@ -1637,9 +1637,7 @@ box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.18);
 	width:100%;
 	tr{
 		cursor:pointer;
-		&:hover{
-			background-color:blue;
-		}
+	
 	}
 }
 
@@ -1711,7 +1709,7 @@ box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.18);
 	}
 }
 
-#prospectTable{
+#prospectTable, #contactMe{
 	margin-top:30px;
 	table{
 		width:100%;
@@ -1734,7 +1732,13 @@ box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.18);
 			}
 			td{
 				border-top:1px solid #dbdbdb;
+				cursor:pointer;
 				
+			}
+			&.current{
+				td{
+					background-color:#f5fbfd;
+				}
 			}
 		}
 	}
