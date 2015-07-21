@@ -1,0 +1,111 @@
+<div class="info">
+    <span>
+        <h1>Weekly analytic information for <%=companyName %></h1>
+    </span>
+    <span>
+        <img src="<%= process.env.WEB_HOST +'/'+ companyLogo%>" alt="logo" height="100" width="150">
+    </span>
+        <h2>New activity on your account </h2>
+        <p>
+            You have  <%=visits.total %> prospects visit your site :
+            <li><%=visits.new %> new prospects</li>
+            <li><%=visits.old %> old prospects</li>
+        </p>
+
+        <h3>Videos activity</h3>
+        <table cellspacing="0" border="1" cellpadding="0">
+            <tr>
+            <th>
+                <b>Name of video</b>
+            </th>
+            <th>
+                <b>Views</b>
+            </th>
+            </tr>
+            <tr>
+                <td>
+                    <a href="<%= process.env.WEB_HOST +'/'+ videos.mainVideo.name%>"> Main video</a>
+                </td>
+                <td>
+                    <%=videos.mainVideo.count %>
+                </td>
+            </tr>
+            <% _.each(videos.survey, function(item){%>
+            <tr>
+                <td>
+                    <a href="<%= process.env.WEB_HOST +'/'+ item.name%>"><%=item.name.split('/').pop() %></a>
+                </td>
+                <td>
+                    <%=item.count %>
+                </td>
+            </tr>
+            <% });%>
+        </table><br/>
+    <b>
+    <%=videos.watchedEnd %> of  <%=documents.all %> watched the entire Main Video
+    <%=videos.watchedSurvey %> of  <%=documents.all %> watched the additional videos
+
+    </b>
+    <br/>
+        <h3>Question activity:</h3>
+        <table cellspacing="0" border="1" cellpadding="0">
+            <tr>
+                <th rowspan="2">
+                    <b>Question</b>
+                </th>
+                <th colspan="3">
+                    <b>Rate</b>
+                </th>
+            </tr>
+            <tr>
+                <th>Not interest</th>
+                <th>Somewhat interest</th>
+                <th>Very interest</th>
+            </tr>
+            <% _.each(questions, function(item){%>
+            <tr>
+                <td>
+                    <%=item.name %>
+                </td>
+                <td>
+                    <%=Math.floor(item.not/videos.all*100)%>
+                </td>
+                <td>
+                    <%= Math.floor(item.some/videos.all*100)%>
+                </td>
+                <td>
+                    <%= Math.floor(item.very/videos.all*100)%>
+                </td>
+            </tr>
+            <% });%>
+        </table><br/>
+
+    <h3>Download document: </h3>
+    <table cellspacing="0" border="1" cellpadding="0">
+        <tr>
+            <th>
+                <b>Name of document</b>
+            </th>
+            <th>
+                <b>Downloads</b>
+            </th>
+        </tr>
+        <% _.each(documents.docs, function(item){%>
+        <tr>
+            <td>
+                <a href="<%= process.env.WEB_HOST +'/'+ item.name%>"><%=item.name.split('/').pop() %></a>
+            </td>
+            <td>
+                <%=item.count %>
+            </td>
+        </tr>
+        <% });%>
+    </table><br/>
+    <%=documents.download %> of  <%=documents.all %> prospects downloaded documents
+
+    <br/>
+    <hr/>
+         <footer>
+             Copyright DemoRocket 2015
+         </footer>
+</div>

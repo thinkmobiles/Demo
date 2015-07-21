@@ -1,7 +1,6 @@
 var async = require('async');
 var mongoose = require('mongoose');
 var _ = require('../public/js/libs/underscore/underscore-min');
-var moment = require('moment');
 var Analytic = require('../helpers/analytic');
 
 var routeHandler = function (db) {
@@ -244,6 +243,12 @@ var routeHandler = function (db) {
     };
 
     this.visits = function (req, res, next) {
+        if(!req.query.from || !req.query.to){
+            var error = new Error();
+            error.status = 400;
+            error.message = 'Bad Request'
+            return
+        }
         var from = new Date(req.query.from);
         var date = new Date(req.query.to);
         var to = new Date(date.setHours(date.getHours() + 24));
@@ -257,7 +262,34 @@ var routeHandler = function (db) {
         });
     };
 
+
+    this.totalVisits = function (req, res, next) {
+        if(!req.query.from || !req.query.to){
+            var error = new Error();
+            error.status = 400;
+            error.message = 'Bad Request'
+            return
+        }
+        var from = new Date(req.query.from);
+        var date = new Date(req.query.to);
+        var to = new Date(date.setHours(date.getHours() + 24));
+        var userId =req.session.uId;
+
+        analytic.totalVisits(userId, from, to, function (err, data) {
+            if (err) {
+                return next(err);
+            }
+            res.status(200).send(data);
+        });
+    };
+
     this.video = function (req, res, next) {
+        if(!req.query.from || !req.query.to){
+            var error = new Error();
+            error.status = 400;
+            error.message = 'Bad Request'
+            return
+        }
         var from = new Date(req.query.from);
         var date = new Date(req.query.to);
         var to = new Date(date.setHours(date.getHours() + 24));
@@ -271,6 +303,12 @@ var routeHandler = function (db) {
     };
 
     this.question = function (req, res, next) {
+        if(!req.query.from || !req.query.to){
+            var error = new Error();
+            error.status = 400;
+            error.message = 'Bad Request';
+            return
+        }
         var reqFrom = new Date(req.query.from);
         var reqTo = new Date(req.query.to);
         var from = new Date(reqFrom.setHours(0));
@@ -285,11 +323,17 @@ var routeHandler = function (db) {
     };
 
     this.document = function (req, res, next) {
+        if(!req.query.from || !req.query.to){
+            var error = new Error();
+            error.status = 400;
+            error.message = 'Bad Request';
+            return
+        }
         var from = new Date(req.query.from);
         var date = new Date(req.query.to);
         var to = new Date(date.setHours(date.getHours() + 24));
         var userId = req.session.uId;
-        analytic.documents(userId, from, to, function(err, data){
+        analytic.document(userId, from, to, function(err, data){
             if(err){
                 return next(err);
             }

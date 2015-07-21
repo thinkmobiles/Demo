@@ -26,7 +26,7 @@
             <% _.each(videos, function(item){%>
             <tr>
                 <td>
-                    <a href="<%= process.env.HOST +'/'+ item.video%>"><%=item.video.split('/').pop() %></a>
+                    <a href="<%= process.env.WEB_HOST +'/'+ item.video%>"><%=item.video.split('/').pop() %></a>
                 </td>
                 <td>
                     <%=item.end?'Yes':'No' %>
@@ -69,7 +69,7 @@
          <h3>Download document: </h3>
         <ul>
             <% _.each(documents, function(item){%>
-            <li> <a href="<%= process.env.HOST +'/'+ item.document%>"><%=item.document.split('/').pop() %></a></li>
+            <li> <a href="<%= process.env.WEB_HOST +'/'+ item.document%>"><%=item.document.split('/').pop() %></a></li>
             <% });%>
         </ul>
     <br/>

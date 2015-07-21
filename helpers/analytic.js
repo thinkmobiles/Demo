@@ -16,7 +16,7 @@ var AnalyticModule = function (db) {
 
     var self = this;
 
-    this.visits = function (userId, from, to, callback) {
+    this.totalVisits = function (userId, from, to, callback) {
         var uId = mongoose.Types.ObjectId(userId);
         async.waterfall([
                 function (waterfallCb) {
@@ -45,6 +45,92 @@ var AnalyticModule = function (db) {
                             }
                         },
                         {
+                            $project: {
+                                isNewViewer: 1
+                            }
+                        }, {
+                            $group: {
+                                _id: {
+                                    isNewViewer: '$isNewViewer'
+                                }, count: {$sum: 1}
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 0,
+                                count: 1,
+                                new: {$cond: [{$eq: ['$_id.isNewViewer', true]}, '$count', 0]},
+                                old: {$cond: [{$eq: ['$_id.isNewViewer', false]}, '$count', 0]}
+                            }
+                        }, {
+                            $group: {
+                                _id: 'null',
+                                total: {$sum: '$count'},
+                                old: {$sum: '$old'},
+                                new: {$sum: '$new'}
+                            }
+                        }, {
+                            $project: {
+                                total: 1,
+                                old: 1,
+                                new: 1,
+                                _id: 0
+                            }
+                        }], function (err, response) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        waterfallCb(null, response[0]);
+                    });
+                }],
+            function (err, data) {
+                if (err) {
+                    return callback(err);
+                }else if(!data){
+                    var obj2 = {
+                        old:  0,
+                        new:  0,
+                        total:0
+                    };
+                    callback(null, obj2);
+                }
+                var obj = {
+                    old: data.old || 0,
+                    new: data.new || 0,
+                    total: data.total || 0
+                };
+                callback(null, obj);
+            });
+    };
+
+    this.visits = function (userId, from, to, callback) {
+        var uId = mongoose.Types.ObjectId(userId);
+        async.waterfall([
+                function (waterfallCb) {
+                    ContentModel.findOne({ownerId: uId}, function (err, doc) {
+                        if (err) {
+                            return waterfallCb(err);
+                        } else if (!doc) {
+                            var error = new Error();
+                            error.status = 404;
+                            error.message = 'No Data';
+                            return waterfallCb(error);
+                        }
+                        waterfallCb(null, doc._id)
+                    });
+                },
+                function (contentId, waterfallCb) {
+
+                    TrackModel.aggregate([
+                        {
+
+                            $match: {
+                                contentId: contentId,
+                                updatedAt: {
+                                    $gte: from, $lte: to
+                                }
+                            }
+                        }, {
                             $project: {
                                 date: {
                                     $add: [{$dayOfYear: '$updatedAt'}, {$multiply: [1000, {$year: '$updatedAt'}]}]
@@ -223,13 +309,11 @@ var AnalyticModule = function (db) {
                         {
                             $group: {
                                 _id: null,
-                                all: {$sum: 1},
                                 survey: {$sum: '$survey'}
                             }
                         }, {
                             $project: {
                                 _id: 0,
-                                all: 1,
                                 survey: 1
                             }
                         }], function (err, surveyRes) {
@@ -239,7 +323,52 @@ var AnalyticModule = function (db) {
                         waterfallCb(null, videoRes, data, surveyRes[0]);
                     });
                 },
+
                 function (videoRes, data, surveyRes, waterfallCb) {
+                    TrackModel.aggregate([
+                        {
+
+                            $match: {
+                                contentId: data.id,
+                                updatedAt: {
+                                    $gte: from, $lte: to
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                isNewViewer: 1
+                            }
+                        }, {
+                            $group: {
+                                _id: {
+                                    isNewViewer: '$isNewViewer'
+                                }, count: {$sum: 1}
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 0,
+                                count: 1,
+                            }
+                        }, {
+                            $group: {
+                                _id: 'null',
+                                total: {$sum: '$count'},
+                            }
+                        }, {
+                            $project: {
+                                total: 1,
+                                _id: 0
+                            }
+                        }], function (err, response) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        waterfallCb(null, videoRes, data, surveyRes, response[0]);
+                    });
+                },
+                function (videoRes, data, surveyRes, allRes, waterfallCb) {
                     var arr = [];
                     if (!data) {
                         var error = new Error();
@@ -282,8 +411,8 @@ var AnalyticModule = function (db) {
                             survey: arr,
                             mainVideo: mainVideo,
                             watchedEnd: watchedEnd,
-                            watchedSurvey: surveyRes.survey,
-                            all: surveyRes.all
+                            watchedSurvey: surveyRes ? surveyRes.survey : 0,
+                            all: allRes ? allRes.total : 0
                         };
                         waterfallCb(null, info);
 
@@ -347,12 +476,31 @@ var AnalyticModule = function (db) {
                                 'questTime': {$gte: from, $lte: to}
 
                             }
-                        }, {$project: {firstName: 1, lastName: 1, questions: 1, _id: 0}},
-                        {$unwind: '$questions'},
-                        {$match: {'questions.question': question}},
-                        {$group: {_id: '$questions.item', count: {$sum: 1}}},
-                        {$project: {rate: '$_id', _id: 0, count: 1}}
-                    ], function (err, questRes) {
+                        }, {
+                            $project: {
+                                firstName: 1,
+                                lastName: 1,
+                                questions: 1,
+                                _id: 0
+                            }
+                        }, {
+                            $unwind: '$questions'
+                        }, {
+                            $match: {
+                                'questions.question': question
+                            }
+                        }, {
+                            $group: {
+                                _id: '$questions.item',
+                                count: {$sum: 1}
+                            }
+                        }, {
+                            $project: {
+                                rate: '$_id',
+                                _id: 0,
+                                count: 1
+                            }
+                        }], function (err, questRes) {
                         if (err) {
                             return eachCb(err);
                         }
@@ -380,7 +528,7 @@ var AnalyticModule = function (db) {
         });
     };
 
-    this.documents = function (userId, from, to, callback) {
+    this.document = function (userId, from, to, callback) {
         var uId = mongoose.Types.ObjectId(userId);
         async.waterfall([
             function (waterfallCb) {
@@ -492,13 +640,11 @@ var AnalyticModule = function (db) {
                     {
                         $group: {
                             _id: null,
-                            all: {$sum: 1},
                             download: {$sum: '$download'}
                         }
                     }, {
                         $project: {
                             _id: 0,
-                            all: 1,
                             download: 1
                         }
                     }], function (err, downloadRes) {
@@ -528,8 +674,7 @@ var AnalyticModule = function (db) {
                     }
                     var data = {
                         docs: arr,
-                        all: downloadRes.all,
-                        download: downloadRes.download
+                        download: downloadRes ? downloadRes.download : 0
                     };
                     waterfallCb(null, data);
 
