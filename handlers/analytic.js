@@ -118,7 +118,8 @@ var routeHandler = function (db) {
             if (err) {
                 return next(err);
             }
-            res.status(200).send(docs.domains)
+            var domains = docs?docs.domains:[];
+            res.status(200).send(domains);
         });
     };
 
