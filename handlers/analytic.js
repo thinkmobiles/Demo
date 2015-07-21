@@ -118,7 +118,7 @@ var routeHandler = function (db) {
             if (err) {
                 return next(err);
             }
-            var domains = docs?docs.domains:[];
+            var domains = docs ? docs.domains : [];
             res.status(200).send(domains);
         });
     };
@@ -225,7 +225,7 @@ var routeHandler = function (db) {
                 });
             },
             function (contentId, waterfallCb) {
-
+                console.log(contentId.toString());
                 ContactMeModel.find({
                     contentId: contentId,
                     sentAt: {$gte: from, $lte: to}
@@ -244,7 +244,7 @@ var routeHandler = function (db) {
     };
 
     this.visits = function (req, res, next) {
-        if(!req.query.from || !req.query.to){
+        if (!req.query.from || !req.query.to) {
             var error = new Error();
             error.status = 400;
             error.message = 'Bad Request'
@@ -253,7 +253,7 @@ var routeHandler = function (db) {
         var from = new Date(req.query.from);
         var date = new Date(req.query.to);
         var to = new Date(date.setHours(date.getHours() + 24));
-        var userId =req.session.uId;
+        var userId = req.session.uId;
 
         analytic.visits(userId, from, to, function (err, data) {
             if (err) {
@@ -265,7 +265,7 @@ var routeHandler = function (db) {
 
 
     this.totalVisits = function (req, res, next) {
-        if(!req.query.from || !req.query.to){
+        if (!req.query.from || !req.query.to) {
             var error = new Error();
             error.status = 400;
             error.message = 'Bad Request'
@@ -274,7 +274,7 @@ var routeHandler = function (db) {
         var from = new Date(req.query.from);
         var date = new Date(req.query.to);
         var to = new Date(date.setHours(date.getHours() + 24));
-        var userId =req.session.uId;
+        var userId = req.session.uId;
 
         analytic.totalVisits(userId, from, to, function (err, data) {
             if (err) {
@@ -285,7 +285,7 @@ var routeHandler = function (db) {
     };
 
     this.video = function (req, res, next) {
-        if(!req.query.from || !req.query.to){
+        if (!req.query.from || !req.query.to) {
             var error = new Error();
             error.status = 400;
             error.message = 'Bad Request'
@@ -294,7 +294,7 @@ var routeHandler = function (db) {
         var from = new Date(req.query.from);
         var date = new Date(req.query.to);
         var to = new Date(date.setHours(date.getHours() + 24));
-        var userId =req.session.uId;
+        var userId = req.session.uId;
         analytic.video(userId, from, to, function (err, data) {
             if (err) {
                 return next(err);
@@ -304,7 +304,7 @@ var routeHandler = function (db) {
     };
 
     this.question = function (req, res, next) {
-        if(!req.query.from || !req.query.to){
+        if (!req.query.from || !req.query.to) {
             var error = new Error();
             error.status = 400;
             error.message = 'Bad Request';
@@ -324,7 +324,7 @@ var routeHandler = function (db) {
     };
 
     this.document = function (req, res, next) {
-        if(!req.query.from || !req.query.to){
+        if (!req.query.from || !req.query.to) {
             var error = new Error();
             error.status = 400;
             error.message = 'Bad Request';
@@ -334,8 +334,8 @@ var routeHandler = function (db) {
         var date = new Date(req.query.to);
         var to = new Date(date.setHours(date.getHours() + 24));
         var userId = req.session.uId;
-        analytic.document(userId, from, to, function(err, data){
-            if(err){
+        analytic.document(userId, from, to, function (err, data) {
+            if (err) {
                 return next(err);
             }
             res.status(200).send(data);
