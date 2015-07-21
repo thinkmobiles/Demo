@@ -215,7 +215,7 @@ var routeHandler = function (db) {
                 UserModel.findById(userId, function (err, user) {
                     if (err) {
                         return next(err);
-                    } else if (!user) {
+                    } else if (!user||!user.contentId) {
                         var error = new Error();
                         error.status = 404;
                         error.message = 'No Data';
