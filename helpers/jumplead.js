@@ -168,10 +168,16 @@ var JumpleadModule = function (db) {
                     console.log(e);
                 }
                 if (body.status == '404') {
-                    var error = new Error();
-                    error.status = 404;
-                    error.message = 'User not found';
-                    return callback(error)
+                    var e = new Error();
+                    e.status = 404;
+                    e.message = 'Contact not found';
+                    return callback(e)
+                }
+                if(body == 'ID is not valid'){
+                    var e = new Error();
+                    e.status = 404;
+                    e.message = 'Contact not found';
+                    return callback(e)
                 }
                 if (body.status == '401') {
                     return (function () {
