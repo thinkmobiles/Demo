@@ -518,8 +518,7 @@ var routeHandler = function (db) {
                             };
                             return waterfallCb(null, obj);
                         });
-                    }
-                    else {
+                    } else {
 
                         updateProspect(userId, doc.jumpleadId);
                         return waterfallCb(null, doc);

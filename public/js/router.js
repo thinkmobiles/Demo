@@ -23,7 +23,7 @@ define([
 			"relatedVideo(/:videoId/:userId)(/:indexList)" :  "relatedVideo",
             "registration"              :  "registration",
             //ToDo: analitic )))))))))))))haha)
-			"analitics"              :  "analitics",
+			"analytics"              :  "analytics",
             "*any"                      :  "any"
         },
 
@@ -138,7 +138,7 @@ define([
         upload: function () {
             this.loadWrapperView('upload');
         },
-		analitics: function () {
+		analytics: function () {
             this.loadWrapperView('analitics');
         },
         registration: function () {

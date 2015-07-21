@@ -1,6 +1,5 @@
 <div class="innerContainer">
-  <h2><%=name%></h2>
-  <h3>Survey Result</h3>
+  <h2 class="survayName"><%=name%></h2>
   <ul>
 	<%_.each(questions,function(question,index){%>
 	<li>
@@ -11,13 +10,13 @@
 	</li>
 	<%})%>
   </ul>
-  <h3>Videos Watched</h3>
+  <h3 class="videoWached">Videos Watched</h3>
 	<%_.each(videos,function(video, index){%>
 	<span>
 	  <%=video.video.split("/").pop().split(".").shift()%>   <span class="silver">(<%=video.time%>)</span><%=index==videos.length-1?"":","%>
 	</span>
 	<%})%>
-  <h3>Documents Downloaded</h3>
+  <h3 class="docDownload">Documents Downloaded</h3>
   <ul>
 	<%_.each(documents,function(item, index){%>
 	<span>
