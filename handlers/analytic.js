@@ -234,6 +234,7 @@ var routeHandler = function (db) {
                         return waterfallCb(err);
                     }
                     waterfallCb(null, doc);
+
                 });
             }], function (err, doc) {
             if (err) {
