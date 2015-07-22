@@ -53,13 +53,17 @@ define([
 
 		removeContent:function () {
 			var self = this;
+			var sure = confirm("Are you sure?");
+			if (!sure) {
+				return;
+			}
 			$.ajax({
 				type: "delete",
 				url: "/content",
 				contentType: "application/json",
 				success: function (data) {
 					console.log('Its work!!!'+ data.message);
-					//Backbone.history.navigate("#/home", {trigger: true});
+					Backbone.history.navigate("#/upload", {trigger: true});
 
 				},
 				error: function (model, xhr) {

@@ -462,7 +462,7 @@ var routeHandler = function (db) {
     function rmDir (dirPath) {
         try {
             var files = fs.readdirSync(dirPath);
-            console.log(files);
+            //console.log(files);
         }
         catch(e) { return; }
         if (files.length > 0)
@@ -477,29 +477,42 @@ var routeHandler = function (db) {
     };
 
     this.removeContent = function (req, res, next) {
+        var contentId;
+        var userId = req.session.uId;
         var sep = path.sep;
-        ContentModel.findOne({ownerId: req.session.uId}, function (err, found) {
+
+        ContentModel.findOneAndRemove({ownerId: req.session.uId}, function (err, doc) {
             if (err) {
                 return next(err);
             }
-            if (!found) {
+            if (!doc) {
                 return res.status(404).send({err: 'Content Not Found'});
             }
-            var contentId = found._id;
-            ContentModel.findByIdAndRemove(contentId, function (err, doc) {
-                if(err){
+            contentId = doc._id;
+            UserModel.findByIdAndUpdate(userId, {contentId: null}, function (err, found) {
+                if (err) {
                     return next(err);
                 }
-                ContactMeModel.remove({contentId: contentId});
-                TrackModel.remove({contentId: contentId});
-                var dirPath = localFs.defaultPublicDir + sep + 'video' + sep + doc._id.toString();
-                rmDir(dirPath);
+                if (!found) {
+                    return res.status(404).send({err: 'Content Not Found'});
+                }
             });
+            ContactMeModel.remove({contentId: contentId}, function (err) {
+                if (err) {
+                    console.error(err);
+                }
+                console.log('ContactMeModel updated')
+            });
+            TrackModel.remove({contentId: contentId}, function (err) {
+                if (err) {
+                    console.error(err);
+                }
+                console.log('TrackModel updated')
+            });
+            var dirPath = localFs.defaultPublicDir + sep + 'video' + sep + doc._id.toString();
+            rmDir(dirPath);
 
-
-
-
-            var message ='Success';
+            var message = 'Content removed';
             res.status(200).send({message: message});
         });
     };
