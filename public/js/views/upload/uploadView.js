@@ -10,6 +10,7 @@ define([
 
 		el:"#wrapper",
 		events: {
+            "click .removeContent": "removeContent",
             "click .decline": "decline",
             "click .save": "save",
             "click .question": "question",
@@ -44,6 +45,24 @@ define([
 				},
 				error: function (model, xhr) {
 					self.render();
+					console.log(xhr);
+					console.log(model);
+				}
+			});
+		},
+
+		removeContent:function () {
+			var self = this;
+			$.ajax({
+				type: "delete",
+				url: "/content",
+				contentType: "application/json",
+				success: function (data) {
+					console.log('Its work!!!'+ data.message);
+					//Backbone.history.navigate("#/home", {trigger: true});
+
+				},
+				error: function (model, xhr) {
 					console.log(xhr);
 					console.log(model);
 				}

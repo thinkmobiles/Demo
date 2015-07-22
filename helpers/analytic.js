@@ -86,18 +86,11 @@ var AnalyticModule = function (db) {
             function (err, data) {
                 if (err) {
                     return callback(err);
-                }else if(!data){
-                    var obj2 = {
-                        old:  0,
-                        new:  0,
-                        total:0
-                    };
-                    callback(null, obj2);
                 }
                 var obj = {
-                    old: data.old || 0,
-                    new: data.new || 0,
-                    total: data.total || 0
+                    old: data ? data.old : 0,
+                    new: data ? data.new : 0,
+                    total: data ? data.total : 0
                 };
                 callback(null, obj);
             });
@@ -383,24 +376,17 @@ var AnalyticModule = function (db) {
                     };
                     var watchedEnd;
                     var fd = _.findWhere(videoRes, {name: data.mainVideo});
-                    if (fd) {
-                        mainVideo.count = fd.count;
-                        watchedEnd = fd.watchedEnd;
-                    } else {
-                        mainVideo.count = 0;
-                        watchedEnd = 0;
-                    }
+                    mainVideo.count = fd ? fd.count : 0;
+                    watchedEnd = fd ? fd.watchedEnd : 0;
+
 
                     //============Survey Video Info===========
                     async.each(data.videos, function (video, eachCb) {
                         var obj = {};
                         obj.name = video;
                         var findDocument = _.findWhere(videoRes, {name: video});
-                        if (findDocument) {
-                            obj.count = findDocument.count;
-                        } else {
-                            obj.count = 0;
-                        }
+                        obj.count = findDocument ? findDocument.count : 0;
+
                         arr.push(obj);
                         eachCb(null);
                     }, function (err) {
@@ -620,9 +606,10 @@ var AnalyticModule = function (db) {
                         'questTime': {$gte: from, $lte: to}
 
                     }
-                }, {$project: {documents: 1,_id: 1}}, {
-                    $unwind: '$documents'}, {$group:{_id: null, doc: {$addToSet: '$_id'}, count:{$sum:1}}},{
-                    $project:{_id: 0,download:{$size: '$doc'}}
+                }, {$project: {documents: 1, _id: 1}}, {
+                    $unwind: '$documents'
+                }, {$group: {_id: null, doc: {$addToSet: '$_id'}, count: {$sum: 1}}}, {
+                    $project: {_id: 0, download: {$size: '$doc'}}
                 }], function (err, downloadRes) {
                     if (err) {
                         return waterfallCb(err);
@@ -637,11 +624,7 @@ var AnalyticModule = function (db) {
                     var obj = {};
                     obj.name = pdf;
                     var findDocument = _.findWhere(trackResp, {name: pdf});
-                    if (findDocument) {
-                        obj.count = findDocument.count;
-                    } else {
-                        obj.count = 0;
-                    }
+                    obj.count = findDocument ? findDocument.count : 0;
                     arr.push(obj);
                     eachCb(null);
                 }, function (err) {
