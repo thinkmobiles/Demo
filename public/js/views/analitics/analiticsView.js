@@ -183,7 +183,7 @@ define([
 			var self = this;
 			if (!this.domainModel)return;
 			var domains = this.domainModel.toJSON();
-			if (domains.length){
+			if (!domains||Object.keys(domains).length){
 				this.$el.find(".haveActivity").show();
 				this.$el.find(".noActivity").hide();
 			}
