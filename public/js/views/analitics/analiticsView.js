@@ -179,6 +179,10 @@ define([
 			var self = this;
 			if (!this.domainModel)return;
 			var domains = this.domainModel.toJSON();
+			if (domains.length){
+				this.$el.find(".haveActivity").show();
+				this.$el.find(".noActivity").hide();
+			}
 			var s = "";
 			for (var i in domains){
 				s+="<li>"+domains[i]+"</li>";
