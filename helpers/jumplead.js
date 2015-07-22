@@ -60,7 +60,7 @@ var JumpleadModule = function (db) {
                 }
                 if (!body.access_token) {
                     var err = new Error();
-                    err.message = "For some reason we cant connect to jumplead";
+                    err.message = "Cant connect to external resources";
                     err.status = 404;
                     return callback(err);
                 }
@@ -78,10 +78,7 @@ var JumpleadModule = function (db) {
                     )
                     ;//findByIdAndUpdate
                 });
-
-
             });//request
-
         });//findById
     };
 
@@ -264,7 +261,7 @@ var JumpleadModule = function (db) {
                 } catch (e) {
                     console.log(e);
                 }
-                if (body.status == '401' || body.status == '404' || error) {
+                if (body.status == '401' || body.status == '404' ||body.status == '403'|| body.error||!body.data) {
                     var err = new Error();
                     err.message = "Some trouble with jumplead";
                     err.status = 500;

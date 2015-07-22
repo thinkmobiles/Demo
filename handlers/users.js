@@ -459,6 +459,52 @@ var routeHandler = function (db) {
         });
     };
 
+    function rmDir (dirPath) {
+        try {
+            var files = fs.readdirSync(dirPath);
+            console.log(files);
+        }
+        catch(e) { return; }
+        if (files.length > 0)
+            for (var i = 0; i < files.length; i++) {
+                var filePath = dirPath + '/' + files[i];
+                if (fs.statSync(filePath).isFile())
+                    fs.unlinkSync(filePath);
+                else
+                    rmDir(filePath);
+            }
+        fs.rmdirSync(dirPath);
+    };
+
+    this.removeContent = function (req, res, next) {
+        var sep = path.sep;
+        ContentModel.findOne({ownerId: req.session.uId}, function (err, found) {
+            if (err) {
+                return next(err);
+            }
+            if (!found) {
+                return res.status(404).send({err: 'Content Not Found'});
+            }
+            var contentId = found._id;
+            ContentModel.findByIdAndRemove(contentId, function (err, doc) {
+                if(err){
+                    return next(err);
+                }
+                ContactMeModel.remove({contentId: contentId});
+                TrackModel.remove({contentId: contentId});
+                var dirPath = localFs.defaultPublicDir + sep + 'video' + sep + doc._id.toString();
+                rmDir(dirPath);
+            });
+
+
+
+
+            var message ='Success';
+            res.status(200).send({message: message});
+        });
+    };
+
+
     // url = '/:contentId/:ctid'
     this.getMain = function (req, res, next) {
         var contentId = req.params.contentId;
