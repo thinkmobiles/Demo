@@ -1,4 +1,4 @@
-  <table class="contactMe" cellspacing="0" cellpadding="0">
+ <% if (contactList.length){ %> <table class="contactMe" cellspacing="0" cellpadding="0">
 	<tr>
 	  <th><span>Name</span></th>
 	  <th><span>Email</span></th>
@@ -16,5 +16,8 @@
   </table>
 
   <h3 class="messageIcon">Message</h3>
-<p class="textMessage"><%=contactList[0].fullMessage%></p>
+<p class="textMessage"><%=contactList.length?contactList[0].fullMessage:""%></p>
   
+<% } else { %>
+<h3>No Data from server</h3>
+<% } %>
