@@ -34,6 +34,21 @@ define([
 
         initialize: function () {
 			var self = this;
+			$.ajax({
+				type: "GET",
+				url: "/content",
+				contentType: "application/json",
+				success: function (data) {
+					if (!data) {
+						self.$el.find(".noVideo").show();
+						self.$el.find(".analitics .haveVideo").hide();
+					} 
+				},
+				error: function (model, xhr) {
+					self.$el.find(".noVideo").show();
+					self.$el.find(".analitics .haveVideo").hide();
+				}
+			});
 			this.documentAnalyticCollection = new DocumentAnalyticCollection({
 				from:moment().subtract(7, 'days').format("MM/DD/YYYY"),
 				to:moment().format("MM/DD/YYYY")
@@ -61,7 +76,7 @@ define([
 			this.visitAnalyticCollection.bind('reset', self.renderVisitChart, self);
 			this.contactMeCollection.bind('reset', self.renderContactMe, self);
 			this.domainModel.bind('change', self.renderDomainList, self);
-			
+	
             this.render();
         },
 
