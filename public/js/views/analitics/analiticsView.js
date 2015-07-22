@@ -145,7 +145,7 @@ define([
 			Custom.drawBarChart(mas, '#videoView');
 			this.$el.find(".info .watchedEnd").text(data.watchedEnd);
 			this.$el.find(".info .watchedSurvey").text(data.watchedSurvey);
-			this.$el.find(".info .allVideo").text(data.watchedSurvey);
+			this.$el.find(".info .allVideo").text(data.all);
 			
 		},
 
