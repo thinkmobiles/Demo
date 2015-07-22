@@ -40,12 +40,16 @@ define([
 				contentType: "application/json",
 				success: function (data) {
 					if (!data) {
-						self.$el.find(".noVideo").show();
+						self.$el.find(".analitics>.noVideo").show();
 						self.$el.find(".analitics .haveVideo").hide();
-					} 
+					} else{
+						self.$el.find(".analitics>.noVideo").hide();
+						self.$el.find(".analitics .haveVideo").show();
+
+					}
 				},
 				error: function (model, xhr) {
-					self.$el.find(".noVideo").show();
+					self.$el.find(".analitics>.noVideo").show();
 					self.$el.find(".analitics .haveVideo").hide();
 				}
 			});
@@ -179,6 +183,10 @@ define([
 			var self = this;
 			if (!this.domainModel)return;
 			var domains = this.domainModel.toJSON();
+			if (!domains||Object.keys(domains).length){
+				this.$el.find(".haveActivity").show();
+				this.$el.find(".noActivity").hide();
+			}
 			var s = "";
 			for (var i in domains){
 				s+="<li>"+domains[i]+"</li>";

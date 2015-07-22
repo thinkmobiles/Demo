@@ -1505,6 +1505,12 @@ box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.18);
 	text-align:right;
 	width:820px;
 	margin:0 auto;
+	.haveActivity{
+		display:none;
+	}
+	.noActivity{
+		display:block;
+	}
 	.noVideo{
 		text-align:center;
 		font-size:24px;
@@ -1591,6 +1597,20 @@ box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.18);
 				&.not{
 					span{
 						background-color:#f5fcff;
+					}
+				}
+				&.print{
+					span{
+						.i("print.png");
+						margin-top:-5px;
+						margin-left:45px;
+						cursor:pointer;
+						background-position:50% 50%;
+						width:26px;
+						height:24px;
+						display:block;
+						border:1px solid #dbdbdb;
+						border-radius:3px;
 					}
 				}
 			}
