@@ -8,4 +8,73 @@
 
          <p>Message: <%=message %></p>
     </span>
+    </p>
+    <h3> A N A L Y T I C    I N F O R M A T I O N</h3>
+    <h3>Video activity</h3>
+    <table cellspacing="0" border="1" cellpadding="0">
+        <tr>
+            <th>
+                <b>Name of video</b>
+            </th>
+            <th>
+                <b>Is watched to the end</b>
+            </th>
+            <th>
+                <b>How long watched</b>
+            </th>
+        </tr>
+        <% _.each(analytics.videos, function(item){%>
+        <tr>
+            <td>
+                <a href="<%= process.env.WEB_HOST +'/'+ item.video%>"><%=item.video.split('/').pop() %></a>
+            </td>
+            <td>
+                <%=item.end?'Yes':'No' %>
+            </td>
+            <td>
+
+                <% var all = item.stopTime; %>
+                <% var m = Math.floor(all/60); %>
+                <% var s = all-m*60; %>
+                <%= m+ ':' + (s<10?'0'+s:s)%>
+
+            </td>
+        </tr>
+        <% });%>
+    </table><br/>
+
+    <h3>Question activity:</h3>
+    <table cellspacing="0" border="1" cellpadding="0">
+        <tr>
+            <th>
+                <b>Question</b>
+            </th>
+            <th>
+                <b>Rate</b>
+            </th>
+        </tr>
+        <% _.each(analytics.questions, function(item){%>
+        <tr>
+            <td>
+                <%=item.question %>
+            </td>
+            <td>
+                <%= item.item%>
+
+            </td>
+        </tr>
+        <% });%>
+    </table><br/>
+
+    <h3>Download document: </h3>
+    <ul>
+        <% _.each(analytics.documents, function(item){%>
+        <li> <a href="<%= process.env.WEB_HOST +'/'+ item.document%>"><%=item.document.split('/').pop() %></a></li>
+        <% });%>
+    </ul>
+    <br/>
+    <hr/>
+    <footer>
+        Copyright DemoRocket 2015
+    </footer>
 </div>

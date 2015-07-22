@@ -62,7 +62,6 @@ define([
 				url: "/content",
 				contentType: "application/json",
 				success: function (data) {
-					console.log('Its work!!!'+ data.message);
 					Backbone.history.navigate("#/upload", {trigger: true});
 
 				},
@@ -211,7 +210,7 @@ define([
 			oReq.upload.addEventListener('progress',visualEffectHandler, false);
 
 			function visualEffectHandler(){
-				var value = self.percentComplete
+				var value = self.percentComplete;
 				$('#progress_bar').val(value);
 
 				$('.progress-value').html(value + '%');

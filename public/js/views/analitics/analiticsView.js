@@ -26,7 +26,7 @@ define([
 			"change #startDate input, #endDate input":"updateDate",
 			"click #prospectTable table tr": "showContactInfo",
 			"click .customSelect ul li": "updateProspect",
-			"click .customSelect .current": "showList",
+			"click .customSelect .showList": "showList",
 			"click .contactMe tr": "showMessage"
 			
         },
@@ -205,7 +205,10 @@ define([
 		
         render: function () {
 			var self = this;
-		
+			/*$('.customSelect').focusout(function() {
+				//self.$el.find(".customSelect ul").hide();
+				console.log('focus!!!');
+			});*/
             this.$el.html(_.template(AnaliticsTemplate));
 			$("#startDate input").datepicker({
 				onSelect: function(selected) {
