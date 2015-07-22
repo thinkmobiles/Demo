@@ -40,12 +40,16 @@ define([
 				contentType: "application/json",
 				success: function (data) {
 					if (!data) {
-						self.$el.find(".noVideo").show();
+						self.$el.find(".analitics>.noVideo").show();
 						self.$el.find(".analitics .haveVideo").hide();
-					} 
+					} else{
+						self.$el.find(".analitics>.noVideo").hide();
+						self.$el.find(".analitics .haveVideo").show();
+
+					}
 				},
 				error: function (model, xhr) {
-					self.$el.find(".noVideo").show();
+					self.$el.find(".analitics>.noVideo").show();
 					self.$el.find(".analitics .haveVideo").hide();
 				}
 			});
