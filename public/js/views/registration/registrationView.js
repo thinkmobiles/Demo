@@ -10,7 +10,7 @@ define([
             "input #pass": "progressBar",
             "click .cancel":"cancel",
             "click .registerBtn":"register",
-            "click .preview":"showFiles",
+            "click .preview, .uploadAvatar":"showFiles",
             "change #ava":"showPreview",
 			"keyup .required input":"changeText"
         },
@@ -65,7 +65,12 @@ define([
 				isError = true;
 				self.$el.find(".registration .userName").addClass("error");
 			}
-
+			
+			if (self.$el.find(".registration .phone").val()&&!validation.validPhone(self.$el.find(".registration .phone").val())){
+				isError = true;
+				self.$el.find(".registration .phone").addClass("error");
+			}
+			
 			var pass = self.$el.find(".registration .pass").val();
             var rate = checkPass.scorePassword(pass)
 			
@@ -93,6 +98,7 @@ define([
                     userName: self.$el.find(".registration .userName").val(),
                     organization: self.$el.find(".registration .organization").val(),
                     pass: self.$el.find(".registration .pass").val(),
+					phone: self.$el.find(".registration .phone").val(),
                     avatar: self.$el.find(".registration .preview").attr("src")
                 },
                 success: function (model) {
