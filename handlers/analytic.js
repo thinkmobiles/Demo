@@ -290,9 +290,9 @@ var routeHandler = function (db) {
                     if (err) {
                         return waterfallCb(err);
                     }
-                    waterfallCb(null, docs);
+                    waterfallCb(null, doc);
                 });
-            }], function (err, doc) {
+            }], function (err, docs) {
             if (err) {
                 return next(err);
             }

@@ -74,8 +74,11 @@
                 <%=item.name %>
             </td>
             <td>
+                <%if(!item.not&&!item.some&&!item.very){ %>
                 <%var sum = item.not+item.some+item.very%>
                 <%=Math.floor(item.not/sum*100)%>
+                <%} else {%>
+
             </td>
             <td>
                 <%= Math.floor(item.some/sum*100)%>
