@@ -93,7 +93,7 @@ define([
 
 		printDiv: function (divId) {
 			//var styleStr = '<link rel="stylesheet/less" href="less/style.less">';
-			window.frames["print_frame"].document.body.innerHTML = '<style>'+document.getElementById('less:less-style').innerHTML+'</style>' + 'div class="container analytics">'+document.getElementById(divId).innerHTML+'</div>';
+			window.frames["print_frame"].document.body.innerHTML = '<style>'+document.getElementById('less:less-style').innerHTML+'</style>' + '<div class="container analitics">'+document.getElementById(divId).innerHTML+'</div>';
 			window.frames["print_frame"].window.focus();
 			window.frames["print_frame"].window.print();
 		},
