@@ -211,7 +211,7 @@ var routeHandler = function (db) {
             res.status(200).send(doc);
         });
     };
-    this.contact = function (req, res, next) {
+    this.contacts = function (req, res, next) {
         if (!req.query.domain) {
             var error = new Error();
             error.status = 400;
@@ -290,13 +290,13 @@ var routeHandler = function (db) {
                     if (err) {
                         return waterfallCb(err);
                     }
-                    waterfallCb(null, doc[0]);
+                    waterfallCb(null, docs);
                 });
             }], function (err, doc) {
             if (err) {
                 return next(err);
             }
-            res.status(200).send(doc);
+            res.status(200).send(docs);
         });
     };
 
