@@ -100,7 +100,7 @@ var routeHandler = function (db) {
                     $group: {
                         _id: null,
                         domains: {
-                            $push: {domain: '$domain'}
+                            $addToSet: {domain: '$domain'}
                         }
                     }
                 }, {

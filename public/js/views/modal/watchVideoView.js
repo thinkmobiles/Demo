@@ -178,6 +178,10 @@ define([
 				indexList.push( $(this).closest("table").find("tr").index($(this).closest("tr"))-1);
 				//self.currentSurvay.push(self.content.toJSON().content.survey[index]);
 			});
+			$(".someImp.checked").each(function(){
+				indexList.push( $(this).closest("table").find("tr").index($(this).closest("tr"))-1);
+				//self.currentSurvay.push(self.content.toJSON().content.survey[index]);
+			});
 			this.trackQuestion();
 			Backbone.history.navigate("#/relatedVideo/"+this.videoId+"/"+this.userId+"/"+indexList.join(","), {trigger: true});
 			/*$(".questionSection").hide();

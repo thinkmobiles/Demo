@@ -1,60 +1,93 @@
 <div class="container analitics">
-  <div class="noVideo">You don't have any uploaded video</div>
-  <div class="haveVideo">
-	From:&nbsp;<div id="startDate" class="dtPick"><input type="text"/><span class="icon"></span></div>&nbsp;&nbsp;&nbsp;To:&nbsp;<div id="endDate" class="dtPick"><input type="text"/><span class="icon"></span></div>
-	<h2>Site Views</h2>
-	<div class="legend">
-	  <ul>
-		<li class="invitedPr"><span></span>Invited Prospects</li>
-		<li class="newPr"><span></span>New Prospects</li>
-		<li class="totalPr"><span></span>Total Views</li>
-		<li class="print"><span></span></li>
-	  </ul>
-	</div>
-	<svg id="siteVisits" width="1000" height="500"></svg>
-	<h2>Video Views</h2>
-	<svg id="videoView" width="1000" height="500"></svg>
-	
-	<div class="info"><span class="watchedEnd"></span> of <span class="allVideo"></span> watched the entire Main Video </div>
-	<div class="info"><span class="watchedSurvey"></span> of <span class="allVideo"></span> watched the additional videos </div>
-	
-	<h2>Survay Results</h2>
-    <div class="legend">
-	  <ul>
-		<li class="very"><span></span>Very Interested</li>
-		<li class="some"><span></span>Somewhat Interested</li>
-		<li class="not"><span></span>Not Interested</li>
-		<li class="print"><span></span></li>
-	  </ul>
-	</div>
+    <iframe name="print_frame" width="0" height="0" frameborder="0" src="about:blank"></iframe>
+    <div class="noVideo">You don't have any uploaded video</div>
+
+    <div class="haveVideo">
+        <div id="date">
+            From:&nbsp;
+            <div id="startDate" class="dtPick"><input type="text"/><span class="icon"></span></div>
+            &nbsp;&nbsp;&nbsp;To:&nbsp;
+            <div id="endDate" class="dtPick"><input type="text"/><span class="icon"></span></div>
+        </div>
+        <div class="printPart">
+            <h2>Site Views</h2>
+
+            <div class="legend">
+                <ul>
+                    <li class="invitedPr"><span></span>Invited Prospects</li>
+                    <li class="newPr"><span></span>New Prospects</li>
+                    <li class="totalPr"><span></span>Total Views</li>
+                    <li class="print"><span></span></li>
+                </ul>
+            </div>
+            <svg id="siteVisits" width="1000" height="500"></svg>
+        </div>
+        <div class="printPart">
+            <h2>Video Views</h2>
+            <svg id="videoView" width="1000" height="500"></svg>
+
+            <div class="info"><span class="watchedEnd"></span> of <span class="allVideo"></span> watched the entire
+                Main
+                Video
+            </div>
+            <div class="info"><span class="watchedSurvey"></span> of <span class="allVideo"></span> watched the
+                additional videos
+            </div>
+        </div>
+    </div>
+    <div class="printPart">
+        <h2>Survay Results</h2>
+
+        <div class="legend">
+            <ul>
+                <li class="very"><span></span>Very Interested</li>
+                <li class="some"><span></span>Somewhat Interested</li>
+                <li class="not"><span></span>Not Interested</li>
+                <li class="print"><span></span></li>
+            </ul>
+        </div>
+
+        <div class="clear">
+        </div>
+        <ul class="questionsPie">
+
+        </ul>
+    </div>
     <div class="clear">
     </div>
-	<ul class="questionsPie">
+    <div class="printPart">
+        <h2>File Downloads</h2>
+        <svg id="docDownload" width="1000" height="500"></svg>
+        <div class="info"><span class="countDownload"></span> of <span class="allVideo"></span> prospects downloaded
+            documents
+        </div>
+    </div>
+    <div class="printPart">
+        <h2>Detailed Prospect Activity</h2>
 
-	</ul>
-	<div class="clear">
-	</div>
-	<h2>File Downloads</h2>
-	<svg id="docDownload" width="1000" height="500"></svg>
-	<div class="info"><span class="countDownload"></span> of <span class="allVideo"></span> prospects downloaded documents</div>
-	<h2>Detailed Prospect Activity</h2>
-    <div class="haveActivity">
-	  <div class="customSelect">
-		  <div class="showList">
-		<span class="current"></span>
-		<span class="arrow"></span>
-		  </div>
-		<ul>
-		</ul>
-	  </div>
-	  <div id="prospectTable"></div>
-	  <div id="prospectActivity"></div>
+        <div class="haveActivity">
+            <div class="customSelect">
+                <div class="showList">
+                    <span class="current"></span>
+                    <span class="arrow"></span>
+                </div>
+                <ul>
+                </ul>
+            </div>
+            <div id="prospectTable"></div>
+            <div id="prospectActivity"></div>
+        </div>
+        <div class="noActivity">
+            <h3 class="noVideo">You don't have any prospect activity</h3>
+        </div>
     </div>
-    <div class="noActivity">
-	  <h3 class="noVideo">You don't have any prospect activity</h3>
+    <div class="printPart">
+        <h2>"Contact Me" Submission</h2>
+
+        <div id="contactMe"></div>
+
     </div>
-	<h2>"Contact Me" Submission</h2>
-	<div id="contactMe"></div>
-	
-  </div>
+</div>
+
+<div class="tooltip"></div>
 </div>

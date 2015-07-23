@@ -16,7 +16,7 @@ define(["moment"],function (moment) {
                 authorized: true,
                 user: data
             });
-		
+			
             return Backbone.history.navigate(url, {trigger: true});
         } else {
             App.sessionData.set({
@@ -45,7 +45,7 @@ define(["moment"],function (moment) {
 			.scale(x)
 			.orient("bottom")
 			.tickFormat(function(d){return  moment(d).format("MMM DD")});
-			
+		
 		var yAxis = d3.svg.axis()
 			.scale(y)
 			.orient("left")
@@ -71,23 +71,24 @@ define(["moment"],function (moment) {
 			.append("g")
 			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-			data.forEach(function(d) {
-				d.date = new Date(d.date);
-			});
-
+		data.forEach(function(d) {
+			d.date = new Date(d.date);
+		});
+		
+		var div = d3.select(".tooltip");
 		
 		x.domain(data.map(function (d) {
 			return d.date;
 		}));
 		y.domain([0,  d3.max(data, function(d){ return Math.max(d.total); })]);
 
-	
+		
 		svg.append("path")
 			.datum(data)
 			.attr("class", "area")
 			.attr("d", area);
 		
-	
+		
 		svg.append("g")
 			.attr("class", "x axis")
 			.attr("transform", "translate(0," + height + ")")
@@ -113,13 +114,32 @@ define(["moment"],function (moment) {
 			.attr("class", "lineTotal")
 			.attr("d", lineTotal);
 
+		var showTooltip = function(name){
+			return function(d) {
+				div.transition()        
+					.duration(200)      
+					.style("opacity", .9);
+				div .html("<span>"+d[name]+"</span>" + "<br/>views" )  
+					.style("left", ($(this).closest("svg").offset().left+x(d.date)+x.rangeBand()/2+17)+"px")     
+					.style("top", ($(this).closest("svg").offset().top+ y(d[name])- 38) + "px");
+            }
+		}
+
+		var hideTooltip = function() {       
+				div.transition()        
+					.duration(500)      
+					.style("opacity", 0);   
+			}
+		
 		svg.selectAll(".circle").data(data).enter().append("circle").attr("class", "circle").attr("cx", function (d) {
             return x(d.date) + x.rangeBand() / 2;
         }).attr("cy", function (d) {
             return y(d.old);
         }).attr("r", function () {
             return 4;
-        }).style("fill", "#f56a3f").style("stroke-width", "2");
+        }).style("fill", "#f56a3f").style("stroke-width", "2")
+			.on("mouseover",showTooltip("old"))                  
+			.on("mouseout", hideTooltip);
 
 		svg.selectAll(".circle1").data(data).enter().append("circle").attr("class", "circle1").attr("cx", function (d) {
             return x(d.date) + x.rangeBand() / 2;
@@ -127,7 +147,10 @@ define(["moment"],function (moment) {
             return y(d.new);
         }).attr("r", function () {
             return 4;
-        }).style("fill", "#00c982").style("stroke-width", "2");
+        }).style("fill", "#00c982").style("stroke-width", "2")
+			.on("mouseover", showTooltip("new"))                  
+			.on("mouseout", hideTooltip);
+
 
 		svg.selectAll(".circle2").data(data).enter().append("circle").attr("class", "circle2").attr("cx", function (d) {
 			return x(d.date) + x.rangeBand() / 2;
@@ -135,11 +158,13 @@ define(["moment"],function (moment) {
 			return y(d.total);
 		}).attr("r", function () {
 			return 4;
-		}).style("fill", "#42b9f5").style("stroke-width", "2");
+		}).style("fill", "#42b9f5").style("stroke-width", "2")
+			.on("mouseover",  showTooltip("total"))                  
+			.on("mouseout", hideTooltip);
 		
 	}
-			   
-	var drawBarChart = function(barData, el){
+	
+	var drawBarChart = function(barData, el,isViews){
 		d3.select(el).selectAll("*").remove();
 		var vis = d3.select(el),
 			WIDTH = 820,
@@ -150,16 +175,22 @@ define(["moment"],function (moment) {
 				bottom: 300,
 				left: 50
 			},
-			xRange = d3.scale.ordinal().rangeRoundBands([MARGINS.left, WIDTH - MARGINS.right], 0.1).domain(barData.map(function (d) {
+			
+			xRange = d3.scale
+			.ordinal()
+			.rangeRoundBands([MARGINS.left, WIDTH - MARGINS.right], 0.1)
+			.domain(barData.map(function (d) {
 				return d.name;
 			})),
+			
 
-
-			yRange = d3.scale.linear().range([HEIGHT - MARGINS.bottom, MARGINS.top]).domain([0,
-																							 d3.max(barData, function (d) {
-																								 return d.count;
-																							 })
-																							]),
+			yRange = d3.scale.linear()
+			.range([HEIGHT - MARGINS.bottom, MARGINS.top])
+			.domain([0,
+					 d3.max(barData, function (d) {
+						 return d.count;
+					 })
+					]),
 
 			xAxis = d3.svg.axis()
 			.scale(xRange)
@@ -173,9 +204,8 @@ define(["moment"],function (moment) {
 			.orient("left")
 			.tickSubdivide(true)
 			.tickFormat(d3.format("d"));
-		var div = d3.select("body").append("div")   
-			.attr("class", "tooltip")               
-			.style("opacity", 0);
+		
+		var div = d3.select(".tooltip");
 
 		
 		vis.append('svg:g')
@@ -209,24 +239,31 @@ define(["moment"],function (moment) {
 			.on("mouseover", function(d) {
 				div.transition()        
 					.duration(200)      
-					.style("opacity", .9);      
-				div .html("<span>"+d.count+"</span>" + "<br/>views" )  
-					.style("left", ($(this).closest("svg").offset().left+xRange(d.name)+xRange.rangeBand()/2-32)+"px")     
-					.style("top", ($(this).closest("svg").offset().top+ yRange(d.count)- 55) + "px");    
+					.style("opacity", .9);
+				if (isViews){
+					div .html("<span>"+d.count+"</span>" + "<br/>views" )  
+						.style("left", ($(this).closest("svg").offset().left+xRange(d.name)+xRange.rangeBand()/2-32)+"px")     
+						.style("top", ($(this).closest("svg").offset().top+ yRange(d.count)- 55) + "px");
+				}else{
+					div .html("<span>"+d.count+"</span>" + "<br/>downloads" )  
+						.style("left", ($(this).closest("svg").offset().left+xRange(d.name)+xRange.rangeBand()/2-32)+"px")     
+						.style("top", ($(this).closest("svg").offset().top+ yRange(d.count)- 55) + "px");
+					
+				}
             })                  
 			.on("mouseout", function(d) {       
 				div.transition()        
 					.duration(500)      
-                .style("opacity", 0);   
-        });
-			/*.on('mouseover',function(d){
-				d3.select(this)
-					.attr('fill','blue');
-			})
-			.on('mouseout',function(d, i){
-				d3.select(this)
-					.attr('fill',colors(i));
-			});*/
+					.style("opacity", 0);   
+			});
+		/*.on('mouseover',function(d){
+		  d3.select(this)
+		  .attr('fill','blue');
+		  })
+		  .on('mouseout',function(d, i){
+		  d3.select(this)
+		  .attr('fill',colors(i));
+		  });*/
 	};
 	
 
@@ -308,7 +345,7 @@ define(["moment"],function (moment) {
 				})
 				.style("font-size","13px")
 		}
-	
+		
 	};
 
 	
