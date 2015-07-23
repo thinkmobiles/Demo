@@ -5,13 +5,15 @@
     <span>
         <img src="<%= process.env.WEB_HOST +'/'+ companyLogo%>" alt="logo" height="100" width="150">
     </span>
-
+    <% if (visits.total>0){ %>
     <h2>New activity on your account </h2>
 
     <p>
+
         You have <%=visits.total %> prospects visit your site :
     <li><%=visits.new %> new prospects</li>
-    <li><%=visits.old %> old prospects</li>
+    <li><%=visits.old %> invited prospects</li>
+
     </p>
 
     <h3>Videos activity</h3>
@@ -109,8 +111,10 @@
     </table>
     <br/>
     <%=documents.download %> of <%=visits.total %> prospects downloaded documents
-
     <br/>
+    <% } else { %>
+    You doesn't have any prospect activity
+    <% } %>
     <hr/>
     <footer>
         Copyright DemoRocket 2015

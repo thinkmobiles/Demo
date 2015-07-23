@@ -1849,16 +1849,37 @@ box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.18);
 }
 
 div.tooltip {   
-  position: absolute;           
-  text-align: center;           
-  width: 60px;                  
-  height: 28px;                 
-  padding: 2px;             
-  font: 12px sans-serif;        
-  background: lightsteelblue;   
-  border: 0px;      
-  border-radius: 8px;           
-  pointer-events: none;         
+	position: absolute;           
+	text-align: center;           
+	width: 60px;                  
+	height: 40px;                 
+	padding: 2px;             
+	font: 12px sans-serif;        
+	background: white;   
+	border: 1px solid #F5F5F5;      
+	color:#808080;
+	border-radius: 3px;           
+	pointer-events: none;
+	-webkit-box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.18);
+	-moz-box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.18);
+	box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.18);
+	&:after{
+		content:"";
+		position:absolute;
+		width: 0; 
+		height: 0; 
+		border-left: 5px solid transparent;
+		border-right: 5px solid transparent;
+		border-top: 5px solid white;
+		left:50%;
+		margin-left: -5px;
+		bottom: -5px;
+	}
+	span{
+		font-size:20px;
+		font-weight:bold;
+		color:black;
+	}
 }
 svg{
 	position:relative;
