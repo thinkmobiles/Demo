@@ -49,7 +49,8 @@ var MailerModule = function () {
                     companyName: options.companyName,
                     name: options.name,
                     email: options.email,
-                    message: options.message
+                    message: options.message,
+                    analytics: options.analytics
                 };
 
                 mailOptions = {

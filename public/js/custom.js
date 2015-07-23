@@ -173,8 +173,11 @@ define(["moment"],function (moment) {
 			.orient("left")
 			.tickSubdivide(true)
 			.tickFormat(d3.format("d"));
+		var div = d3.select("body").append("div")   
+			.attr("class", "tooltip")               
+			.style("opacity", 0);
 
-
+		
 		vis.append('svg:g')
 			.attr('class', 'x axis')
 			.attr('transform', 'translate(0,' + (HEIGHT - MARGINS.bottom) + ')')
@@ -203,14 +206,27 @@ define(["moment"],function (moment) {
 				return ((HEIGHT - MARGINS.bottom) - yRange(d.count));
 			})
 			.attr("fill",function(d,i){return colors(i)})
-			.on('mouseover',function(d){
+			.on("mouseover", function(d) {
+				div.transition()        
+					.duration(200)      
+					.style("opacity", .9);      
+				div .html(d.count + "<br/>views" )  
+					.style("left", ($(this).closest("svg").offset().left+xRange(d.name)+xRange.rangeBand()/2-32)+"px")     
+					.style("top", ($(this).closest("svg").offset().top+ yRange(d.count)- 38) + "px");    
+            })                  
+			.on("mouseout", function(d) {       
+				div.transition()        
+					.duration(500)      
+                .style("opacity", 0);   
+        });
+			/*.on('mouseover',function(d){
 				d3.select(this)
 					.attr('fill','blue');
 			})
 			.on('mouseout',function(d, i){
 				d3.select(this)
 					.attr('fill',colors(i));
-			});
+			});*/
 	};
 	
 

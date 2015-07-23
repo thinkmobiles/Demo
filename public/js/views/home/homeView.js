@@ -49,7 +49,8 @@ define([
 			}
 		},
 
-		showAvatar:function(e){
+		showAvatar:_.debounce(function(){
+			
 			var self = this;
 			$.ajax({
                 url: "/avatar/"+self.$el.find(".signIn .userName").val(),
@@ -66,11 +67,11 @@ define([
 					self.$el.find(".signIn .ava img").attr("src", Custom.defaultImage);
 				}
             });
-		},
+		},300),
 		
 		changeFieldUsername:function(e){
 			this.changeField(e);
-			this.showAvatar(e);
+			this.showAvatar();
 		},
 
 		hideBlur:function(e){

@@ -10,6 +10,7 @@ define([
 
 		el:"#wrapper",
 		events: {
+            "click .removeContent": "removeContent",
             "click .decline": "decline",
             "click .save": "save",
             "click .question": "question",
@@ -44,6 +45,27 @@ define([
 				},
 				error: function (model, xhr) {
 					self.render();
+					console.log(xhr);
+					console.log(model);
+				}
+			});
+		},
+
+		removeContent:function () {
+			var self = this;
+			var sure = confirm("Are you sure?");
+			if (!sure) {
+				return;
+			}
+			$.ajax({
+				type: "delete",
+				url: "/content",
+				contentType: "application/json",
+				success: function (data) {
+					Backbone.history.navigate("#/upload", {trigger: true});
+
+				},
+				error: function (model, xhr) {
 					console.log(xhr);
 					console.log(model);
 				}
@@ -188,7 +210,7 @@ define([
 			oReq.upload.addEventListener('progress',visualEffectHandler, false);
 
 			function visualEffectHandler(){
-				var value = self.percentComplete
+				var value = self.percentComplete;
 				$('#progress_bar').val(value);
 
 				$('.progress-value').html(value + '%');

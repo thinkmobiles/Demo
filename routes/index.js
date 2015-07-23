@@ -35,6 +35,7 @@ module.exports = function (app, db) {
     app.get('/redirect', session.isAuthenticated, handler.redirect);
     app.post('/upload',multipart, session.isAuthenticated, handler.upload);
     app.get('/content', session.isAuthenticated, handler.content);
+    app.delete('/content', session.isAuthenticated, handler.removeContent);
 
     analyticRouter = require('./analytic')(db);
     app.use('/analytic', analyticRouter);

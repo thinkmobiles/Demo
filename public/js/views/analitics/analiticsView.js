@@ -26,7 +26,7 @@ define([
 			"change #startDate input, #endDate input":"updateDate",
 			"click #prospectTable table tr": "showContactInfo",
 			"click .customSelect ul li": "updateProspect",
-			"click .customSelect .current": "showList",
+			"click .customSelect .showList": "showList",
 			"click .contactMe tr": "showMessage"
 			
         },
@@ -34,6 +34,25 @@ define([
 
         initialize: function () {
 			var self = this;
+			$.ajax({
+				type: "GET",
+				url: "/content",
+				contentType: "application/json",
+				success: function (data) {
+					if (!data) {
+						self.$el.find(".analitics>.noVideo").show();
+						self.$el.find(".analitics .haveVideo").hide();
+					} else{
+						self.$el.find(".analitics>.noVideo").hide();
+						self.$el.find(".analitics .haveVideo").show();
+
+					}
+				},
+				error: function (model, xhr) {
+					self.$el.find(".analitics>.noVideo").show();
+					self.$el.find(".analitics .haveVideo").hide();
+				}
+			});
 			this.documentAnalyticCollection = new DocumentAnalyticCollection({
 				from:moment().subtract(7, 'days').format("MM/DD/YYYY"),
 				to:moment().format("MM/DD/YYYY")
@@ -61,7 +80,7 @@ define([
 			this.visitAnalyticCollection.bind('reset', self.renderVisitChart, self);
 			this.contactMeCollection.bind('reset', self.renderContactMe, self);
 			this.domainModel.bind('change', self.renderDomainList, self);
-			
+	
             this.render();
         },
 
@@ -164,6 +183,10 @@ define([
 			var self = this;
 			if (!this.domainModel)return;
 			var domains = this.domainModel.toJSON();
+			if (!domains||Object.keys(domains).length){
+				this.$el.find(".haveActivity").show();
+				this.$el.find(".noActivity").hide();
+			}
 			var s = "";
 			for (var i in domains){
 				s+="<li>"+domains[i]+"</li>";
@@ -190,7 +213,10 @@ define([
 		
         render: function () {
 			var self = this;
-		
+			/*$('.customSelect').focusout(function() {
+				//self.$el.find(".customSelect ul").hide();
+				console.log('focus!!!');
+			});*/
             this.$el.html(_.template(AnaliticsTemplate));
 			$("#startDate input").datepicker({
 				onSelect: function(selected) {

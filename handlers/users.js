@@ -189,7 +189,7 @@ var routeHandler = function (db) {
         var userId;
 
         async.waterfall([
-            function ( waterfallCb) {
+            function (waterfallCb) {
                 userId = req.session.uId;
                 jumplead.getToken(code, userId, function (err) {
                     if (err) {
@@ -269,7 +269,7 @@ var routeHandler = function (db) {
         var body = req.body;
         var error = new Error();
 
-        if (!contentId || !body.name ||!body.email || !body.message) {
+        if (!contentId || !body.name || !body.email || !body.message) {
             error.message = 'Some field is empty';
             error.status = 403;
             return next(error)
@@ -283,14 +283,6 @@ var routeHandler = function (db) {
                 error.status = 404;
                 return next(error);
             }
-            var data = {
-                companyName: content.name,
-                companyEmail: content.email,
-                name: body.name || 'NoName',
-                email: body.email || '-',
-                message: body.message || 'NoDescription'
-            };
-
             var saveObj = new ContactMeModel({
                 contentId: contentId,
                 name: body.name || 'NoName',
@@ -304,7 +296,36 @@ var routeHandler = function (db) {
                 }
                 console.log(doc);
             });
-            mailer.contactMe(data);
+
+            var firstName = body.name.split(' ').shift();
+            var lastName = body.name.split(' ').pop();
+
+            TrackModel.findOne({
+                contentId: contentId,
+                isSent: false,
+                firstName: firstName,
+                lastName: lastName,
+                email: body.email
+            }, function (err, doc) {
+                if (err) {
+                    return next(err);
+                }
+                var analytics = {
+                    videos: doc? doc.videos:[],
+                    questions: doc? doc.questions:[],
+                    documents: doc? doc.documents:[]
+                };
+                var data = {
+                    companyName: content.name,
+                    companyEmail: content.email,
+                    name: body.name || 'NoName',
+                    email: body.email || '-',
+                    message: body.message || 'NoDescription',
+                    analytics: analytics
+                };
+                mailer.contactMe(data);
+            });
+
             res.status(200).send('Successful Send');
         });
     };
@@ -312,6 +333,14 @@ var routeHandler = function (db) {
 
     this.currentUser = function (req, res, next) {
         UserModel.findById(req.session.uId, function (err, doc) {
+            if (err) {
+                return next(err);
+            } else if (!doc) {
+                var e = new Error();
+                e.message = 'User not found';
+                e.status = 404;
+                return next(e);
+            }
             res.status(200).send(doc);
         });
     };
@@ -459,6 +488,67 @@ var routeHandler = function (db) {
         });
     };
 
+    function rmDir(dirPath) {
+        try {
+            var files = fs.readdirSync(dirPath);
+            //console.log(files);
+        }
+        catch (e) {
+            return;
+        }
+        if (files.length > 0)
+            for (var i = 0; i < files.length; i++) {
+                var filePath = dirPath + '/' + files[i];
+                if (fs.statSync(filePath).isFile())
+                    fs.unlinkSync(filePath);
+                else
+                    rmDir(filePath);
+            }
+        fs.rmdirSync(dirPath);
+    };
+
+    this.removeContent = function (req, res, next) {
+        var contentId;
+        var userId = req.session.uId;
+        var sep = path.sep;
+
+        ContentModel.findOneAndRemove({ownerId: req.session.uId}, function (err, doc) {
+            if (err) {
+                return next(err);
+            }
+            if (!doc) {
+                return res.status(404).send({err: 'Content Not Found'});
+            }
+            contentId = doc._id;
+            UserModel.findByIdAndUpdate(userId, {contentId: null}, function (err, found) {
+                if (err) {
+                    return next(err);
+                }
+                if (!found) {
+                    return res.status(404).send({err: 'Content Not Found'});
+                }
+            });
+            ContactMeModel.remove({contentId: contentId}, function (err) {
+                if (err) {
+                    console.error(err);
+                }
+                console.log('ContactMeModel updated')
+            });
+            TrackModel.remove({contentId: contentId}, function (err) {
+                if (err) {
+                    console.error(err);
+                }
+                console.log('TrackModel updated')
+            });
+            var dirPath = localFs.defaultPublicDir + sep + 'video' + sep + doc._id.toString();
+            rmDir(dirPath);
+
+            var message = 'Content removed';
+            res.status(200).send({message: message});
+        });
+    };
+
+
     // url = '/:contentId/:ctid'
     this.getMain = function (req, res, next) {
         var contentId = req.params.contentId;
@@ -573,12 +663,11 @@ var routeHandler = function (db) {
             }
         }, {upsert: true}, function (err, doc) {
             if (err) {
-                return console.err(err);
+                return console.error(err);
             }
             return true;
         });
     };
-
 
 
     function upFile(target, file, callback) {
@@ -827,7 +916,7 @@ var routeHandler = function (db) {
                             phone: data.phone,
                             mainVideoDescription: data.desc
                         };
-                        waterfallCb(null,insObj);
+                        waterfallCb(null, insObj);
                     });
                 },
 
@@ -856,7 +945,7 @@ var routeHandler = function (db) {
                 },
 
                 // save data staff
-                function ( waterfallCb) {
+                function (waterfallCb) {
                     async.series([
                         function (seriesCb) {
                             if (!!files['video']) {
@@ -920,7 +1009,7 @@ var routeHandler = function (db) {
                     return console.error(err);
                 }
                 //res.status(201).send({url: url});
-                console.log('success upload. url '+ url);
+                console.log('success upload. url ' + url);
             });
     };
 };
