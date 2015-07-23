@@ -83,7 +83,7 @@ var routeHandler = function (db) {
     function validateUserSignUp(userData, callback) { //used for signUpMobile, signUpWeb;
         var errMessage;
 
-        if (!userData || !userData.email || !userData.firstName || !userData.lastName || !userData.userName  || !userData.phone) {
+        if (!userData || !userData.email || !userData.firstName || !userData.lastName || !userData.userName || !userData.phone) {
             return callback(badRequests.NotEnParams({reqParams: ['email', 'pass', 'firstName', 'lastName', 'phone']}));
         }
 
@@ -316,9 +316,9 @@ var routeHandler = function (db) {
                     return next(err);
                 }
                 var analytics = {
-                    videos: doc? doc.videos:[],
-                    questions: doc? doc.questions:[],
-                    documents: doc? doc.documents:[]
+                    videos: doc ? doc.videos : [],
+                    questions: doc ? doc.questions : [],
+                    documents: doc ? doc.documents : []
                 };
                 var data = {
                     companyName: content.name,
@@ -687,6 +687,16 @@ var routeHandler = function (db) {
         });
     };
 
+    function mkdirSync(path) {
+        try {
+            fs.mkdirSync(path);
+        } catch (e) {
+            if (e.code != 'EEXIST') {
+                console.log('Directory already exist');
+            }
+        }
+    }
+
     function validation(data, callback) {
         var files = data.files;
         var body = data.body;
@@ -706,7 +716,7 @@ var routeHandler = function (db) {
             err.message = 'Not  completed fields';
             return callback(err);
         }
-        if (!files['video'] && body['video']) {
+        if (!files['video'].name && !body['video']) {
             err.message = 'Main video is not found';
             return callback(err);
         }
@@ -714,7 +724,7 @@ var routeHandler = function (db) {
             err.message = 'Question  is not found';
             return callback(err);
         }
-        if (files['video'] && formatsVideo.indexOf(mainVideoExt) == -1) {
+        if (!body['video'] && files['video'].name && formatsVideo.indexOf(mainVideoExt) == -1) {
             err.message = 'Main video format is not support';
             return callback(err);
         }
@@ -746,13 +756,13 @@ var routeHandler = function (db) {
                 return callback(err);
             }
 
-            if (files[videoName] && formatsVideo.indexOf(videoExt) == -1) {
+            if (!body[videoName] && files[videoName] && formatsVideo.indexOf(videoExt) == -1) {
                 err.message = 'Survey video format is not support';
                 return callback(err);
             }
         }
 
-        if (!files['logo']) {
+        if (!files['logo'].name) {
             err.message = 'Logo is not found';
             return callback(err);
         }
@@ -797,11 +807,10 @@ var routeHandler = function (db) {
         var name = 'video' + num;
         var saveVideoUri;
         var insSurvey;
+        var sep = path.sep;
+        var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString() + sep + 'survey' + num;
 
-        if (!!files[name]) {
-            var sep = path.sep;
-            var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString() + sep + 'survey' + num;
-
+        if (files[name].name) {
             upFile(url, files[name], function (err, videoUri) {
                 if (err) {
                     return callback(err);
@@ -823,6 +832,7 @@ var routeHandler = function (db) {
                 question: data[question],
                 videoUri: data[name]
             };
+            mkdirSync(url);
             ContentModel.findByIdAndUpdate(id, {$addToSet: {survey: insSurvey}}, function (err) {
                 if (err) {
                     return callback(err);
@@ -889,6 +899,7 @@ var routeHandler = function (db) {
         var data = req.body;
         var files = req.files;
         var userId = req.session.uId;
+        var sep = path.sep;
         var id;
         async.waterfall([
 
@@ -953,7 +964,7 @@ var routeHandler = function (db) {
                 function (waterfallCb) {
                     async.series([
                         function (seriesCb) {
-                            if (!!files['video']) {
+                            if (files['video'].name) {
                                 saveMainVideo(id, files, seriesCb);
                             }
                             else {
