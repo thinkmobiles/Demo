@@ -83,8 +83,13 @@ var routeHandler = function (db) {
     function validateUserSignUp(userData, callback) { //used for signUpMobile, signUpWeb;
         var errMessage;
 
-        if (!userData || !userData.email || !userData.firstName || !userData.lastName || !userData.userName) {
-            return callback(badRequests.NotEnParams({reqParams: ['email', 'pass', 'firstName', 'lastName']}));
+        if (!userData || !userData.email || !userData.firstName || !userData.lastName || !userData.userName  || !userData.phone) {
+            return callback(badRequests.NotEnParams({reqParams: ['email', 'pass', 'firstName', 'lastName', 'phone']}));
+        }
+
+        if (userData.phone.length > CONSTANTS.PHONE_MAX_LENGTH) {
+            errMessage = 'First name cannot contain more than ' + CONSTANTS.PHONE_MAX_LENGTH + ' symbols';
+            return callback(badRequests.InvalidValue({message: errMessage}));
         }
 
         if (userData.firstName.length > CONSTANTS.USERNAME_MAX_LENGTH) {
