@@ -286,11 +286,11 @@ var routeHandler = function (db) {
                         videos: 1,
                         _id: 0
                     }
-                }], function (err, doc) {
+                }], function (err, docs) {
                     if (err) {
                         return waterfallCb(err);
                     }
-                    waterfallCb(null, doc);
+                    waterfallCb(null, docs);
                 });
             }], function (err, docs) {
             if (err) {
