@@ -179,7 +179,7 @@ define([
 			var mas = data.survey;
 			data.mainVideo.name="Main Video";
 			mas.unshift(data.mainVideo);
-			Custom.drawBarChart(mas, '#videoView');
+			Custom.drawBarChart(mas, '#videoView',true);
 			this.$el.find(".info .watchedEnd").text(data.watchedEnd);
 			this.$el.find(".info .watchedSurvey").text(data.watchedSurvey);
 			this.$el.find(".info .allVideo").text(data.all);
