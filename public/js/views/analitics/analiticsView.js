@@ -30,7 +30,6 @@ define([
             "click .customSelect .showList": "showList",
             "click .contactMe tr": "showMessage",
             "click #startDate, #endDate": "showDatepicker"
-
         },
 
 
@@ -88,6 +87,7 @@ define([
         print: function (e) {
             var el = $(e.target).closest("div.printPart");
             window.frames["print_frame"].document.body.innerHTML = '<style>' + document.getElementById('less:less-style').innerHTML + '</style>' + '<div class="container analitics">' + el.html() + '</div>';
+			window.frames["print_frame"].document.getElementsByClassName("print")[0].style.display="none";
             window.frames["print_frame"].window.focus();
             window.frames["print_frame"].window.print();
         },
