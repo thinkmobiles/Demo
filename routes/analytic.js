@@ -20,6 +20,7 @@ module.exports = function (db) {
     router.get('/contactsByDomain', session.isAuthenticated, handler.contactsByDomain);
     router.get('/contactMe', session.isAuthenticated, handler.contactMe);
     router.get('/contact', session.isAuthenticated, handler.contact);
+    router.get('/contacts', session.isAuthenticated, handler.contacts);
 
     return router;
 };
