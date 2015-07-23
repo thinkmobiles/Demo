@@ -663,7 +663,7 @@ var routeHandler = function (db) {
             }
         }, {upsert: true}, function (err, doc) {
             if (err) {
-                return console.err(err);
+                return console.error(err);
             }
             return true;
         });
