@@ -26,6 +26,7 @@ define([
 			"change #startDate input, #endDate input":"updateDate",
 			"click #prospectTable table tr": "showContactInfo",
 			"click .customSelect ul li": "updateProspect",
+			"click .legend ul li span": "printSiteVisits",
 			"click .customSelect .showList": "showList",
 			"click .contactMe tr": "showMessage",
 			"click #startDate, #endDate": "showDatepicker"
@@ -84,6 +85,18 @@ define([
 	
             this.render();
         },
+		printSiteVisits: function () {
+			//alert('click!!!');
+			this.printDiv('printVisits');
+		},
+
+
+		printDiv: function (divId) {
+			//var styleStr = '<link rel="stylesheet/less" href="less/style.less">';
+			window.frames["print_frame"].document.body.innerHTML = '<style>'+document.getElementById('less:less-style').innerHTML+'</style>' + document.getElementById(divId).innerHTML;
+			window.frames["print_frame"].window.focus();
+			window.frames["print_frame"].window.print();
+		},
 
 		showDatepicker:function(e){
 			$(e.target).closest("div").find("input").datepicker('show');

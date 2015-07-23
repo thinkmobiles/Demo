@@ -1,17 +1,21 @@
 <div class="container analitics">
+	<iframe name="print_frame" width="0" height="0" frameborder="0" src="about:blank"></iframe>
   <div class="noVideo">You don't have any uploaded video</div>
   <div class="haveVideo">
 	From:&nbsp;<div id="startDate" class="dtPick"><input type="text"/><span class="icon"></span></div>&nbsp;&nbsp;&nbsp;To:&nbsp;<div id="endDate" class="dtPick"><input type="text"/><span class="icon"></span></div>
-	<h2>Site Views</h2>
-	<div class="legend">
-	  <ul>
-		<li class="invitedPr"><span></span>Invited Prospects</li>
-		<li class="newPr"><span></span>New Prospects</li>
-		<li class="totalPr"><span></span>Total Views</li>
-		<li class="print"><span></span></li>
-	  </ul>
-	</div>
-	<svg id="siteVisits" width="1000" height="500"></svg>
+	  <div id="printVisits">
+		  <h2>Site Views</h2>
+
+		  <div class="legend">
+			  <ul>
+				  <li class="invitedPr"><span></span>Invited Prospects</li>
+				  <li class="newPr"><span></span>New Prospects</li>
+				  <li class="totalPr"><span></span>Total Views</li>
+				  <li class="print"><span></span></li>
+			  </ul>
+		  </div>
+		  <svg id="siteVisits" width="1000" height="500"></svg>
+	  </div>
 	<h2>Video Views</h2>
 	<svg id="videoView" width="1000" height="500"></svg>
 	
