@@ -157,8 +157,9 @@ var routeHandler = function (db) {
                     $project: {
                         name: {$concat: ['$firstName', " ", '$lastName']},
                         questions: '$questions',
-                        _id: 1, videos: '$videos',
-                        documents: '$documents'
+                        videos: '$videos',
+                        documents: '$documents',
+                        _id: 1
                     }
                 }, {
                     $unwind: '$videos'
