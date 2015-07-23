@@ -27,7 +27,8 @@ define([
 			"click #prospectTable table tr": "showContactInfo",
 			"click .customSelect ul li": "updateProspect",
 			"click .customSelect .showList": "showList",
-			"click .contactMe tr": "showMessage"
+			"click .contactMe tr": "showMessage",
+			"click #startDate, #endDate": "showDatepicker"
 			
         },
 
@@ -84,6 +85,10 @@ define([
             this.render();
         },
 
+		showDatepicker:function(e){
+			$(e.target).closest("div").find("input").datepicker('show');
+		},
+		
 		updateDate: function(e){
 			this.documentAnalyticCollection.update({
 				from:$("#startDate input").val(),

@@ -210,9 +210,9 @@ define(["moment"],function (moment) {
 				div.transition()        
 					.duration(200)      
 					.style("opacity", .9);      
-				div .html(d.count + "<br/>views" )  
+				div .html("<span>"+d.count+"</span>" + "<br/>views" )  
 					.style("left", ($(this).closest("svg").offset().left+xRange(d.name)+xRange.rangeBand()/2-32)+"px")     
-					.style("top", ($(this).closest("svg").offset().top+ yRange(d.count)- 38) + "px");    
+					.style("top", ($(this).closest("svg").offset().top+ yRange(d.count)- 55) + "px");    
             })                  
 			.on("mouseout", function(d) {       
 				div.transition()        
