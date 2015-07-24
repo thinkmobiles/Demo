@@ -211,6 +211,94 @@ var routeHandler = function (db) {
             res.status(200).send(doc);
         });
     };
+    this.contacts = function (req, res, next) {
+        if (!req.query.domain) {
+            var error = new Error();
+            error.status = 400;
+            error.message = 'Bad Request';
+            return next(error);
+        }
+        var domain = req.query.domain;
+        async.waterfall([
+            function (waterfallCb) {
+                var userId = mongoose.Types.ObjectId(req.session.uId);
+                ContentModel.findOne({ownerId: userId}, function (err, doc) {
+                    if (err) {
+                        return waterfallCb(err);
+                    } else if (!doc) {
+                        var error = new Error();
+                        error.status = 404;
+                        error.message = 'No Data';
+                        return waterfallCb(error);
+                    }
+                    waterfallCb(null, doc._id)
+                });
+            },
+
+            function (contentId, waterfallCb) {
+                TrackModel.aggregate([{
+                    $match: {
+                        contentId: contentId,
+                        domain: domain
+                    }
+                }, {
+                    $project: {
+                        name: {$concat: ['$firstName', " ", '$lastName']},
+                        questions: '$questions',
+                        videos: '$videos',
+                        documents: '$documents',
+                        _id: 1
+                    }
+                }, {
+                    $unwind: '$videos'
+                }, {
+                    $unwind: '$documents'
+                }, {
+                    $project: {
+                        videos: {
+                            video: '$videos.video',
+                            time: '$videos.stopTime'
+                        },
+                        _id: 1,
+                        questions: 1,
+                        document: '$documents.document',
+                        name: 1
+                    }
+                }, {
+                    $group: {
+                        _id: {
+                            id: '$_id',
+                            name: '$name',
+                            questions: '$questions'
+                        },
+                        videos: {
+                            $addToSet: '$videos'
+                        },
+                        documents: {
+                            $addToSet: '$document'
+                        }
+                    }
+                }, {
+                    $project: {
+                        name: '$_id.name',
+                        questions: '$_id.questions',
+                        documents: 1,
+                        videos: 1,
+                        _id: 0
+                    }
+                }], function (err, docs) {
+                    if (err) {
+                        return waterfallCb(err);
+                    }
+                    waterfallCb(null, docs);
+                });
+            }], function (err, docs) {
+            if (err) {
+                return next(err);
+            }
+            res.status(200).send(docs);
+        });
+    };
 
     this.contactMe = function (req, res, next) {
         if (!req.query.from || !req.query.to) {

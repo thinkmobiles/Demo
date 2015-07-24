@@ -26,11 +26,11 @@ define([
             "change #startDate input, #endDate input": "updateDate",
             "click #prospectTable table tr": "showContactInfo",
             "click .customSelect ul li": "updateProspect",
-            "click .legend ul li.print span": "print",
+            "click .legend ul li.print:not(.all) span": "print",
+            "click .legend ul li.print.all ": "printContacts",
             "click .customSelect .showList": "showList",
             "click .contactMe tr": "showMessage",
             "click #startDate, #endDate": "showDatepicker"
-
         },
 
 
@@ -88,8 +88,47 @@ define([
         print: function (e) {
             var el = $(e.target).closest("div.printPart");
             window.frames["print_frame"].document.body.innerHTML = '<style>' + document.getElementById('less:less-style').innerHTML + '</style>' + '<div class="container analitics">' + el.html() + '</div>';
+            window.frames["print_frame"].document.getElementsByClassName("print")[0].style.display = "none";
             window.frames["print_frame"].window.focus();
             window.frames["print_frame"].window.print();
+        },
+
+        printContacts: function (e) {
+            var domain = this.$el.find(".customSelect .current").text();
+            if (!domain) {
+                return alert('You must choose some domain');
+            }
+            $.ajax({
+                type: "GET",
+                url: "analytic/contacts",
+                data:{
+                    domain: domain
+                },
+                contentType: "application/json",
+                success: function (data) {
+                    if (!data) {
+                        return alert('You must choose some domain')
+                    }
+                    var html = '';
+                        _.each(data, function (elem) {
+                            html+= _.template(ProspectActivityTemplate)(elem);
+                        });
+                    window.frames["print_frame"].document.body.innerHTML = '<style>' + document.getElementById('less:less-style').innerHTML + '</style>' + '<div class="container analitics"><div id="prospectActivity">' + html + '</div></div>';
+                    window.frames["print_frame"].window.focus();
+                    window.frames["print_frame"].window.print();
+                },
+                error: function (model, xhr) {
+                    console.log(model);
+                    console.log(xhr);
+                   alert('some err');
+                }
+            });
+
+
+        },
+
+        showDatepicker: function (e) {
+            $(e.target).closest("div").find("input").datepicker('show');
         },
 
         showDatepicker: function (e) {

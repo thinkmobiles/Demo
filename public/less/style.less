@@ -92,8 +92,6 @@ html,body{
 	.mp;
 	//width:100%;
 	position:relative;
-
-
     font-family: "LatoRegular";
 }
 body{
@@ -1509,6 +1507,7 @@ box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.18);
 	text-align:right;
 	width:820px;
 	margin:0 auto;
+	font-family:arial;
 	.haveActivity{
 		display:none;
 	}
@@ -1554,6 +1553,7 @@ box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.18);
 		display: block;
 	}
 	.legend{
+		
 		ul{
 			.mp;
 			list-style:none;
@@ -1561,6 +1561,7 @@ box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.18);
 			li{
 				float:left;
 				padding:0 10px;
+				font-family:arial;
 				&.invitedPr, &.newPr, &.totalPr, &.very, &.some, &.not{
 					span{
 						display:block;
@@ -1605,19 +1606,33 @@ box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.18);
 					}
 				}
 				&.print{
+					position:absolute;
+					right:0px;
 					span{
 						.i("print.png");
-						margin-top:-5px;
-						margin-left:45px;
 						cursor:pointer;
-						background-position:50% 50%;
-						width:26px;
-						height:24px;
-						display:block;
-						border:1px solid #dbdbdb;
-						border-radius:3px;
-						&:hover{
-							
+						background-position: 50% 50%;
+						width: 26px;
+						height: 24px;
+						display: block;
+						border: 1px solid #DBDBDB;
+						border-radius: 3px;
+						margin-top: -47px;
+
+						
+						
+					}
+					&.all{
+						span{
+						    margin-right: 50px;
+							width: auto;
+							text-align: left;
+							line-height: 24px;
+							padding: 0 15px;
+							padding-right: 30px;
+							color: #808080;
+							background-position: 95% 50%;
+							font-size: 14px;
 						}
 					}
 				}
@@ -1892,4 +1907,61 @@ div.tooltip {
 }
 svg{
 	position:relative;
+}
+.printPart{
+	position:relative;
+}
+
+.ui-datepicker{
+	z-index:1000 !important;
+	padding:0;
+	width:auto;
+	.ui-datepicker-header{
+		.lh(40px);
+		padding:0;
+		background:#44cbff;
+		border:none;
+		.ui-icon{
+			//background:none;
+		}
+		.ui-datepicker-prev, .ui-datepicker-next{
+			&.ui-state-hover{
+				background:none;
+				border:1px solid transparent;
+				border-radius:31px;
+				background-color:#3db6e5;
+				cursor:pointer;
+				
+			}
+		}
+
+		.ui-datepicker-title{
+			.lh(40px);
+			color:white;
+			font-weight:normal;
+		}
+	}
+	.ui-datepicker-calendar{
+		tr{
+			td{
+				a,span{
+					.lh(40px);
+					text-align:center;
+					width:40px;
+				}
+			}
+		}
+		.ui-datepicker-current-day:not(.ui-datepicker-today){
+			a{
+				.mp;
+				.lh(40px);
+				margin:0 auto;
+				color:white;
+				width:40px;
+				text-align:center;
+				border-radius:40px;
+				background-color:#44cbff;
+			}
+		}
+	}
 }
