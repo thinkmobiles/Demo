@@ -489,7 +489,7 @@ var routeHandler = function (db) {
                 return res.status(404).send({err: 'Content Not Found'});
             }
             var url = process.env.HOME_PAGE + found._id + '/{{ctid}}';
-            res.status(201).send({url: url});
+            res.status(201).send({url: url, content:found});
         });
     };
 
@@ -631,6 +631,7 @@ var routeHandler = function (db) {
             res.status(200).send(data);
         });
     };
+
 
     function updateProspect(userId, contactId) {
         jumplead.getContact(userId, contactId, function (err, data) {

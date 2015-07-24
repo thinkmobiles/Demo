@@ -1,11 +1,12 @@
 define([
     'text!templates/upload/uploadTemplate.html',
+	'text!templates/upload/editTemplate.html',
     'text!templates/upload/collapseQuestion.html',
     'text!templates/upload/videoElement.html',
 	'./progressBarView',
 	"validation"
 
-], function (RegistrationTemplate, CollapseQuestion, VideoElement, progressBarView, validation) {
+], function (RegistrationTemplate, EditTemplate,  CollapseQuestion, VideoElement, progressBarView, validation) {
     var View = Backbone.View.extend({
 
 		el:"#wrapper",
@@ -32,8 +33,8 @@ define([
 				url: "/content",
 				contentType: "application/json",
 				success: function (data) {
-					self.render();
-					if (!data) {
+					self.renderEdit(data);
+					/*if (!data) {
 						console.log('Successfully send')
 					} else {
 						self.$el.find(".login").hide();
@@ -41,7 +42,7 @@ define([
 						self.$el.find(".haveContent :input").val(data.url);
 						console.log("You already have content");
 						console.log(data.url);
-					}
+					}*/
 				},
 				error: function (model, xhr) {
 					self.render();
@@ -286,8 +287,29 @@ define([
         render: function () {
             this.$el.html(_.template(RegistrationTemplate));
             return this;
-        }
+        },
+		renderEdit: function (data) {
+			var self = this;
+            this.$el.html(_.template(EditTemplate)({content:data.content, url:data.url}));
 
+		
+			_.each(data.content.survey,function(item){
+				var pdf = _.map(item.pdfUri,function(item){
+					return item.split("/").pop();
+				})
+				pdf = pdf.join(" ");
+				$(self.$el).find(".collapseQuestions").append(_.template(CollapseQuestion)({
+					question:item.question,
+					video:item.videoUri.split("/").pop(),
+					pdf:pdf
+				}));
+
+				
+			});
+
+			
+            return this;
+        }
     });
 
     return View;
