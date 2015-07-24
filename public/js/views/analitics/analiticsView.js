@@ -26,7 +26,7 @@ define([
             "change #startDate input, #endDate input": "updateDate",
             "click #prospectTable table tr": "showContactInfo",
             "click .customSelect ul li": "updateProspect",
-            "click .legend ul li.print span": "print",
+            "click .legend ul li.print:not(.all) span": "print",
             "click .customSelect .showList": "showList",
             "click .contactMe tr": "showMessage",
             "click #startDate, #endDate": "showDatepicker"
