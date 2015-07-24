@@ -1,94 +1,153 @@
-<div class="info">
-    <span>
-        <h1>Information for <%=companyName %></h1>
-    </span>
-        <h2>New activity on your account </h2>
-        <p>
-            <ul>
-        <li>Name: <%=name %></li>
-        <li>Email: <%=email %></li>
-    </ul>
-        </p>
-
-        <h3>Video activity</h3>
-    <% if (videos.length){ %>
-        <table cellspacing="0" border="1" cellpadding="0">
-            <tr>
-            <th>
-                <b>Name of video</b>
-            </th>
-            <th>
-                <b>Is watched to the end</b>
-            </th>
-            <th>
-                <b>How long watched</b>
-            </th>
-            </tr>
-            <% _.each(videos, function(item){%>
-            <tr>
-                <td>
-                    <a href="<%= process.env.WEB_HOST +'/'+ item.video%>"><%=item.video.split('/').pop() %></a>
-                </td>
-                <td>
-                    <%=item.end?'Yes':'No' %>
-                </td>
-                <td>
-
-                    <% var all = item.stopTime; %>
-                    <% var m = Math.floor(all/60); %>
-                    <% var s = all-m*60; %>
-                    <%= m+ ':' + (s<10?'0'+s:s)%>
-
-                </td>
-            </tr>
-            <% });%>
-        </table>
-    <% } else { %>
-    <h5 >Contact doesn't watched any video</h5>
-    <% } %>
-    <br/>
-
-        <h3>Question activity:</h3>
-    <% if (questions.length){ %>
-        <table cellspacing="0" border="1" cellpadding="0">
-            <tr>
-                <th>
-                    <b>Question</b>
-                </th>
-                <th>
-                    <b>Rate</b>
-                </th>
-            </tr>
-            <% _.each(questions, function(item){%>
-            <tr>
-                <td>
-                    <%=item.question %>
-                </td>
-                <td>
-                    <%= item.item%>
-
-                </td>
-            </tr>
-            <% });%>
-        </table>
-    <% } else { %>
-    <h5 >Contact doesn't answered any question</h5>
-    <% } %>
-    <br/>
-
-         <h3>Download document: </h3>
-    <% if (documents.length){ %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Demystifying Email Design</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<style>
+	  .info h1{
+	  text-transform:uppercase;
+	  color:#656565;
+	  font-weight:normal;
+	  font-size:24px;
+	  }
+	  .info h2{
+	  color:#26c2ff;
+	  font-weight:normal;
+	  font-size:24px;
+	  }
+	    .info h3{
+	  font-weight:normal;
+	  font-size:17px;
+	  }
+	  .info .videoAct{
+	  background-image: url("http://134.249.164.53:8838/i/eye.png");
+      background-repeat: no-repeat;
+      padding-left: 30px;
+      background-position: 5px 50%;
+	  }
+	  .info .questionAct{
+	  background-image: url("http://134.249.164.53:8838/i/message.png");
+      background-repeat: no-repeat;
+      padding-left: 30px;
+      background-position: 5px 50%;
+	  }
+	  .info .downloadAct{
+	  background-image: url("http://134.249.164.53:8838/i/download.png");
+      background-repeat: no-repeat;
+      padding-left: 30px;
+      background-position: 5px 50%;
+	  }
+	  .info ul{
+	  list-style:none;
+	  margin:0px;
+	  padding:0px;
+	  margin-left:30px;
+	  font-size:20px;
+	  }
+	  .silver{
+	  color:#656565;
+	  }
+	  .info table{
+	  margin-left:30px;
+	  }
+	  .info table tr td{
+	  border:1px solid #efefef;
+	  }
+	</style>
+  </head>
+  <body>
+	<div class="info">
+      <h1>Information for <%=companyName %></h1>
+      <h2>New activity on your account </h2>
         <ul>
-            <% _.each(documents, function(item){%>
-            <li> <a href="<%= process.env.WEB_HOST +'/'+ item.document%>"><%=item.document.split('/').pop() %></a></li>
-            <% });%>
-        </ul>
-    <% } else { %>
-    <h5 >Contact doesn't downloaded any documents</h5>
-    <% } %>
-    <br/>
-    <hr/>
-         <footer>
-             Copyright DemoRocket 2015
-         </footer>
-</div>
+          <li><span class="silver">NAME:</span> <%=name %></li>
+          <li><span class="silver">EMAIL:</span> <%=email %></li>
+		</ul>
+
+      <h3 class="videoAct">Video activity</h3>
+      <% if (videos.length){ %>
+      <table cellspacing="0" cellpadding="0">
+        <tr>
+          <th>
+            <b>Name of video</b>
+          </th>
+          <th>
+            <b>Is watched to the end</b>
+          </th>
+          <th>
+            <b>How long watched</b>
+          </th>
+        </tr>
+        <% _.each(videos, function(item){%>
+        <tr>
+          <td>
+            <a href="<%= process.env.WEB_HOST +'/'+ item.video%>"><%=item.video.split('/').pop() %></a>
+          </td>
+          <td>
+            <%=item.end?'Yes':'No' %>
+          </td>
+          <td>
+
+            <% var all = item.stopTime; %>
+            <% var m = Math.floor(all/60); %>
+            <% var s = all-m*60; %>
+            <%= m+ ':' + (s<10?'0'+s:s)%>
+
+                </td>
+        </tr>
+        <% });%>
+      </table>
+      <% } else { %>
+      <h5 >Contact doesn't watched any video</h5>
+      <% } %>
+      <br/>
+
+      <h3 class="questionAct">Question activity:</h3>
+      <% if (questions.length){ %>
+      <table cellspacing="0" cellpadding="0">
+        <tr>
+          <th>
+            <b>Question</b>
+          </th>
+          <th>
+            <b>Rate</b>
+          </th>
+        </tr>
+        <% _.each(questions, function(item){%>
+        <tr>
+          <td>
+            <%=item.question %>
+          </td>
+          <td>
+            <%= item.item%>
+
+          </td>
+        </tr>
+        <% });%>
+      </table>
+      <% } else { %>
+      <h5 >Contact doesn't answered any question</h5>
+      <% } %>
+      <br/>
+
+      <h3 class="downloadAct">Download document: </h3>
+      <% if (documents.length){ %>
+      <ul>
+        <% _.each(documents, function(item){%>
+        <li> <a href="<%= process.env.WEB_HOST +'/'+ item.document%>"><%=item.document.split('/').pop() %></a></li>
+        <% });%>
+      </ul>
+      <% } else { %>
+      <h5 >Contact doesn't downloaded any documents</h5>
+      <% } %>
+      <br/>
+      <hr/>
+      <footer>
+        Copyright DemoRocket 2015
+      </footer>
+	</div>
+
+  </body>
+</html>
+
