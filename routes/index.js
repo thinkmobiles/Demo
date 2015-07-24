@@ -10,8 +10,11 @@ var multipart = require( 'connect-multiparty' )();
 module.exports = function (app, db) {
     var handler = new Handler(db);
     var session = new SessionHandler(db);
-    var analyticRouter;
-    var trackRouter;
+    var analyticRouter = require('./analytic')(db);
+    var trackRouter = require('./track')(db);
+    var adminRouter = require('./admin')(db);
+
+
     app.use(function (req, res, next) {
         if (process.env.NODE_ENV === 'development') {
             console.log('user-agent:', req.headers['user-agent']);
@@ -32,16 +35,18 @@ module.exports = function (app, db) {
     app.get('/avatar/:userName', handler.avatar);
     app.get('/logout', session.kill);
     app.get('/currentUser',session.isAuthenticated, handler.currentUser);
-    app.get('/redirect', session.isAuthenticated, handler.redirect);
+    app.get('/redirect', handler.redirect);
     app.post('/upload',multipart, session.isAuthenticated, handler.upload);
     app.get('/content', session.isAuthenticated, handler.content);
     app.delete('/content', session.isAuthenticated, handler.removeContent);
 
-    analyticRouter = require('./analytic')(db);
-    app.use('/analytic', analyticRouter);
+    // ----------------------------------------------------------
+    // Routers:
+    // ----------------------------------------------------------
 
-    trackRouter = require('./track')(db);
+    app.use('/analytic', analyticRouter);
     app.use('/track', trackRouter);
+    app.use('/admin', adminRouter);
 
 
     // ----------------------------------------------------------

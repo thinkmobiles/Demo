@@ -66,6 +66,58 @@ var MailerModule = function () {
         });
     };
 
+    this.newUserConfirm = function (options) {
+        fs.readFile('public/templates/mailer/confirmUser.html', 'utf8', function (err, template) {
+            var mailOptions;
+
+            if (err) {
+                if (process.env.NODE_ENV !== 'production') {
+                    console.error(err);
+                }
+            } else {
+
+                mailOptions = {
+                    from: FROM,
+                    to: process.env.SUPER_ADMIN_EMAIL,
+                    subject: 'New User',
+                    generateTextFromHTML: true,
+                    html: _.template(template)(options)
+                };
+
+                deliver(mailOptions);
+            }
+        });
+    };
+
+    this.sendInvite = function (options) {
+        fs.readFile('public/templates/mailer/inviteUser.html', 'utf8', function (err, template) {
+            var templateOptions;
+            var mailOptions;
+
+            if (err) {
+                if (process.env.NODE_ENV !== 'production') {
+                    console.error(err);
+                }
+            } else {
+
+                templateOptions = {
+                    firstName: options.firstName,
+                    lastName: options.lastName
+                };
+
+                mailOptions = {
+                    from: FROM,
+                    to: options.email,
+                    subject: 'Your account confirmed',
+                    generateTextFromHTML: true,
+                    html: _.template(template)(templateOptions)
+                };
+
+                deliver(mailOptions);
+            }
+        });
+    };
+
     this.sendWeeklyAnalytic = function (options, callback) {
         fs.readFile('public/templates/mailer/weeklyAnalytic.html', 'utf8', function (err, template) {
             var templateOptions;
