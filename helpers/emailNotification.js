@@ -15,7 +15,7 @@ var Schedule = function (db) {
 
     this.runSchedule = function () {
         var cronJob = NodeCronTab.scheduleJob('0 0 */1 * * *', function () { //production every 2 hours
-            //    var cronJob = NodeCronTab.scheduleJob('*/10 * * * * *', function () { //every 2 minutes
+                //var cronJob = NodeCronTab.scheduleJob('*/10 * * * * *', function () { //every 2 minutes
             var hour = 60 * 60 * 1000;
             var time = new Date(Date.now() - 2 * hour);
             var conditions = {
@@ -120,8 +120,8 @@ var Schedule = function (db) {
 
 
         //==============================================================================================================
-        //var cronJobWeekly = NodeCronTab.scheduleJob('0 8 * * 6 *', function () { //production every saturday at 8 am
-        var cronJobWeekly = NodeCronTab.scheduleJob('0 0 */2 * * *', function () { // every 10 sec
+        var cronJobWeekly = NodeCronTab.scheduleJob('0 8 * * 6 *', function () { //production every saturday at 8 am
+        //var cronJobWeekly = NodeCronTab.scheduleJob('0 0 */2 * * *', function () { // every 10 sec
             console.log('weekly report start');
             var now = new Date(Date.now());
             var to = new Date(now.setHours(24));
