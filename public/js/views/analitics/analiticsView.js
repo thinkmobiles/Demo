@@ -27,6 +27,7 @@ define([
             "click #prospectTable table tr": "showContactInfo",
             "click .customSelect ul li": "updateProspect",
             "click .legend ul li.print span": "print",
+            "click .legend ul li.print ": "printContacts",
             "click .customSelect .showList": "showList",
             "click .contactMe tr": "showMessage",
             "click #startDate, #endDate": "showDatepicker"
@@ -88,6 +89,34 @@ define([
             var el = $(e.target).closest("div.printPart");
             window.frames["print_frame"].document.body.innerHTML = '<style>' + document.getElementById('less:less-style').innerHTML + '</style>' + '<div class="container analitics">' + el.html() + '</div>';
 			window.frames["print_frame"].document.getElementsByClassName("print")[0].style.display="none";
+            window.frames["print_frame"].window.focus();
+            window.frames["print_frame"].window.print();
+        },
+
+        printContacts: function (e) {    var self = this;
+            var domain = $(e.target).closest("span.current").val();
+            if(!domain){
+                return alert('You must choose some domain');
+            }
+            $.ajax({
+                type: "GET",
+                url: "/content",
+                contentType: "application/json",
+                success: function (data) {
+                    if (!data) {
+                        return alert('You must choose some domain')
+                    }
+
+                },
+                error: function (model, xhr) {
+                    self.$el.find(".analitics>.noVideo").show();
+                    self.$el.find(".analitics .haveVideo").hide();
+                }
+            });
+
+            var el = $(e.target).closest("span.printPart");
+            window.frames["print_frame"].document.body.innerHTML = '<style>' + document.getElementById('less:less-style').innerHTML + '</style>' + '<div class="container analitics">' + el.html() + '</div>';
+            window.frames["print_frame"].document.getElementsByClassName("print")[0].style.display="none";
             window.frames["print_frame"].window.focus();
             window.frames["print_frame"].window.print();
         },
