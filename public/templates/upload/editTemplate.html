@@ -45,7 +45,7 @@
                 <div class="videoElement">
                     <div class="left">
                         <span>Please enter brief description:</span>
-                        <textarea name="question1" class="questionText"></textarea>
+                        <textarea name="question<%=count%>" class="questionText"></textarea>
                     </div>
                     <div class="right">
                         <span>Upload video from computer:</span>
@@ -56,14 +56,14 @@
                             </div>
                             <div class="right">
                             </div>
-                            <input type="file" name="video1" accept="video/mp4,video/x-m4v,video/*"/><br/>
+                            <input type="file" name="video<%=count%>" accept="video/mp4,video/x-m4v,video/*"/><br/>
                         </div>
                         <br/>
                         <span>Or paste a link:</span>
 
                         <div class="uploadContainer link">
                             <div class="left">
-                                <input type="text" name="video1"/>
+                                <input type="text" name="video<%=count%>"/>
                             </div>
                             <div class="right">
                             </div>
