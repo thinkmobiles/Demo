@@ -1053,8 +1053,6 @@ var routeHandler = function (db) {
 
                 res.status(200).send('Notifications successfully sent');
 
-
-
     };
 
         this.sendDaily = function (req, res, next) {
