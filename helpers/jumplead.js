@@ -291,7 +291,12 @@ var JumpleadModule = function (db) {
             } catch (e) {
                 console.log(e);
             }
-
+            if(!body.access_token||!body.refresh_token){
+                var err = new Error();
+                err.message = "Some trouble with jumplead";
+                err.status = 500;
+                return callback(err);
+            }
             UserModel.findByIdAndUpdate(userId, {
                 $set: {
                     accessToken: body.access_token,
