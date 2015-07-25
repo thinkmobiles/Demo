@@ -434,7 +434,7 @@ define([
         },
 		renderEdit: function (data) {
 			var self = this;
-            this.$el.html(_.template(EditTemplate)({content:data.content, url:data.url, count:data.content.survey.length}));
+            this.$el.html(_.template(EditTemplate)({content:data.content, url:data.url, count:data.content.survey.length+1}));
 
 			this.countQuestion = data.content.survey.length;
 			$(this.$el).find(".countQuestion").val(this.countQuestion);
