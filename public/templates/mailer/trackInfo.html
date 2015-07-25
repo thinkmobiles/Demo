@@ -6,51 +6,53 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   </head>
   <body>
-	<div class="info">
+	<div class="info" style="color:black">
       <h1 style="text-transform:uppercase;color:#656565;font-weight:normal;font-size:24px;">Information for <%=companyName %></h1>
       <h2 style="color:#26c2ff;
 	  font-weight:normal;
 	  font-size:24px;">New activity on your account </h2>
-        <ul>
+        <ul style="list-style:none;margin:0;padding:0; margin-left:18px;font-size:17px;">
           <li><span style=" color:#656565;" class="silver">NAME:</span> <%=name %></li>
           <li><span style=" color:#656565;" class="silver">EMAIL:</span> <%=email %></li>
 		</ul>
 
-      <h3 style="  font-weight:normal;
-	  font-size:17px;background-image: url("http://134.249.164.53:8838/i/eye.png");
-      background-repeat: no-repeat;
-      padding-left: 30px;
-      background-position: 5px 50%;" class="videoAct">Video activity</h3>
+		<table><tr><td><img src="http://134.249.164.53:8838/i/eye.png" alt="img" style="margin-left:5px;"/></td><td>
+			  <h3 style="  font-weight:normal;
+						 font-size:17px;
+						 background-repeat: no-repeat;
+						 padding-left: 0px;
+						 background-position: 5px 50%;" class="videoAct">Video activity</h3></td></tr></table>
       <% if (videos.length){ %>
-      <table cellspacing="0" cellpadding="0" style="margin-left:30px;">
+      <table cellspacing="0" cellpadding="0" style="margin-left:30px;font-size:13px;">
         <tr>
-          <th>
-            <b>Name of video</b>
+          <th style="background-color:#fbfbfb;border:1px solid #efefef;text-align:left;">
+            <span style="padding:5px 15px;line-height:30px"><b>Name of video</b></span>
           </th>
-          <th>
-            <b>Is watched to the end</b>
+          <th style="background-color:#fbfbfb;border:1px solid #efefef;text-align:left;">
+            <span style="padding:5px 15px;line-height:30px"><b>Is watched to the end</b></span>
           </th>
-          <th>
-            <b>How long watched</b>
+          <th style="background-color:#fbfbfb;border:1px solid #efefef;text-align:left;">
+            <span style="padding:5px 15px;line-height:30px"><b>How long watched</b></span>
           </th>
         </tr>
         <% _.each(videos, function(item){%>
         <tr>
           <td style="border:1px solid #efefef;">
-            <a href="<%= process.env.WEB_HOST +'/'+ item.video%>"><%=item.video.split('/').pop() %></a>
+            <span style="padding:0 15px;line-height:30px"><a href="<%= process.env.WEB_HOST +'/'+ item.video%>"><%=item.video.split('/').pop() %></a></span>
           </td>
           <td style="border:1px solid #efefef;">
-            <%=item.end?'Yes':'No' %>
+            <span style="padding:0 15px;line-height:30px"><%=item.end?'Yes':'No' %></span>
           </td>
           <td style="border:1px solid #efefef;">
+			<span style="padding:0 15px;line-height:30px">
+              <% var all = item.stopTime; %>
+              <% var m = Math.floor(all/60); %>
+              <% var s = all-m*60; %>
+              <%= m+ ':' + (s<10?'0'+s:s)%>
+				  </span>
 
-            <% var all = item.stopTime; %>
-            <% var m = Math.floor(all/60); %>
-            <% var s = all-m*60; %>
-            <%= m+ ':' + (s<10?'0'+s:s)%>
-
-                </td>
-        </tr>
+            </td>
+          </tr>
         <% });%>
       </table>
       <% } else { %>
@@ -58,28 +60,28 @@
       <% } %>
       <br/>
 
-      <h3 style="  font-weight:normal;
-	  font-size:17px;  background-image: url("http://134.249.164.53:8838/i/message.png");
+      <table><tr><td><img src="http://134.249.164.53:8838/i/message.png" alt="img" style="margin-left:5px;"/></td><td><h3 style="  font-weight:normal;
+	  font-size:17px;
       background-repeat: no-repeat;
-      padding-left: 30px;
-      background-position: 5px 50%;" class="questionAct">Question activity:</h3>
+      padding-left: 0px;
+      background-position: 5px 50%;" class="questionAct">Question activity:</h3></td></tr></table>
       <% if (questions.length){ %>
-      <table cellspacing="0" cellpadding="0" style="margin-left:30px;">
+      <table cellspacing="0" cellpadding="0" style="margin-left:30px;font-size:13px;">
         <tr>
-          <th>
-            <b>Question</b>
+          <th style="background-color:#fbfbfb;border:1px solid #efefef;text-align:left;">
+            <span style="padding:0 15px;line-height:30px"><b>Question</b></span>
           </th>
-          <th>
-            <b>Rate</b>
+          <th style="background-color:#fbfbfb;border:1px solid #efefef;text-align:left;">
+            <span style="padding:0 15px;line-height:30px"><b>Rate</b></span>
           </th>
         </tr>
         <% _.each(questions, function(item){%>
         <tr>
           <td style="border:1px solid #efefef;">
-            <%=item.question %>
+            <span style="padding:0 15px;line-height:30px"><%=item.question %></span>
           </td>
           <td style="border:1px solid #efefef;">
-            <%= item.item%>
+            <span style="padding:0 15px;line-height:30px"><%= item.item%></span>
 
           </td>
         </tr>
@@ -90,17 +92,19 @@
       <% } %>
       <br/>
 
-      <h3  style="  font-weight:normal;
-	  font-size:17px; background-image: url("http://134.249.164.53:8838/i/download.png");
+      <table><tr><td><img src="http://134.249.164.53:8838/i/download.png" alt="img" style="margin-left:5px;"/></td><td><h3  style="  
+																												   font-weight:normal;
+	  font-size:17px;
       background-repeat: no-repeat;
-      padding-left: 30px;
+      padding-left: 0px;
       background-position: 5px 50%;" class="downloadAct">Download document: </h3>
+	  </td></tr></table>
       <% if (documents.length){ %>
       <ul style="list-style:none;
 	  margin:0px;
 	  padding:0px;
-	  margin-left:30px;
-	  font-size:20px;">
+	  margin-left:18px;
+	  font-size:13px;">
         <% _.each(documents, function(item){%>
         <li> <a href="<%= process.env.WEB_HOST +'/'+ item.document%>"><%=item.document.split('/').pop() %></a></li>
         <% });%>

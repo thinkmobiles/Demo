@@ -1092,84 +1092,43 @@ var routeHandler = function (db) {
     };
 
         this.sendDaily = function (req, res, next) {
-        var contentId = req.query.contentId;
-             async.waterfall([
 
-                function (waterfallCb) {
-                    TrackModel.find({contentId:contentId }, function (err, docs) {
-                        if (err) {
-                            return waterfallCb(err);
-                        }
-                        if (!docs.length) {
-                            var error = new Error();
-                            error.message = 'No data to send';
-                            return waterfallCb(error);
-                        }
-                        waterfallCb(null, docs)
-                    });
-                },
-
-                // supplement name & email field if they missing
-                function (docs, waterfallCb) {
-                    async.each(docs, function (track, eachCb) {
-                        if (!track.firstName || !track.lastName || !track.email) {
-                            TrackModel.findOne({jumpleadId: track.jumpleadId}, function (err, doc) {
-                                if (err) {
-                                    return eachCb(err);
-                                }
-                                track.firstName = doc.firstName;
-                                track.lastName = doc.lastName;
-                                track.email = doc.email;
-                                eachCb(null);
-                            })
-                        } else {
-                            return eachCb(null);
-                        }
-                    }, function (err) {
-                        if (err) {
-                            return waterfallCb(err);
-                        }
-                        waterfallCb(null, docs)
-                    });
-                },
-
-                //Populate contentId field
-                function (docs, waterfallCb) {
-                    ContentModel.populate(docs, {path: 'contentId'}, function (err, popDocs) {
-                        if (err) {
-                            return waterfallCb(err);
-                        }
-                        waterfallCb(null, popDocs);
-                    });
-                },
-
-                //send notification to company email
-                function (docs, waterfallCb) {
-                    async.each(docs, function (doc, cb) {
-                        var name = doc.firstName + ' ' + doc.lastName;
                         var data = {
-                            companyName: doc.contentId.name,
-                            companyEmail: doc.contentId.email,
-                            name: name,
-                            email: doc.email,
-                            documents: doc.documents,
-                            videos: doc.videos,
-                            questions: doc.questions
+                            companyName: "myName",
+                            companyEmail: "slavik990@gmail.com",
+                            name: "myName",
+                            email:  "slavik990@gmail.com",
+                            documents: [{document:"myDoc1"},{document:"myDoc2"}],
+                            videos: [
+                                {
+                                    video:"myVirde1",
+                                    end:true,
+                                    stopTime:123
+                                },
+                                {
+                                    video:"myVirde1",
+                                    end:true,
+                                    stopTime:123
+                                }
+
+                            ],
+                            questions: [
+                                {
+                                    question:"myVirde1",
+                                    item:123
+                                },
+                                {
+                                    question:"myVirde1",
+
+                                    item:123
+                                }
+
+                            ]
                         };
-                        mailer.sendTrackInfo(data, cb);
-                    }, function (err) {
-                        if (err) {
-                            return waterfallCb(err)
-                        }
-                        waterfallCb(null);
-                    });
-                }],
-            function (err) {
-                if (err) {
-                    return console.error(err);
-                }
+                        mailer.sendTrackInfo(data);
+
                res.status(200).send('Notifications successfully sent');
-            });
+
     }
 };
 

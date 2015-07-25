@@ -29,13 +29,16 @@ define([
 
 		initialize: function () {
 			this.countQuestion = 0;
+			this.removedQuestions = [];
 			var self = this;
+			self.isEdit = false;
 			$.ajax({
 				type: "GET",
 				url: "/content",
 				contentType: "application/json",
 				success: function (data) {
 					self.renderEdit(data);
+					self.isEdit = true;
 					/*if (!data) {
 						console.log('Successfully send')
 					} else {
@@ -100,20 +103,31 @@ define([
 		},
 
 		removeQuestion: function(e){
-			var current = $(e.target).closest(".collapseQuestion");
-			var n = this.$el.find(".collapseQuestions .collapseQuestion").index(current);
-			this.$el.find(".videoContainer .videoElement").each(function(index){
-				if (index>n){
-					$(this).find(".questionText").attr("name","question"+index);
-					$(this).find(".right .uploadContainer.file input[type='file']").attr("name","video"+index);
-					$(this).find(".right .uploadContainer.link input").attr("name","video"+index);
-					$(this).find(".left .uploadContainer.file input[type='file']").attr("name","file"+index);
-				}
-			});
-			this.$el.find(".videoContainer .videoElement").eq(n).remove();
-			this.countQuestion--;
-			$(this.$el).find(".countQuestion").val(this.countQuestion);
-			current.remove();
+			if (!this.isEdit){
+				var current = $(e.target).closest(".collapseQuestion");
+				var n = this.$el.find(".collapseQuestions .collapseQuestion").index(current);
+				this.$el.find(".videoContainer .videoElement").each(function(index){
+					if (index>n){
+						$(this).find(".questionText").attr("name","question"+index);
+						$(this).find(".right .uploadContainer.file input[type='file']").attr("name","video"+index);
+						$(this).find(".right .uploadContainer.link input").attr("name","video"+index);
+						$(this).find(".left .uploadContainer.file input[type='file']").attr("name","file"+index);
+					}
+				});
+				this.$el.find(".videoContainer .videoElement").eq(n).remove();
+				this.countQuestion--;
+				$(this.$el).find(".countQuestion").val(this.countQuestion);
+				current.remove();
+				
+			}else{
+				var current = $(e.target).closest(".collapseQuestion");
+				var cur = current.data("id");
+				var n = this.$el.find(".collapseQuestions .collapseQuestion").index(current);
+				this.$el.find(".videoContainer .videoElement").eq(n).remove();
+				this.removedQuestions.push(cur);
+				$(this.$el).find(".removedQuestions").val(this.removedQuestions.join(" "));
+				current.remove();
+			}
 		},
 
 		clickOnFile:function(e){
@@ -152,7 +166,8 @@ define([
 				$(this.$el).find(".collapseQuestions").append(_.template(CollapseQuestion)({
 					question:$(e.target).closest(".videoElement").find(".questionText").val(),
 					video:videoName,
-					pdf:self.getFiles($(e.target).closest(".videoElement").find(".left input[type='file']").get(0).files)
+					pdf:self.getFiles($(e.target).closest(".videoElement").find(".left input[type='file']").get(0).files),
+					index:this.countQuestion
 				}));
 				$(this.$el).find(".countQuestion").val(this.countQuestion);
 				$(e.target).closest(".videoElement").hide();
@@ -307,8 +322,9 @@ define([
 			var self = this;
             this.$el.html(_.template(EditTemplate)({content:data.content, url:data.url}));
 
-		
-			_.each(data.content.survey,function(item){
+			this.countQuestion = data.content.survey.length;
+			$(this.$el).find(".countQuestion").val(this.countQuestion);
+			_.each(data.content.survey,function(item, index){
 				var pdf = _.map(item.pdfUri,function(item){
 					return item.split("/").pop();
 				})
@@ -316,13 +332,10 @@ define([
 				$(self.$el).find(".collapseQuestions").append(_.template(CollapseQuestion)({
 					question:item.question,
 					video:item.videoUri.split("/").pop(),
-					pdf:pdf
+					pdf:pdf,
+					index:index
 				}));
-
-				
 			});
-
-			
             return this;
         }
     });

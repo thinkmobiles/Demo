@@ -1,127 +1,138 @@
-<div class="info">
-    <span>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Demystifying Email Design</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  </head>
+  <body>
+	<div class="info" style="color:black">
+      <span>
         <h1>Weekly analytic information for <%=companyName %></h1>
-    </span>
-    <span>
+      </span>
+      <span>
         <img src="<%= process.env.WEB_HOST +'/'+ companyLogo%>" alt="logo" height="100" width="150">
-    </span>
-    <% if (visits.total>0){ %>
-    <h2>New activity on your account </h2>
+      </span>
+      <% if (visits.total>0){ %>
+      <h2>New activity on your account </h2>
 
-    <p>
+      <p>
 
         You have <%=visits.total %> prospects visit your site :
-    <li><%=visits.new %> new prospects</li>
-    <li><%=visits.old %> invited prospects</li>
+		<li><%=visits.new %> new prospects</li>
+		<li><%=visits.old %> invited prospects</li>
 
-    </p>
+      </p>
 
-    <h3>Videos activity</h3>
-    <table cellspacing="0" border="1" cellpadding="0">
+      <h3>Videos activity</h3>
+      <table cellspacing="0" border="1" cellpadding="0">
         <tr>
-            <th>
-                <b>Name of video</b>
-            </th>
-            <th>
-                <b>Views</b>
-            </th>
+          <th>
+            <b>Name of video</b>
+          </th>
+          <th>
+            <b>Views</b>
+          </th>
         </tr>
         <tr>
-            <td>
-                <a href="<%= process.env.WEB_HOST +'/'+ videos.mainVideo.name%>"> Main video</a>
-            </td>
-            <td>
-                <%=videos.mainVideo.count %>
-            </td>
+          <td>
+            <a href="<%= process.env.WEB_HOST +'/'+ videos.mainVideo.name%>"> Main video</a>
+          </td>
+          <td>
+            <%=videos.mainVideo.count %>
+          </td>
         </tr>
         <% _.each(videos.survey, function(item){%>
         <tr>
-            <td>
-                <a href="<%= process.env.WEB_HOST +'/'+ item.name%>"><%=item.name.split('/').pop() %></a>
-            </td>
-            <td>
-                <%=item.count %>
-            </td>
+          <td>
+            <a href="<%= process.env.WEB_HOST +'/'+ item.name%>"><%=item.name.split('/').pop() %></a>
+          </td>
+          <td>
+            <%=item.count %>
+          </td>
         </tr>
         <% });%>
-    </table>
-    <br/>
-    <b>
+      </table>
+      <br/>
+      <b>
         <%=videos.watchedEnd %> of <%=visits.total %> watched the entire Main Video <br/>
         <%=videos.watchedSurvey %> of <%=visits.total %> watched the additional videos
 
-    </b>
-    <br/>
+      </b>
+      <br/>
 
-    <h3>Question activity:</h3>
-    <table cellspacing="0" border="1" cellpadding="0">
+      <h3>Question activity:</h3>
+      <table cellspacing="0" border="1" cellpadding="0">
         <tr>
-            <th rowspan="2">
-                <b>Question</b>
-            </th>
-            <th colspan="3">
-                <b>Rate</b>
-            </th>
+          <th rowspan="2">
+            <b>Question</b>
+          </th>
+          <th colspan="3">
+            <b>Rate</b>
+          </th>
         </tr>
         <tr>
-            <th>Not interest</th>
-            <th>Somewhat interest</th>
-            <th>Very interest</th>
+          <th>Not interest</th>
+          <th>Somewhat interest</th>
+          <th>Very interest</th>
         </tr>
         <% _.each(questions, function(item){%>
         <tr>
-            <td>
-                <%=item.name %>
-            </td>
-            <td>
-                <%if(!item.not&&!item.some&&!item.very){ %>
-                <%var sum = item.not+item.some+item.very%>
+          <td>
+            <%=item.name %>
+          </td>
+          <td>
+            <%if(!item.not&&!item.some&&!item.very){ %>
+            <%var sum = item.not+item.some+item.very%>
 
-                <%} else { var sum = 1} %>
+            <%} else { var sum = 1} %>
 
-                <%=Math.floor(item.not/sum*100)%>
+            <%=Math.floor(item.not/sum*100)%>
 
-            </td>
-            <td>
-                <%= Math.floor(item.some/sum*100)%>
-            </td>
-            <td>
-                <%=100-(Math.floor(item.not/sum*100)+ Math.floor(item.some/sum*100))%>
-            </td>
+          </td>
+          <td>
+            <%= Math.floor(item.some/sum*100)%>
+          </td>
+          <td>
+            <%=100-(Math.floor(item.not/sum*100)+ Math.floor(item.some/sum*100))%>
+          </td>
         </tr>
         <% });%>
-    </table>
-    <br/>
+      </table>
+      <br/>
 
-    <h3>Download document: </h3>
-    <table cellspacing="0" border="1" cellpadding="0">
+      <h3>Download document: </h3>
+      <table cellspacing="0" border="1" cellpadding="0">
         <tr>
-            <th>
-                <b>Name of document</b>
-            </th>
-            <th>
-                <b>Downloads</b>
-            </th>
+          <th>
+            <b>Name of document</b>
+          </th>
+          <th>
+            <b>Downloads</b>
+          </th>
         </tr>
         <% _.each(documents.docs, function(item){%>
         <tr>
-            <td>
-                <a href="<%= process.env.WEB_HOST +'/'+ item.name%>"><%=item.name.split('/').pop() %></a>
-            </td>
-            <td>
-                <%=item.count %>
-            </td>
+          <td>
+            <a href="<%= process.env.WEB_HOST +'/'+ item.name%>"><%=item.name.split('/').pop() %></a>
+          </td>
+          <td>
+            <%=item.count %>
+          </td>
         </tr>
         <% });%>
-    </table>
-    <br/>
-    <%=documents.download %> of <%=visits.total %> prospects downloaded documents
-    <br/>
-    <% } else { %>
-    You doesn't have any prospect activity
-    <% } %>
-    <hr/>
-    <footer>
+      </table>
+      <br/>
+      <%=documents.download %> of <%=visits.total %> prospects downloaded documents
+      <br/>
+      <% } else { %>
+      You doesn't have any prospect activity
+      <% } %>
+      <hr/>
+      <footer>
         Copyright DemoRocket 2015
-    </footer>
-</div>
+      </footer>
+	</div>
+  </body>
+</html>
+
