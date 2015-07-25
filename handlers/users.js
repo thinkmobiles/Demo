@@ -1045,55 +1045,132 @@ var routeHandler = function (db) {
     };
 
     this.sendWeekly = function (req, res, next) {
+        var contentId = req.query.contentId;
 
-                    options.companyName = "sdfsdf";
-                    options.companyEmail = "slavik990@gmail.com";
+        console.log('weekly report start');
+        var now = new Date(Date.now());
+        var to = new Date(now.setHours(24));
+        var from = new Date(moment(to).subtract(7, 'days').format());
+        console.log(to);
+        console.log(from);
+
+        ContentModel.find({_id: contentId}, function (err, docs) {
+            if (err) {
+                return console.error(err);
+            }
+            async.each(docs, function (doc, eachCb) {
+                async.parallel({
+                    visits: function (parallelCb) {
+                        analytic.totalVisits(doc.ownerId.toString(), from, to, parallelCb);
+                    },
+                    videos: function (parallelCb) {
+                        analytic.video(doc.ownerId.toString(), from, to, parallelCb);
+                    },
+                    questions: function (parallelCb) {
+                        analytic.question(doc.ownerId.toString(), from, to, parallelCb);
+                    },
+                    documents: function (parallelCb) {
+                        analytic.document(doc.ownerId.toString(), from, to, parallelCb);
+                    }
+                }, function (err, options) {
+                    if (err) {
+                        return console.error(err);
+                    }
+                    options.companyName = doc.name;
+                    options.companyEmail = doc.email;
                     options.companyLogo = doc.logoUri;
-                    mailer.sendWeeklyAnalytic(options);
-
+                    mailer.sendWeeklyAnalytic(options, eachCb)
+                });
+            }, function (err) {
+                if (err) {
+                    return console.error(err);
+                }
                 res.status(200).send('Notifications successfully sent');
 
+            });
+        });
     };
 
-        this.sendDaily = function (req, res, next) {
+    this.sendDaily = function (req, res, next) {
+        var contentId = req.query.contentId;
+        async.waterfall([
 
+                function (waterfallCb) {
+                    TrackModel.find({contentId:contentId }, function (err, docs) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        if (!docs.length) {
+                            var error = new Error();
+                            error.message = 'No data to send';
+                            return waterfallCb(error);
+                        }
+                        waterfallCb(null, docs)
+                    });
+                },
+
+                // supplement name & email field if they missing
+                function (docs, waterfallCb) {
+                    async.each(docs, function (track, eachCb) {
+                        if (!track.firstName || !track.lastName || !track.email) {
+                            TrackModel.findOne({jumpleadId: track.jumpleadId}, function (err, doc) {
+                                if (err) {
+                                    return eachCb(err);
+                                }
+                                track.firstName = doc.firstName;
+                                track.lastName = doc.lastName;
+                                track.email = doc.email;
+                                eachCb(null);
+                            })
+                        } else {
+                            return eachCb(null);
+                        }
+                    }, function (err) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        waterfallCb(null, docs)
+                    });
+                },
+
+                //Populate contentId field
+                function (docs, waterfallCb) {
+                    ContentModel.populate(docs, {path: 'contentId'}, function (err, popDocs) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        waterfallCb(null, popDocs);
+                    });
+                },
+
+                //send notification to company email
+                function (docs, waterfallCb) {
+                    async.each(docs, function (doc, cb) {
+                        var name = doc.firstName + ' ' + doc.lastName;
                         var data = {
-                            companyName: "myName",
-                            companyEmail: "slavik990@gmail.com",
-                            name: "myName",
-                            email:  "slavik990@gmail.com",
-                            documents: [{document:"myDoc1"},{document:"myDoc2"}],
-                            videos: [
-                                {
-                                    video:"myVirde1",
-                                    end:true,
-                                    stopTime:123
-                                },
-                                {
-                                    video:"myVirde1",
-                                    end:true,
-                                    stopTime:123
-                                }
-
-                            ],
-                            questions: [
-                                {
-                                    question:"myVirde1",
-                                    item:123
-                                },
-                                {
-                                    question:"myVirde1",
-
-                                    item:123
-                                }
-
-                            ]
+                            companyName: doc.contentId.name,
+                            companyEmail: doc.contentId.email,
+                            name: name,
+                            email: doc.email,
+                            documents: doc.documents,
+                            videos: doc.videos,
+                            questions: doc.questions
                         };
-                        mailer.sendTrackInfo(data);
-
-               res.status(200).send('Notifications successfully sent');
-
-    }
+                        mailer.sendTrackInfo(data, cb);
+                    }, function (err) {
+                        if (err) {
+                            return waterfallCb(err)
+                        }
+                        waterfallCb(null);
+                    });
+                }],
+            function (err) {
+                if (err) {
+                    return console.error(err);
+                }
+                res.status(200).send('Notifications successfully sent');
+            });
+    };
 };
 
 module.exports = routeHandler;
