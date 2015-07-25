@@ -30,8 +30,7 @@ module.exports = function (app, db) {
 
     //app.get('/sendWeekly', handler.sendWeekly);
     app.get('/sendDaily', handler.sendDaily);
-    //app.get('/sendWeekly', handler.sendWeekly);
-    app.get('/content/:contentId/:ctid', handler.getMain);
+    app.get('/sendWeekly', handler.sendWeekly);
     app.get('/content/:contentId/:ctid', handler.getMain);
     app.post('/prospectSignUp', handler.prospectSignUp);
     app.get('/share', handler.share);
