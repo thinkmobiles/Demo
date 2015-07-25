@@ -84,8 +84,8 @@ var Schedule = function (db) {
                         async.each(docs, function (doc, cb) {
                             var name = doc.firstName + ' ' + doc.lastName;
                             var data = {
-                                companyName: doc.name,
-                                companyEmail: doc.email,
+                                companyName: doc.contentId.name,
+                                companyEmail: doc.contentId.email,
                                 name: name,
                                 email: doc.email,
                                 documents: doc.documents,

@@ -4,11 +4,13 @@ var RESPONSES = require('../constants/responses');
 var fs = require("fs");
 var logWriter = require('../helpers/logWriter')();
 var Handler = require('../handlers/users');
+var EditHandler = require('../handlers/edit');
 var SessionHandler = require('../handlers/sessions');
 var multipart = require( 'connect-multiparty' )();
 
 module.exports = function (app, db) {
     var handler = new Handler(db);
+    var editHandler = new EditHandler(db);
     var session = new SessionHandler(db);
     var analyticRouter = require('./analytic')(db);
     var trackRouter = require('./track')(db);
@@ -26,6 +28,10 @@ module.exports = function (app, db) {
         res.sendfile('index.html');
     });
 
+    //app.get('/sendWeekly', handler.sendWeekly);
+    app.get('/sendDaily', handler.sendDaily);
+    //app.get('/sendWeekly', handler.sendWeekly);
+    app.get('/content/:contentId/:ctid', handler.getMain);
     app.get('/content/:contentId/:ctid', handler.getMain);
     app.post('/prospectSignUp', handler.prospectSignUp);
     app.get('/share', handler.share);
@@ -37,6 +43,7 @@ module.exports = function (app, db) {
     app.get('/currentUser',session.isAuthenticated, handler.currentUser);
     app.get('/redirect', handler.redirect);
     app.post('/upload',multipart, session.isAuthenticated, handler.upload);
+    app.post('/upload',multipart, session.isAuthenticated, editHandler.edit);
     app.get('/content', session.isAuthenticated, handler.content);
     app.delete('/content', session.isAuthenticated, handler.removeContent);
 
