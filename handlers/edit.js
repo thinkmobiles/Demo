@@ -7,7 +7,7 @@ var _ = require('../public/js/libs/underscore/underscore-min');
 var LocalFs = require('./fileStorage/localFs')();
 var localFs = new LocalFs();
 var path = require('path');
-
+var pdfutils = require('pdfutils').pdfutils;
 var fs = require('fs');
 var routeHandler = function (db) {
 
@@ -166,7 +166,8 @@ var routeHandler = function (db) {
         var data = req.body;
         var files = req.files;
         var sep = path.sep;
-        var delSurvey = data.removedQuestions.split(' ');
+
+        var delSurvey = data.removedQuestions?data.removedQuestions.split(' '):[];
         var id;
         var url;
 
@@ -262,8 +263,10 @@ var routeHandler = function (db) {
                         return waterfallCb(null);
                     }
                     async.each(delSurvey, function(num, eachCb){
-                        var dir = localFs.defaultPublicDir + sep + 'video' + sep + id.toString()+ sep + 'survey'+num;
-                        //rmDir(dir);
+                        num= parseInt(num);
+                        var arr = content.survey[num].videoUri.split(sep);
+                        var dir = localFs.defaultPublicDir + sep + 'video' + sep + id.toString() + sep + arr[arr.length - 2];
+                        rmDir(dir);
                         ContentModel.findByIdAndUpdate(id, {$pull: {survey:{question: content.survey[num].question}}}, function (err, doc) {
                             if(err){
                                 return eachCb(err);
@@ -300,7 +303,9 @@ var routeHandler = function (db) {
                 if (err) {
                     return next(err)
                 }
-                res.status(200).send({message: 'Success modified'})
+                var url = process.env.HOME_PAGE + id.toString() + '/{{ctid}}';
+                res.status(200).send({url: url});
+                //res.status(200).send({message: 'Success modified'})
             });
     };
 };
