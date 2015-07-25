@@ -4,70 +4,25 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<title>Demystifying Email Design</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-	<style>
-	  .info h1{
-	  text-transform:uppercase;
-	  color:#656565;
-	  font-weight:normal;
-	  font-size:24px;
-	  }
-	  .info h2{
-	  color:#26c2ff;
-	  font-weight:normal;
-	  font-size:24px;
-	  }
-	    .info h3{
-	  font-weight:normal;
-	  font-size:17px;
-	  }
-	  .info .videoAct{
-	  background-image: url("http://134.249.164.53:8838/i/eye.png");
-      background-repeat: no-repeat;
-      padding-left: 30px;
-      background-position: 5px 50%;
-	  }
-	  .info .questionAct{
-	  background-image: url("http://134.249.164.53:8838/i/message.png");
-      background-repeat: no-repeat;
-      padding-left: 30px;
-      background-position: 5px 50%;
-	  }
-	  .info .downloadAct{
-	  background-image: url("http://134.249.164.53:8838/i/download.png");
-      background-repeat: no-repeat;
-      padding-left: 30px;
-      background-position: 5px 50%;
-	  }
-	  .info ul{
-	  list-style:none;
-	  margin:0px;
-	  padding:0px;
-	  margin-left:30px;
-	  font-size:20px;
-	  }
-	  .silver{
-	  color:#656565;
-	  }
-	  .info table{
-	  margin-left:30px;
-	  }
-	  .info table tr td{
-	  border:1px solid #efefef;
-	  }
-	</style>
   </head>
   <body>
 	<div class="info">
-      <h1>Information for <%=companyName %></h1>
-      <h2>New activity on your account </h2>
+      <h1 style="text-transform:uppercase;color:#656565;font-weight:normal;font-size:24px;">Information for <%=companyName %></h1>
+      <h2 style="color:#26c2ff;
+	  font-weight:normal;
+	  font-size:24px;">New activity on your account </h2>
         <ul>
-          <li><span class="silver">NAME:</span> <%=name %></li>
-          <li><span class="silver">EMAIL:</span> <%=email %></li>
+          <li><span style=" color:#656565;" class="silver">NAME:</span> <%=name %></li>
+          <li><span style=" color:#656565;" class="silver">EMAIL:</span> <%=email %></li>
 		</ul>
 
-      <h3 class="videoAct">Video activity</h3>
+      <h3 style="  font-weight:normal;
+	  font-size:17px;background-image: url("http://134.249.164.53:8838/i/eye.png");
+      background-repeat: no-repeat;
+      padding-left: 30px;
+      background-position: 5px 50%;" class="videoAct">Video activity</h3>
       <% if (videos.length){ %>
-      <table cellspacing="0" cellpadding="0">
+      <table cellspacing="0" cellpadding="0" style="margin-left:30px;">
         <tr>
           <th>
             <b>Name of video</b>
@@ -81,13 +36,13 @@
         </tr>
         <% _.each(videos, function(item){%>
         <tr>
-          <td>
+          <td style="border:1px solid #efefef;">
             <a href="<%= process.env.WEB_HOST +'/'+ item.video%>"><%=item.video.split('/').pop() %></a>
           </td>
-          <td>
+          <td style="border:1px solid #efefef;">
             <%=item.end?'Yes':'No' %>
           </td>
-          <td>
+          <td style="border:1px solid #efefef;">
 
             <% var all = item.stopTime; %>
             <% var m = Math.floor(all/60); %>
@@ -103,9 +58,13 @@
       <% } %>
       <br/>
 
-      <h3 class="questionAct">Question activity:</h3>
+      <h3 style="  font-weight:normal;
+	  font-size:17px;  background-image: url("http://134.249.164.53:8838/i/message.png");
+      background-repeat: no-repeat;
+      padding-left: 30px;
+      background-position: 5px 50%;" class="questionAct">Question activity:</h3>
       <% if (questions.length){ %>
-      <table cellspacing="0" cellpadding="0">
+      <table cellspacing="0" cellpadding="0" style="margin-left:30px;">
         <tr>
           <th>
             <b>Question</b>
@@ -116,10 +75,10 @@
         </tr>
         <% _.each(questions, function(item){%>
         <tr>
-          <td>
+          <td style="border:1px solid #efefef;">
             <%=item.question %>
           </td>
-          <td>
+          <td style="border:1px solid #efefef;">
             <%= item.item%>
 
           </td>
@@ -131,9 +90,17 @@
       <% } %>
       <br/>
 
-      <h3 class="downloadAct">Download document: </h3>
+      <h3  style="  font-weight:normal;
+	  font-size:17px; background-image: url("http://134.249.164.53:8838/i/download.png");
+      background-repeat: no-repeat;
+      padding-left: 30px;
+      background-position: 5px 50%;" class="downloadAct">Download document: </h3>
       <% if (documents.length){ %>
-      <ul>
+      <ul style="list-style:none;
+	  margin:0px;
+	  padding:0px;
+	  margin-left:30px;
+	  font-size:20px;">
         <% _.each(documents, function(item){%>
         <li> <a href="<%= process.env.WEB_HOST +'/'+ item.document%>"><%=item.document.split('/').pop() %></a></li>
         <% });%>
