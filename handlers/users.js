@@ -10,7 +10,7 @@ var request = require('request');
 var REG_EXP = require('../constants/regExp');
 
 var badRequests = require('../helpers/badRequests');
-
+var Analytic = require('../helpers/analytic');
 var _ = require('../public/js/libs/underscore/underscore-min');
 var LocalFs = require('./fileStorage/localFs')();
 var localFs = new LocalFs();
@@ -43,7 +43,7 @@ var routeHandler = function (db) {
 
     var jumplead = new Jumplead(db);
     var session = new Sessions(db);
-
+    var analytic = new Analytic(db);
     function normalizeEmail(email) {
         return email.trim().toLowerCase();
     };
@@ -1044,7 +1044,54 @@ var routeHandler = function (db) {
             });
     };
 
-    this.sendDaily = function (req, res, next) {
+    this.sendWeekly = function (req, res, next) {
+        var contentId = req.query.contentId;
+
+        console.log('weekly report start');
+        var now = new Date(Date.now());
+        var to = new Date(now.setHours(24));
+        var from = new Date(moment(to).subtract(7, 'days').format());
+        console.log(to);
+        console.log(from);
+
+        ContentModel.find({_id: contentId}, function (err, docs) {
+            if (err) {
+                return console.error(err);
+            }
+            async.each(docs, function (doc, eachCb) {
+                async.parallel({
+                    visits: function (parallelCb) {
+                        analytic.totalVisits(doc.ownerId.toString(), from, to, parallelCb);
+                    },
+                    videos: function (parallelCb) {
+                        analytic.video(doc.ownerId.toString(), from, to, parallelCb);
+                    },
+                    questions: function (parallelCb) {
+                        analytic.question(doc.ownerId.toString(), from, to, parallelCb);
+                    },
+                    documents: function (parallelCb) {
+                        analytic.document(doc.ownerId.toString(), from, to, parallelCb);
+                    }
+                }, function (err, options) {
+                    if (err) {
+                        return console.error(err);
+                    }
+                    options.companyName = doc.name;
+                    options.companyEmail = doc.email;
+                    options.companyLogo = doc.logoUri;
+                    mailer.sendWeeklyAnalytic(options, eachCb)
+                });
+            }, function (err) {
+                if (err) {
+                    return console.error(err);
+                }
+                res.status(200).send('Notifications successfully sent');
+
+            });
+        });
+    };
+
+        this.sendDaily = function (req, res, next) {
         var contentId = req.query.contentId;
              async.waterfall([
 
