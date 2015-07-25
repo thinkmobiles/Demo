@@ -34,25 +34,25 @@
           <th style="background-color:#fbfbfb;border:1px solid #efefef;text-align:left;">
             <span style="padding:0 15px;line-height:30px"><b>Name of video</b></span>
           </th>
-          <th>
+          <th style="background-color:#fbfbfb;border:1px solid #efefef;text-align:left;">
             <span style="padding:0 15px;line-height:30px"><b>Views</b></span>
           </th>
         </tr>
         <tr>
-          <td>
-            <a href="<%= process.env.WEB_HOST +'/'+ videos.mainVideo.name%>"> Main video</a>
-          </td>
-          <td>
-            <%=videos.mainVideo.count %>
+          <td style="border:1px solid #efefef;">
+            <span style="padding:0 15px;line-height:30px"><a href="<%= process.env.WEB_HOST +'/'+ videos.mainVideo.name%>"> Main video</a></span>
+          </td style="border:1px solid #efefef;">
+          <td style="border:1px solid #efefef;">
+            <span style="padding:0 15px;line-height:30px"><%=videos.mainVideo.count %></span>
           </td>
         </tr>
         <% _.each(videos.survey, function(item){%>
         <tr>
-          <td>
-            <a href="<%= process.env.WEB_HOST +'/'+ item.name%>"><%=item.name.split('/').pop() %></a>
+          <td style="border:1px solid #efefef;">
+            <span style="padding:0 15px;line-height:30px"><a href="<%= process.env.WEB_HOST +'/'+ item.name%>"><%=item.name.split('/').pop() %></a></span>
           </td>
-          <td>
-            <%=item.count %>
+          <td style="border:1px solid #efefef;">
+            <span style="padding:0 15px;line-height:30px"><%=item.count %></span>
           </td>
         </tr>
         <% });%>
@@ -116,20 +116,20 @@
  
       <table cellspacing="0" border="1" cellpadding="0">
         <tr>
-          <th>
-            <b>Name of document</b>
+          <th style="background-color:#fbfbfb;border:1px solid #efefef;text-align:left;">
+            <span style="padding:0 15px;line-height:30px"><b>Name of document</b></span>
           </th>
-          <th>
-            <b>Downloads</b>
+          <th style="background-color:#fbfbfb;border:1px solid #efefef;text-align:left;">
+            <span style="padding:0 15px;line-height:30px"><b>Downloads</b></span>
           </th>
         </tr>
         <% _.each(documents.docs, function(item){%>
         <tr>
-          <td>
-            <a href="<%= process.env.WEB_HOST +'/'+ item.name%>"><%=item.name.split('/').pop() %></a>
+          <td style="border:1px solid #efefef;">
+            <span style="padding:0 15px;line-height:30px"><a href="<%= process.env.WEB_HOST +'/'+ item.name%>"><%=item.name.split('/').pop() %></a></span>
           </td>
-          <td>
-            <%=item.count %>
+          <td style="border:1px solid #efefef;">
+            <span style="padding:0 15px;line-height:30px"><%=item.count %></span>
           </td>
         </tr>
         <% });%>
