@@ -42,7 +42,7 @@ module.exports = function (app, db) {
     app.get('/currentUser',session.isAuthenticated, handler.currentUser);
     app.get('/redirect', handler.redirect);
     app.post('/upload',multipart, session.isAuthenticated, handler.upload);
-    app.post('/upload',multipart, session.isAuthenticated, editHandler.edit);
+    app.post('/updateContent',multipart, session.isAuthenticated, editHandler.updateContent);
     app.get('/content', session.isAuthenticated, handler.content);
     app.delete('/content', session.isAuthenticated, handler.removeContent);
 

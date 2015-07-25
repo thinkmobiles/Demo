@@ -57,8 +57,122 @@ define([
 			});
 		},
 
-		update: function(){
-			alert();
+		update: function(e){
+			var self = this;
+			e.preventDefault();
+			this.$el.find(".error").removeClass("error");
+			var hasError = false;
+			if (!this.$el.find("textarea[name='desc']").val()){
+				this.$el.find("textarea[name='desc']").addClass("error");
+				hasError = true;
+			}
+
+			if (!validation.validPhone(this.$el.find("input[name='phone']").val())){
+				this.$el.find("input[name='phone']").closest(".uploadContainer").addClass("error");
+				hasError = true;
+			}
+
+			if (!validation.validEmail(this.$el.find("input[name='email']").val())){
+				this.$el.find(".uploadContainer input[name='email']").closest(".uploadContainer").addClass("error");
+				hasError = true;
+			}
+
+
+			/*if (!this.$el.find(".uploadContainer.file input[name='video']").val()&&!this.$el.find(".uploadContainer.link input[name='video']").val()){
+				this.$el.find(".uploadContainer.file input[name='video']").closest(".uploadContainer").addClass("error");
+				this.$el.find(".uploadContainer.link input[name='video']").closest(".uploadContainer").addClass("error");
+				hasError = true;
+			}
+
+			if (!this.$el.find(".uploadContainer.file input[name='logo']").val()){
+				this.$el.find(".uploadContainer.file input[name='logo']").closest(".uploadContainer").addClass("error");
+				hasError = true;
+			}
+			if (!this.$el.find(".uploadContainer.file input[name='logo']").val()){
+				this.$el.find(".uploadContainer.file input[name='logo']").closest(".uploadContainer").addClass("error");
+				hasError = true;
+			}*/
+
+			if (!this.$el.find(".uploadContainer input[name='name']").val()){
+				this.$el.find(".uploadContainer input[name='name']").closest(".uploadContainer").addClass("error");
+				hasError = true;
+			}
+
+			if (hasError){
+				return;
+			}
+
+			var form = document.forms.namedItem("videoForm");
+
+			var oData = new FormData(form);
+			var oReq = new XMLHttpRequest();
+			this.xhr = oReq;
+			if(this.modalProgres) {
+				this.modalProgres.undelegateEvents();
+			}
+
+			this.modalProgres = new progressBarView(this.xhr);
+
+			oReq.upload.addEventListener("progress", function(evt) {
+				if (evt.lengthComputable) {
+					self.percentComplete = evt.loaded / evt.total;
+					self.percentComplete = parseInt(self.percentComplete * 100);
+
+					if (self.percentComplete === 100) {
+						//remove dialog
+						self.modalProgres.hide();
+					}
+				}
+			}, false);
+			//============================================================
+			oReq.upload.addEventListener('progress',visualEffectHandler, false);
+
+			function visualEffectHandler(){
+				var value = self.percentComplete;
+				$('#progress_bar').val(value);
+
+				$('.progress-value').html(value + '%');
+				var deg = 360 * value / 100;
+				if (value > 50) {
+					$('.progress-pie-chart').addClass('gt-50');
+				}
+
+				$('.ppc-progress-fill').css('transform', 'rotate(' + deg + 'deg)');
+				$('.ppc-percents span').html(value + '%');
+			};
+
+			//============================================================
+
+
+			oReq.open("POST", "/updateContent", true);
+			oReq.onload = function(oEvent) {
+				if (oReq.status === 200) {
+					try{
+						var res = JSON.parse(oReq.response);
+						$("<div><input type='text' value='"+res.url+"' readonly/></div>").dialog({
+							modal:true,
+							closeOnEscape: false,
+							appendTo:"#wrapper",
+							dialogClass: "link-dialog",
+							width: 725
+						});
+						//window.location="/#home";
+						self.$el.find()
+					}
+					catch(e){
+						App.notification(e);
+					}
+				} else {
+					try{
+						App.notification(JSON.parse(oReq.responseText).error);
+					}catch(e){
+						App.notification();
+					}
+				}
+			};
+
+			oReq.send(oData);
+
 		},
 		
 		showEdit: function(){
