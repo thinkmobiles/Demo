@@ -68,39 +68,40 @@
       background-repeat: no-repeat;
       padding-left: 0px;
       background-position: 5px 50%;" class="questionAct">Question activity:</h3></td></tr></table>
-      <table cellspacing="0" border="1" cellpadding="0">
+      <table cellspacing="0" border="1" cellpadding="0" style="margin-left:30px;font-size:13px;">
         <tr>
-          <th rowspan="2">
-            <b>Question</b>
+          <th rowspan="2" style="background-color:#fbfbfb;border:1px solid #efefef;text-align:left;">
+            <span style="padding:5px 15px;line-height:30px"><b>Question</b></span>
           </th>
-          <th colspan="3">
-            <b>Rate</b>
+          <th colspan="3" style="background-color:#fbfbfb;border:1px solid #efefef;text-align:center;">
+            <span style="padding:5px 15px;line-height:30px"><b>Rate</b></span>
           </th>
         </tr>
         <tr>
-          <th>Not interest</th>
-          <th>Somewhat interest</th>
-          <th>Very interest</th>
+          <th style="background-color:#fbfbfb;border:1px solid #efefef;text-align:left;"><span style="padding:5px 15px;line-height:30px">Not interest</span></th>
+          <th style="background-color:#fbfbfb;border:1px solid #efefef;text-align:left;"><span style="padding:5px 15px;line-height:30px">Somewhat interest</span></th>
+          <th style="background-color:#fbfbfb;border:1px solid #efefef;text-align:left;"><span style="padding:5px 15px;line-height:30px">Very interest</span></th>
         </tr>
         <% _.each(questions, function(item){%>
         <tr>
-          <td>
-            <%=item.name %>
+          <td style="border:1px solid #efefef;">
+            <span style="padding:0 15px;line-height:30px"><%=item.name %></span>
           </td>
-          <td>
-            <%if(!item.not&&!item.some&&!item.very){ %>
+          <td style="border:1px solid #efefef;">
+<span style="padding:0 15px;line-height:30px">            <%if(!item.not&&!item.some&&!item.very){ %>
             <%var sum = item.not+item.some+item.very%>
 
             <%} else { var sum = 1} %>
 
             <%=Math.floor(item.not/sum*100)%>
+			</span>
 
           </td>
-          <td>
-            <%= Math.floor(item.some/sum*100)%>
+          <td style="border:1px solid #efefef;">
+            <span style="padding:0 15px;line-height:30px"><%= Math.floor(item.some/sum*100)%></span>
           </td>
-          <td>
-            <%=100-(Math.floor(item.not/sum*100)+ Math.floor(item.some/sum*100))%>
+          <td style="border:1px solid #efefef;">
+            <span style="padding:0 15px;line-height:30px"><%=100-(Math.floor(item.not/sum*100)+ Math.floor(item.some/sum*100))%></span>
           </td>
         </tr>
         <% });%>
