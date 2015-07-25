@@ -13,7 +13,8 @@ define([
 		events: {
             "click .removeContent": "removeContent",
             "click .decline": "decline",
-            "click .save": "save",
+            "click .save:not(.edit)": "save",
+			"click .save.edit": "update",
             "click .question": "question",
             "click .collapseQuestions .collapseQuestion .close": "removeQuestion",
             "click .login-button": "login",
@@ -53,7 +54,11 @@ define([
 			});
 		},
 
-		showEdit:function(){
+		update: function(){
+			alert();
+		},
+		
+		showEdit: function(){
 			this.$el.find("form.disableEdit").removeClass("disableEdit");
 			this.$el.find("input[type='text']").removeAttr("disabled");
 			this.$el.find("textarea").removeAttr("disabled");
@@ -276,7 +281,9 @@ define([
 		},
 
 		browse: function(e){
-			$(e.target).closest(".uploadContainer").find("input[type='file']").click();
+			if (!$(e.target).closest(".disableEdit").length){
+				$(e.target).closest(".uploadContainer").find("input[type='file']").click();
+			}
 		},
 
 		getFiles:function(files){

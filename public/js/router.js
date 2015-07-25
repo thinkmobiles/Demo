@@ -24,6 +24,7 @@ define([
             "registration"              :  "registration",
             //ToDo: analitic )))))))))))))haha)
 			"analytics"              :  "analytics",
+			"message?text=:text":       "showNotification",
             "*any"                      :  "any"
         },
 
@@ -175,7 +176,12 @@ define([
         },
 		relatedVideo: function (videoId, userId, indexList) {
             this.showModalView('watchVideo',{videoId:videoId, userId:userId, indexList:indexList, page:"related"});
-        }
+        },
+		showNotification:function(text){
+			console.log(text);
+			Backbone.history.navigate("#/home", {trigger: true});
+			App.notification(text);
+		}
 		
 
     });
