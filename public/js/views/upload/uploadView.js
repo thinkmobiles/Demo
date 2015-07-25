@@ -322,7 +322,7 @@ define([
 			var self = this;
             this.$el.html(_.template(EditTemplate)({content:data.content, url:data.url}));
 
-			this.countQuestion = data.content.survey.length;
+			this.countQuestion = data.content.survey.length+1;
 			$(this.$el).find(".countQuestion").val(this.countQuestion);
 			_.each(data.content.survey,function(item, index){
 				var pdf = _.map(item.pdfUri,function(item){
