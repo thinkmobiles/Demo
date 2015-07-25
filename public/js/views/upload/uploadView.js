@@ -22,7 +22,8 @@ define([
 			"change .uploadContainer input[type='text']": "changeInput",
 			"keyup .uploadContainer input[type='text']": "changeInput",
             "click .uploadContainer.file input[type='file']": "clickOnFile",
-			"click .link-dialog .ui-dialog-titlebar-close": "decline"
+			"click .link-dialog .ui-dialog-titlebar-close": "decline",
+			"click .editContent": "showEdit"
         },
 
 		initialize: function () {
@@ -50,6 +51,10 @@ define([
 					console.log(model);
 				}
 			});
+		},
+
+		showEdit:function(){
+			
 		},
 
 		removeContent:function () {

@@ -113,6 +113,7 @@ define([
                 error: function (err) {
 					self.$el.find(".signIn .username .inp").addClass("error");
 					self.$el.find(".signIn .pass .inp").addClass("error");
+					App.notification(err.responseJSON.error);
 				}
             });
 		},
