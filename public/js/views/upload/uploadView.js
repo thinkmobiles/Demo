@@ -54,7 +54,10 @@ define([
 		},
 
 		showEdit:function(){
-			
+			this.$el.find("form.disableEdit").removeClass("disableEdit");
+			this.$el.find("input[type='text']").removeAttr("disabled");
+			this.$el.find("textarea").removeAttr("disabled");
+			this.$el.find(".editContent").hide();
 		},
 
 		removeContent:function () {
