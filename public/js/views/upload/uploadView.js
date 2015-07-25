@@ -335,6 +335,7 @@ define([
 					pdf:pdf,
 					index:index
 				}));
+				$(self.$el).find(".videoContainer").prepend('<div class="videoElement"> </div>');
 			});
             return this;
         }
