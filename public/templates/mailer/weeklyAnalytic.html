@@ -7,24 +7,28 @@
   </head>
   <body>
 	<div class="info" style="color:black">
-      <span>
-        <h1>Weekly analytic information for <%=companyName %></h1>
-      </span>
-      <span>
-        <img src="<%= process.env.WEB_HOST +'/'+ companyLogo%>" alt="logo" height="100" width="150">
-      </span>
+      <h1 style="text-transform:uppercase;color:#656565;font-weight:normal;font-size:24px;">Weekly analytic information for <%=companyName %></h1>
+
       <% if (visits.total>0){ %>
-      <h2>New activity on your account </h2>
+      <h2 style="color:#26c2ff;
+	  font-weight:normal;
+	  font-size:24px;">New activity on your account </h2>
 
       <p>
 
         You have <%=visits.total %> prospects visit your site :
+		<ul style="list-style:none;margin:0;padding:0; margin-left:18px;font-size:17px;">
 		<li><%=visits.new %> new prospects</li>
 		<li><%=visits.old %> invited prospects</li>
+		</ul>
 
       </p>
-
-      <h3>Videos activity</h3>
+		<table><tr><td><img src="http://134.249.164.53:8838/i/eye.png" alt="img" style="margin-left:5px;"/></td><td>
+			  <h3 style="  font-weight:normal;
+						 font-size:17px;
+						 background-repeat: no-repeat;
+						 padding-left: 0px;
+						 background-position: 5px 50%;" class="videoAct">Video activity</h3></td></tr></table>
       <table cellspacing="0" border="1" cellpadding="0">
         <tr>
           <th>
@@ -54,14 +58,16 @@
         <% });%>
       </table>
       <br/>
-      <b>
         <%=videos.watchedEnd %> of <%=visits.total %> watched the entire Main Video <br/>
         <%=videos.watchedSurvey %> of <%=visits.total %> watched the additional videos
 
-      </b>
       <br/>
 
-      <h3>Question activity:</h3>
+      <table><tr><td><img src="http://134.249.164.53:8838/i/message.png" alt="img" style="margin-left:5px;"/></td><td><h3 style="  font-weight:normal;
+	  font-size:17px;
+      background-repeat: no-repeat;
+      padding-left: 0px;
+      background-position: 5px 50%;" class="questionAct">Question activity:</h3></td></tr></table>
       <table cellspacing="0" border="1" cellpadding="0">
         <tr>
           <th rowspan="2">
@@ -100,8 +106,14 @@
         <% });%>
       </table>
       <br/>
-
-      <h3>Download document: </h3>
+     <table><tr><td><img src="http://134.249.164.53:8838/i/download.png" alt="img" style="margin-left:5px;"/></td><td><h3  style="  
+																												   font-weight:normal;
+	  font-size:17px;
+      background-repeat: no-repeat;
+      padding-left: 0px;
+      background-position: 5px 50%;" class="downloadAct">Download document: </h3>
+	  </td></tr></table>
+ 
       <table cellspacing="0" border="1" cellpadding="0">
         <tr>
           <th>
