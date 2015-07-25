@@ -15,3 +15,4 @@ process.env.HOME_PAGE = "http://demo.com:8838/#/home/";
 process.env.mailerService = 'Gmail';
 process.env.mailerUserName = "gogi.gogishvili";
 process.env.mailerPassword = "gogi123456789";
+process.env.SUPER_ADMIN_EMAIL = "johnnye.be@gmail.com";

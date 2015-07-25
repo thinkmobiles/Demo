@@ -4,6 +4,7 @@ var Session = function (db) {
         if(!options) return false;
         req.session.loggedIn = true;
         req.session.uId = options._id;
+        req.session.isConfirmed = options.isConfirmed;
         return true;
     };
 
@@ -16,9 +17,12 @@ var Session = function (db) {
     };
 
     this.isAuthenticated = function (req, res, next) {
-        if (req.session && req.session.uId && req.session.loggedIn) {
+        if (req.session && req.session.uId && req.session.loggedIn && req.session.isConfirmed) {
             next();
         } else {
+            if (req.session && req.session.uId) {
+                req.session.destroy();
+            }
             var err = new Error('Forbidden');
             err.status = 403;
             next(err);

@@ -21,6 +21,8 @@ var Sessions = require('../handlers/sessions');
 var mailer = require('../helpers/mailer');
 var pdfutils = require('pdfutils').pdfutils;
 var moment = require('moment');
+var randToken = require('rand-token');
+
 var routeHandler = function (db) {
 
 
@@ -125,6 +127,8 @@ var routeHandler = function (db) {
     };
 
     function createUser(userData, callback) {
+        userData.isConfirmed = false;
+        userData.confirmToken = randToken.generate(24);
         var newUser = new UserModel(userData);
 
         newUser.save(function (err, result) {
@@ -233,6 +237,9 @@ var routeHandler = function (db) {
             }], function (err) {
             if (err) {
                 return next(err);
+            }
+            if (req.session && req.session.uId) {
+                req.session.destroy();
             }
             return res.redirect('/#/home');
         });
@@ -353,7 +360,6 @@ var routeHandler = function (db) {
     this.login = function (req, res, next) {
         var options = req.body;
         var error = new Error();
-
         if (!options.userName || !options.pass) {
             error.message = "Username and password is required";
             error.status = 401;
@@ -374,6 +380,13 @@ var routeHandler = function (db) {
             }
 
             if (user.pass === pass) {
+                if (!user.isConfirmed) {
+                    error.message = "Your account not verified yet";
+                    error.status = 401;
+                    return next(error);
+
+                }
+
                 session.login(req, user);
                 if (options.keepAlive === 'true') {
                     req.session.cookie.maxAge = 365 * 24 * 60 * 60 * 1000;
@@ -385,7 +398,7 @@ var routeHandler = function (db) {
                     user: user
                 });
             } else {
-                error.message = "Incorrect password";
+                error.message = "Wrong password";
                 error.status = 401;
                 return next(error);
             }
@@ -433,13 +446,15 @@ var routeHandler = function (db) {
                         return cb(err);
                     }
                     session.login(req, user);
+                    mailer.newUserConfirm(user);
                     cb(null, user);
                 });
             }], function (err) {
             if (err) {
                 return next(err);
             }
-            res.status(201).send('User created');
+            res.status(201).send({message: 'Well done! We\'ll send you an email as soon as this is complete, this shouldn\'t take more than 2 working days.'});
+
         });
     };
 

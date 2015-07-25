@@ -1,0 +1,17 @@
+<div class="contactMe">
+    <span><h3> New user want to register !</h3>
+       <p> <b>User Data:</b> </p>
+           <ul>
+               <li>Name: <b><%=firstName+ ' ' + lastName %></b></li>
+               <li>Email: <b><%=email %></b></li>
+               <li>Organization: <%=organization %></li>
+               <li>Phone: <%=phone %></li>
+           </ul><br/>
+If you want confirm this user press the link below: <br/>
+        <a href="<%=process.env.WEB_HOST+'/admin/confirm?token='+ confirmToken %>">Press to Confirm</a>
+        <br/><br/><br/>
+</span>
+    <footer>
+        Copyright DemoRocket 2015
+    </footer>
+</div>
