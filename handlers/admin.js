@@ -34,7 +34,7 @@ var routeHandler = function (db) {
                 lastName: doc.lastName
             };
             mailer.sendInvite(options);
-            return res.redirect(process.env.WEB_HOST+'/#/message?text=Confirmed');
+            return res.redirect(process.env.WEB_HOST+'/#/message?text=Success! You confirmed '+ doc.firstName +' '+ doc.lastName+ ' as new user');
         });
     };
 
