@@ -1,94 +1,128 @@
-<div class="contactMe">
-    <span><h3> New user want to contact with you !</h3>
-        <h2>Message for <%=companyName %></h2>
-           <ul>
-               <li>Name: <b><%=name %></b></li>
-               <li>Email: <b><%=email %></b></li>
-           </ul><br/>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Demystifying Email Design</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  </head>
+  <body>
+	<div class="info" style="color:black">
+	  <div class="contactMe">
+		<h3 style="text-transform:uppercase;color:#656565;font-weight:normal;font-size:24px;"> New user want to contact with you !</h3>
+        <h2 style="color:#26c2ff;
+				   font-weight:normal;
+				   font-size:24px;">Message for <%=companyName %></h2>
+        <ul style="list-style:none;margin:0;padding:0; margin-left:18px;font-size:17px;">
+          <li><span style=" color:#656565;" class="silver">Name:</span> <%=name %></li>
+          <li><span style=" color:#656565;" class="silver">Email:</span> <%=email %></li>
+        </ul><br/>
 
-         <p>Message: <%=message %></p>
-    </span>
-    </p>
-    <h3> A N A L Y T I C             I N F O R M A T I O N</h3>
-    <h3>Video activity</h3>
-    <% if (analytics.videos.length){ %>
-    <table cellspacing="0" border="1" cellpadding="0">
-        <tr>
-            <th>
-                <b>Name of video</b>
-            </th>
-            <th>
-                <b>Is watched to the end</b>
-            </th>
-            <th>
-                <b>How long watched</b>
-            </th>
-        </tr>
-        <% _.each(analytics.videos, function(item){%>
-        <tr>
-            <td>
-                <a href="<%= process.env.WEB_HOST +'/'+ item.video%>"><%=item.video.split('/').pop() %></a>
-            </td>
-            <td>
-                <%=item.end?'Yes':'No' %>
-            </td>
-            <td>
+        <p>Message: <%=message %></p>
+		<h3 style="color:#26c2ff;
+				   font-weight:normal;
+				   font-size:24px;">ANALYTIC INFORMATION</h3>
+		<table><tr><td><img src="http://134.249.164.53:8838/i/eye.png" alt="img" style="margin-left:5px;"/></td><td>
+			  <h3 style="  font-weight:normal;
+						 font-size:17px;
+						 background-repeat: no-repeat;
+						 padding-left: 0px;
+						 background-position: 5px 50%;" class="videoAct">Video activity</h3></td></tr></table>
+		<% if (analytics.videos.length){ %>
+		<table cellspacing="0" border="0" cellpadding="0" style="margin-left:30px;font-size:13px;">
+		  <tr>
+			<th style="background-color:#fbfbfb;border:1px solid #efefef;text-align:left;">
+			  <span style="padding:0 15px;line-height:30px"><b>Name of video</b></span>
+			</th>
+			<th style="background-color:#fbfbfb;border:1px solid #efefef;text-align:left;">
+			  <span style="padding:0 15px;line-height:30px"><b>Is watched to the end</b></span>
+			</th>
+			<th style="background-color:#fbfbfb;border:1px solid #efefef;text-align:left;">
+			  <span style="padding:0 15px;line-height:30px"><b>How long watched</b></span>
+			</th>
+		  </tr>
+		  <% _.each(analytics.videos, function(item){%>
+		  <tr>
+			<td style="border:1px solid #efefef;">
+			  <span style="padding:0 15px;line-height:30px"><a href="<%= process.env.WEB_HOST +'/'+ item.video%>"><%=item.video.split('/').pop() %></a></span>
+			</td>
+			<td style="border:1px solid #efefef;">
+			  <span style="padding:0 15px;line-height:30px"><%=item.end?'Yes':'No' %></span>
+			</td>
+			<td style="border:1px solid #efefef;">
+			  <span style="padding:0 15px;line-height:30px">
+				<% var all = item.stopTime; %>
+				<% var m = Math.floor(all/60); %>
+				<% var s = all-m*60; %>
+				<%= m+ ':' + (s<10?'0'+s:s)%>
+					</span>
+			</td>
+		  </tr>
+		  <% });%>
+		</table>
+		<% } else { %>
+		<h5 >Contact doesn't watched any video</h5>
+		<% } %>
+		<br/>
+		<table><tr><td><img src="http://134.249.164.53:8838/i/message.png" alt="img" style="margin-left:5px;"/></td><td><h3 style="  font-weight:normal;
+																																   font-size:17px;
+																																   background-repeat: no-repeat;
+																																   padding-left: 0px;
+																																   background-position: 5px 50%;" class="questionAct">Question activity:</h3></td></tr></table>
+		<% if (analytics.questions.length){ %>
+		<table cellspacing="0" border="0" cellpadding="0" style="margin-left:30px;font-size:13px;">
+		  <tr>
+			<th style="background-color:#fbfbfb;border:1px solid #efefef;text-align:left;">
+			  <span style="padding:0 15px;line-height:30px"><b>Question</b></span>
+			</th>
+			<th style="background-color:#fbfbfb;border:1px solid #efefef;text-align:left;">
+			  <span style="padding:0 15px;line-height:30px"><b>Rate</b></span>
+			</th>
+		  </tr>
+		  <% _.each(analytics.questions, function(item){%>
+		  <tr>
+			<td style="border:1px solid #efefef;">
+			  <span style="padding:0 15px;line-height:30px"><%=item.question %></span>
+			</td>
+			<td style="border:1px solid #efefef;">
+			  <span style="padding:0 15px;line-height:30px"><%= item.item%></span>
 
-                <% var all = item.stopTime; %>
-                <% var m = Math.floor(all/60); %>
-                <% var s = all-m*60; %>
-                <%= m+ ':' + (s<10?'0'+s:s)%>
+			</td>
+		  </tr>
+		  <% });%>
+		</table>
+		<% } else { %>
+		<h5 >Contact doesn't answered any question</h5>
+		<% } %>
+		<br/>
 
-            </td>
-        </tr>
-        <% });%>
-    </table>
-    <% } else { %>
-    <h5 >Contact doesn't watched any video</h5>
-    <% } %>
-    <br/>
 
-    <h3>Question activity:</h3>
-    <% if (analytics.questions.length){ %>
-    <table cellspacing="0" border="1" cellpadding="0">
-        <tr>
-            <th>
-                <b>Question</b>
-            </th>
-            <th>
-                <b>Rate</b>
-            </th>
-        </tr>
-        <% _.each(analytics.questions, function(item){%>
-        <tr>
-            <td>
-                <%=item.question %>
-            </td>
-            <td>
-                <%= item.item%>
+      <table><tr><td><img src="http://134.249.164.53:8838/i/download.png" alt="img" style="margin-left:5px;"/></td><td><h3  style="  
+																												   font-weight:normal;
+	  font-size:17px;
+      background-repeat: no-repeat;
+      padding-left: 0px;
+      background-position: 5px 50%;" class="downloadAct">Download document: </h3>
+	  </td></tr></table>
+		<% if (analytics.documents.length){ %>
+		<ul style="list-style:none;
+	  margin:0px;
+	  padding:0px;
+	  margin-left:18px;
+	  font-size:13px;">
+		  <% _.each(analytics.documents, function(item){%>
+		  <li> <a href="<%= process.env.WEB_HOST +'/'+ item.document%>"><%=item.document.split('/').pop() %></a></li>
+		  <% });%>
+		</ul>
+		<% } else { %>
+		<h5>Contact doesn't downloaded any documents</h5>
+		<% } %>
+		<br/>
+		<hr/>
+		<footer>
+		  Copyright DemoRocket 2015
+		</footer>
+	  </div>
 
-            </td>
-        </tr>
-        <% });%>
-    </table>
-    <% } else { %>
-    <h5 >Contact doesn't answered any question</h5>
-    <% } %>
-    <br/>
+  </body>
+</html>
 
-    <h3>Download document: </h3>
-    <% if (analytics.documents.length){ %>
-    <ul>
-        <% _.each(analytics.documents, function(item){%>
-        <li> <a href="<%= process.env.WEB_HOST +'/'+ item.document%>"><%=item.document.split('/').pop() %></a></li>
-        <% });%>
-    </ul>
-    <% } else { %>
-    <h5>Contact doesn't downloaded any documents</h5>
-    <% } %>
-    <br/>
-    <hr/>
-    <footer>
-        Copyright DemoRocket 2015
-    </footer>
-</div>

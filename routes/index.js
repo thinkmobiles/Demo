@@ -5,13 +5,17 @@ var fs = require("fs");
 var logWriter = require('../helpers/logWriter')();
 var Handler = require('../handlers/users');
 var SessionHandler = require('../handlers/sessions');
-var multipart = require( 'connect-multiparty' )();
+
 
 module.exports = function (app, db) {
     var handler = new Handler(db);
     var session = new SessionHandler(db);
-    var analyticRouter;
-    var trackRouter;
+    var analyticRouter = require('./analytic')(db);
+    var trackRouter = require('./track')(db);
+    var adminRouter = require('./admin')(db);
+    var contentRouter = require('./content')(db);
+
+
     app.use(function (req, res, next) {
         if (process.env.NODE_ENV === 'development') {
             console.log('user-agent:', req.headers['user-agent']);
@@ -23,25 +27,29 @@ module.exports = function (app, db) {
         res.sendfile('index.html');
     });
 
+    //app.get('/sendWeekly', handler.sendWeekly);
+    app.get('/sendDaily', handler.sendDaily);
+    app.get('/sendWeekly', handler.sendWeekly);
     app.get('/content/:contentId/:ctid', handler.getMain);
     app.post('/prospectSignUp', handler.prospectSignUp);
     app.get('/share', handler.share);
     app.post('/sendContactMe', handler.sendContactMe);
     app.post('/signUp', handler.signUp);
     app.post('/login', handler.login);
+    app.get('/image/:id', handler.avatarById );
     app.get('/avatar/:userName', handler.avatar);
     app.get('/logout', session.kill);
     app.get('/currentUser',session.isAuthenticated, handler.currentUser);
-    app.get('/redirect', session.isAuthenticated, handler.redirect);
-    app.post('/upload',multipart, session.isAuthenticated, handler.upload);
-    app.get('/content', session.isAuthenticated, handler.content);
-    app.delete('/content', session.isAuthenticated, handler.removeContent);
+    app.get('/redirect', handler.redirect);
 
-    analyticRouter = require('./analytic')(db);
-    app.use('/analytic', analyticRouter);
+    // ----------------------------------------------------------
+    // Routers:
+    // ----------------------------------------------------------
 
-    trackRouter = require('./track')(db);
+    app.use('/content', contentRouter);
     app.use('/track', trackRouter);
+    app.use('/analytic', analyticRouter);
+    app.use('/admin', adminRouter);
 
 
     // ----------------------------------------------------------

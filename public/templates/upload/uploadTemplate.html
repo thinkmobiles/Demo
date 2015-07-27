@@ -2,7 +2,7 @@
     <div class="inner">
         <form action="/upload" enctype="multipart/form-data" method="post" id="videoForm" name="videoForm">
             <input name="countQuestion" value="1" type="hidden" class="countQuestion"/>
-
+            <input name="removedQuestions" value="" type="hidden" class="countQuestion"/>
             <h2>STEP1: CHOOSE YOUR MAIN VIDEO</h2>
 
             <div class="left">
@@ -95,7 +95,7 @@
 
             <div class="clear">
             </div>
-            <div class="left">
+            <div class="left relative">
                 <span>Upload your logo from computer:</span><br/>
 
                 <div class="uploadContainer file long">
@@ -107,6 +107,9 @@
                     <input type="file" name="logo" accept="image/*"/>
                 </div>
                 <br/>
+				<canvas id="preview" width="100" height="100"></canvas>
+                <div id="arrowPreview">
+                </div>
             </div>
             <div class="right">
                 <span>Company Name:</span><br/>

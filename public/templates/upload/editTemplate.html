@@ -1,0 +1,185 @@
+<div class="login">
+  <div class="inner">
+	<center><h2>Link to content:</h2></center>
+	<center><span class="contentUrl"><%=url%></span></center>
+	<div class="contentButtons">
+	  <button class="removeContent">Delete Content</button>
+	  <button class="editContent">Edit Content</button>
+	</div>
+    <div class="clear">
+    </div>
+    <form action="/updateContent" enctype="multipart/form-data" method="post" id="videoForm" name="videoForm" class="disableEdit">
+      <input name="countQuestion" value="1" type="hidden" class="countQuestion"/>
+	  <input name="removedQuestions" value="" type="hidden" class="removedQuestions"/>
+	  
+      <h2>STEP1: CHOOSE YOUR MAIN VIDEO</h2>
+
+      <div class="left">
+        <span>Please enter brief description:</span><br/>
+        <textarea disabled name="desc"><%=content.mainVideoDescription%></textarea>
+      </div>
+      <div class="right">
+        <span>Upload video from computer:</span>
+
+        <div class="uploadContainer file">
+          <div class="left">
+            <input type="text" placeholder="Drop file here" readonly="readonly" value="<%=content.mainVideoUri.split('/').pop()%>" disabled/>
+          </div>
+          <div class="right">
+          </div>
+          <input type="file" name="video" accept="video/mp4,video/x-m4v,video/*"/>
+        </div>
+        <br/>
+        <span>Or paste a link:</span>
+
+        <div class="uploadContainer link">
+          <div class="left">
+            <input type="text" name="video" disabled/>
+          </div>
+          <div class="right">
+          </div>
+        </div>
+      </div>
+      <div class="clear">
+      </div>
+
+      <h2>STEP2: PLEASE ENTER QUESTION</h2>
+      <span>Potential leads will be asked to indicate their level of interest in a topic. Levels of interest include: Not Important, Somewhat Important and Very Important</span>
+
+      <div class="clear">
+      </div>
+      <div class="collapseQuestions"></div>
+      <div class="videoContainer">
+        <div class="videoElement">
+          <div class="left">
+            <span>Please enter brief description:</span>
+            <textarea name="question<%=count%>" class="questionText"></textarea>
+          </div>
+          <div class="right">
+            <span>Upload video from computer:</span>
+
+            <div class="uploadContainer file">
+              <div class="left">
+                <input type="text" placeholder="Drop file here" readonly="readonly"/>
+              </div>
+              <div class="right">
+              </div>
+              <input type="file" name="video<%=count%>" accept="video/mp4,video/x-m4v,video/*"/><br/>
+            </div>
+            <br/>
+            <span>Or paste a link:</span>
+
+            <div class="uploadContainer link">
+              <div class="left">
+                <input type="text" name="video<%=count%>"/>
+              </div>
+              <div class="right">
+              </div>
+            </div>
+          </div>
+          <div class="clear">
+          </div>
+          <div class="left">
+            <span>Upload related PDF’s (You can choose more than one file): </span>
+
+            <div class="uploadContainer file long">
+              <div class="left">
+                <input type="text" placeholder="Or drop file here" readonly="readonly"/>
+              </div>
+              <div class="right">
+              </div>
+              <input type="file" name="file<%=count%>" multiple accept="application/pdf"/><br/>
+            </div>
+          </div>
+          <div class="right">
+            <span>&nbsp;</span><br/>
+            <button class="question">ADD QUESTION</button>
+          </div>
+        </div>
+      </div>
+      <div class="clear">
+      </div>
+
+      <h2>STEP 3: UPLOAD YOUR LOGO</h2>
+
+      <div class="clear">
+      </div>
+      <div class="left relative">
+        <span>Upload your logo from computer:</span><br/>
+
+        <div class="uploadContainer file long">
+          <div class="left">
+            <input type="text" placeholder="Or drop file here" readonly="readonly" value="<%=content.logoUri.split('/').pop()%>" disabled/>
+          </div>
+          <div class="right">
+          </div>
+          <input type="file" name="logo" accept="image/*"/>
+        </div>
+        <br/>
+		<canvas id="preview" width="100" height="100"></canvas>
+        <div id="arrowPreview">
+        </div>
+      </div>
+      <div class="right">
+        <span>Company Name:</span><br/>
+
+        <div class="left">
+          <div class="uploadContainer text">
+            <div class="left">
+              <input type="text" name="name" value="<%=content.name%>" disabled/>
+            </div>
+          </div>
+        </div>
+      </div>
+	  <div class="clear">
+      </div>
+
+	  
+      <div class="clear">
+      </div>
+
+      <h2>STEP 4: ENTER «CONTACT ME» INFO</h2>
+
+      <div class="clear">
+      </div>
+      <div class="left">
+        <span>Email:</span><br/>
+
+        <div class="uploadContainer text long">
+          <div class="left">
+            <input type="text" name="email" value="<%=content.email%>" disabled/>
+          </div>
+        </div>
+        <br/>
+      </div>
+      <div class="right">
+        <span>Phone:</span><br/>
+
+        <div class="left">
+          <div class="uploadContainer text">
+            <div class="left">
+              <input type="text" name="phone" value="<%=content.phone%>" disabled/>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="clear">
+      </div>
+      <div class="buttons">
+        <button class="decline">CANCEL</button>
+        <input type="submit" value="SAVE" class="save edit"/>
+      </div>
+      <div class="clear">
+      </div>
+
+    </form>
+  </div>
+
+</div>
+<div class="haveContent">
+  <span>
+	<h1>You already have content</h1><br/>
+	<input type="text" value="" readonly/>
+  </span><br/><br/>
+  <button class="removeContent">Delete Content</button>
+</div>
