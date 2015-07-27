@@ -10,6 +10,10 @@ module.exports = function (db) {
     var handler = new AnalyticHandler(db);
     var session = new SessionHandler(db);
     router.get('/confirm', handler.confirmUser);
+    router.get('/users', session.isAuthenticatedAdmin, handler.users);
+    router.post('/changePass', session.isAuthenticatedAdmin, handler.changePass);
+    router.delete('/user', session.isAuthenticatedAdmin, handler.remove);
+
 
     return router;
 };
