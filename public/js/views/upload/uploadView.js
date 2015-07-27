@@ -426,12 +426,31 @@ define([
 		changeFile:function(e){
 			var self = this;
 			$(e.target).closest(".uploadContainer").find("input[type='text']").val(self.getFiles($(e.target).get(0).files)).change();
+
+			if ($(e.target).attr("name")==="logo"){
+				var reader = new FileReader();
+				reader.onload = function(event){
+					self.drawImage(event.target.result);
+				}
+				reader.readAsDataURL(e.target.files[0]);     
+			}
 		},
 		
         render: function () {
             this.$el.html(_.template(RegistrationTemplate));
             return this;
         },
+		drawImage:function(src){
+			this.$el.find("#preview").show();
+			this.$el.find("#arrowPreview").show();
+			var myImage = new Image(100, 100);
+			myImage.src =src;
+			myImage.onload = function(){
+				var c=document.getElementById("preview");
+				var ctx=c.getContext("2d");
+				ctx.drawImage(myImage,0,0,100,100);
+			};	
+		},
 		renderEdit: function (data) {
 			var self = this;
             this.$el.html(_.template(EditTemplate)({content:data.content, url:data.url, count:data.content.survey.length+1}));
@@ -451,6 +470,8 @@ define([
 				}));
 				$(self.$el).find(".videoContainer").prepend('<div class="videoElement"> </div>');
 			});
+
+			this.drawImage(data.content.logoUri);
             return this;
         }
     });
