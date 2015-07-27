@@ -11,7 +11,7 @@ define([
 
 		el:"#wrapper",
 		events: {
-            "click .removeContent": "removeContent",
+            "click .removeContent": "remove",
             "click .decline": "decline",
             "click .save:not(.edit)": "save",
 			"click .save.edit": "update",
@@ -144,7 +144,7 @@ define([
 			//============================================================
 
 
-			oReq.open("POST", "/updateContent", true);
+			oReq.open("POST", "content/update", true);
 			oReq.onload = function(oEvent) {
 				if (oReq.status === 200) {
 					try{
@@ -182,7 +182,7 @@ define([
 			this.$el.find(".editContent").hide();
 		},
 
-		removeContent:function () {
+		remove:function () {
 			var self = this;
 			var sure = confirm("Are you sure?");
 			if (!sure) {
@@ -378,7 +378,7 @@ define([
 				//============================================================
 
 
-			oReq.open("POST", "/upload", true);
+			oReq.open("POST", "content/upload", true);
 			oReq.onload = function(oEvent) {
 				if (oReq.status === 201) {
 					try{

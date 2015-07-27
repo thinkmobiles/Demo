@@ -123,6 +123,15 @@ var routeHandler = function (db) {
                 callback();
             }
         });
+        UserModel.findOne({userName: userData.userName}, function (err, user) {
+            if (err) {
+                callback(err);
+            } else if (user) {
+                callback(badRequests.UsernameInUse());
+            } else {
+                callback();
+            }
+        });
 
     };
 
@@ -494,79 +503,8 @@ var routeHandler = function (db) {
         });
     };
 
-    this.content = function (req, res, next) {
-        ContentModel.findOne({ownerId: req.session.uId}, function (err, found) {
-            if (err) {
-                return next(err);
-            }
-            console.log(found);
-            if (!found) {
-                return res.status(404).send({err: 'Content Not Found'});
-            }
-            var url = process.env.HOME_PAGE + found._id + '/{{ctid}}';
-            res.status(201).send({url: url, content:found});
-        });
-    };
 
-    function rmDir(dirPath) {
-        try {
-            var files = fs.readdirSync(dirPath);
-            //console.log(files);
-        }
-        catch (e) {
-            return;
-        }
-        if (files.length > 0)
-            for (var i = 0; i < files.length; i++) {
-                var filePath = dirPath + '/' + files[i];
-                if (fs.statSync(filePath).isFile())
-                    fs.unlinkSync(filePath);
-                else
-                    rmDir(filePath);
-            }
-        fs.rmdirSync(dirPath);
-    };
 
-    this.removeContent = function (req, res, next) {
-        var contentId;
-        var userId = req.session.uId;
-        var sep = path.sep;
-
-        ContentModel.findOneAndRemove({ownerId: req.session.uId}, function (err, doc) {
-            if (err) {
-                return next(err);
-            }
-            if (!doc) {
-                return res.status(404).send({err: 'Content Not Found'});
-            }
-            contentId = doc._id;
-            UserModel.findByIdAndUpdate(userId, {contentId: null}, function (err, found) {
-                if (err) {
-                    return next(err);
-                }
-                if (!found) {
-                    return res.status(404).send({err: 'Content Not Found'});
-                }
-            });
-            ContactMeModel.remove({contentId: contentId}, function (err) {
-                if (err) {
-                    console.error(err);
-                }
-                console.log('ContactMeModel updated')
-            });
-            TrackModel.remove({contentId: contentId}, function (err) {
-                if (err) {
-                    console.error(err);
-                }
-                console.log('TrackModel updated')
-            });
-            var dirPath = localFs.defaultPublicDir + sep + 'video' + sep + doc._id.toString();
-            rmDir(dirPath);
-
-            var message = 'Content removed';
-            res.status(200).send({message: message});
-        });
-    };
 
 
     // url = '/:contentId/:ctid'
@@ -691,409 +629,136 @@ var routeHandler = function (db) {
     };
 
 
-    function upFile(target, file, callback) {
-        fs.readFile(file.path, function (err, data) {
-            localFs.setFile(target, file.originalFilename, data, function (err) {
-                if (err) {
-                    return callback(err);
-                }
-                var uri = path.join(target, file.originalFilename);
-                return callback(null, uri);
-            });
-        });
-    };
-
-    function mkdirSync(path) {
-        try {
-            fs.mkdirSync(path);
-        } catch (e) {
-            if (e.code != 'EEXIST') {
-                console.log('Directory already exist');
-            }
-        }
-    }
-
-    function validation(data, callback) {
-        var files = data.files;
-        var body = data.body;
-        var formatsVideo = '.mp4 .WebM .Ogg';
-        var formatsImage = '.jpg .bmp .png .ico';
-        var mainVideoExt = (files['video'].originalFilename.split('.')).pop().toLowerCase();
-        var err = new Error();
-        err.status = 400;
-        var videoName;
-        var pdfName;
-        var questionName;
-        var videoExt;
 
 
-        if (!body.desc || !body.name || !body.email || !body.phone) {
-            err.message = 'Not  completed fields';
-            return callback(err);
-        }
-        if (!files['video'].name && !body['video']) {
-            err.message = 'Main video is not found';
-            return callback(err);
-        }
-        if (!body.countQuestion) {
-            err.message = 'Question  is not found';
-            return callback(err);
-        }
-        if (!body['video'] && files['video'].name && formatsVideo.indexOf(mainVideoExt) == -1) {
-            err.message = 'Main video format is not support';
-            return callback(err);
-        }
-        if (!REG_EXP.EMAIL_REGEXP.test(body.email)) {
-            err.message = 'Email validation failed';
-            return callback(err);
-        }
-
-        for (var i = body.countQuestion; i > 0; i--) {
-            videoName = 'video' + i;
-            pdfName = 'file' + i;
-            questionName = 'question' + i;
-            videoExt = (files[videoName].originalFilename.split('.')).pop().toLowerCase();
-
-            async.each(files[pdfName], function (file, cb) {
-                var pdfExt = (file.originalFilename.split('.')).pop().toLowerCase();
-                if (pdfExt != 'pdf') {
-                    err.message = 'Survey pdf files format is not support';
-                    return cb(err);
-                }
-                else cb();
-            });
-            if (!files[videoName] && !body[videoName]) {
-                err.message = 'Survey video is not found';
-                return callback(err);
-            }
-            if (!body[questionName]) {
-                err.message = 'Survey question is not found';
-                return callback(err);
-            }
-
-            if (!body[videoName] && files[videoName] && formatsVideo.indexOf(videoExt) == -1) {
-                err.message = 'Survey video format is not support';
-                return callback(err);
-            }
-        }
-
-        if (!files['logo'].name) {
-            err.message = 'Logo is not found';
-            return callback(err);
-        }
-        var logoExt = (files['logo'].originalFilename.split('.')).pop().toLowerCase();
-        if (formatsImage.indexOf(logoExt) == -1) {
-            err.message = 'Logo format is not support';
-            return callback(err);
-        }
-        return callback();
-    };
-
-
-    function saveMainVideo(id, files, callback) {
-        var sep = path.sep;
-        var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString();
-        var saveMainVideoUri;
-        var saveLogoUri;
-
-        upFile(url, files['video'], function (err, mainVideoUri) {
-            if (err) {
-                return callback(err);
-            }
-            upFile(url, files['logo'], function (err, logoUri) {
-                if (err) {
-                    return callback(err);
-                }
-                saveMainVideoUri = mainVideoUri.replace('public' + sep, '');
-                saveLogoUri = logoUri.replace('public' + sep, '');
-                ContentModel.findByIdAndUpdate(id, {$set: {mainVideoUri: saveMainVideoUri, logoUri: saveLogoUri}},
-                    function (err, content) {
-                        if (err) {
-                            return callback(err);
-                        }
-                        callback(null);
-                    });
-            });
-        });
-    };
-
-    function saveSurveyVideo(num, id, files, data, callback) {
-        var question = 'question' + num;
-        var name = 'video' + num;
-        var saveVideoUri;
-        var insSurvey;
-        var sep = path.sep;
-        var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString() + sep + 'survey' + num;
-
-        if (files[name].name) {
-            upFile(url, files[name], function (err, videoUri) {
-                if (err) {
-                    return callback(err);
-                }
-                saveVideoUri = videoUri.replace('public' + sep, '');
-                insSurvey = {
-                    question: data[question],
-                    videoUri: saveVideoUri
-                };
-                ContentModel.findByIdAndUpdate(id, {$addToSet: {survey: insSurvey}}, function (err) {
-                    if (err) {
-                        return callback(err);
-                    }
-                    return callback(null)
-                });
-            });
-        } else {
-            insSurvey = {
-                question: data[question],
-                videoUri: data[name]
-            };
-            mkdirSync(url);
-            ContentModel.findByIdAndUpdate(id, {$addToSet: {survey: insSurvey}}, function (err) {
-                if (err) {
-                    return callback(err);
-                }
-                return callback(null)
-            });
-        }
-    };
-
-    function saveSurveyFiles(num, id, files, data, mainCallback) {
-        var question = 'question' + num;
-        var name = 'file' + num;
-        var sep = path.sep;
-        var arr = [];
-        var url;
-
-
-        if (!files[name]) {
-            var error = new Error();
-            error.message = "Some files missing";
-            error.status = 401;
-            return mainCallback(error);
-        }
-        if (!files[name].length) {
-            arr.push(files[name]);
-        }
-        else {
-            arr = files[name];
-        }
-        url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString() + sep + 'survey' + num + sep + 'pdf';
-
-        async.each(arr, function (file, eachCb) {
-            upFile(url, file, function (err, pdfUri) {
-                if (err) {
-                    return eachCb(err);
-                }
-                var name = file.originalFilename.split(sep).pop().slice(0, -4) + '.png';
-
-                pdfutils(file.path, function (err, doc) {
-                    doc[0].asPNG({maxWidth: 500, maxHeight: 1000}).toFile(url + sep + name);
-                });
-                var savePdfUri = pdfUri.replace('public' + sep, '');
-                ContentModel.findOneAndUpdate({
-                    "_id": id,
-                    "survey.question": data[question]
-                }, {$addToSet: {"survey.$.pdfUri": savePdfUri}}, function (err, content) {
-                    if (err) {
-                        return eachCb(err);
-                    }
-                    eachCb();
-                });
-            });
-        }, function (err) {
-            if (err) {
-                return mainCallback(err);
-            } else {
-                mainCallback();
-            }
-        });
-    };
-
-
-    this.upload = function (req, res, next) {
-        var data = req.body;
-        var files = req.files;
-        var userId = req.session.uId;
-        var sep = path.sep;
-        var id;
-        async.waterfall([
-
-                //validation
-                function (waterfallCb) {
-                    validation(req, function (err) {
-                        if (err) {
-                            return waterfallCb(err);
-                        }
-                        waterfallCb(null);
-
-                    });
-                },
-
-                function (waterfallCb) {
-                    ContentModel.findOne({ownerId: userId}, function (err, doc) {
-                        if (err) {
-                            return waterfallCb(err);
-                        }
-                        if (doc) {
-                            var error = new Error();
-                            error.status = 401;
-                            error.message = 'You already have content';
-                            return waterfallCb(error);
-                        }
-                        var insObj = {
-                            ownerId: userId,
-                            name: data.name,
-                            email: data.email,
-                            phone: data.phone,
-                            mainVideoDescription: data.desc
-                        };
-                        waterfallCb(null, insObj);
-                    });
-                },
-
-                // create content model
-                function (insObj, waterfallCb) {
-                    var content = new ContentModel(insObj);
-                    content.save(function (err, result) {
-                        if (err) {
-                            return waterfallCb(err);
-                        }
-                        var url = process.env.HOME_PAGE + result._id + '/{{ctid}}';
-                        res.status(201).send({url: url});
-                        waterfallCb(null, result);
-                    });
-                },
-
-                // update user => set contentId
-                function (result, waterfallCb) {
-                    id = result._id;
-                    UserModel.findByIdAndUpdate(userId, {$set: {contentId: result._id}}, function (err, user) {
-                        if (err) {
-                            return waterfallCb(err);
-                        }
-                        waterfallCb(null);
-                    });
-                },
-
-                // save data staff
-                function (waterfallCb) {
-                    async.series([
-                        function (seriesCb) {
-                            if (files['video'].name) {
-                                saveMainVideo(id, files, seriesCb);
-                            }
-                            else {
-                                var url = localFs.defaultPublicDir + sep + 'video' + sep + id.toString();
-                                upFile(url, files['logo'], function (err, logoUri) {
-                                    if (err) {
-                                        return seriesCb(err);
-                                    }
-                                    var saveLogoUri = logoUri.replace('public' + sep, '');
-                                    ContentModel.findByIdAndUpdate(id, {
-                                            $set: {
-                                                mainVideoUri: data.video,
-                                                logoUri: saveLogoUri
-                                            }
-                                        },
-                                        function (err) {
-                                            if (err) {
-                                                return seriesCb(err);
-                                            }
-                                            seriesCb(null);
-                                        });
-                                });
-                            }
-                        },
-
-                        function (seriesCb) {
-                            var index = [];
-                            for (var i = data.countQuestion; i > 0; i--) {
-                                index.push(i);
-                            }
-                            async.each(index, function (i, eachCb) {
-                                async.applyEachSeries([saveSurveyVideo, saveSurveyFiles], i, id, files, data, function (err) {
-                                    if (err) {
-                                        return eachCb(err);
-                                    }
-                                    eachCb();
-                                });
-                            }, function (err) {
-                                if (err) {
-                                    return seriesCb(err);
-                                }
-                                seriesCb(null);
-                            });
-
-                        }], function (err) {
-                        if (err) {
-                            return waterfallCb(err);
-                        }
-                        var url = process.env.HOME_PAGE + id + '/{{ctid}}';
-                        waterfallCb(null, url)
-                    });
-                    localFs.defaultPublicDir = 'public';
-                }],
-
-            function (err, url) {
-                if (err) {
-                    //return next(err);
-                    return console.error(err);
-                }
-                //res.status(201).send({url: url});
-                console.log('success upload. url ' + url);
-            });
-    };
 
     this.sendWeekly = function (req, res, next) {
+        var contentId = req.query.contentId;
 
-                    options.companyName = "sdfsdf";
-                    options.companyEmail = "slavik990@gmail.com";
+        console.log('weekly report start');
+        var now = new Date(Date.now());
+        var to = new Date(now.setHours(24));
+        var from = new Date(moment(to).subtract(7, 'days').format());
+        console.log(to);
+        console.log(from);
+
+        ContentModel.find({_id: contentId}, function (err, docs) {
+            if (err) {
+                return console.error(err);
+            }
+            async.each(docs, function (doc, eachCb) {
+                async.parallel({
+                    visits: function (parallelCb) {
+                        analytic.totalVisits(doc.ownerId.toString(), from, to, parallelCb);
+                    },
+                    videos: function (parallelCb) {
+                        analytic.video(doc.ownerId.toString(), from, to, parallelCb);
+                    },
+                    questions: function (parallelCb) {
+                        analytic.question(doc.ownerId.toString(), from, to, parallelCb);
+                    },
+                    documents: function (parallelCb) {
+                        analytic.document(doc.ownerId.toString(), from, to, parallelCb);
+                    }
+                }, function (err, options) {
+                    if (err) {
+                        return console.error(err);
+                    }
+                    options.companyName = doc.name;
+                    options.companyEmail = doc.email;
                     options.companyLogo = doc.logoUri;
-                    mailer.sendWeeklyAnalytic(options);
-
+                    mailer.sendWeeklyAnalytic(options, eachCb)
+                });
+            }, function (err) {
+                if (err) {
+                    return console.error(err);
+                }
                 res.status(200).send('Notifications successfully sent');
 
+            });
+        });
     };
 
-        this.sendDaily = function (req, res, next) {
+    this.sendDaily = function (req, res, next) {
+        var contentId = req.query.contentId;
+        async.waterfall([
 
+                function (waterfallCb) {
+                    TrackModel.find({contentId:contentId }, function (err, docs) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        if (!docs.length) {
+                            var error = new Error();
+                            error.message = 'No data to send';
+                            return waterfallCb(error);
+                        }
+                        waterfallCb(null, docs)
+                    });
+                },
+
+                // supplement name & email field if they missing
+                function (docs, waterfallCb) {
+                    async.each(docs, function (track, eachCb) {
+                        if (!track.firstName || !track.lastName || !track.email) {
+                            TrackModel.findOne({jumpleadId: track.jumpleadId}, function (err, doc) {
+                                if (err) {
+                                    return eachCb(err);
+                                }
+                                track.firstName = doc.firstName;
+                                track.lastName = doc.lastName;
+                                track.email = doc.email;
+                                eachCb(null);
+                            })
+                        } else {
+                            return eachCb(null);
+                        }
+                    }, function (err) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        waterfallCb(null, docs)
+                    });
+                },
+
+                //Populate contentId field
+                function (docs, waterfallCb) {
+                    ContentModel.populate(docs, {path: 'contentId'}, function (err, popDocs) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        waterfallCb(null, popDocs);
+                    });
+                },
+
+                //send notification to company email
+                function (docs, waterfallCb) {
+                    async.each(docs, function (doc, cb) {
+                        var name = doc.firstName + ' ' + doc.lastName;
                         var data = {
-                            companyName: "myName",
-                            companyEmail: "slavik990@gmail.com",
-                            name: "myName",
-                            email:  "slavik990@gmail.com",
-                            documents: [{document:"myDoc1"},{document:"myDoc2"}],
-                            videos: [
-                                {
-                                    video:"myVirde1",
-                                    end:true,
-                                    stopTime:123
-                                },
-                                {
-                                    video:"myVirde1",
-                                    end:true,
-                                    stopTime:123
-                                }
-
-                            ],
-                            questions: [
-                                {
-                                    question:"myVirde1",
-                                    item:123
-                                },
-                                {
-                                    question:"myVirde1",
-
-                                    item:123
-                                }
-
-                            ]
+                            companyName: doc.contentId.name,
+                            companyEmail: doc.contentId.email,
+                            name: name,
+                            email: doc.email,
+                            documents: doc.documents,
+                            videos: doc.videos,
+                            questions: doc.questions
                         };
-                        mailer.sendTrackInfo(data);
-
-               res.status(200).send('Notifications successfully sent');
-
-    }
+                        mailer.sendTrackInfo(data, cb);
+                    }, function (err) {
+                        if (err) {
+                            return waterfallCb(err)
+                        }
+                        waterfallCb(null);
+                    });
+                }],
+            function (err) {
+                if (err) {
+                    return console.error(err);
+                }
+                res.status(200).send('Notifications successfully sent');
+            });
+    };
 };
 
 module.exports = routeHandler;
