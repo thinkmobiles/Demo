@@ -122,6 +122,7 @@ define([
             this.$el.html(_.template(HomeTemplate));
 			if (this.options&&this.options.videoId&&this.options.userId&&!this.options.showedModal){
 				Backbone.history.navigate("#/chooseViewer/"+this.videoId+"/"+this.userId, {trigger: true});
+				$(".showModal").attr("href","#/home/"+this.videoId+"/"+this.userId);
 			}
             return this;
         }
