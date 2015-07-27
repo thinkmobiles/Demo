@@ -8,6 +8,7 @@ var BadRequestModule = function () {
     var NOT_ENAUGH_PARAMS = "Not enough incoming parameters.";
     var INVALID_EMAIL = "Invalid email address.";
     var EMAIL_IN_USE = 'Email in use. Please input another email address.';
+    var USERNAME_IN_USE = 'Username in use. Please input another username.';
     var DEVICE_IN_USE = 'deviceId in use. Please input another deviceId';
     var NO_UPDATE_PARAMS = 'There are no params for update.';
 
@@ -92,6 +93,24 @@ var BadRequestModule = function () {
         }
         if (!errOptions.message) {
             errOptions.message = EMAIL_IN_USE;
+        }
+
+        return new Errors(errOptions);
+    }
+    function UsernameInUse(options) {
+        var errOptions;
+
+        if (options) {
+            errOptions = options;
+        } else {
+            errOptions = {};
+        }
+
+        if (!errOptions.name) {
+            errOptions.name = 'DoubledUsername';
+        }
+        if (!errOptions.message) {
+            errOptions.message = USERNAME_IN_USE;
         }
 
         return new Errors(errOptions);
@@ -364,6 +383,7 @@ var BadRequestModule = function () {
         NotEnParams: NotEnParams,
         InvalidEmail: InvalidEmail,
         EmailInUse: EmailInUse,
+        UsernameInUse: UsernameInUse,
         DeviceAlreadySubscribed: DeviceAlreadySubscribed,
         DeviceIdInUse: DeviceIdInUse,
         InvalidValue: InvalidValue,
