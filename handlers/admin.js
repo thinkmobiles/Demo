@@ -24,20 +24,17 @@ var routeHandler = function (db) {
     this.confirmUser = function (req, res, next) {
         var confirmToken = req.query.token;
         var options;
-        fs.readFile('public/templates/successConfirmation.html', 'utf8', function (err, template) {
-            UserModel.findOneAndUpdate({confirmToken: confirmToken}, {isConfirmed: true}, function (err, doc) {
-                if (err) {
-                    return console(err);
-                }
-                options = {
-                    email: doc.email,
-                    firstName: doc.firstName,
-                    lastName: doc.lastName
-                };
-                mailer.sendInvite(options);
-                var html = _.template(template)();
-                res.end(html);
-            });
+        UserModel.findOneAndUpdate({confirmToken: confirmToken}, {isConfirmed: true}, function (err, doc) {
+            if (err) {
+                return console(err);
+            }
+            options = {
+                email: doc.email,
+                firstName: doc.firstName,
+                lastName: doc.lastName
+            };
+            mailer.sendInvite(options);
+            return res.redirect(process.env.WEB_HOST+'/#/message?text=Confirmed');
         });
     };
 

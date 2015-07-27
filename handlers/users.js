@@ -116,22 +116,22 @@ var routeHandler = function (db) {
 
         UserModel.findOne({email: userData.email}, function (err, user) {
             if (err) {
-                callback(err);
+               return callback(err);
             } else if (user) {
-                callback(badRequests.EmailInUse());
+               return callback(badRequests.EmailInUse());
             } else {
-                callback();
+                UserModel.findOne({userName: userData.userName}, function (err, user) {
+                    if (err) {
+                     return   callback(err);
+                    } else if (user) {
+                      return  callback(badRequests.UsernameInUse());
+                    } else {
+                        callback();
+                    }
+                });
             }
         });
-        UserModel.findOne({userName: userData.userName}, function (err, user) {
-            if (err) {
-                callback(err);
-            } else if (user) {
-                callback(badRequests.UsernameInUse());
-            } else {
-                callback();
-            }
-        });
+
 
     };
 
@@ -433,6 +433,32 @@ var routeHandler = function (db) {
         });
     };
 
+    this.avatarById = function (req, res, next) {
+        var id = req.params.id;
+        if (!id) {
+            var error = new Error();
+            error.message = "id is required";
+            error.status = 401;
+            return next(error);
+        }
+        UserModel.findById(id, function (err, user) {
+            if (err) {
+                return next(err);
+            }
+            if (!user) {
+                return res.status(200).send({avatar: ""});
+            }
+            var base64data = user.avatar.replace('data:image/jpeg;base64,', "").replace('data:image/jpeg;base64,', "").replace('data:image/jpg;base64,', "").replace('data:image/bmp;base64,', "");
+            var img = new Buffer(base64data, 'base64');
+
+            res.writeHead(200, {
+                'Content-Type': 'image/jpeg',
+                'Content-Length': img.length
+            });
+            res.end(img);
+        });
+    };
+
     this.signUp = function (req, res, next) {
         var options = req.body;
         var pass = options.pass;
@@ -638,7 +664,7 @@ var routeHandler = function (db) {
         console.log('weekly report start');
         var now = new Date(Date.now());
         var to = new Date(now.setHours(24));
-        var from = new Date(moment(to).subtract(7, 'days').format());
+        var from = new Date(moment(to).subtract(140, 'days').format());
         console.log(to);
         console.log(from);
 
@@ -665,7 +691,7 @@ var routeHandler = function (db) {
                         return console.error(err);
                     }
                     options.companyName = doc.name;
-                    options.companyEmail = doc.email;
+                    options.companyEmail = 'johnnye.be@gmail.com'//doc.email;
                     options.companyLogo = doc.logoUri;
                     mailer.sendWeeklyAnalytic(options, eachCb)
                 });

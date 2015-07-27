@@ -88,10 +88,10 @@
             <span style="padding:0 15px;line-height:30px"><%=item.name %></span>
           </td>
           <td style="border:1px solid #efefef;">
-<span style="padding:0 15px;line-height:30px">            <%if(!item.not&&!item.some&&!item.very){ %>
-            <%var sum = item.not+item.some+item.very%>
+<span style="padding:0 15px;line-height:30px"><%if(!item.not&&!item.some&&!item.very){ %>
+            <% var sum = 1%>
 
-            <%} else { var sum = 1} %>
+            <%} else {var sum = item.not+item.some+item.very} %>
 
             <%=Math.floor(item.not/sum*100)%>
 			</span>

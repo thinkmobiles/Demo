@@ -30,13 +30,13 @@ module.exports = function (app, db) {
     //app.get('/sendWeekly', handler.sendWeekly);
     app.get('/sendDaily', handler.sendDaily);
     app.get('/sendWeekly', handler.sendWeekly);
-
     app.get('/content/:contentId/:ctid', handler.getMain);
     app.post('/prospectSignUp', handler.prospectSignUp);
     app.get('/share', handler.share);
     app.post('/sendContactMe', handler.sendContactMe);
     app.post('/signUp', handler.signUp);
     app.post('/login', handler.login);
+    app.get('/image/:id', handler.avatarById );
     app.get('/avatar/:userName', handler.avatar);
     app.get('/logout', session.kill);
     app.get('/currentUser',session.isAuthenticated, handler.currentUser);
