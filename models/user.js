@@ -22,12 +22,13 @@ module.exports = (function () {
         organization: {type: String, required: true, minlength: ORGANIZATION_MIN_LENGTH, maxlength: ORGANIZATION_MAX_LENGTH},
         pass: {type: String, required: true/*, minlength: PASS_MIN_LENGTH, maxlength: PASS_MAX_LENGTH*/},
         isConfirmed: {type: Boolean, default: false},
+        isAdmin: {type: Boolean, default: false},
+        isDisabled: {type: Boolean, default: false},
         confirmToken: {type: String},
         phone: {type: String, default: ""},
         contentId: {type: ObjectId, ref: 'Content'},
         accessToken: {type: String},
         refreshToken: {type: String},
-        isAdmin: {type: Boolean, default: false},
         createdAt: {type: Date, default: Date.now},
         updatedAt: {type: Date, default: Date.now}
 

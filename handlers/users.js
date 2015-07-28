@@ -137,6 +137,7 @@ var routeHandler = function (db) {
 
     function createUser(userData, callback) {
         userData.isConfirmed = false;
+        userData.isDisabled = false;
         userData.confirmToken = randToken.generate(24);
         var newUser = new UserModel(userData);
 
@@ -393,7 +394,10 @@ var routeHandler = function (db) {
                     error.message = "Your account not verified yet";
                     error.status = 401;
                     return next(error);
-
+                } else if (user.isDisabled) {
+                    error.message = "Your account disabled by administrator";
+                    error.status = 401;
+                    return next(error);
                 }
 
                 session.login(req, user);
@@ -537,6 +541,7 @@ var routeHandler = function (db) {
     this.getMain = function (req, res, next) {
         var contentId = req.params.contentId;
         var prospectId = req.params.ctid;
+        var error = new Error();
         var userId;
         var content;
         var data;
@@ -564,11 +569,15 @@ var routeHandler = function (db) {
                         return waterfallCb(err);
                     }
                     if (!user) {
-                        var error = new Error();
                         error.message = 'User Not Found';
                         error.status = 404;
                         return waterfallCb(error);
+                    }else if (user.isDisabled) {
+                        error.message = 'Sory, but this content disabled now';
+                        error.status = 403;
+                        return waterfallCb(error);
                     }
+
                     userId = user._id;
                     waterfallCb(null, user);
                 });

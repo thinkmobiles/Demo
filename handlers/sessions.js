@@ -5,6 +5,7 @@ var Session = function (db) {
         req.session.loggedIn = true;
         req.session.uId = options._id;
         req.session.isConfirmed = options.isConfirmed;
+        req.session.isDisabled = options.isDisabled;
         req.session.isAdmin = options.isAdmin;
         return true;
     };
