@@ -4,12 +4,15 @@ define([
 	'text!templates/users/confirmedTemplate.html',
 	"collections/usersCollection",
 	"collections/confirmedCollection",
-], function (UsersTemplate, PendingTemplate, ConfirmedTemplate, UsersCollection, ConfirmedCollection) {
+	"models/confirmedUserModel",
+	"models/pendingUsersModel"
+], function (UsersTemplate, PendingTemplate, ConfirmedTemplate, UsersCollection, ConfirmedCollection, confirmedUserModel, pendingUsersModel) {
     var View = Backbone.View.extend({
 
 		el:"#wrapper",
         events:{
-
+            'click .confirm': 'confirm',
+            'click .delete': 'delete'
         },
         initialize: function () {
 			var self = this;
@@ -19,6 +22,9 @@ define([
 			this.confirmedCollection.bind('reset', self.renderConfirmed, self);
 			this.render();
         },
+        confirm: function (e) {
+
+        };
 
 		 renderPending: function () {
              this.$el.find("#pendingAccount").html(_.template(PendingTemplate)({users:this.usersCollection.toJSON()}));
