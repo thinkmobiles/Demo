@@ -30,6 +30,7 @@ define([
         },
 
         needAuthorize: [
+			'users',
             'upload',
             'main'
         ],
