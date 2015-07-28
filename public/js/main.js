@@ -100,8 +100,9 @@ require(['app'], function (app) {
             success: function (data) {
                 App.sessionData.set({
 					authorized: true,
+					admin:data.isAdmin,
                     user: data
-                })
+                });
 				if (callback)callback();
             },
             error: function (data) {
