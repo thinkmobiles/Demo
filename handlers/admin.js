@@ -104,12 +104,12 @@ var routeHandler = function (db) {
         var pass = req.body.pass;
         var id = req.body.id;
         var hashPass =getEncryptedPass(pass);
-            UserModel.findByIdAndUpdate(id, {pass: hashPass}, function (err, doc) {
-                if (err) {
-                    return next(err);
-                }
-                return res.status(200).send({message:'Success'});
-            });
+        UserModel.findByIdAndUpdate(id, {pass: hashPass}, function (err, doc) {
+            if (err) {
+                return next(err);
+            }
+            return res.status(200).send({message:'Success'});
+        });
     };
 
     this.remove = function (req, res, next) {
