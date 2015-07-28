@@ -18,7 +18,7 @@ define(
             emailRegExp = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
             loggedRegExp = /^([0-9]{1,9})\.?([0-9]{1,2})?$/;
         var MIN_LENGTH = 2,
-            LOGIN_MIN_LENGTH = 6,
+            LOGIN_MIN_LENGTH = 5,
             WORKFLOW_MIN_LENGTH = 3;
 
         var validateEmail = function (validatedString) {
