@@ -4,9 +4,9 @@ define([
 	'text!templates/users/confirmedTemplate.html',
 	"collections/usersCollection",
 	"collections/confirmedCollection",
-	"models/confirmedUserModel",
+	"models/confirmedUsersModel",
 	"models/pendingUsersModel"
-], function (UsersTemplate, PendingTemplate, ConfirmedTemplate, UsersCollection, ConfirmedCollection, confirmedUserModel, pendingUsersModel) {
+], function (UsersTemplate, PendingTemplate, ConfirmedTemplate, UsersCollection, ConfirmedCollection) {
     var View = Backbone.View.extend({
 
 		el:"#wrapper",
@@ -22,9 +22,44 @@ define([
 			this.confirmedCollection.bind('reset', self.renderConfirmed, self);
 			this.render();
         },
-        confirm: function (e) {
 
-        };
+        confirm: function (e) {
+            var id = $(e.target).closest("tr").data("id");
+           var model =  this.usersCollection.get(id);
+            var self = this;
+           model.save({
+                   isConfirmed: true
+                },{patch: true},
+                {
+                    wait: true,
+                    success: function (model, response) {
+                        self.usersCollection.update();
+                        self.confirmedCollection.update();
+                        alert('Updated');
+                    },
+                    error: function (err) {
+                        console.log(JSON.stringify(err));
+                    }
+                });
+
+        },
+
+        delete: function (e) {
+            var id = $(e.target).closest("tr").data("id");
+            var model =  this.usersCollection.get(id);
+            model.destroy({
+                    wait: true,
+                    success: function (model, response) {
+                        this.usersCollection.update();
+                        this.confirmedCollection.update();
+                        alert('Removed');
+                    },
+                    error: function (err) {
+                        console.log(JSON.stringify(err));
+                    }
+                });
+
+        },
 
 		 renderPending: function () {
              this.$el.find("#pendingAccount").html(_.template(PendingTemplate)({users:this.usersCollection.toJSON()}));
