@@ -66,21 +66,32 @@ var routeHandler = function (db) {
         });
     };
 
-    this.users = function (req, res, next) {
-        UserModel.find({}, {avatar: 0}, function (err, docs) {
+    this.confirmedUsers = function (req, res, next) {
+        UserModel.find({isConfirmed: true, isAdmin:false}, {avatar: 0, pass:0}, function (err, docs) {
             if (err) {
                 return next(err);
             } else if (!docs) {
                 return res.status(200).send([]);
             }
-            ContentModel.populate(docs, {path: 'contentId'}, function (err, popDocs) {
-                if (err) {
-                    return next(err);
-                }
-                return res.status(200).send(popDocs);
-            });
-            //return res.status(200).send(docs);
-        })
+            //ContentModel.populate(docs, {path: 'contentId'}, function (err, popDocs) {
+            //    if (err) {
+            //        return next(err);
+            //    }
+            //    return res.status(200).send(popDocs);
+            //});
+            res.status(200).send(docs);
+        });
+    };
+
+    this.pendingUsers = function (req, res, next) {
+        UserModel.find({isConfirmed: false, isAdmin:false}, {avatar: 0, pass:0}, function (err, docs) {
+            if (err) {
+                return next(err);
+            } else if (!docs) {
+                return res.status(200).send([]);
+            }
+            res.status(200).send(docs);
+        });
     };
 
     this.changePass = function (req, res, next) {
