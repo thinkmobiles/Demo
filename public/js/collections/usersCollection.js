@@ -17,7 +17,7 @@ define([
             });
         },
         url: function () {
-            return "/admin/users"
+            return "/admin/users/pending"
         },
         parse: function (response) {
             return response;

@@ -17,7 +17,7 @@ define([
             });
         },
         url: function () {
-            return "/admin/confirm"
+            return "/admin/users/confirmed"
         },
         parse: function (response) {
             return response;
