@@ -14,7 +14,8 @@ define(["moment"],function (moment) {
         if (!err) {
             App.sessionData.set({
                 authorized: true,
-                user: data
+                user: data,
+				admin:data.isAdmin
             });
 			
             return Backbone.history.navigate(url, {trigger: true});

@@ -1,19 +1,19 @@
-<div class="contactMe">
-    <span><h3> New user want to register !</h3>
-       <p> <b>User Data:</b> </p>
-        <span><img src="<%=process.env.WEB_HOST+'/image/'+ _id.toString() %>" width="100" height="120"/><br/>
-        <!--<span><img src="http://www.gcsit.com/images/slider/slider-businessman-dark-suit.png" width="100" height="120"/><br/>-->
-            <strong><%=firstName%> <%=lastName%></strong></span>
-           <ul>
-               <!--<li>Name: <b><%=firstName+ ' ' + lastName %></b></li>-->
+<div class="contactMe" style="color:black">
+        <h2 style="text-transform:uppercase;color:#656565;font-weight:normal;font-size:24px;">New user want to register !</h2>
+    <h2 style="color:#26c2ff;
+	  font-weight:normal;
+	  font-size:24px;">User Data: <%=firstName%> <%=lastName%></h2>
+        <span><img src="<%=process.env.WEB_HOST+'/image/'+ _id.toString() %>" width="100" height="120" style="margin-left:80px;border-radius:50%;"/><br/>
+           <ul style="list-style:none;margin:0;padding:0; margin-left:18px;font-size:17px;">
                <li>Email: <b><%=email %></b></li>
                <li>Organization: <%=organization %></li>
                <li>Phone: <%=phone %></li>
            </ul><br/>
-If you want confirm this user press the link below: <br/>
-        <a href="<%=process.env.WEB_HOST+'/admin/confirm?token='+ confirmToken %>">Press to Confirm</a>
+            <h3 style=" font-size:16px;">
+If you want confirm this user click the link: <a href="<%=process.env.WEB_HOST+'/admin/confirm?token='+ confirmToken %>">CONFIRM USER</a>,  <br/>
+            or go to admin panel and do this manually: <a href="<%=process.env.WEB_HOST+'/#/users'%>">ADMIN PANEL</a></h3>
         <br/><br/><br/>
-</span>
+    </span>
     <footer>
         Copyright DemoRocket 2015
     </footer>

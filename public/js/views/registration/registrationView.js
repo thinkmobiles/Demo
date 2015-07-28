@@ -1,6 +1,6 @@
 define([
     'text!templates/registration/registrationTemplate.html',
-    '../../checkPass',
+    'checkPass',
 	"validation"
 ], function (RegistrationTemplate, checkPass, validation) {
     var View = Backbone.View.extend({

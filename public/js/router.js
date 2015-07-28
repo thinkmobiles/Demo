@@ -24,11 +24,13 @@ define([
             "registration"              :  "registration",
             //ToDo: analitic )))))))))))))haha)
 			"analytics"              :  "analytics",
+			"users"              :  "users",
 			"message?text=:text":       "showNotification",
             "*any"                      :  "any"
         },
 
         needAuthorize: [
+			'users',
             'upload',
             'main'
         ],
@@ -146,6 +148,9 @@ define([
         },
 		analytics: function () {
             this.loadWrapperView('analitics');
+        },
+		users: function () {
+            this.loadWrapperView('users');
         },
         registration: function () {
             this.loadWrapperView('registration');

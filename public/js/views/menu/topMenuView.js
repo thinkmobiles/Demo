@@ -47,8 +47,9 @@ define([
             console.log(App.sessionData.get("authorized"));
 
             this.$el.html(_.template(topMenuTemplate)({
-				authorized:App.sessionData.get("authorized"),
-				user:App.sessionData.get("user")
+				authorized: App.sessionData.get("authorized"),
+				admin: App.sessionData.get("admin"),
+				user: App.sessionData.get("user")
 			}));
             return this;
         }

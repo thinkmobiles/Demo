@@ -49,22 +49,24 @@ var routeHandler = function (db) {
         fs.rmdirSync(dirPath);
     };
 
-    this.confirmUser = function (req, res, next) {
-        var confirmToken = req.query.token;
-        var options;
-        UserModel.findOneAndUpdate({confirmToken: confirmToken}, {isConfirmed: true}, function (err, doc) {
-            if (err) {
-                return console(err);
-            }
-            options = {
-                email: doc.email,
-                firstName: doc.firstName,
-                lastName: doc.lastName
-            };
-            mailer.sendInvite(options);
-            return res.redirect(process.env.WEB_HOST + '/#/message?text=Success! You confirmed ' + doc.firstName + ' ' + doc.lastName + ' as new user');
-        });
-    };
+    //this.confirmUser = function (req, res, next) {
+    //    var confirmToken = req.query.token;
+    //    var options;
+    //    UserModel.findOneAndUpdate({confirmToken: confirmToken}, {isConfirmed: true}, function (err, doc) {
+    //        if (err) {
+    //            return console(err);
+    //        }
+    //        options = {
+    //            email: doc.email,
+    //            firstName: doc.firstName,
+    //            lastName: doc.lastName
+    //        };
+    //        mailer.sendInvite(options);
+    //        return res.redirect(process.env.WEB_HOST + '/#/message?text=Success! You confirmed ' + doc.firstName + ' ' + doc.lastName + ' as new user');
+    //    });
+    //};
+
+
 
     this.confirmedUsers = function (req, res, next) {
         UserModel.find({isConfirmed: true, isAdmin:false}, {avatar: 0, pass:0}, function (err, docs) {
@@ -112,12 +114,45 @@ var routeHandler = function (db) {
         });
     };
 
-    this.remove = function (req, res, next) {
-        if (!req.body || !req.body.id) {
+    this.update = function (req, res, next) {
+        if (!req.params.id) {
             var e = new Error();
             e.message = 'Not enough params';
             e.status = 400;
-            return next(err);
+            return next(e);
+        }
+        var id = req.params.id;
+        var body = req.body;
+        var saveObj= {};
+        if(body.isDisabled !== undefined){
+         saveObj.isDisabled = body.isDisabled;
+        }
+        if(body.isConfirmed !== undefined){
+         saveObj.isConfirmed = body.isConfirmed;
+        }
+        UserModel.findByIdAndUpdate(id, saveObj, function (err, doc) {
+            if (err) {
+                return console(err);
+            }
+            if(saveObj.isConfirmed === true){
+            var options = {
+                email: doc.email,
+                firstName: doc.firstName,
+                lastName: doc.lastName
+            };
+            mailer.sendInvite(options);
+            }
+            var message = 'User modified';
+            res.status(200).send({message: message});
+        });
+    };
+
+    this.remove = function (req, res, next) {
+        if (!req.params.id) {
+            var e = new Error();
+            e.message = 'Not enough params';
+            e.status = 400;
+            return next(e);
         }
         var contentId;
         var userId = req.query.id;
@@ -154,7 +189,7 @@ var routeHandler = function (db) {
             var dirPath = localFs.defaultPublicDir + sep + 'video' + sep + doc._id.toString();
             rmDir(dirPath);
 
-            var message = 'Content removed';
+            var message = 'User removed';
             res.status(200).send({message: message});
         });
     };
