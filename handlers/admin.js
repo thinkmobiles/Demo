@@ -49,38 +49,49 @@ var routeHandler = function (db) {
         fs.rmdirSync(dirPath);
     };
 
-    this.confirmUser = function (req, res, next) {
-        var confirmToken = req.query.token;
-        var options;
-        UserModel.findOneAndUpdate({confirmToken: confirmToken}, {isConfirmed: true}, function (err, doc) {
-            if (err) {
-                return console(err);
-            }
-            options = {
-                email: doc.email,
-                firstName: doc.firstName,
-                lastName: doc.lastName
-            };
-            mailer.sendInvite(options);
-            return res.redirect(process.env.WEB_HOST + '/#/message?text=Success! You confirmed ' + doc.firstName + ' ' + doc.lastName + ' as new user');
-        });
-    };
+    //this.confirmUser = function (req, res, next) {
+    //    var confirmToken = req.query.token;
+    //    var options;
+    //    UserModel.findOneAndUpdate({confirmToken: confirmToken}, {isConfirmed: true}, function (err, doc) {
+    //        if (err) {
+    //            return console(err);
+    //        }
+    //        options = {
+    //            email: doc.email,
+    //            firstName: doc.firstName,
+    //            lastName: doc.lastName
+    //        };
+    //        mailer.sendInvite(options);
+    //        return res.redirect(process.env.WEB_HOST + '/#/message?text=Success! You confirmed ' + doc.firstName + ' ' + doc.lastName + ' as new user');
+    //    });
+    //};
 
-    this.users = function (req, res, next) {
-        UserModel.find({}, {avatar: 0}, function (err, docs) {
+    this.confirmedUsers = function (req, res, next) {
+        UserModel.find({isConfirmed: true, isAdmin:false}, {avatar: 0, pass:0}, function (err, docs) {
             if (err) {
                 return next(err);
             } else if (!docs) {
                 return res.status(200).send([]);
             }
-            ContentModel.populate(docs, {path: 'contentId'}, function (err, popDocs) {
-                if (err) {
-                    return next(err);
-                }
-                return res.status(200).send(popDocs);
-            });
-            //return res.status(200).send(docs);
-        })
+            //ContentModel.populate(docs, {path: 'contentId'}, function (err, popDocs) {
+            //    if (err) {
+            //        return next(err);
+            //    }
+            //    return res.status(200).send(popDocs);
+            //});
+            res.status(200).send(docs);
+        });
+    };
+
+    this.pendingUsers = function (req, res, next) {
+        UserModel.find({isConfirmed: false, isAdmin:false}, {avatar: 0, pass:0}, function (err, docs) {
+            if (err) {
+                return next(err);
+            } else if (!docs) {
+                return res.status(200).send([]);
+            }
+            res.status(200).send(docs);
+        });
     };
 
     this.changePass = function (req, res, next) {
@@ -93,12 +104,12 @@ var routeHandler = function (db) {
         var pass = req.body.pass;
         var id = req.body.id;
         var hashPass =getEncryptedPass(pass);
-            UserModel.findByIdAndUpdate(id, {pass: hashPass}, function (err, doc) {
-                if (err) {
-                    return next(err);
-                }
-                return res.status(200).send({message:'Success'});
-            });
+        UserModel.findByIdAndUpdate(id, {pass: hashPass}, function (err, doc) {
+            if (err) {
+                return next(err);
+            }
+            return res.status(200).send({message:'Success'});
+        });
     };
 
     this.remove = function (req, res, next) {
