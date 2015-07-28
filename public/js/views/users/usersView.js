@@ -25,7 +25,7 @@ define([
             return this;
          },
 		renderConfirmed: function () {
-             this.$el.find("#confirmedAccount").html(_.template(ConfirmedTemplate)({users:this.usersCollection.toJSON()}));
+             this.$el.find("#confirmedAccount").html(_.template(ConfirmedTemplate)({users:this.confirmedCollection.toJSON()}));
             return this;
          },
         render: function () {

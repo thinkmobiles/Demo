@@ -1,0 +1,22 @@
+<h3>Pending User Accounts</h3>
+<table>
+  <tr>
+	<th><span>First Name</span></th>
+	<th><span>Last Name</span></th>
+	<th><span>Organization</span></th>
+	<th><span>Phone</span></th>
+	<th><span>Email</span></th>
+	<th><span>Username</span></th>
+	<th></th>
+  </tr>
+  <%_.each(users,function(user){%>
+  <tr>
+	<td><span><%=user.firstName %></span></td>
+	<td><span><%=user.lastName %></span></td>
+	<td><span><%=user.organization %></span></td>
+	<td><span><%=user.phone %></span></td>
+	<td><span><%=user.email %></span></td>
+	<td><span><%=user.userName %></span></td>
+  </tr>
+  <%})%>
+</table>
