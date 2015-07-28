@@ -7,7 +7,9 @@
 	<th><span>Phone</span></th>
 	<th><span>Email</span></th>
 	<th><span>Username</span></th>
-	<th></th>
+	<th><span>Status</span></th>
+	<td></td>
+
   </tr>
   <%_.each(users,function(user){%>
   <tr>
@@ -17,6 +19,9 @@
 	<td><span><%=user.phone %></span></td>
 	<td><span><%=user.email %></span></td>
 	<td><span><%=user.userName %></span></td>
+	<td><span><%=user.isConfirmed?"Enabled":"Disabled" %></span></td>
+	<td><span><a href="javascript:;">Edit</a>&nbsp;&nbsp;<a href="javascript:;">Disable</a>&nbsp;&nbsp;<a href="javascript:;">Reset Password</a>&nbsp;&nbsp;<a href="javascript:;">Delete</a></span></td>
+		
   </tr>
   <%})%>
 </table>
