@@ -27,6 +27,7 @@ module.exports = (function () {
         contentId: {type: ObjectId, ref: 'Content'},
         accessToken: {type: String},
         refreshToken: {type: String},
+        isAdmin: {type: Boolean, default: false},
         createdAt: {type: Date, default: Date.now},
         updatedAt: {type: Date, default: Date.now}
 

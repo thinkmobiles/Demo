@@ -6,7 +6,7 @@ define(
             nameRegExp = /^[a-zA-Z]+[a-zA-Z-_\s]+$/,
             nameRegExp = /^[a-zA-Z-_\s]+$/,
             groupsNameRegExp = /[a-zA-Z0-9]+[a-zA-Z0-9-,#@&*-_\s()\.\/\s]+$/,
-            loginRegExp = /[\w\.@]{6,100}$/,
+            loginRegExp = /[\w\.@]{5,100}$/,
             passRegExp = /^[\w\.@]{3,100}$/,
             skypeRegExp = /^[\w\._@]{6,100}$/,
             workflowRegExp = /^[a-zA-Z0-9\s]{2,100}$/,

@@ -5,6 +5,7 @@ var Session = function (db) {
         req.session.loggedIn = true;
         req.session.uId = options._id;
         req.session.isConfirmed = options.isConfirmed;
+        req.session.isAdmin = options.isAdmin;
         return true;
     };
 
@@ -28,6 +29,19 @@ var Session = function (db) {
             next(err);
         }
     };
+    this.isAuthenticatedAdmin = function (req, res, next) {
+        if (req.session && req.session.uId && req.session.loggedIn && req.session.isAdmin) {
+            next();
+        } else {
+            if (req.session && req.session.uId) {
+                req.session.destroy();
+            }
+            var err = new Error('You are not admin');
+            err.status = 403;
+            next(err);
+        }
+    };
+
    /* this.register = function (req, res, userModel, options) {
         var status = (options && options.status) ? options.status : 200;
         var role;
