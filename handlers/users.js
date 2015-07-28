@@ -452,7 +452,7 @@ var routeHandler = function (db) {
             if (!user) {
                 return res.status(200).send({avatar: ""});
             }
-            var base64data = user.avatar.replace('data:image/jpeg;base64,', "").replace('data:image/jpeg;base64,', "").replace('data:image/jpg;base64,', "").replace('data:image/bmp;base64,', "");
+            var base64data = user.avatar.replace('data:image/jpeg;base64,', "").replace('data:image/png;base64,', "").replace('data:image/jpg;base64,', "").replace('data:image/bmp;base64,', "");
             var img = new Buffer(base64data, 'base64');
 
             res.writeHead(200, {
