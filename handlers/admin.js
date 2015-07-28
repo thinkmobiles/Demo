@@ -49,22 +49,22 @@ var routeHandler = function (db) {
         fs.rmdirSync(dirPath);
     };
 
-    //this.confirmUser = function (req, res, next) {
-    //    var confirmToken = req.query.token;
-    //    var options;
-    //    UserModel.findOneAndUpdate({confirmToken: confirmToken}, {isConfirmed: true}, function (err, doc) {
-    //        if (err) {
-    //            return console(err);
-    //        }
-    //        options = {
-    //            email: doc.email,
-    //            firstName: doc.firstName,
-    //            lastName: doc.lastName
-    //        };
-    //        mailer.sendInvite(options);
-    //        return res.redirect(process.env.WEB_HOST + '/#/message?text=Success! You confirmed ' + doc.firstName + ' ' + doc.lastName + ' as new user');
-    //    });
-    //};
+    this.confirmUser = function (req, res, next) {
+        var confirmToken = req.query.token;
+        var options;
+        UserModel.findOneAndUpdate({confirmToken: confirmToken}, {isConfirmed: true}, function (err, doc) {
+            if (err) {
+                return next(err);
+            }
+            options = {
+                email: doc.email,
+                firstName: doc.firstName,
+                lastName: doc.lastName
+            };
+            mailer.sendInvite(options);
+            return res.redirect(process.env.WEB_HOST + '/#/message?text=Success! You confirmed ' + doc.firstName + ' ' + doc.lastName + ' as new user');
+        });
+    };
 
 
 
@@ -132,7 +132,7 @@ var routeHandler = function (db) {
         }
         UserModel.findByIdAndUpdate(id, saveObj, function (err, doc) {
             if (err) {
-                return console(err);
+                return next(err);
             }
             if(saveObj.isConfirmed === true){
             var options = {
