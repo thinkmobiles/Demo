@@ -46,7 +46,7 @@ define([
 				self.$el.find(".contactPage .title").addClass("error");
 			}
 
-			if (self.$el.find(".contactPage .phone").val()&&!validation.validPhone(self.$el.find(".contactPage .phone").val())){
+			if (!validation.validPhone(self.$el.find(".contactPage .phone").val())){
 				isError = true;
 				self.$el.find(".contactPage .phone").addClass("error");
 			}
