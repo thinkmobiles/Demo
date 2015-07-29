@@ -25,6 +25,10 @@ define([
             //ToDo: analitic )))))))))))))haha)
 			"analytics"              :  "analytics",
 			"users"              :  "users",
+			"pricing"              :  "pricing",
+			"aboutUs"              :  "aboutUs",
+			"contact"              : "contact",
+			"forgot"              : "forgot",
 			"message?text=:text":       "showNotification",
             "*any"                      :  "any"
         },
@@ -155,6 +159,18 @@ define([
         registration: function () {
             this.loadWrapperView('registration');
         },
+		pricing: function () {
+            this.loadWrapperView('pricing');
+        },
+		aboutUs: function () {
+            this.loadWrapperView('aboutUs');
+        },
+		contact: function () {
+            this.loadWrapperView('contact');
+        },
+		forgot: function () {
+            this.loadWrapperView('forgot');
+		},
         home: function (videoId, userId) {
             this.loadWrapperView('home',{
                 videoId:videoId,

@@ -1,9 +1,9 @@
 define([
-    'models/documentAnalyticModel'
+    'models/pendingUsersModel'
 ], function (model) {
     var Collection = Backbone.Collection.extend({
         model: model,
-		initialize: function (options) {
+        initialize: function (options) {
             var that = this;
             this.fetch({
                 data: options,
@@ -12,7 +12,17 @@ define([
 
                 },
                 error: function (models, xhr) {
-                    if (xhr.status === 401) Backbone.history.navigate('#login', { trigger: true });
+                    if (xhr.status === 401) Backbone.history.navigate('#login', {trigger: true});
+                }
+            });
+        },
+        update: function () {
+            this.fetch({
+                reset: true,
+                success: function () {
+                },
+                error: function (models, xhr) {
+                    if (xhr.status === 401) Backbone.history.navigate('#login', {trigger: true});
                 }
             });
         },

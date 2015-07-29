@@ -4,6 +4,7 @@
 var async = require('async');
 var mongoose = require('mongoose');
 var crypto = require('crypto');
+var path = require('path');
 var fs = require('fs');
 var _ = require('../public/js/libs/underscore/underscore-min');
 var mailer = require('../helpers/mailer');
@@ -67,9 +68,8 @@ var routeHandler = function (db) {
     };
 
 
-
     this.confirmedUsers = function (req, res, next) {
-        UserModel.find({isConfirmed: true, isAdmin:false}, {avatar: 0, pass:0}, function (err, docs) {
+        UserModel.find({isConfirmed: true, isAdmin: false}, {avatar: 0, pass: 0}, function (err, docs) {
             if (err) {
                 return next(err);
             } else if (!docs) {
@@ -86,7 +86,7 @@ var routeHandler = function (db) {
     };
 
     this.pendingUsers = function (req, res, next) {
-        UserModel.find({isConfirmed: false, isAdmin:false}, {avatar: 0, pass:0}, function (err, docs) {
+        UserModel.find({isConfirmed: false, isAdmin: false}, {avatar: 0, pass: 0}, function (err, docs) {
             if (err) {
                 return next(err);
             } else if (!docs) {
@@ -105,12 +105,12 @@ var routeHandler = function (db) {
         }
         var pass = req.body.pass;
         var id = req.body.id;
-        var hashPass =getEncryptedPass(pass);
+        var hashPass = getEncryptedPass(pass);
         UserModel.findByIdAndUpdate(id, {pass: hashPass}, function (err, doc) {
             if (err) {
                 return next(err);
             }
-            return res.status(200).send({message:'Success'});
+            return res.status(200).send({message: 'Success'});
         });
     };
 
@@ -123,24 +123,24 @@ var routeHandler = function (db) {
         }
         var id = req.params.id;
         var body = req.body;
-        var saveObj= {};
-        if(body.isDisabled !== undefined){
-         saveObj.isDisabled = body.isDisabled;
+        var saveObj = {};
+        if (body.isDisabled !== undefined) {
+            saveObj.isDisabled = body.isDisabled;
         }
-        if(body.isConfirmed !== undefined){
-         saveObj.isConfirmed = body.isConfirmed;
+        if (body.isConfirmed !== undefined) {
+            saveObj.isConfirmed = body.isConfirmed;
         }
         UserModel.findByIdAndUpdate(id, saveObj, function (err, doc) {
             if (err) {
                 return next(err);
             }
-            if(saveObj.isConfirmed === true){
-            var options = {
-                email: doc.email,
-                firstName: doc.firstName,
-                lastName: doc.lastName
-            };
-            mailer.sendInvite(options);
+            if (saveObj.isConfirmed === true) {
+                var options = {
+                    email: doc.email,
+                    firstName: doc.firstName,
+                    lastName: doc.lastName
+                };
+                mailer.sendInvite(options);
             }
             var message = 'User modified';
             res.status(200).send({message: message});
@@ -155,42 +155,44 @@ var routeHandler = function (db) {
             return next(e);
         }
         var contentId;
-        var userId = req.query.id;
+        var userId = req.params.id;
         var sep = path.sep;
 
-        ContentModel.findOneAndRemove({ownerId: id}, function (err, doc) {
+        UserModel.findById(userId, function (err, user) {
             if (err) {
                 return next(err);
             }
-            if (!doc) {
-                return res.status(404).send({err: 'Content Not Found'});
+            if (!user) {
+                return res.status(404).send({err: 'User Not Found'});
             }
-            contentId = doc._id;
-            UserModel.findByIdAndRemove(userId, function (err, found) {
-                if (err) {
-                    return next(err);
-                }
-                if (!found) {
-                    return res.status(404).send({err: 'User Not Found'});
-                }
-            });
-            ContactMeModel.remove({contentId: contentId}, function (err) {
+            contentId = user.contentId;
+            ContentModel.findByIdAndRemove(contentId, function (err, doc) {
                 if (err) {
                     console.error(err);
                 }
-                console.log('ContactMeModel updated')
-            });
-            TrackModel.remove({contentId: contentId}, function (err) {
-                if (err) {
-                    console.error(err);
-                }
-                console.log('TrackModel updated')
-            });
-            var dirPath = localFs.defaultPublicDir + sep + 'video' + sep + doc._id.toString();
-            rmDir(dirPath);
+                UserModel.findByIdAndRemove(userId, function (err, found) {
+                    if (err) {
+                        console.error(err);
+                    }
+                });
+                ContactMeModel.findByIdAndRemove(userId, function (err) {
+                    if (err) {
+                        console.error(err);
+                    }
+                    console.log('ContactMeModel updated')
+                });
+                TrackModel.remove({contentId: contentId}, function (err) {
+                    if (err) {
+                        console.error(err);
+                    }
+                    console.log('TrackModel updated')
+                });
+                var dirPath = localFs.defaultPublicDir + sep + 'video' + sep + user._id.toString();
+                rmDir(dirPath);
 
-            var message = 'User removed';
-            res.status(200).send({message: message});
+                var message = 'User removed';
+                res.status(200).send({message: message});
+            });
         });
     };
 

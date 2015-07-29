@@ -1,5 +1,5 @@
 define([
-    'models/documentAnalyticModel'
+    'models/confirmedUsersModel'
 ], function (model) {
     var Collection = Backbone.Collection.extend({
         model: model,
@@ -13,6 +13,16 @@ define([
                 },
                 error: function (models, xhr) {
                     if (xhr.status === 401) Backbone.history.navigate('#login', { trigger: true });
+                }
+            });
+        },
+        update: function () {
+            this.fetch({
+                reset: true,
+                success: function () {
+                },
+                error: function (models, xhr) {
+                    if (xhr.status === 401) Backbone.history.navigate('#login', {trigger: true});
                 }
             });
         },

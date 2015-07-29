@@ -13,8 +13,12 @@ define([
             "click .checkbox":"checkboxClick",
             "click .registration":"hideBlur",
 			"click .lock.active":"login",
+			"click .whatSay .arrows .arrow-left":"prevSlide",
+			"click .whatSay .arrows .arrow-right":"nextSlide",
 			"keyup .signIn .userName":"changeFieldUsername",
 			"keyup .signIn .password":"changeField",
+			"click .toTop":"toTop",
+			'click .login': 'loginBtn'
 //			"change .signIn .userName":"showAvatar",
         },
 
@@ -26,6 +30,72 @@ define([
 			this.modal = null;
             this.render();
         },
+		
+		loginBtn: function(e){
+			e.stopPropagation();
+			$("body").addClass("withLogin");
+			setTimeout(function(){
+				$(".signIn .username .userName")[0].focus();
+			},550);
+			
+		},
+
+		toTop:function(){
+			$('html, body').animate({ scrollTop: 0 }, 'fast');
+		},
+		
+		prevSlide: function(e){
+			if (e){
+				clearInterval(this.interval);
+			}
+			var self = this;
+			var count = this.$el.find(".messages .item").length;
+			var n = this.$el.find(".messages .item").index(this.$el.find(".messages .item.selected"));
+			this.$el.find(".messages .item.selected").stop().animate({
+				opacity:0
+			},300,function(){
+				$(this).removeClass("selected").css({opacity:1});
+				var k= 0;
+				if (!n){
+					k = count-1
+				}else{
+					k = n-1
+				}
+				self.$el.find(".messages .item").eq(k).addClass("selected").css({opacity:0}).stop().animate({
+					opacity:1
+				},300,function(){
+				});
+
+			})
+
+
+
+		},
+
+		nextSlide: function(e){
+			if (e){
+				clearInterval(this.interval);
+			}
+			var self = this;
+			var count = this.$el.find(".messages .item").length;
+			var n = this.$el.find(".messages .item").index(this.$el.find(".messages .item.selected"));
+			this.$el.find(".messages .item.selected").stop().animate({
+				opacity:0
+			},300,function(){
+				$(this).removeClass("selected").css({opacity:1});
+				var k= 0;
+					if (n===count-1){
+					k = 0
+				}else{
+					k = n+1
+				}
+				self.$el.find(".messages .item").eq(k).addClass("selected").css({opacity:0}).stop().animate({
+					opacity:1
+				},300,function(){
+				});
+
+			})
+		},
 
 		changeField:function(e){
 			var self = this;
@@ -119,11 +189,15 @@ define([
 		},
 
         render: function () {
+			var self = this;
             this.$el.html(_.template(HomeTemplate));
 			if (this.options&&this.options.videoId&&this.options.userId&&!this.options.showedModal){
 				Backbone.history.navigate("#/chooseViewer/"+this.videoId+"/"+this.userId, {trigger: true});
 				$(".showModal").attr("href","#/home/"+this.videoId+"/"+this.userId);
 			}
+
+			this.interval = setInterval(function(){self.nextSlide()},5000)
+			
             return this;
         }
 
