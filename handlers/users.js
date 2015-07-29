@@ -116,15 +116,15 @@ var routeHandler = function (db) {
 
         UserModel.findOne({email: userData.email}, function (err, user) {
             if (err) {
-               return callback(err);
+                return callback(err);
             } else if (user) {
-               return callback(badRequests.EmailInUse());
+                return callback(badRequests.EmailInUse());
             } else {
                 UserModel.findOne({userName: userData.userName}, function (err, user) {
                     if (err) {
-                     return   callback(err);
+                        return   callback(err);
                     } else if (user) {
-                      return  callback(badRequests.UsernameInUse());
+                        return  callback(badRequests.UsernameInUse());
                     } else {
                         callback();
                     }
@@ -415,6 +415,34 @@ var routeHandler = function (db) {
                 error.status = 401;
                 return next(error);
             }
+        });
+    };
+
+    this.forgotPassword = function (req, res, next) {
+        if(!req.body.email){
+            var error = new Error();
+            error.message = "Bad request";
+            error.status = 400;
+            return next(error);
+        }
+        var email = req.body.email;
+        var token = randToken.generate(24);
+        var options;
+
+        UserModel.findOneAndUpdate({email: email}, {forgotToken: token}, function (err, doc) {
+            if(err){
+                return next(err);
+            }else if(!doc){
+                return res.status(200).({message: 'Ok'});
+            }
+            options = {
+                firstName: doc.firstName,
+                lastName: doc.lastName,
+                email: doc.email,
+                forgotToken: token
+            };
+            mailer.forgotPassword(options);
+            res.status(200).({message: 'Ok'});
         });
     };
 
