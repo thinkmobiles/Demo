@@ -368,11 +368,12 @@ var routeHandler = function (db) {
             lastName: body.lastName,
             email: body.email,
             title: body.title,
+            company: body.company,
             phone: body.phone,
             notes: body.notes||''
         };
                 mailer.contactAdmin(data);
-            res.status(200).send('Successful Send');
+            res.status(200).send({message:'Successful Send'});
     };
 
 
