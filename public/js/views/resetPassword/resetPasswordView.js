@@ -53,7 +53,7 @@ define([
 					App.notification("Password was chnaged");
                 },
                 error: function (err) {
-					App.notification((err.responseJSON?err.responseJSON.error:"Some Error"));
+					App.notification((err.responseJSON?err.responseJSON.message:"Some Error"));
 				}
             });
 		},
