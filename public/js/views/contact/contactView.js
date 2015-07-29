@@ -37,7 +37,25 @@ define([
 				isError = true;
 				self.$el.find(".contactPage .lastName").addClass("error");
 			}
-	
+			if (!self.$el.find(".contactPage .company").val()){
+				isError = true;
+				self.$el.find(".contactPage .company").addClass("error");
+			}
+			if (!self.$el.find(".contactPage .title").val()){
+				isError = true;
+				self.$el.find(".contactPage .title").addClass("error");
+			}
+
+			if (self.$el.find(".contactPage .phone").val()&&!validation.validPhone(self.$el.find(".contactPage .phone").val())){
+				isError = true;
+				self.$el.find(".contactPage .phone").addClass("error");
+			}
+			
+			if (!self.$el.find(".contactPage .notes").val()){
+				isError = true;
+				self.$el.find(".contactPage .notes").addClass("error");
+			}
+			
 			if (isError)return;
 			$.ajax({
                 url: "/admin/contact",
