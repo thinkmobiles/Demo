@@ -16,6 +16,7 @@ module.exports = function (db) {
     router.get('/users/pending', session.isAuthenticatedAdmin, handler.pendingUsers);
     router.get('/users/confirmed', session.isAuthenticatedAdmin, handler.confirmedUsers);
     router.post('/changePass', session.isAuthenticatedAdmin, handler.changePass);
+    router.delete('/user', session.isAuthenticatedAdmin, handler.remove);
 
 
     return router;

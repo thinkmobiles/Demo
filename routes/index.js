@@ -36,6 +36,7 @@ module.exports = function (app, db) {
     app.post('/sendContactMe', handler.sendContactMe);
     app.post('/signUp', handler.signUp);
     app.post('/login', handler.login);
+    app.post('/forgot', handler.forgotPassword);
     app.get('/image/:id', handler.avatarById );
     app.get('/avatar/:userName', handler.avatar);
     app.get('/logout', session.kill);
