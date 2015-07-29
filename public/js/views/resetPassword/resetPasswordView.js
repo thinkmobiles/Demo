@@ -13,7 +13,6 @@ define([
 			"keyup .required input":"changeText"
         },
         initialize: function (options) {
-			$("#progressBar").progressbar({value: 5 });
 			this.token = options.token;
             this.render();
         },

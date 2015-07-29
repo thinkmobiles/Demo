@@ -15,7 +15,7 @@ define([
 			"keyup .required input":"changeText"
         },
         initialize: function () {
-            $("#progressBar").progressbar({value: 5 });
+            $(".progressBar").progressbar({value: 5 });
             this.render();
         },
 		
