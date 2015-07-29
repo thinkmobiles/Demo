@@ -211,7 +211,7 @@ body{
 	top:210px;
 	h1{
 		.mp;
-		font-size:54px;
+		font-size:38px;
 		color:#333333;
 		font-weight:normal;
 	}
@@ -301,7 +301,7 @@ body{
 			img{
 				position:absolute;
 				right:-710px;
-				top:0px;
+				top:150px;
 			}
 		}
 		.right{
@@ -338,14 +338,23 @@ body{
 			font-size:24px;
 			color:#646566;
 		}
-		>span{
-			color:#969799;
-			font-size:16px;
-			span{
-				font-family: "LatoMedium";
-				color:#44cbff;
+		.messages{
+			.item{
+				display:none;
+				>span{
+					color:#969799;
+					font-size:16px;
+					span{
+						font-family: "LatoMedium";
+						color:#44cbff;
+					}
+				}
+				&.selected{
+					display:block;
+				}
 			}
 		}
+
 		.arrows{
 			height:32px;
 			width:80px;
@@ -486,6 +495,8 @@ body{
 	}
 
 }
+
+
 
 
 
@@ -1191,6 +1202,192 @@ box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.18);
 }
 
 
+.aboutUs{
+	text-align:center;
+	padding-top:1px;
+
+	h2{
+		text-align:center;
+		margin-top: 0px;
+		text-align: center;
+		font-family: "LatoSemiBold";
+		font-size: 34px;
+	}
+	p{
+		font-family: "LatoRegular";
+		font-size: 18px;
+		color: #646566;
+		line-height: 27px;
+	}
+	.inner{
+		width:1070px;
+		margin:0 auto;
+		margin-top:160px;
+		text-align:left;
+	}
+}
+
+
+
+.pricing{
+	text-align:center;
+	padding-top:1px;
+
+	h2{
+		text-align:center;
+		margin-top: 0px;
+		text-align: center;
+		font-family: "LatoSemiBold";
+		font-size: 34px;
+	}
+	p{
+		font-family: "LatoRegular";
+		font-size: 18px;
+		color: #646566;
+		line-height: 27px;
+	}
+	h3{
+		font-family: "LatoSemiBold";
+		font-size: 26px;
+		margin-bottom: 0px;
+	}
+	span.marg{
+		padding-left:20px;
+	}
+	
+	ul{
+		li{
+			font-family: "LatoRegular";
+			font-size: 18px;
+			color: #646566;
+			line-height: 27px;
+		}
+	}
+	.inner{
+		width:1070px;
+		margin:0 auto;
+		margin-top:160px;
+		text-align:left;
+	}
+}
+
+.contactPage{
+	text-align:center;
+	padding-top:1px;
+
+	h2{
+		text-align:center;
+		margin-top: 0px;
+		text-align: center;
+		font-family: "LatoSemiBold";
+		font-size: 34px;
+	}
+	p{
+		font-family: "LatoRegular";
+		font-size: 18px;
+		color: #646566;
+		line-height: 27px;
+	}
+	.required{
+		position:relative;
+		display:inline-block;
+
+		&:after{
+			content:'*';
+			color:#e85044;
+			font-size:18px;
+			position:absolute;
+			right: 25px;
+			top: 45px;
+			font-size: 17px;
+		}
+		&.full{
+			&:after{
+				content:'';
+			}
+		}
+	}
+	.inner{
+		width:1070px;
+		margin:0 auto;
+		margin-top:160px;
+		input{
+			height:46px;
+			width:270px;
+			padding:0 15px;
+			margin:24px 8px 0 8px;
+			border:1px solid #dbdbdb;
+			outline:none;
+			&.big{
+				width:595px;
+			}
+			&:focus{
+				border:1px solid #41bef0;
+
+			}
+			&.uploadAvatar{
+				font-family: "LatoLight";
+				margin-bottom:30px;
+			}
+
+		}
+		
+		textarea{
+			margin:24px 0 0 0;
+			width:593px;
+			padding:15px;
+			height:200px;
+			border:1px solid #dbdbdb;
+			outline:none;
+			&:focus{
+				border:1px solid #41bef0;
+
+			}
+			
+		}
+	}
+		.buttons{
+		width:440px;
+		margin:50px auto 100px auto;
+		font-family: "LatoSemiBold";
+		font-weight:bold;
+		.cancel{
+			.lh(50px);
+			width:180px;
+			display:block;
+			text-align:center;
+			background-color:#eb6b56;
+			border-radius:5px;
+			color:white;
+			border:none;
+			font-size:15px;
+			float:left;
+			margin-right:20px;
+			margin-left:20px;
+			cursor:pointer;
+			font-family: "LatoSemiBold";
+			font-weight:bold;
+		}
+
+		.registerBtn{
+			.lh(50px);
+			width:180px;
+			display:block;
+			text-align:center;
+			background-color:#5be371;
+			border-radius:5px;
+			color:white;
+			border:none;
+			font-size:15px;
+			float:left;
+			margin-right:20px;
+			margin-left:20px;
+			cursor:pointer;
+			font-family: "LatoSemiBold";
+			font-weight:bold;
+		}
+	}
+}
 
 .registration{
 	text-align:center;
