@@ -44,6 +44,7 @@ var routeHandler = function (db) {
     var jumplead = new Jumplead(db);
     var session = new Sessions(db);
     var analytic = new Analytic(db);
+
     function normalizeEmail(email) {
         return email.trim().toLowerCase();
     };
@@ -122,9 +123,9 @@ var routeHandler = function (db) {
             } else {
                 UserModel.findOne({userName: userData.userName}, function (err, user) {
                     if (err) {
-                        return   callback(err);
+                        return callback(err);
                     } else if (user) {
-                        return  callback(badRequests.UsernameInUse());
+                        return callback(badRequests.UsernameInUse());
                     } else {
                         callback();
                     }
@@ -419,7 +420,7 @@ var routeHandler = function (db) {
     };
 
     this.forgotPassword = function (req, res, next) {
-        if(!req.body.email){
+        if (!req.body.email) {
             var error = new Error();
             error.message = "Bad request";
             error.status = 400;
@@ -430,10 +431,10 @@ var routeHandler = function (db) {
         var options;
 
         UserModel.findOneAndUpdate({email: email}, {forgotToken: token}, function (err, doc) {
-            if(err){
+            if (err) {
                 return next(err);
-            }else if(!doc){
-                return res.status(200).({message: 'Ok'});
+            } else if (!doc) {
+                return res.status(200).send({message: 'Ok'});
             }
             options = {
                 firstName: doc.firstName,
@@ -442,7 +443,32 @@ var routeHandler = function (db) {
                 forgotToken: token
             };
             mailer.forgotPassword(options);
-            res.status(200).({message: 'Ok'});
+            res.status(200).send({message: 'Ok'});
+        });
+    };
+
+    this.changePassword = function (req, res, next) {
+        if (!req.body.password || !req.body.token) {
+            var error = new Error();
+            error.message = "Bad request";
+            error.status = 400;
+            return next(error);
+        }
+        var token = req.body.token;
+        var pass = getEncryptedPass(req.body.password);
+
+        UserModel.findOneAndUpdate({forgotToken: token}, {pass: pass}, function (err, doc) {
+            if (err) {
+                return next(err);
+            } else if (!doc) {
+                return res.status(400).send({message: 'Token is not valid'});
+            }
+            res.status(200).send({message: 'Ok'});
+            UserModel.findByIdAndUpdate(doc._id, {forgotToken: ''}, function (err, doc) {
+                if (err) {
+                    console.error(err);
+                }
+            });
         });
     };
 
@@ -561,9 +587,6 @@ var routeHandler = function (db) {
     };
 
 
-
-
-
     // url = '/:contentId/:ctid'
     this.getMain = function (req, res, next) {
         var contentId = req.params.contentId;
@@ -599,7 +622,7 @@ var routeHandler = function (db) {
                         error.message = 'User Not Found';
                         error.status = 404;
                         return waterfallCb(error);
-                    }else if (user.isDisabled) {
+                    } else if (user.isDisabled) {
                         error.message = 'Sory, but this content disabled now';
                         error.status = 403;
                         return waterfallCb(error);
@@ -691,9 +714,6 @@ var routeHandler = function (db) {
     };
 
 
-
-
-
     this.sendWeekly = function (req, res, next) {
         var contentId = req.query.contentId;
 
@@ -746,7 +766,7 @@ var routeHandler = function (db) {
         async.waterfall([
 
                 function (waterfallCb) {
-                    TrackModel.find({contentId:contentId }, function (err, docs) {
+                    TrackModel.find({contentId: contentId}, function (err, docs) {
                         if (err) {
                             return waterfallCb(err);
                         }
