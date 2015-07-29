@@ -45,8 +45,8 @@ define([
 		},
 		
 		prevSlide: function(e){
-			if (e){
-				clearInterval(this.interval);
+			if (e&&App.interval){
+				clearInterval(App.interval);
 			}
 			var self = this;
 			var count = this.$el.find(".messages .item").length;
@@ -73,8 +73,8 @@ define([
 		},
 
 		nextSlide: function(e){
-			if (e){
-				clearInterval(this.interval);
+			if (e&&App.interval){
+				clearInterval(App.interval);
 			}
 			var self = this;
 			var count = this.$el.find(".messages .item").length;
@@ -196,7 +196,7 @@ define([
 				$(".showModal").attr("href","#/home/"+this.videoId+"/"+this.userId);
 			}
 
-			this.interval = setInterval(function(){self.nextSlide()},5000)
+			App.interval = setInterval(function(){self.nextSlide()},5000)
 			
             return this;
         }
