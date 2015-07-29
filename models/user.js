@@ -25,6 +25,7 @@ module.exports = (function () {
         isAdmin: {type: Boolean, default: false},
         isDisabled: {type: Boolean, default: false},
         confirmToken: {type: String},
+        forgotToken: {type: String},
         phone: {type: String, default: ""},
         contentId: {type: ObjectId, ref: 'Content'},
         accessToken: {type: String},

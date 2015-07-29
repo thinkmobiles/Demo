@@ -418,6 +418,34 @@ var routeHandler = function (db) {
         });
     };
 
+    this.forgotPassword = function (req, res, next) {
+        if(!req.body.email){
+            var error = new Error();
+            error.message = "Bad request";
+            error.status = 400;
+            return next(error);
+        }
+        var email = req.body.email;
+        var token = randToken.generate(24);
+        var options;
+
+        UserModel.findOneAndUpdate({email: email}, {forgotToken: token}, function (err, doc) {
+            if(err){
+                return next(err);
+            }else if(!doc){
+                return res.status(200).({message: 'Ok'});
+            }
+            options = {
+                firstName: doc.firstName,
+                lastName: doc.lastName,
+                email: doc.email,
+                forgotToken: token
+            };
+            mailer.forgotPassword(options);
+            res.status(200).({message: 'Ok'});
+        });
+    };
+
     this.avatar = function (req, res, next) {
         var userName = req.params.userName;
         if (!userName) {

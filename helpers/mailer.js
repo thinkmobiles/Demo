@@ -89,6 +89,35 @@ var MailerModule = function () {
         });
     };
 
+    this.forgotPassword = function (options) {
+        fs.readFile('public/templates/mailer/forgotPassword.html', 'utf8', function (err, template) {
+            var templateOptions;
+            var mailOptions;
+
+            if (err) {
+                if (process.env.NODE_ENV !== 'production') {
+                    console.error(err);
+                }
+            } else {
+
+                templateOptions = {
+                    name: options.firstName + ' ' + options.lastName,
+                    url: process.env.WEB_HOST + '/#/resetPassword/' + options.forgotToken
+                };
+
+                mailOptions = {
+                    from: FROM,
+                    to: options.email,
+                    subject: 'Forgot password',
+                    generateTextFromHTML: true,
+                    html: _.template(template, templateOptions)
+                };
+
+                deliver(mailOptions);
+            }
+        });
+    };
+
     this.sendInvite = function (options) {
         fs.readFile('public/templates/mailer/inviteUser.html', 'utf8', function (err, template) {
             var templateOptions;
@@ -220,34 +249,7 @@ var MailerModule = function () {
         });
     };
 
-    this.forgotPassword = function (options) {
-        fs.readFile('public/templates/mailer/forgotPassword.html', 'utf8', function (err, template) {
-            var templateOptions;
-            var mailOptions;
 
-            if (err) {
-                if (process.env.NODE_ENV !== 'production') {
-                    console.error(err);
-                }
-            } else {
-
-                templateOptions = {
-                    name: options.firstName + ' ' + options.lastName,
-                    url: process.env.HOST + '/#resetPassword/' + options.forgotToken
-                };
-
-                mailOptions = {
-                    from: FROM,
-                    to: options.email,
-                    subject: 'Forgot password',
-                    generateTextFromHTML: true,
-                    html: _.template(template, templateOptions)
-                };
-
-                deliver(mailOptions);
-            }
-        });
-    };
 
     this.beforeExpired = function (options) {
         fs.readFile('public/templates/mailer/beforeExpired.html', 'utf8', function (err, template) {
