@@ -19,7 +19,6 @@ var fs = require('fs');
 var Jumplead = require('../helpers/jumplead');
 var Sessions = require('../handlers/sessions');
 var mailer = require('../helpers/mailer');
-var pdfutils = require('pdfutils').pdfutils;
 var moment = require('moment');
 var randToken = require('rand-token');
 

@@ -9,8 +9,6 @@ var BadRequestModule = function () {
     var INVALID_EMAIL = "Invalid email address.";
     var EMAIL_IN_USE = 'Email in use. Please input another email address.';
     var USERNAME_IN_USE = 'Username in use. Please input another username.';
-    var DEVICE_IN_USE = 'deviceId in use. Please input another deviceId';
-    var NO_UPDATE_PARAMS = 'There are no params for update.';
 
     function Errors(options) {
         //http://j-query.blogspot.com/2014/03/custom-error-objects-in-javascript.html
@@ -116,43 +114,6 @@ var BadRequestModule = function () {
         return new Errors(errOptions);
     }
 
-    function DeviceIdInUse(options) {
-        var errOptions;
-
-        if (options) {
-            errOptions = options;
-        } else {
-            errOptions = {};
-        }
-
-        if (!errOptions.name) {
-            errOptions.name = 'DoubledDeviceId';
-        }
-        if (!errOptions.message) {
-            errOptions.message = DEVICE_IN_USE;
-        }
-
-        return new Errors(errOptions);
-    }
-
-    function DeviceAlreadySubscribed(options) {
-        var errOptions;
-
-        if (options) {
-            errOptions = options;
-        } else {
-            errOptions = {};
-        }
-
-        if (!errOptions.name) {
-            errOptions.name = 'DeviceAlreadySubscribed';
-        }
-        if (!errOptions.message) {
-            errOptions.message = 'Device already is subscribed.';
-        }
-
-        return new Errors(errOptions);
-    }
 
     function InvalidValue(options) {
         var errOptions;
@@ -182,27 +143,7 @@ var BadRequestModule = function () {
         return new Errors(errOptions);
     }
 
-    function UnknownDeviceOS(options) {
-        var errOptions;
-        var errMessage;
 
-        if (options) {
-            errOptions = options;
-        } else {
-            errOptions = {};
-        }
-
-        if (!errOptions.name) {
-            errOptions.name = 'UnknownDeviceOS';
-        }
-
-        if (!errOptions.message) {
-            errMessage = 'Unknown device OS';
-            errOptions.message = errMessage;
-        }
-
-        return new Errors(errOptions);
-    }
 
     function NotFound(options) {
         var errOptions;
@@ -335,57 +276,14 @@ var BadRequestModule = function () {
         return new Errors(errOptions);
     }
 
-    function NoActiveDevices(options) {
-        var errOptions;
 
-        if (options) {
-            errOptions = options;
-        } else {
-            errOptions = {};
-        }
 
-        if (!errOptions.name) {
-            errOptions.name = 'NoActiveDevices';
-        }
-        if (!errOptions.status) {
-            errOptions.status = 400;
-        }
-        if (!errOptions.message) {
-            errOptions.message = 'The are no active devices';
-        }
-
-        return new Errors(errOptions);
-    }
-
-    function PaymentRequired(options) {
-        var errOptions;
-
-        if (options) {
-            errOptions = options;
-        } else {
-            errOptions = {};
-        }
-
-        if (!errOptions.name) {
-            errOptions.name = 'PaymentRequired';
-        }
-        if (!errOptions.status) {
-            errOptions.status = 402;
-        }
-        if (!errOptions.message) {
-            errOptions.message = 'Payment Required';
-        }
-
-        return new Errors(errOptions);
-    }
 
     return {
         NotEnParams: NotEnParams,
         InvalidEmail: InvalidEmail,
         EmailInUse: EmailInUse,
         UsernameInUse: UsernameInUse,
-        DeviceAlreadySubscribed: DeviceAlreadySubscribed,
-        DeviceIdInUse: DeviceIdInUse,
         InvalidValue: InvalidValue,
         NotFound: NotFound,
         UnconfirmedEmail: UnconfirmedEmail,
@@ -393,9 +291,7 @@ var BadRequestModule = function () {
         AccessError: AccessError,
         CaptchaError:CaptchaError,
         BlockedAccount: BlockedAccount,
-        UnknownDeviceOS: UnknownDeviceOS,
-        NoActiveDevices: NoActiveDevices,
-        PaymentRequired: PaymentRequired,
+
     }
 };
 
