@@ -12,7 +12,8 @@ define([
 		el:"#wrapper",
         events:{
             'click .confirm': 'confirm',
-            'click .delete': 'delete'
+            'click .delete': 'delete',
+            'click .disable': 'disable'
         },
         initialize: function () {
 			var self = this;
@@ -44,9 +45,31 @@ define([
 
         },
 
+        disable: function (e) {
+            var row = $(e.target).closest("tr");
+            var id = row.data("id");
+            var status = row.find("span.status").text();
+           var model =  this.confirmedCollection.get(id);
+            var self = this;
+           model.save({
+                   isDisabled: status=='Disabled'?false:true
+                },{patch: true},
+                {
+                    wait: true,
+                    success: function (model, response) {
+                        alert('Updated');
+                    },
+                    error: function (err) {
+                        console.log(JSON.stringify(err));
+                    }
+                });
+            self.usersCollection.update();
+            self.confirmedCollection.update();
+        },
+
         delete: function (e) {
             var id = $(e.target).closest("tr").data("id");
-            var model =  this.usersCollection.get(id);
+            var model =  this.usersCollection.get(id)||this.confirmedCollection.get(id);
             var self = this;
             model.destroy({
                     wait: true,
