@@ -15,7 +15,7 @@ define([
 			"keyup .required input":"changeText"
         },
         initialize: function () {
-            $("#progressBar").progressbar({value: 5 });
+            $(".progressBar").progressbar({value: 5 });
             this.render();
         },
 		
@@ -123,7 +123,7 @@ define([
             var add = checkPass.checkPassStrength(pass);
             var remove = add==="weak"?"good strong":(add==="good"?"weak strong":"good weak");
             //console.log( $("#progressBar"));
-            $("#progressBar").progressbar({value: rate});
+            $(".progressBar").progressbar({value: rate});
             $(".ui-progressbar-value").addClass(add).removeClass(remove);
         },
 		cancel:function(e){

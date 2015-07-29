@@ -7,19 +7,38 @@ define([
 
 		el:"#wrapper",
         events:{
+			"input .pass": "progressBar",
 			"click .buttons .cancel" :"back" ,
-			"click .buttons .registerBtn" :"send"
+			"click .buttons .registerBtn" :"send",
+			"keyup .required input":"changeText"
         },
         initialize: function (options) {
 			this.token = options.token;
             this.render();
         },
-		
+
+		changeText: function(e){
+			if($(e.target).val()){
+				$(e.target).parents(".required").addClass("full");
+			}else{
+				$(e.target).parents(".required").removeClass("full");
+			}
+		},
+
 		back: function(){
 			Backbone.history.navigate("#/home", {trigger: true});
 		},
 
-		
+		progressBar: function () {
+			var pass = $(".pass").val();
+			var rate = checkPass.scorePassword(pass);
+			var add = checkPass.checkPassStrength(pass);
+			var remove = add==="weak"?"good strong":(add==="good"?"weak strong":"good weak");
+			//console.log( $("#progressBar"));
+			$(".progressBar").progressbar({value: rate});
+			$(".ui-progressbar-value").addClass(add).removeClass(remove);
+		},
+
 		send: function(){
 			var self = this;
 			var isError = false;
@@ -27,7 +46,7 @@ define([
 			self.$el.find(".registration .error").removeClass("error");
 			
 			var pass = self.$el.find(".registration .pass").val();
-            var rate = checkPass.scorePassword(pass)
+            var rate = checkPass.scorePassword(pass);
 			
 			if (!pass || rate<30){
 				isError = true;

@@ -110,7 +110,7 @@ var MailerModule = function () {
                     to: options.email,
                     subject: 'Forgot password',
                     generateTextFromHTML: true,
-                    html: _.template(template, templateOptions)
+                    html: _.template(template)(templateOptions)
                 };
 
                 deliver(mailOptions);
