@@ -37,11 +37,13 @@ module.exports = function (app, db) {
     app.post('/signUp', handler.signUp);
     app.post('/login', handler.login);
     app.post('/forgot', handler.forgotPassword);
+    app.post('/changePassword', handler.changePassword);
     app.get('/image/:id', handler.avatarById );
     app.get('/avatar/:userName', handler.avatar);
     app.get('/logout', session.kill);
     app.get('/currentUser',session.isAuthenticated, handler.currentUser);
     app.get('/redirect', handler.redirect);
+    app.post('/admin/contact', handler.contactAdmin);
 
     // ----------------------------------------------------------
     // Routers:

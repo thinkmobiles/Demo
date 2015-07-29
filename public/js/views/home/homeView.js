@@ -196,6 +196,10 @@ define([
 				$(".showModal").attr("href","#/home/"+this.videoId+"/"+this.userId);
 			}
 
+			if (App.interval){
+				clearInterval(App.interval);				
+			}
+			
 			App.interval = setInterval(function(){self.nextSlide()},5000)
 			
             return this;

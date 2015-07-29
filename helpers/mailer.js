@@ -56,9 +56,31 @@ var MailerModule = function () {
                 mailOptions = {
                     from: FROM,
                     to: options.companyEmail,
-                    subject: 'Info',
+                    subject: 'Contact me message',
                     generateTextFromHTML: true,
                     html: _.template(template)(templateOptions)
+                };
+
+                deliver(mailOptions);
+            }
+        });
+    };
+
+    this.contactAdmin = function (options) {
+        fs.readFile('public/templates/mailer/contactAdmin.html', 'utf8', function (err, template) {
+            var mailOptions;
+
+            if (err) {
+                if (process.env.NODE_ENV !== 'production') {
+                    console.error(err);
+                }
+            } else {
+                mailOptions = {
+                    from: FROM,
+                    to: process.env.SUPER_ADMIN_EMAIL,
+                    subject: 'Contact Me Message',
+                    generateTextFromHTML: true,
+                    html: _.template(template)(options)
                 };
 
                 deliver(mailOptions);
@@ -108,9 +130,9 @@ var MailerModule = function () {
                 mailOptions = {
                     from: FROM,
                     to: options.email,
-                    subject: 'Forgot password',
+                    subject: 'Reset password',
                     generateTextFromHTML: true,
-                    html: _.template(template, templateOptions)
+                    html: _.template(template)(templateOptions)
                 };
 
                 deliver(mailOptions);
@@ -137,7 +159,7 @@ var MailerModule = function () {
                 mailOptions = {
                     from: FROM,
                     to: options.email,
-                    subject: 'Your account confirmed',
+                    subject: 'Account confirmed',
                     generateTextFromHTML: true,
                     html: _.template(template)(templateOptions)
                 };
@@ -173,7 +195,7 @@ var MailerModule = function () {
                 mailOptions = {
                     from: FROM,
                     to: options.companyEmail,
-                    subject: 'Info',
+                    subject: 'Weekly Analytics',
                     generateTextFromHTML: true,
                     html: _.template(template)(templateOptions)
                 };
@@ -207,7 +229,7 @@ var MailerModule = function () {
                 mailOptions = {
                     from: FROM,
                     to: options.companyEmail,
-                    subject: 'Info',
+                    subject: 'Activity information',
                     generateTextFromHTML: true,
                     html: _.template(template)(templateOptions)
                 };
