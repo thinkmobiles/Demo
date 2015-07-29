@@ -28,6 +28,7 @@ define([
 			"pricing"              :  "pricing",
 			"aboutUs"              :  "aboutUs",
 			"contact"              : "contact",
+			"forgot"              : "forgot",
 			"message?text=:text":       "showNotification",
             "*any"                      :  "any"
         },
@@ -167,6 +168,9 @@ define([
 		contact: function () {
             this.loadWrapperView('contact');
         },
+		forgot: function () {
+            this.loadWrapperView('forgot');
+		},
         home: function (videoId, userId) {
             this.loadWrapperView('home',{
                 videoId:videoId,
