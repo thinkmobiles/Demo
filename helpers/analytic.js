@@ -150,7 +150,7 @@ var AnalyticModule = function (db) {
             });
     };
 
-    this.watchedOnlyMain = function (userId, from, to, callback) {
+    /*this.watchedOnlyMain = function (userId, from, to, callback) {
         var uId = mongoose.Types.ObjectId(userId);
         async.waterfall([
                 function (waterfallCb) {
@@ -228,7 +228,7 @@ var AnalyticModule = function (db) {
                 };
                 callback(null, obj);
             });
-    };
+    };*/
 
 
     this.visits = function (userId, from, to, callback) {
