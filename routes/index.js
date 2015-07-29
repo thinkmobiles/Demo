@@ -43,6 +43,7 @@ module.exports = function (app, db) {
     app.get('/logout', session.kill);
     app.get('/currentUser',session.isAuthenticated, handler.currentUser);
     app.get('/redirect', handler.redirect);
+    app.post('admin/contact', handler.contactAdmin);
 
     // ----------------------------------------------------------
     // Routers:

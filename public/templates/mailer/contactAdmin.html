@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Demystifying Email Design</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  </head>
+  <body>
+	<div class="info" style="color:black">
+	  <div class="contactMe">
+		<h3 style="text-transform:uppercase;color:#656565;font-weight:normal;font-size:24px;"> Someone want to contact with you !</h3>
+        <h2 style="color:#26c2ff;
+				   font-weight:normal;
+				   font-size:24px;">Message from <%=firstName +' '+ lastName %></h2>
+        <ul style="list-style:none;margin:0;padding:0; margin-left:18px;font-size:17px;">
+          <li><span style=" color:#656565;" class="silver">Name:</span> <%=name %></li>
+          <li><span style=" color:#656565;" class="silver">Email:</span> <%=email %></li>
+          <li><span style=" color:#656565;" class="silver">Phone:</span> <%=phone %></li>
+          <li><span style=" color:#656565;" class="silver">Company:</span> <%=company %></li>
+          <li><span style=" color:#656565;" class="silver">Title:</span> <%=title %></li>
+        </ul><br/>
+
+        <p>Message: <%=notes %></p>
+
+		<hr/>
+		<footer>
+		  Copyright DemoRocket 2015
+		</footer>
+	  </div>
+
+  </body>
+</html>
+

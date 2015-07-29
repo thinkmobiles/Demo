@@ -353,6 +353,28 @@ var routeHandler = function (db) {
         });
     };
 
+    this.contactAdmin = function (req, res, next) {
+        var body = req.body;
+        var error = new Error();
+        var data;
+
+        if (!body.lastName||!body.firstName || !body.email || !body.phone ||!body.title) {
+            error.message = 'Some field is empty';
+            error.status = 403;
+            return next(error)
+        }
+        data = {
+            firstName: body.firstName,
+            lastName: body.lastName,
+            email: body.email,
+            title: body.title,
+            phone: body.phone,
+            notes: body.notes||''
+        };
+                mailer.contactAdmin(data);
+            res.status(200).send('Successful Send');
+    };
+
 
     this.currentUser = function (req, res, next) {
         UserModel.findById(req.session.uId, function (err, doc) {
