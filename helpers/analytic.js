@@ -18,6 +18,140 @@ var AnalyticModule = function (db) {
 
     this.totalVisits = function (userId, from, to, callback) {
         var uId = mongoose.Types.ObjectId(userId);
+
+        async.waterfall([
+                function (waterfallCb) {
+                    ContentModel.aggregate([{
+                        $match: {
+                            ownerId: uId
+                        }
+                    }, {
+                        $group: {
+                            _id: {
+                                video: '$survey.videoUri', id: '$_id', mainVideo: '$mainVideoUri'
+                            }
+                        }
+                    }, {
+                        $project: {
+                            mainVideo: '$_id.mainVideo',
+                            _id: 0, 'id': '$_id.id'
+
+                        }
+                    }], function (err, data) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        if (!data.length) {
+                            var error = new Error();
+                            error.status = 404;
+                            error.message = 'No Data';
+                            return waterfallCb(error);
+                        }
+
+                        waterfallCb(null, data[0]);
+                    });
+                },
+
+                function (data, waterfallCb) {
+                    TrackModel.aggregate([{
+                        $match: {
+                            'contentId': data.id,
+                            'videos.time': {$gte: from, $lte: to}
+
+                        }
+                    }, {
+                        $project: {
+                            firstName: 1,
+                            lastName: 1,
+                            videos: 1,
+                            _id: 0
+                        }
+                    }, {
+                        $unwind: '$videos'
+                    }, {
+                        $project: {
+                            notWatchedEnd: {
+                                $cond: [{$eq: ['$videos.end', false]}, {$add: [1]}, {$add: [0]}]
+                            },
+                            firstName: 1,
+                            lastName: 1,
+                            videos: 1
+                        }
+                    }, {
+                        $group: {
+                            _id: '$videos.video',
+                            count: {$sum: 1},
+                            notWatchedEnd: {$sum: '$notWatchedEnd'}
+                        }
+                    }, {
+                        $project: {
+                            name: '$_id',
+                            count: 1,
+                            watchedEnd: 1,
+                            _id: 0
+                        }
+                    }], function (err, videoRes) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        waterfallCb(null, videoRes, data);
+                    });
+                },
+
+
+                function (videoRes, data, waterfallCb) {
+                    var arr = [];
+                    if (!data) {
+                        var error = new Error();
+                        error.status = 404;
+                        error.message = 'No Data';
+                        return waterfallCb(error);
+                    }
+
+                    //============Main Video Info===========
+                    var mainVideo = {
+                        name: data.mainVideo
+                    };
+                    var watchedEnd;
+                    var fd = _.findWhere(videoRes, {name: data.mainVideo});
+                    mainVideo.count = fd ? fd.count : 0;
+                    watchedEnd = fd ? fd.watchedEnd : 0;
+
+
+                    //============Survey Video Info===========
+                    async.each(data.videos, function (video, eachCb) {
+                        var obj = {};
+                        obj.name = video;
+                        var findDocument = _.findWhere(videoRes, {name: video});
+                        obj.count = findDocument ? findDocument.count : 0;
+
+                        arr.push(obj);
+                        eachCb(null);
+                    }, function (err) {
+                        if (err) {
+                            return next(err);
+                        }
+                        var info = {
+                            survey: arr,
+                            mainVideo: mainVideo,
+                            watchedEnd: watchedEnd,
+                            watchedSurvey: surveyRes ? surveyRes.survey : 0,
+                            all: allRes ? allRes.total : 0
+                        };
+                        waterfallCb(null, info);
+
+                    });
+                }],
+            function (err, data) {
+                if (err) {
+                    return callback(err);
+                }
+                callback(null, data);
+            });
+    };
+
+    this.watchedOnlyMain = function (userId, from, to, callback) {
+        var uId = mongoose.Types.ObjectId(userId);
         async.waterfall([
                 function (waterfallCb) {
                     ContentModel.findOne({ownerId: uId}, function (err, doc) {
@@ -95,6 +229,7 @@ var AnalyticModule = function (db) {
                 callback(null, obj);
             });
     };
+
 
     this.visits = function (userId, from, to, callback) {
         var uId = mongoose.Types.ObjectId(userId);
@@ -234,7 +369,7 @@ var AnalyticModule = function (db) {
                     TrackModel.aggregate([{
                         $match: {
                             'contentId': data.id,
-                            'questTime': {$gte: from, $lte: to}
+                            'videos.time': {$gte: from, $lte: to}
 
                         }
                     }, {
@@ -279,7 +414,7 @@ var AnalyticModule = function (db) {
                     TrackModel.aggregate([{
                         $match: {
                             'contentId': data.id,
-                            'questTime': {$gte: from, $lte: to}
+                            'videos.time': {$gte: from, $lte: to}
 
                         }
                     }, {
@@ -323,7 +458,7 @@ var AnalyticModule = function (db) {
 
                             $match: {
                                 contentId: data.id,
-                                updatedAt: {
+                                'videos.time': {
                                     $gte: from, $lte: to
                                 }
                             }
@@ -409,9 +544,7 @@ var AnalyticModule = function (db) {
                     return callback(err);
                 }
                 callback(null, data);
-            }
-        )
-        ;
+            });
     };
 
     this.question = function (userId, from, to, callback) {
