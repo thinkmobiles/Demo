@@ -2,11 +2,11 @@ define([
     'text!templates/users/usersTemplate.html',
 	'text!templates/users/pendingTemplate.html',
 	'text!templates/users/confirmedTemplate.html',
-	"collections/usersCollection",
-	"collections/confirmedCollection",
+	"collections/pendingUsersCollection",
+	"collections/confirmedUsersCollection",
 	"models/confirmedUsersModel",
 	"models/pendingUsersModel"
-], function (UsersTemplate, PendingTemplate, ConfirmedTemplate, UsersCollection, ConfirmedCollection) {
+], function (UsersTemplate, PendingTemplate, ConfirmedTemplate, PendingUsersCollection, ConfirmedUsersCollection) {
     var View = Backbone.View.extend({
 
 		el:"#wrapper",
@@ -16,9 +16,9 @@ define([
         },
         initialize: function () {
 			var self = this;
-			this.usersCollection = new UsersCollection();
+			this.usersCollection = new PendingUsersCollection();
 			this.usersCollection.bind('reset', self.renderPending, self);
-			this.confirmedCollection = new ConfirmedCollection();
+			this.confirmedCollection = new ConfirmedUsersCollection();
 			this.confirmedCollection.bind('reset', self.renderConfirmed, self);
 			this.render();
         },
@@ -33,31 +33,32 @@ define([
                 {
                     wait: true,
                     success: function (model, response) {
-                        self.usersCollection.update();
-                        self.confirmedCollection.update();
                         alert('Updated');
                     },
                     error: function (err) {
                         console.log(JSON.stringify(err));
                     }
                 });
+            self.usersCollection.update();
+            self.confirmedCollection.update();
 
         },
 
         delete: function (e) {
             var id = $(e.target).closest("tr").data("id");
             var model =  this.usersCollection.get(id);
+            var self = this;
             model.destroy({
                     wait: true,
                     success: function (model, response) {
-                        this.usersCollection.update();
-                        this.confirmedCollection.update();
                         alert('Removed');
                     },
                     error: function (err) {
                         console.log(JSON.stringify(err));
                     }
                 });
+            self.usersCollection.update();
+            self.confirmedCollection.update();
 
         },
 
