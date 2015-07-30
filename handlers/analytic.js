@@ -67,6 +67,26 @@ var routeHandler = function (db) {
         });
     };
 
+    this.watchedOnlyMain = function (req, res, next) {
+        if (!req.query.from || !req.query.to) {
+            var error = new Error();
+            error.status = 400;
+            error.message = 'Bad Request';
+            return next(error);
+        }
+        var from = new Date(req.query.from);
+        var date = new Date(req.query.to);
+        var to = new Date(date.setHours(date.getHours() + 24));
+        var userId = req.session.uId;
+
+        analytic.watchedOnlyMain(userId, from, to, function (err, data) {
+            if (err) {
+                return next(err);
+            }
+            res.status(200).send(data);
+        });
+    };
+
     this.allDomain = function (req, res, next) {
         async.waterfall([
             function (waterfallCb) {

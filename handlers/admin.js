@@ -130,6 +130,10 @@ var routeHandler = function (db) {
         if (body.isConfirmed !== undefined) {
             saveObj.isConfirmed = body.isConfirmed;
         }
+        if (body.subscriptionStart !== undefined && body.subscriptionEnd !== undefined) {
+            saveObj.subscriptionStart = body.subscriptionStart;
+            saveObj.subscriptionEnd = body.subscriptionEnd;
+        }
         UserModel.findByIdAndUpdate(id, saveObj, function (err, doc) {
             if (err) {
                 return next(err);
