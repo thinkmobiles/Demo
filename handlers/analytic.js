@@ -228,7 +228,13 @@ var routeHandler = function (db) {
             if (err) {
                 return next(err);
             }
-            res.status(200).send(doc);
+            var obj = {
+                name: doc? doc.name:'',
+                questions: doc? doc.questions:[],
+                videos: doc? doc.videos:[],
+                documents: doc? doc.documents:[]
+            };
+            res.status(200).send(obj);
         });
     };
     this.contacts = function (req, res, next) {

@@ -76,12 +76,13 @@
           </th>
         </tr>
         <% _.each(questions, function(item){%>
+          <% var obj = {very: 'Very Interested', some: 'Somewhat Interested', not: 'Not Interested'}%>
         <tr>
           <td style="border:1px solid #efefef;">
             <span style="padding:0 15px;line-height:30px"><%=item.question %></span>
           </td>
           <td style="border:1px solid #efefef;">
-            <span style="padding:0 15px;line-height:30px"><%= item.item%></span>
+            <span style="padding:0 15px;line-height:30px"><%= obj[item.item]%></span>
 
           </td>
         </tr>
