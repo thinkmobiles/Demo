@@ -1,7 +1,13 @@
 <h3>CONFIRMED USER ACCOUNTS</h3>
 
 <div class="tableBt">
-  <a href="javascript:;">
+  <a href="javascript:;" class="saveBtn">
+	<span>Save</span>
+  </a>
+  <a href="javascript:;" class="cancelBtn">
+	<span>Cancel</span>
+  </a>
+  <a href="javascript:;" class="editBtn">
 	<span>Edit</span>
   </a>
   <a href="javascript:;" class="disable">
@@ -33,9 +39,8 @@
 	<td><span><%=user.email %></span></td>
 	<td><span><%=user.userName %></span></td>
 	<td><span class="status"><%=user.isDisabled?"Disabled":"Enabled" %></span></td>
-	<td><span><%=user.subscriptionStart %></span></td>
-	<td><span><%=user.subscriptionEnd %></span></td>
-	
+	<td><span class="view"><%=user.subscriptionStart %></span><span class="edit"><input type="text" value="<%=user.subscriptionStart %>"/></span></td>
+	<td><span class="view"><%=user.subscriptionEnd %></span><span class="edit"><input type="text" value="<%=user.subscriptionEnd %>"/></span></td>
   </tr>
   <%})%>
 </table>

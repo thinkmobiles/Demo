@@ -10,12 +10,13 @@ define([
 
 		el:"#wrapper",
         events:{
-			'click .customTable tr': 'chooseRow',
+			'click .customTable tr:not(.current)': 'chooseRow',
             'click .confirm': 'confirm',
             'click .delete': 'delete',
             'click .disable': 'disable',
 			'click .editBtn': 'edit',
-			'click .saveBtn': 'save'
+			'click .saveBtn': 'save',
+			'click .cancelBtn': 'cancel'
         },
         initialize: function () {
 			var self = this;
@@ -30,10 +31,10 @@ define([
         },
 
 		chooseRow: function (e) {
+			var self = this;
             var index = $(e.target).closest("table").find("tr").index($(e.target).closest("tr"));
 
             if (index) {
-				
 				if ($(e.target).parents("#pendingAccount").length){
 					this.pendingChoosed = index-1;
 				}else{
@@ -44,11 +45,22 @@ define([
                 $(e.target).closest("tr").addClass("current");
 
 				this.updateDisableBtn();
+				this.$el.find(".isEdited").removeClass("isEdited");
+				self.renderPending();
+				self.renderConfirmed();
             }
+			
         },
 
+		cancel:function(){
+			var self = this;
+			this.$el.find(".isEdited").removeClass("isEdited")
+			self.usersCollection.update();
+			self.confirmedCollection.update();
+		},
+		
 		edit: function(e){
-			$(e.target).parents(".accountContainer").find(".customTable .current").addClass("edited");
+			$(e.target).parents(".accountContainer").addClass("isEdited").find(".customTable .current").addClass("edited");
 		},
 		
 		updateDisableBtn:function(){
@@ -81,8 +93,10 @@ define([
 			var id = row.data("id");
 			this.updateUser(id, {
 				subscriptionStart:row.find("input").eq(0).datepicker('getDate'),
-				subscriptionEnd:row.find("input").eq(0).datepicker('getDate')
+				subscriptionEnd:row.find("input").eq(1).datepicker('getDate')
 			});
+			this.$el.find(".isEdited").removeClass("isEdited")
+
         },
 
 		
@@ -96,7 +110,6 @@ define([
             var id = row.data("id");
             var status = row.find("span.status").text();
 			this.updateUser(id, {isDisabled: status==='Disabled'?false:true});
-		
         },
 
         delete: function (e) {
@@ -126,8 +139,32 @@ define([
 				return user;
 			});
             this.$el.find("#pendingAccount").html(_.template(PendingTemplate)({users:users, current:this.pendingChoosed }));
+			this.$el.find("#pendingAccount .customTable tr").each(function(index){
+				if (index){
+					var start = $(this).find("input").eq(0);
+					var end = $(this).find("input").eq(1);
+					
+					start.datepicker({
+						dateFormat: 'dd M yy',
+						onSelect: function (selected) {
+							end.datepicker("option", "minDate", new Date(selected));
+						},
+						maxDate:moment(users[index-1].subscriptionEnd,self.dataFormat)._d
+					});
+					end.datepicker({
+						dateFormat: 'dd M yy',
+						onSelect: function (selected) {
+							start.datepicker("option", "maxDate",  new Date(selected));
+						},
+						minDate:moment(users[index-1].subscriptionStart,self.dataFormat)._d
+					});
+					console.log(moment(users[index-1].subscriptionStart,self.dataFormat)._d);
+				}
+			});
+			//			this.$el.find("#pendingAccount .customTable input").datepicker({ dateFormat: 'dd M yy' });
             return this;
-         },
+        },
+		
 		renderConfirmed: function () {
 			var self = this;
 			var users = this.confirmedCollection.toJSON();
@@ -139,10 +176,33 @@ define([
             this.$el.find("#confirmedAccount").html(_.template(ConfirmedTemplate)({users:users, current: this.confirmedChoosed }));
 			this.updateDisableBtn();
 
-			this.$el.find(".customTable input").datepicker({ dateFormat: 'dd M yy' });
-			
+			//this.$el.find("#confirmedAccount .customTable input").datepicker({ dateFormat: 'dd M yy' });
+
+			this.$el.find("#confirmedAccount .customTable tr").each(function(index){
+				if (index){
+					var start = $(this).find("input").eq(0);
+					var end = $(this).find("input").eq(1);
+					
+					start.datepicker({
+						dateFormat: 'dd M yy',
+						onSelect: function (selected) {
+							end.datepicker("option", "minDate", new Date(selected));
+						},
+						maxDate:moment(users[index-1].subscriptionEnd,self.dataFormat)._d
+					});
+					end.datepicker({
+						dateFormat: 'dd M yy',
+						onSelect: function (selected) {
+							start.datepicker("option", "maxDate",  new Date(selected));
+						},
+						minDate:moment(users[index-1].subscriptionStart,self.dataFormat)._d
+					});
+					console.log(moment(users[index-1].subscriptionStart,self.dataFormat)._d);
+				}
+			});
             return this;
-         },
+        },
+		
         render: function () {
             this.$el.html(_.template(UsersTemplate));
             return this;
