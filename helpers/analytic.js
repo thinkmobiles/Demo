@@ -101,9 +101,8 @@ var AnalyticModule = function (db) {
                 callback(null, obj);
             });
     };
-    this.watchedOnlyMain = function (userId, from, to, callback) {
+    this.uninterested = function (userId, from, to, callback) {
         var uId = mongoose.Types.ObjectId(userId);
-
         async.waterfall([
                 function (waterfallCb) {
                     ContentModel.aggregate([{
@@ -151,7 +150,7 @@ var AnalyticModule = function (db) {
                         }
                         async.each(docs, function (doc, eachCb) {
                             if (doc.videos.length === 1 && doc.videos[0].video === data.mainVideo && doc.videos[0].end === false) {
-                                arr.push = {name: doc.firstName + ' ' + doc.lastName};
+                                arr.push({name: doc.firstName + ' ' + doc.lastName});
                             }
                             eachCb(null);
                         }, function (err) {

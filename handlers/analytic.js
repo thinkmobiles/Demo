@@ -67,7 +67,7 @@ var routeHandler = function (db) {
         });
     };
 
-    this.watchedOnlyMain = function (req, res, next) {
+    this.uninterested = function (req, res, next) {
         if (!req.query.from || !req.query.to) {
             var error = new Error();
             error.status = 400;
@@ -79,7 +79,7 @@ var routeHandler = function (db) {
         var to = new Date(date.setHours(date.getHours() + 24));
         var userId = req.session.uId;
 
-        analytic.watchedOnlyMain(userId, from, to, function (err, data) {
+        analytic.uninterested(userId, from, to, function (err, data) {
             if (err) {
                 return next(err);
             }
