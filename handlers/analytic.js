@@ -151,6 +151,8 @@ var routeHandler = function (db) {
             return next(error);
         }
         var email = req.query.email;
+        var contentId;
+
         async.waterfall([
             function (waterfallCb) {
                 var userId = mongoose.Types.ObjectId(req.session.uId);
@@ -163,11 +165,12 @@ var routeHandler = function (db) {
                         error.message = 'No Data';
                         return waterfallCb(error);
                     }
-                    waterfallCb(null, doc._id)
+                    contentId =  doc._id
+                    waterfallCb(null)
                 });
             },
 
-            function (contentId, waterfallCb) {
+            function ( waterfallCb) {
                 TrackModel.aggregate([{
                     $match: {
                         contentId: contentId,
@@ -224,7 +227,65 @@ var routeHandler = function (db) {
                     }
                     waterfallCb(null, doc[0]);
                 });
-            }], function (err, doc) {
+            },
+
+            function (data, waterfallCb) {
+                if(!data){
+                    TrackModel.aggregate([{
+                        $match: {
+                            contentId: contentId,
+                            email: email
+                        }
+                    }, {
+                        $project: {
+                            name: {$concat: ['$firstName', " ", '$lastName']},
+                            questions: '$questions',
+                            videos: '$videos',
+                            documents: '$documents',
+                            _id: 1
+                        }
+                    }, {
+                        $unwind: '$videos'
+                    }, {
+                        $project: {
+                            videos: {
+                                video: '$videos.video',
+                                time: '$videos.stopTime'
+                            },
+                            _id: 1,
+                            questions: 1,
+                            document: 1,
+                            name: 1
+                        }
+                    }, {
+                        $group: {
+                            _id: {
+                                id: '$_id',
+                                name: '$name',
+                                questions: '$questions'
+                            },
+                            videos: {
+                                $addToSet: '$videos'
+                            },
+                        }
+                    }, {
+                        $project: {
+                            name: '$_id.name',
+                            questions: '$_id.questions',
+                            videos: 1,
+                            _id: 0
+                        }
+                    }], function (err, doc) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        waterfallCb(null, doc[0]);
+                    });
+                } else {
+                    return waterfallCb(null, data);
+                }
+            }
+        ], function (err, doc) {
             if (err) {
                 return next(err);
             }
