@@ -30,6 +30,8 @@ module.exports = (function () {
         contentId: {type: ObjectId, ref: 'Content'},
         accessToken: {type: String},
         refreshToken: {type: String},
+        subscriptionStart: {type: Date /*,default: Date.now()*/},
+        subscriptionEnd: {type: Date /*,default: Date.now()*/},
         createdAt: {type: Date, default: Date.now},
         updatedAt: {type: Date, default: Date.now}
 

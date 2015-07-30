@@ -101,7 +101,7 @@ var routeHandler = function (db) {
             var e = new Error();
             e.message = 'Not enough params';
             e.status = 400;
-            return next(err);
+            return next(e);
         }
         var pass = req.body.pass;
         var id = req.body.id;
