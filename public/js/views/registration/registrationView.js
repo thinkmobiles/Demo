@@ -106,8 +106,8 @@ define([
 					//ToDo: Develop
 					window.location = 'https://account.mooloop.com/oauth/authorize?response_type=code&client_id=FcDOCBsnZ2TtKbHTGULY&redirect_uri=http://demo.com:8838/redirect&scope=jumplead.contacts';
 
-					//ToDo: Production
-					//window.location = 'https://account.mooloop.com/oauth/authorize?response_type=code&client_id=uemnB2ZAA92gv5CoTCHc&redirect_uri=http://134.249.164.53:8838/redirect&scope=jumplead.contacts,jumplead.personal';
+                    //ToDo: Production
+                    //window.location = 'https://account.mooloop.com/oauth/authorize?response_type=code&client_id=uemnB2ZAA92gv5CoTCHc&redirect_uri=http://134.249.164.53:8838/redirect&scope=jumplead.contacts,jumplead.personal';
 				},
                 error: function (err) {
 					console.log(err);

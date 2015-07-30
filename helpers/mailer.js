@@ -189,7 +189,8 @@ var MailerModule = function () {
                     videos: options.videos,
                     visits: options.visits,
                     documents: options.documents,
-                    questions: options.questions
+                    questions: options.questions,
+                    uninterested: options.uninterested
                 };
 
                 mailOptions = {

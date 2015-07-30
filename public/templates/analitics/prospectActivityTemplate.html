@@ -1,5 +1,6 @@
 <div class="innerContainer">
-  <h2 class="survayName"><%=name%></h2>
+  <h2 class="survayName"></h2>
+	<% if(questions.length){%>
   <ul>
 	<%_.each(questions,function(question,index){%>
 	<li>
@@ -10,19 +11,30 @@
 	</li>
 	<%})%>
   </ul>
+	<%} else{%>
+		No questions answered
+	<%}%>
   <h3 class="videoWached">Videos Watched</h3>
+	<% if(videos.length){%>
 	<%_.each(videos,function(video, index){%>
 	<span>
 	  <%=video.video.split("/").pop().split(".").shift()%>   <span class="silver">(<%=video.time%>)</span><%=index==videos.length-1?"":","%>
 	</span>
 	<%})%>
+	<%} else{%>
+	No video watched
+	<%}%>
   <h3 class="docDownload">Documents Downloaded</h3>
+	<% if(documents.length){%>
   <ul>
 	<%_.each(documents,function(item, index){%>
 	<span>
 	  <%=item.split("/").pop().split(".").shift()%><%=index==documents.length-1?"":","%>
 	</span>
 	<%})%>
+	  <%} else{%>
+	  No documents downloaded
+	  <%}%>
   </ul>
 </div>
 

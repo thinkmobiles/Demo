@@ -13,6 +13,7 @@ module.exports = function (db) {
     router.get('/document', session.isAuthenticated, handler.document);
     router.get('/video', session.isAuthenticated, handler.video);
     router.get('/visits', session.isAuthenticated, handler.visits);
+    router.get('/uninterested', session.isAuthenticated, handler.uninterested);
 
     router.get('/totalVisits', session.isAuthenticated, handler.totalVisits);
 
