@@ -31,7 +31,7 @@ define([
 			setTimeout(function(){
 				$(".signIn .username .userName")[0].focus();
 			},550);
-			
+
 		},
 
         changeTab: function(event) {
