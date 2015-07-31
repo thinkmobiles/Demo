@@ -215,6 +215,9 @@ define([
 					
 					start.datepicker({
 						dateFormat: 'dd M yy',
+						beforeShow: function(input, inst) {
+							$('#ui-datepicker-div').addClass("usersPick");
+						},
 						onSelect: function (selected) {
 							end.datepicker("option", "minDate", new Date(selected));
 						},
@@ -222,6 +225,9 @@ define([
 					});
 					end.datepicker({
 						dateFormat: 'dd M yy',
+						beforeShow: function(input, inst) {
+							$('#ui-datepicker-div').addClass("usersPick");
+						},
 						onSelect: function (selected) {
 							start.datepicker("option", "maxDate",  new Date(selected));
 						},
@@ -257,12 +263,18 @@ define([
 						onSelect: function (selected) {
 							end.datepicker("option", "minDate", new Date(selected));
 						},
+						beforeShow: function(input, inst) {
+							$('#ui-datepicker-div').addClass("usersPick");
+						},
 						maxDate:moment(users[index-1].subscriptionEnd,self.dataFormat)._d
 					});
 					end.datepicker({
 						dateFormat: 'dd M yy',
 						onSelect: function (selected) {
 							start.datepicker("option", "maxDate",  new Date(selected));
+						},
+						beforeShow: function(input, inst) {
+							$('#ui-datepicker-div').addClass("usersPick");
 						},
 						minDate:moment(users[index-1].subscriptionStart,self.dataFormat)._d
 					});
