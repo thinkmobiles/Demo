@@ -161,6 +161,8 @@ define([
             $(e.target).closest("table").find("tr.current").removeClass("current");
             $(e.target).closest("tr").addClass("current");
             this.prospectActivityModel.update({email: email});
+            var name = this.$el.find(".current .prospectName").text();
+            this.$el.find(".survayName").text(name);
         },
 
         showProspectActivity: function (e) {
@@ -174,6 +176,8 @@ define([
                 return video
             });
             this.$el.find("#prospectActivity").html(_.template(ProspectActivityTemplate)(this.prospectActivityModel.toJSON()));
+            var name = this.$el.find(".current .prospectName").text();
+            this.$el.find(".survayName").text(activity.name||name);
 
         },
         updateProspect: function (e) {

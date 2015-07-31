@@ -617,6 +617,12 @@ var routeHandler = function (db) {
         var userId;
         var content;
         var data;
+        if (prospectId == '{{ctid}}') {
+            error.message = 'You have to paste this link to Jumplead email template, where tht link for each prospect will be generated';
+            error.status = 400;
+            return next(error);
+        }
+
         async.waterfall([
 
             function (waterfallCb) {
@@ -625,7 +631,6 @@ var routeHandler = function (db) {
                         return waterfallCb(err);
                     }
                     if (!foundContent) {
-                        var error = new Error();
                         error.message = 'Content Not Found';
                         error.status = 404;
                         return waterfallCb(error);
@@ -763,7 +768,10 @@ var routeHandler = function (db) {
                     },
                     documents: function (parallelCb) {
                         analytic.document(doc.ownerId.toString(), from, to, parallelCb);
-                    }
+                    },
+                    uninterested: function (parallelCb) {
+                        analytic.uninterested(doc.ownerId.toString(), from, to, parallelCb);
+                    },
                 }, function (err, options) {
                     if (err) {
                         return console.error(err);

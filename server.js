@@ -40,7 +40,7 @@ db.once('open', function() {
     var app = express();
     var logWriter = require('./helpers/logWriter')();
     var Schedule = require('./helpers/emailNotification');
-    var scedule =new Schedule(db);
+    var schedule =new Schedule(db);
     var MemoryStore = require('connect-mongo')(session);
     var sessionConfig = {
         db: db.name,
@@ -50,18 +50,12 @@ db.once('open', function() {
         resave: false
     };
 
-    scedule.runSchedule();
+    schedule.runSchedule();
     var allowCrossDomain = function (req, res, next) {
         var browser = req.headers['user-agent'];
         if (/Trident/.test(browser)) {
             res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
         }
-        res.header("Access-Control-Allow-Origin", "*");
-        res.header('Access-Control-Allow-Credentials', true);
-        res.header('Access-Control-Allow-Origin', req.headers.origin);
-        res.header('Access-Control-Allow-Methods', 'GET,PUT,POST');
-        res.header('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, X-HTTP-Method-Override, uid, hash, mid');
-
         next();
     };
 

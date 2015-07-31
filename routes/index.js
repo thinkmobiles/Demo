@@ -27,9 +27,6 @@ module.exports = function (app, db) {
         res.sendfile('index.html');
     });
 
-    //app.get('/sendWeekly', handler.sendWeekly);
-    app.get('/sendDaily', handler.sendDaily);
-    app.get('/sendWeekly', handler.sendWeekly);
     app.get('/content/:contentId/:ctid', handler.getMain);
     app.post('/prospectSignUp', handler.prospectSignUp);
     app.get('/share', handler.share);
@@ -44,12 +41,14 @@ module.exports = function (app, db) {
     app.get('/currentUser',session.isAuthenticated, handler.currentUser);
     app.get('/redirect', handler.redirect);
     app.post('/admin/contact', handler.contactAdmin);
+    app.use('/content', contentRouter);
+
+    //app.get('/sendDaily', handler.sendDaily);
+    //app.get('/sendWeekly', handler.sendWeekly);
 
     // ----------------------------------------------------------
     // Routers:
     // ----------------------------------------------------------
-
-    app.use('/content', contentRouter);
     app.use('/track', trackRouter);
     app.use('/analytic', analyticRouter);
     app.use('/admin', adminRouter);

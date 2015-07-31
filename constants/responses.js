@@ -1,7 +1,3 @@
-/**
- * Created by Roman on 02.04.2015.
- */
-
 module.exports = {
     PAGE_NOT_FOUND: 'Page Not Found',
     NO_SUCH_SAAS_ACCOUNT_FOUND: 'No such saas account found',

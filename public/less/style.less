@@ -66,6 +66,7 @@
 }
 #wrapper{
 	//width:100%;
+  min-height: 600px;
 }
 
 .filter(@blur){
@@ -269,7 +270,7 @@ body{
 		}
 	.blue{
 		.lh(50px);
-		width:285px;
+		width:327px;
 		display:block;
 		text-align:center;
 		background-color:#66d4ff;
@@ -715,6 +716,7 @@ footer{
   background-color: #414243;
   height:580px;
   position:relative;
+  margin-top: 50px;
   .inner{
 	  width:1070px;
 	  margin:0 auto;
@@ -2087,6 +2089,127 @@ box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.18);
 	}
 }
 
+.customTable{
+	width:100%;
+	border:1px solid #dbdbdb;
+	border-radius:5px;
+	tr{
+		td, th{
+			text-align:left;
+			border-left:1px solid #dbdbdb;
+			height:36px;
+			&:first-child{
+				border-left:none;
+			}
+			span{
+				padding:0 12px;
+				&.edit{
+					display:none;
+					padding:0 10px;
+					input{
+					    width: 80px;
+						padding:0 5px;
+						font-size: 14px;
+					}
+				}
+			}
+		}
+		th{
+			background-color:#fbfbfb;
+			text-align:center;
+			height:50px;
+		}
+		td{
+			border-top:1px solid #dbdbdb;
+			cursor:pointer;
+		}
+		&.current{
+			td{
+				background-color:#f5fbfd;
+			}
+		}
+		&.edited{
+			td{
+				span{
+					&.view{
+						display:none;
+					}
+					&.edit{
+						display:block;
+					}
+				}
+			}
+		}
+	}
+
+
+}
+
+.tableBt{
+	a{
+		text-decoration:none;
+		color:black;
+		padding:3px 8px;
+		display:inline-block;
+		border:1px solid #dbdbdb;
+		border-radius:3px;
+		margin: 0 4px 0 0;
+		&.saveBtn{
+			span{
+				.i("save.png");
+				padding-left:15px;
+				background-position:0 50%;
+			}
+		}
+		&.confirm{
+			span{
+				.i("confirm.png");
+				background-position:0 3px;
+				padding-left:15px;
+			}
+		}
+		&.delete{
+			span{
+				.i("delete.png");
+				background-position:0 1px;
+				padding-left:13px;
+			}
+		}
+		&.disable, &.cancelBtn{
+			span{
+				.i("disable.png");
+				background-position:0 50%;
+				padding-left:15px;
+			}
+			.enb{
+				display:none;
+			}
+			&.enabled{
+				.enb{
+					display:block;
+					.i("confirm.png");
+					background-position:0 50%;
+					padding-left:15px;
+				}
+				.dis{
+					display:none;
+				}
+
+			
+			}
+			
+		}
+		&.editBtn{
+			span{
+				.i("edit.png");
+				padding-left:17px;
+				
+			}
+		}
+	}
+	margin-bottom:10px;
+}
+
 .textMessage{
 	text-align:left;
 }
@@ -2136,6 +2259,11 @@ svg{
 	z-index:1000 !important;
 	padding:0;
 	width:auto;
+
+	&.usersPick{
+		margin-top:-150px;
+		
+	}
 	.ui-datepicker-header{
 		.lh(40px);
 		padding:0;
@@ -2277,4 +2405,50 @@ svg{
 
 .usersContainer{
 	margin-top: 150px;
+}
+
+
+#pendingAccount{
+	margin-bottom:50px;
+}
+
+.accountContainer{
+	.saveBtn, .cancelBtn{
+		display:none;
+	}
+	&.isEdited{
+		.saveBtn, .cancelBtn{
+			display:inline-block;
+		}
+		.editBtn{
+			display:none;
+		}	
+	}
+}
+
+.confirm-dialog{
+	padding:0px;
+	.ui-dialog-titlebar{
+		background-color:#f9fafb;
+		font-weight:normal;
+		color:#646566;
+	}
+	.dialogText{
+		text-align:center;
+		color:#646566;
+		h3{
+			margin-bottom:0px;
+		}
+	}
+	.cancelButtonClass{
+		color:#f3a79b;
+		border:1px solid #f3a79b;
+		outline:none;
+	}
+	.saveButtonClass{
+		background-color:#56d66b;
+		border:1px solid #56d66b;
+		color:white;
+		outline:none;
+	}
 }

@@ -56,7 +56,7 @@
         <% });%>
       </table>
       <% } else { %>
-      <h5 >Contact doesn't watched any video</h5>
+      <h5 >Contact hasn't watched any video</h5>
       <% } %>
       <br/>
 
@@ -76,19 +76,20 @@
           </th>
         </tr>
         <% _.each(questions, function(item){%>
+          <% var obj = {very: 'Very Interested', some: 'Somewhat Interested', not: 'Not Interested'}%>
         <tr>
           <td style="border:1px solid #efefef;">
             <span style="padding:0 15px;line-height:30px"><%=item.question %></span>
           </td>
           <td style="border:1px solid #efefef;">
-            <span style="padding:0 15px;line-height:30px"><%= item.item%></span>
+            <span style="padding:0 15px;line-height:30px"><%= obj[item.item]%></span>
 
           </td>
         </tr>
         <% });%>
       </table>
       <% } else { %>
-      <h5 >Contact doesn't answered any question</h5>
+      <h5 >Contact hasn't answered any question</h5>
       <% } %>
       <br/>
 
@@ -110,12 +111,12 @@
         <% });%>
       </ul>
       <% } else { %>
-      <h5 >Contact doesn't downloaded any documents</h5>
+      <h5 >Contact hasn't downloaded any documents</h5>
       <% } %>
       <br/>
       <hr/>
       <footer>
-        Copyright DemoRocket 2015
+          © Copyright DemoRocket 2015
       </footer>
 	</div>
 

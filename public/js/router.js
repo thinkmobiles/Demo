@@ -1,7 +1,8 @@
 define([
     'custom',
-    'views/menu/topMenuView'
-], function (custom, TopMenuView) {
+    'views/menu/topMenuView',
+    'views/footer/footerView'
+], function (custom, TopMenuView, FooterView) {
 
     var appRouter;
     appRouter = Backbone.Router.extend({
@@ -46,6 +47,7 @@ define([
 
         initialize: function () {
             new TopMenuView();
+            new FooterView();
 			$(document).on("click", ".ui-dialog-titlebar-close", function (e) {
 				$(".ui-dialog").remove();
             });

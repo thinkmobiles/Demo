@@ -9,7 +9,7 @@ module.exports = function (db) {
 
     var handler = new AnalyticHandler(db);
     var session = new SessionHandler(db);
-    router.post('/users/confirm', handler.confirmUser);
+    router.post('/confirm', handler.confirmUser);
     router.patch('/users/:id', handler.update);
     router.delete('/users/:id', session.isAuthenticatedAdmin, handler.remove);
     router.get('/users/pending', session.isAuthenticatedAdmin, handler.pendingUsers);
