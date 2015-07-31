@@ -2087,6 +2087,75 @@ box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.18);
 	}
 }
 
+.customTable{
+	width:100%;
+	border:1px solid #dbdbdb;
+	border-radius:5px;
+	tr{
+		td, th{
+			text-align:left;
+			border-left:1px solid #dbdbdb;
+			height:36px;
+			&:first-child{
+				border-left:none;
+			}
+			span{
+				padding:0 15px;
+				&.edit{
+					display:none;
+					padding:0 10px;
+					input{
+					    width: 80px;
+						padding:0 5px;
+						font-size: 14px;
+					}
+				}
+			}
+		}
+		th{
+			background-color:#fbfbfb;
+			text-align:center;
+			height:50px;
+		}
+		td{
+			border-top:1px solid #dbdbdb;
+			cursor:pointer;
+		}
+		&.current{
+			td{
+				background-color:#f5fbfd;
+			}
+		}
+		&.edited{
+			td{
+				span{
+					&.view{
+						display:none;
+					}
+					&.edit{
+						display:block;
+					}
+				}
+			}
+		}
+	}
+
+
+}
+
+.tableBt{
+	a{
+		text-decoration:none;
+		color:black;
+		padding:7px 20px;
+		display:inline-block;
+		border:1px solid #dbdbdb;
+		border-radius:3px;
+		margin: 0 4px 0 0;
+	}
+	margin-bottom:10px;
+}
+
 .textMessage{
 	text-align:left;
 }
@@ -2277,4 +2346,23 @@ svg{
 
 .usersContainer{
 	margin-top: 150px;
+}
+
+
+#pendingAccount{
+	margin-bottom:50px;
+}
+
+.accountContainer{
+	.saveBtn, .cancelBtn{
+		display:none;
+	}
+	&.isEdited{
+		.saveBtn, .cancelBtn{
+			display:inline-block;
+		}
+		.editBtn{
+			display:none;
+		}	
+	}
 }
