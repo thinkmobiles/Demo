@@ -2,10 +2,11 @@ define([
     'text!templates/users/usersTemplate.html',
 	'text!templates/users/pendingTemplate.html',
 	'text!templates/users/confirmedTemplate.html',
+	'text!templates/users/dialogTemplate.html',
 	"collections/pendingUsersCollection",
 	"collections/confirmedUsersCollection",
 	"moment"
-], function (UsersTemplate, PendingTemplate, ConfirmedTemplate, PendingUsersCollection, ConfirmedUsersCollection, moment) {
+], function (UsersTemplate, PendingTemplate, ConfirmedTemplate, DialogTemplate, PendingUsersCollection, ConfirmedUsersCollection, moment) {
     var View = Backbone.View.extend({
 
 		el:"#wrapper",
@@ -64,8 +65,11 @@ define([
 		},
 		
 		updateDisableBtn:function(){
-			var text = this.$el.find("#confirmedAccount table").find(".current .status").text()=="Disabled"?"Enable":"Disable";
-			this.$el.find(".disable").text(text);
+			if (this.$el.find("#confirmedAccount table").find(".current .status").text()=="Disabled"){
+				this.$el.find(".disable").addClass("enabled");
+			}else{
+				this.$el.find(".disable").removeClass("enabled");
+			}
 			
 		},
 		
@@ -101,18 +105,83 @@ define([
 
 		
         confirm: function (e) {
+			var self = this;
             var id = $(e.target).parents(".accountContainer").find(".customTable .current").data("id");
-			this.updateUser(id, {isConfirmed: true});
+			var model =  this.usersCollection.get(id);
+			var name = model.get("firstName")+" "+model.get("lastName");
+			this.showDialog("Confirm User",name,"CANCEL", "CONFIRM", function(){
+				self.updateUser(id, {isConfirmed: true});
+			});
         },
 
         disable: function (e) {
+			var self = this;
             var row =$(e.target).parents(".accountContainer").find(".customTable .current");
             var id = row.data("id");
             var status = row.find("span.status").text();
-			this.updateUser(id, {isDisabled: status==='Disabled'?false:true});
+			var model =  this.confirmedCollection.get(id);
+			var name = model.get("firstName")+" "+model.get("lastName");
+			var isDisabled = status==='Disabled'?false:true;
+			var title = isDisabled?"Disable User":"Enable User";
+			var btnText = isDisabled?"Disable":"Enable";
+			this.showDialog(title, name, "CANCEL", btnText, function(){
+				self.updateUser(id, {isDisabled: isDisabled});
+			});
         },
 
+		showDialog: function(title, name, cancel,ok, callback){
+			var formString = _.template(DialogTemplate)({
+				operation:ok,
+				name:name
+			});
+			
+			this.dialog = $(formString).dialog({
+				modal:true,
+				closeOnEscape: false,
+				appendTo:"#wrapper",
+				dialogClass: "confirm-dialog",
+				width: 580,
+				title: title,
+				buttons:  [
+					{
+						text: cancel,
+						"class": 'cancelButtonClass',
+						click: function() {
+							$( this ).dialog( "close" );
+						}
+					},
+					{
+						text: ok,
+						"class": 'saveButtonClass',
+						click: function() {
+							$( this ).dialog( "close" );
+							if (callback)callback();
+						}
+					}
+				],
+			});			
+		},
+
         delete: function (e) {
+            var id = $(e.target).parents(".accountContainer").find(".customTable .current").data("id");
+            var model =  this.usersCollection.get(id)||this.confirmedCollection.get(id);
+            var self = this;
+			var name = model.get("firstName")+" "+model.get("lastName");
+			
+			this.showDialog("Delete User",name, "CANCEL", "DELETE", function(){
+				model.destroy({
+					wait: true,
+					success: function (model, response) {
+						self.usersCollection.update();
+						self.confirmedCollection.update();
+					},
+					error: function (err) {
+						console.log(JSON.stringify(err));
+					}
+				});
+
+			});
+			/*
             var id = $(e.target).parents(".accountContainer").find(".customTable .current").data("id");
             var model =  this.usersCollection.get(id)||this.confirmedCollection.get(id);
             var self = this;
@@ -126,7 +195,7 @@ define([
                     console.log(JSON.stringify(err));
                 }
             });
-			
+			*/
 
         },
 
