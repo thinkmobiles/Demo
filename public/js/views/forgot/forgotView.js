@@ -38,8 +38,8 @@ define([
                     email: self.$el.find(".registration .email").val()
                 },
                 success: function (response) {
-					Backbone.history.navigate("#/home",{ trigger:true })
-					App.notification("Recover link sendad in your email");
+					Backbone.history.navigate("#/home",{ trigger:true });
+					App.notification("Recover link send to your email");
                 },
                 error: function (err) {
 					App.notification("Some error");

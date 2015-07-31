@@ -30,6 +30,7 @@ define([
             this.dialog = $(formString).dialog({
                 modal:true,
                 closeOnEscape: false,
+                draggable: false,
                 appendTo:"#wrapper",
                 dialogClass: "progress-dialog",
                 width: 590,

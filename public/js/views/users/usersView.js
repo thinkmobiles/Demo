@@ -130,6 +130,7 @@ define([
         },
 
 		showDialog: function(title, name, cancel,ok, callback){
+			var self = this;
 			var formString = _.template(DialogTemplate)({
 				operation:ok,
 				name:name
@@ -138,6 +139,8 @@ define([
 			this.dialog = $(formString).dialog({
 				modal:true,
 				closeOnEscape: false,
+				resizable: false,
+				draggable: false,
 				appendTo:"#wrapper",
 				dialogClass: "confirm-dialog",
 				width: 580,
@@ -159,7 +162,10 @@ define([
 						}
 					}
 				],
-			});			
+			});
+				setTimeout( function() {
+					self.$el.find(".confirm-dialog").addClass("show");
+				}, 25 );
 		},
 
         delete: function (e) {
@@ -233,7 +239,6 @@ define([
 						},
 						minDate:moment(users[index-1].subscriptionStart,self.dataFormat)._d
 					});
-					console.log(moment(users[index-1].subscriptionStart,self.dataFormat)._d);
 				}
 			});
 			//			this.$el.find("#pendingAccount .customTable input").datepicker({ dateFormat: 'dd M yy' });
@@ -257,28 +262,36 @@ define([
 				if (index){
 					var start = $(this).find("input").eq(0);
 					var end = $(this).find("input").eq(1);
-					
+
+
+
+					if (moment(end.val())._d < moment().add(7, 'days')._d) {
+						end.closest('td').addClass('beforeExpired');
+
+						if (moment(end.val())._d < moment().hour(25)._d) {
+							end.closest('td').removeClass('beforeExpired').addClass('expired');
+						}
+					}
 					start.datepicker({
 						dateFormat: 'dd M yy',
 						onSelect: function (selected) {
 							end.datepicker("option", "minDate", new Date(selected));
 						},
-						beforeShow: function(input, inst) {
+						beforeShow: function (input, inst) {
 							$('#ui-datepicker-div').addClass("usersPick");
 						},
-						maxDate:moment(users[index-1].subscriptionEnd,self.dataFormat)._d
+						maxDate: moment(users[index - 1].subscriptionEnd, self.dataFormat)._d
 					});
 					end.datepicker({
 						dateFormat: 'dd M yy',
 						onSelect: function (selected) {
-							start.datepicker("option", "maxDate",  new Date(selected));
+							start.datepicker("option", "maxDate", new Date(selected));
 						},
-						beforeShow: function(input, inst) {
+						beforeShow: function (input, inst) {
 							$('#ui-datepicker-div').addClass("usersPick");
 						},
-						minDate:moment(users[index-1].subscriptionStart,self.dataFormat)._d
+						minDate: moment(users[index - 1].subscriptionStart, self.dataFormat)._d
 					});
-					console.log(moment(users[index-1].subscriptionStart,self.dataFormat)._d);
 				}
 			});
             return this;

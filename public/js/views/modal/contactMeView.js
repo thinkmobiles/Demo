@@ -86,6 +86,8 @@ define([
              });
             this.dialog = $(formString).dialog({
 				modal:true,
+				resizable: false,
+				draggable: false,
                 closeOnEscape: false,
 				appendTo:"#wrapper",
                 dialogClass: "watch-dialog",

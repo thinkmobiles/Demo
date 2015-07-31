@@ -68,8 +68,8 @@ define([
                     password: self.$el.find(".registration .pass").val()
                 },
                 success: function (response) {
-					Backbone.history.navigate("#/home",{ trigger:true })
-					App.notification("Password was chnaged");
+					Backbone.history.navigate("#/home",{ trigger:true });
+					App.notification("Password was changed");
                 },
                 error: function (err) {
 					App.notification((err.responseJSON?err.responseJSON.message:"Some Error"));
