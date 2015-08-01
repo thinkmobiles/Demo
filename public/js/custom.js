@@ -123,13 +123,17 @@ define(["moment"],function (moment) {
 				div .html("<span>"+d[name]+"</span>" + "<br/>views" )  
 					.style("left", ($(this).closest("svg").offset().left+x(d.date)+x.rangeBand()/2+17)+"px")     
 					.style("top", ($(this).closest("svg").offset().top+ y(d[name])- 38) + "px");
+				setTimeout( function() {
+					$(".tooltip").addClass("show");
+				}, 25 );
             }
 		}
 
 		var hideTooltip = function() {       
 				div.transition()        
 					.duration(500)      
-					.style("opacity", 0);   
+					.style("opacity", 0);
+			$(".tooltip").removeClass("show");
 			}
 		
 		svg.selectAll(".circle").data(data).enter().append("circle").attr("class", "circle").attr("cx", function (d) {
@@ -251,11 +255,17 @@ define(["moment"],function (moment) {
 						.style("top", ($(this).closest("svg").offset().top+ yRange(d.count)- 55) + "px");
 					
 				}
+				setTimeout( function() {
+					$(".tooltip").addClass("show");
+				}, 100 );
             })                  
 			.on("mouseout", function(d) {       
 				div.transition()        
 					.duration(500)      
-					.style("opacity", 0);   
+					.style("opacity", 0);
+				setTimeout( function() {
+					$(".tooltip").removeClass("show");
+				}, 25 );
 			});
 		/*.on('mouseover',function(d){
 		  d3.select(this)

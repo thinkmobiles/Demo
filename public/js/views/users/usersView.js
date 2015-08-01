@@ -143,6 +143,7 @@ define([
 				draggable: false,
 				appendTo:"#wrapper",
 				dialogClass: "confirm-dialog",
+				//position: 'center',
 				width: 580,
 				title: title,
 				buttons:  [
