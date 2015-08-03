@@ -23,7 +23,6 @@ define([
 			"chooseImportant(/:videoId/:userId)" :  "chooseImportant",
 			"relatedVideo(/:videoId/:userId)(/:indexList)" :  "relatedVideo",
             "registration"              :  "registration",
-            //ToDo: analitic )))))))))))))haha)
 			"analytics"              :  "analytics",
 			"users"              :  "users",
 			"pricing"              :  "pricing",
@@ -34,16 +33,6 @@ define([
 			"message?text=:text":       "showNotification",
             "*any"                      :  "any"
         },
-
-        needAuthorize: [
-			'users',
-            'upload',
-            'main'
-        ],
-
-        redirectWhenAuthorize: [
-            'registration'
-        ],
 
         initialize: function () {
             new TopMenuView();
@@ -72,7 +61,7 @@ define([
             // show only permitted pages
             if (!App.sessionData.get('authorized')) {
                 // access only authorized views
-                WrongRout = _.find(this.needAuthorize, function (rout) {
+                WrongRout = _.find(custom.routes.needAuthorize, function (rout) {
                     if (name === rout) {
                         return true
                     }
@@ -83,7 +72,7 @@ define([
             } else {
                 // access not authorized views
 
-                WrongRout = _.find(this.redirectWhenAuthorize, function (rout) {
+                WrongRout = _.find(custom.routes.redirectWhenAuthorize, function (rout) {
                     if (name === rout) {
                         return true
 

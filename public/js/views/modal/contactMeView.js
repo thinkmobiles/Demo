@@ -18,8 +18,8 @@ define([
 			var self = this;
 			this.modal = null;
 			this.videoModal = null;
-			this.videoId = options&&options.videoId?options.videoId:"55800aadcb7bb82c1f000002";
-			this.userId = options&&options.userId?options.userId:"55800aadcb7bb82c1f000002";
+			this.videoId = options&&options.videoId?options.videoId:"";
+			this.userId = options&&options.userId?options.userId:"";
 			this.page = options&&options.page?options.page:"watchVideo";
 			this.indexList = options&&options.indexList?options.indexList:[];
 			App.getContent(this.videoId, this.userId,function(content){

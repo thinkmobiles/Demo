@@ -10,6 +10,7 @@ define([
 		el:"#wrapper",
         events: {
             "click .showModal":"showModal",
+            "click .showMain":"showMain",
             "click .checkbox":"checkboxClick",
             "click .registration":"hideBlur",
 			"click .lock.active":"login",
@@ -17,7 +18,6 @@ define([
 			"click .whatSay .arrows .arrow-right":"nextSlide",
 			"keyup .signIn .userName":"changeFieldUsername",
 			"keyup .signIn .password":"changeField",
-			"click .toTop":"toTop",
 			'click .login': 'loginBtn'
 //			"change .signIn .userName":"showAvatar",
         },
@@ -25,8 +25,8 @@ define([
 
         initialize: function (options) {
 			this.options = options;
-			this.videoId = options&&options.videoId?options.videoId:"55800aadcb7bb82c1f000002";
-			this.userId = options&&options.userId?options.userId:"55800aadcb7bb82c1f000002";
+			this.videoId = options&&options.videoId?options.videoId:"";
+			this.userId = options&&options.userId?options.userId:"";
 			this.modal = null;
             this.render();
         },
@@ -153,11 +153,19 @@ define([
 		},
 
         showModal:function(){
-			Backbone.history.navigate("#/chooseViewer/"+this.videoId+"/"+this.userId, {trigger: true});
+			if (this.options&&this.options.videoId&&this.options.userId&&!this.options.showedModal){
+				Backbone.history.navigate("#/chooseViewer/"+this.videoId+"/"+this.userId, {trigger: true});
+			}else{
+				Backbone.history.navigate("#/watchVideo", {trigger: true});
+			}
 			/*if(this.modal){
 				this.modal.undelegateEvents();
 			}
 			this.modal =new ModalView(this.options);*/
+		},
+
+		showMain:function(){
+				Backbone.history.navigate("#/watchVideo", {trigger: true});
 		},
 
 		login:function(e){
@@ -194,6 +202,8 @@ define([
 			if (this.options&&this.options.videoId&&this.options.userId&&!this.options.showedModal){
 				Backbone.history.navigate("#/chooseViewer/"+this.videoId+"/"+this.userId, {trigger: true});
 				$(".showModal").attr("href","#/home/"+this.videoId+"/"+this.userId);
+			}else{
+				//Backbone.history.navigate("#/watchVideo", {trigger: true});
 			}
 
 			if (App.interval){

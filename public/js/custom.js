@@ -1,4 +1,19 @@
 define(["moment"],function (moment) {
+
+	var routes = {
+		needAuthorize: [
+			'users',
+            'upload',
+            'main'
+        ],
+
+        redirectWhenAuthorize: [
+            'registration'
+        ],
+	};
+
+	routes.allRoutes = routes.needAuthorize.concat(routes.redirectWhenAuthorize);
+	
     var runApplication = function (err, data) {
         var url; // the url on boot up
         url =  Backbone.history.fragment || Backbone.history.getFragment();
@@ -18,17 +33,24 @@ define(["moment"],function (moment) {
 				admin:data.isAdmin
             });
 			
-            return Backbone.history.navigate(url, {trigger: true});
         } else {
             App.sessionData.set({
                 authorized: false,
                 user: null
             });
-            return Backbone.history.navigate(url, {trigger: true});
         }
+		
+        return Backbone.history.navigate(url, {trigger: true});
 
     };
 
+	var toUrl = function(url, videoId, userId){
+		if (videoId&&userId){
+			Backbone.history.navigate("#/"+url+"/"+videoId+"/"+userId, {trigger: true});
+		}else{
+			Backbone.history.navigate("#/"+url, {trigger: true});
+		}
+	};
 
 	var drawSitesVisits = function(data, el){
 		var margin = {top: 20, right: 20, bottom: 30, left: 50},
@@ -123,13 +145,17 @@ define(["moment"],function (moment) {
 				div .html("<span>"+d[name]+"</span>" + "<br/>views" )  
 					.style("left", ($(this).closest("svg").offset().left+x(d.date)+x.rangeBand()/2+17)+"px")     
 					.style("top", ($(this).closest("svg").offset().top+ y(d[name])- 38) + "px");
+				setTimeout( function() {
+					$(".tooltip").addClass("show");
+				}, 25 );
             }
 		}
 
 		var hideTooltip = function() {       
 				div.transition()        
 					.duration(500)      
-					.style("opacity", 0);   
+					.style("opacity", 0);
+			$(".tooltip").removeClass("show");
 			}
 		
 		svg.selectAll(".circle").data(data).enter().append("circle").attr("class", "circle").attr("cx", function (d) {
@@ -251,11 +277,17 @@ define(["moment"],function (moment) {
 						.style("top", ($(this).closest("svg").offset().top+ yRange(d.count)- 55) + "px");
 					
 				}
+				setTimeout( function() {
+					$(".tooltip").addClass("show");
+				}, 100 );
             })                  
 			.on("mouseout", function(d) {       
 				div.transition()        
 					.duration(500)      
-					.style("opacity", 0);   
+					.style("opacity", 0);
+				setTimeout( function() {
+					$(".tooltip").removeClass("show");
+				}, 25 );
 			});
 		/*.on('mouseover',function(d){
 		  d3.select(this)
@@ -355,6 +387,8 @@ define(["moment"],function (moment) {
 		defaultImage: defaultImage,
 		drawBarChart:drawBarChart,
 		drawSitesVisits:drawSitesVisits,
-		drawQuestionsPie:drawQuestionsPie
+		drawQuestionsPie:drawQuestionsPie,
+		routes:routes,
+		toUrl:toUrl
     };
 });
