@@ -6,9 +6,9 @@ define(['validation'], function (validation) {
         idAttribute: "_id",
         url: function () {
 			if (this.get('_id') && this.get('userId')){
-				return "/content/" + this.get('_id')+"/"+this.get('userId');
+				return "/main/" + this.get('_id')+"/"+this.get('userId');
 			}else{
-				return "/content";
+				return "/main";
 			}
         },
         initialize: function () {
