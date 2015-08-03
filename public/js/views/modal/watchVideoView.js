@@ -1,8 +1,9 @@
 define([
 	'text!templates/home/videoModalTemplate.html',
 	'text!templates/home/relatedVideo.html',
-	'text!templates/home/pdfTemplate.html'
-], function ( modalTemplate, relatedVideo, pdfTemplate) {
+	'text!templates/home/pdfTemplate.html',
+	'custom'
+], function ( modalTemplate, relatedVideo, pdfTemplate, custom) {
 
 	var View;
 
@@ -114,7 +115,7 @@ define([
 
 		endedMainVideo:function(e){
 			this.dialog.remove();
-			Backbone.history.navigate("#/chooseImportant/"+this.videoId+"/"+this.userId, {trigger: true});
+			custom.toUrl("chooseImportant",this.videoId,this.userId);
 			//$(".videoSection").hide();
 			//$(".questionSection").show();
 		},

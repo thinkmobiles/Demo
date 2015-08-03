@@ -44,6 +44,13 @@ define(["moment"],function (moment) {
 
     };
 
+	var toUrl = function(url, videoId, userId){
+		if (videoId&&userId){
+			Backbone.history.navigate("#/"+url+"/"+videoId+"/"+userId, {trigger: true});
+		}else{
+			Backbone.history.navigate("#/"+url, {trigger: true});
+		}
+	};
 
 	var drawSitesVisits = function(data, el){
 		var margin = {top: 20, right: 20, bottom: 30, left: 50},
@@ -381,6 +388,7 @@ define(["moment"],function (moment) {
 		drawBarChart:drawBarChart,
 		drawSitesVisits:drawSitesVisits,
 		drawQuestionsPie:drawQuestionsPie,
-		routes:routes
+		routes:routes,
+		toUrl:toUrl
     };
 });

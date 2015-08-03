@@ -152,7 +152,11 @@ define([
 		},
 
         showModal:function(){
-			Backbone.history.navigate("#/chooseViewer/"+this.videoId+"/"+this.userId, {trigger: true});
+			if (this.options&&this.options.videoId&&this.options.userId&&!this.options.showedModal){
+				Backbone.history.navigate("#/chooseViewer/"+this.videoId+"/"+this.userId, {trigger: true});
+			}else{
+				Backbone.history.navigate("#/watchVideo", {trigger: true});
+			}
 			/*if(this.modal){
 				this.modal.undelegateEvents();
 			}
@@ -194,7 +198,7 @@ define([
 				Backbone.history.navigate("#/chooseViewer/"+this.videoId+"/"+this.userId, {trigger: true});
 				$(".showModal").attr("href","#/home/"+this.videoId+"/"+this.userId);
 			}else{
-				Backbone.history.navigate("#/watchVideo", {trigger: true});
+				//Backbone.history.navigate("#/watchVideo", {trigger: true});
 			}
 
 			if (App.interval){
