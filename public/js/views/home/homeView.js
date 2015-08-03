@@ -10,6 +10,7 @@ define([
 		el:"#wrapper",
         events: {
             "click .showModal":"showModal",
+            "click .showMain":"showMain",
             "click .checkbox":"checkboxClick",
             "click .registration":"hideBlur",
 			"click .lock.active":"login",
@@ -161,6 +162,10 @@ define([
 				this.modal.undelegateEvents();
 			}
 			this.modal =new ModalView(this.options);*/
+		},
+
+		showMain:function(){
+				Backbone.history.navigate("#/watchVideo", {trigger: true});
 		},
 
 		login:function(e){

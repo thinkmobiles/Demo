@@ -7,7 +7,7 @@ define([
         el: '#footer',
         events: {
             "click .contactUs": "contact",
-            "click ul li a": "toTop"
+            "click ul li a:not(.showModal)": "toTop"
         },
         contact: function () {
             Backbone.history.navigate("#/contact", {trigger: true});
