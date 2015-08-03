@@ -17,7 +17,6 @@ define([
 			"click .whatSay .arrows .arrow-right":"nextSlide",
 			"keyup .signIn .userName":"changeFieldUsername",
 			"keyup .signIn .password":"changeField",
-			"click .toTop":"toTop",
 			'click .login': 'loginBtn'
 //			"change .signIn .userName":"showAvatar",
         },

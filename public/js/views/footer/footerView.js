@@ -5,7 +5,18 @@ define([
     var View;
     View = Backbone.View.extend({
         el: '#footer',
-
+        events: {
+            "click .contactUs": "contact",
+            "click ul li a": "toTop"
+        },
+        contact: function () {
+            Backbone.history.navigate("#/contact", {trigger: true});
+            $("body").removeClass("withLogin");
+            $('html, body').animate({ scrollTop: 0 }, 'medium');
+        },
+        toTop:function(){
+            $('html, body').animate({ scrollTop: 0 }, 'medium');
+        },
         initialize: function () {
             // keep menu actual
             this.render();

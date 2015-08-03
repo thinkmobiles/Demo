@@ -617,6 +617,9 @@ var routeHandler = function (db) {
         var userId;
         var content;
         var data;
+        if(!contentId&&!prospectId){
+
+        }
         if (prospectId == '{{ctid}}') {
             error.message = 'You have to paste this link to Jumplead email template, where tht link for each prospect will be generated';
             error.status = 400;

@@ -23,7 +23,6 @@ define([
 			"chooseImportant(/:videoId/:userId)" :  "chooseImportant",
 			"relatedVideo(/:videoId/:userId)(/:indexList)" :  "relatedVideo",
             "registration"              :  "registration",
-            //ToDo: analitic )))))))))))))haha)
 			"analytics"              :  "analytics",
 			"users"              :  "users",
 			"pricing"              :  "pricing",

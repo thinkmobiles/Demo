@@ -11,7 +11,8 @@ define([
             'click #logOut': 'logout',
             'click .login': 'login',
             'click .navBar': 'toPage',
-            'click .topMenu' :'changeTab'
+            'click .topMenu' :'changeTab',
+            "click .topMenu":"toTop"
         },
 
 
@@ -19,6 +20,10 @@ define([
             // keep menu actual
 			this.listenTo(App.sessionData, 'change:authorized', this.render);
             this.render();
+        },
+
+        toTop:function(){
+            $('html, body').animate({ scrollTop: 0 }, 'fast');
         },
 
 		toPage:function(){

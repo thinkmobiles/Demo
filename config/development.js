@@ -16,3 +16,4 @@ process.env.mailerService = 'Gmail';
 process.env.mailerUserName = "gogi.gogishvili";
 process.env.mailerPassword = "gogi123456789";
 process.env.SUPER_ADMIN_EMAIL = "johnnye.be@gmail.com";
+process.env.SUPER_ADMIN_ID = "";
