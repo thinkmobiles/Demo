@@ -1,4 +1,19 @@
 define(["moment"],function (moment) {
+
+	var routes = {
+		needAuthorize: [
+			'users',
+            'upload',
+            'main'
+        ],
+
+        redirectWhenAuthorize: [
+            'registration'
+        ],
+	};
+
+	routes.allRoutes = routes.needAuthorize.concat(routes.redirectWhenAuthorize);
+	
     var runApplication = function (err, data) {
         var url; // the url on boot up
         url =  Backbone.history.fragment || Backbone.history.getFragment();
@@ -18,14 +33,14 @@ define(["moment"],function (moment) {
 				admin:data.isAdmin
             });
 			
-            return Backbone.history.navigate(url, {trigger: true});
         } else {
             App.sessionData.set({
                 authorized: false,
                 user: null
             });
-            return Backbone.history.navigate(url, {trigger: true});
         }
+		
+        return Backbone.history.navigate(url, {trigger: true});
 
     };
 
@@ -365,6 +380,7 @@ define(["moment"],function (moment) {
 		defaultImage: defaultImage,
 		drawBarChart:drawBarChart,
 		drawSitesVisits:drawSitesVisits,
-		drawQuestionsPie:drawQuestionsPie
+		drawQuestionsPie:drawQuestionsPie,
+		routes:routes
     };
 });
