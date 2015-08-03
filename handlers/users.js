@@ -618,6 +618,18 @@ var routeHandler = function (db) {
         var content;
         var data;
         if(!contentId&&!prospectId){
+            var id =   process.env.MAIN_CONTENT_ID;
+            ContentModel.findById(id, function (err, foundContent) {
+                if (err) {
+                    return next(err);
+                }
+                if (!foundContent) {
+                    error.message = 'Content Not Found';
+                    error.status = 404;
+                    return next(error);
+                }
+                res.status(200).send(foundContent);
+            });
 
         }
         if (prospectId == '{{ctid}}') {
