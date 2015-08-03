@@ -22,8 +22,8 @@ define([
 
 		initialize: function (options) {
 			var self = this;
-			this.videoId = options&&options.videoId?options.videoId:"55800aadcb7bb82c1f000002";
-			this.userId = options&&options.userId?options.userId:"55800aadcb7bb82c1f000002";
+			this.videoId = options&&options.videoId?options.videoId:"";
+			this.userId = options&&options.userId?options.userId:"";
 			this.indexList = options&&options.indexList?options.indexList:[];
 			var page = options&&options.page?options.page:null;
 			this.currentSurvay = [];

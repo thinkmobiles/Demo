@@ -24,8 +24,8 @@ define([
 
         initialize: function (options) {
 			this.options = options;
-			this.videoId = options&&options.videoId?options.videoId:"55800aadcb7bb82c1f000002";
-			this.userId = options&&options.userId?options.userId:"55800aadcb7bb82c1f000002";
+			this.videoId = options&&options.videoId?options.videoId:"";
+			this.userId = options&&options.userId?options.userId:"";
 			this.modal = null;
             this.render();
         },
@@ -193,6 +193,8 @@ define([
 			if (this.options&&this.options.videoId&&this.options.userId&&!this.options.showedModal){
 				Backbone.history.navigate("#/chooseViewer/"+this.videoId+"/"+this.userId, {trigger: true});
 				$(".showModal").attr("href","#/home/"+this.videoId+"/"+this.userId);
+			}else{
+				Backbone.history.navigate("#/watchVideo", {trigger: true});
 			}
 
 			if (App.interval){
