@@ -448,6 +448,7 @@ define([
 			myImage.onload = function(){
 				var c=document.getElementById("preview");
 				var ctx=c.getContext("2d");
+				ctx.clearRect(0, 0, c.width, c.height)
 				ctx.drawImage(myImage,0,0,100,100);
 			};	
 		},
