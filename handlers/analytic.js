@@ -313,6 +313,7 @@ var routeHandler = function (db) {
     this.contacts = function (req, res, next) {
         var domain = req.query.domain;
         var error = new Error();
+        var userId = req.session.uId;
 
         if (!domain) {
             error.status = 400;
@@ -322,7 +323,7 @@ var routeHandler = function (db) {
 
         async.waterfall([
             function (waterfallCb) {
-                var userId = mongoose.Types.ObjectId(req.session.uId);
+
                 ContentModel.findOne({ownerId: userId}, function (err, doc) {
                     if (err) {
                         return waterfallCb(err);
