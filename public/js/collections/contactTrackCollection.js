@@ -3,7 +3,7 @@ define([
 ], function (model) {
     var Collection = Backbone.Collection.extend({
         model: model,
-		initialize: function (options) {
+        initialize: function (options) {
             var that = this;
             this.fetch({
                 data: options,
@@ -12,20 +12,20 @@ define([
 
                 },
                 error: function (models, xhr) {
-                    if (xhr.status === 401) Backbone.history.navigate('#login', { trigger: true });
+                    if (xhr.status === 401) Backbone.history.navigate('#login', {trigger: true});
                 }
             });
         },
-		update:function (options) {
+        update: function (options) {
             var that = this;
             this.fetch({
                 data: options,
                 reset: true,
                 success: function () {
-
+                    console.log('contactTrackCollections updated')
                 },
                 error: function (models, xhr) {
-                    if (xhr.status === 401) Backbone.history.navigate('#login', { trigger: true });
+                    if (xhr.status === 401) Backbone.history.navigate('#login', {trigger: true});
                 }
             });
         },

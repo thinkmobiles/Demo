@@ -30,7 +30,7 @@ define(['validation'], function (validation) {
                 data: options,
                 reset: true,
                 success: function () {
-
+                console.log('prospectActivityModel updated')
                 },
                 error: function (models, xhr) {
                     if (xhr.status === 401) Backbone.history.navigate('#login', { trigger: true });
