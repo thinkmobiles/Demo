@@ -15,10 +15,12 @@ var routeHandler = function (db) {
     var self = this;
 
     this.question = function (req, res, next) {
+        if (!body.document || !body.userId || !body.contentId) {
+            return res.status(403).send("Invalid parameters");
+        }
         var data = req.body;
         var jumpleadId = req.body.userId;
         var contentId = req.body.contentId;
-
         TrackModel.findOneAndUpdate({
             "jumpleadId": jumpleadId,
             "contentId": contentId,
@@ -50,7 +52,7 @@ var routeHandler = function (db) {
     this.document = function (req, res, next) {
         var body = req.body;
         if (!body.document || !body.userId || !body.contentId) {
-            return res.status(200).send("Invalid parameters");
+            return res.status(403).send("Invalid parameters");
         }
         var jumpleadId = body.userId;
         var contentId = body.contentId;

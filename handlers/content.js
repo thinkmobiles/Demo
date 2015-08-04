@@ -284,7 +284,10 @@ var routeHandler = function (db) {
         var files = req.files;
         var userId = req.session.uId;
         var sep = path.sep;
+        var content;
+        var insObj;
         var id;
+
         async.waterfall([
 
                 //validation
@@ -309,7 +312,7 @@ var routeHandler = function (db) {
                             error.message = 'You already have content';
                             return waterfallCb(error);
                         }
-                        var insObj = {
+                        insObj = {
                             ownerId: userId,
                             name: data.name,
                             email: data.email,
@@ -322,7 +325,7 @@ var routeHandler = function (db) {
 
                 // create content model
                 function (insObj, waterfallCb) {
-                    var content = new ContentModel(insObj);
+                    content = new ContentModel(insObj);
                     content.save(function (err, result) {
                         if (err) {
                             return waterfallCb(err);
@@ -376,9 +379,12 @@ var routeHandler = function (db) {
 
                         function (seriesCb) {
                             var index = [];
+
+                            //ToDo: optimisation!!!
                             for (var i = data.countQuestion; i > 0; i--) {
                                 index.push(i);
                             }
+
                             async.each(index, function (i, eachCb) {
                                 async.applyEachSeries([saveSurveyVideo, saveSurveyFiles], i, id, files, data, function (err) {
                                     if (err) {
@@ -405,10 +411,8 @@ var routeHandler = function (db) {
 
             function (err, url) {
                 if (err) {
-                    //return next(err);
                     return console.error(err);
                 }
-                //res.status(201).send({url: url});
                 console.log('success upload. url ' + url);
             });
     };
@@ -461,7 +465,6 @@ var routeHandler = function (db) {
         var data = req.body;
         var files = req.files;
         var sep = path.sep;
-
         var delSurvey = data.removedQuestions?data.removedQuestions.split(' '):[];
         var id;
         var url;
@@ -600,7 +603,6 @@ var routeHandler = function (db) {
             }
             var url = process.env.HOME_PAGE + id.toString() + '/{{ctid}}';
             res.status(200).send({url: url});
-            //res.status(200).send({message: 'Success modified'})
         });
     };
 };

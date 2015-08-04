@@ -799,7 +799,7 @@ var routeHandler = function (db) {
                     },
                     uninterested: function (parallelCb) {
                         analytic.uninterested(doc.ownerId.toString(), from, to, parallelCb);
-                    },
+                    }
                 }, function (err, options) {
                     if (err) {
                         return console.error(err);
