@@ -1262,7 +1262,8 @@ box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.18);
 .pricing{
 	text-align:center;
 	padding-top:1px;
-
+	overflow: hidden;
+  	margin-bottom: 460px;
 	h2{
 		text-align:center;
 		margin-top: 0px;
@@ -1270,28 +1271,96 @@ box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.18);
 		font-family: "LatoSemiBold";
 		font-size: 34px;
 	}
+  	.line {
+	  width:60px;
+	  border-top:2px solid #b3b3b3;
+	  margin:0 auto;
+	  margin-bottom:50px;
+	}
 	p{
 		font-family: "LatoRegular";
 		font-size: 18px;
 		color: #646566;
 		line-height: 27px;
+	  	text-align: center;
 	}
-	h3{
+
+  	.purchasing {
+	  width: 23%;
+	  text-align: center;
+	  background-color: #FAFBFC;
+	  float: left;
+	  margin-right: 20px;
+	  margin-bottom: 20px;
+	  min-height: 458px;
+	  	&:last-child {
+		  margin-right: 0;
+		}
+	  	&:hover {
+			box-shadow: 0 1px 6px rgb(216,216,216);
+	  	}
+	  .purchCastomText {
+		margin-bottom: 70px;
+		padding: 0 20px;
+	  }
+	  .bold-purch-text {
+		font-weight: 600;
+	  }
+	  h3{
 		font-family: "LatoSemiBold";
-		font-size: 26px;
+		font-size: 22px;
 		margin-bottom: 0px;
+		text-transform: uppercase;
+		background-color: #F2F4F5;
+		text-align: center;
+		.lh(96px);
+		max-height: 96px;
+		border-bottom: 1px solid #EDEFF0;
+		border-radius: 5px 5px 0 0 ;
+	  }
+	  .purchBigCapt {
+		line-height: 1;
+		padding-top: 30px;
+		box-sizing: border-box;
+	  }
+	  ul{
+		list-style: none;
+		padding-left: 0;
+		padding: 0 20px;
+		margin: 0;
+		li{
+		  font-family: "LatoRegular";
+		  font-size: 16px;
+		  color: #646566;
+		  line-height: 27px;
+		  border-bottom: 1px solid #EDEFF0;
+		  .lh(48px);
+		}
+	  }
+	  .purchasing-butt {
+		margin-top: 25px;
+		width: 135px;
+		border: none;
+		background-color: #15D693;
+		border-bottom: 2px solid darken(#15D693, 5%);
+		border-radius: 5px;
+		cursor: pointer;
+			p {
+			  .lh(16px);
+			  color: #fff;display: block;
+			  text-transform: uppercase;
+			}
+	  }
+	  .contact-butt {
+		.purchasing-butt;
+		background-color: #44CBFF;
+		border-bottom: 2px solid darken(#44CBFF, 10%);
+	  }
 	}
+
+
 	span.marg{
 		padding-left:20px;
-	}
-	
-	ul{
-		li{
-			font-family: "LatoRegular";
-			font-size: 18px;
-			color: #646566;
-			line-height: 27px;
-		}
 	}
 	.inner{
 		width:1070px;
