@@ -313,7 +313,7 @@ define([
 			this.$el.find(".mainVideo").on('ended',function(){
 				self.dialog.remove();
 				//Backbone.history.navigate("#/chooseImportant/"+self.videoId+"/"+self.userId, {trigger: true});
-				custom.toUrl("chooseImportant",this.videoId,this.userId);
+				custom.toUrl("chooseImportant",self.videoId,self.userId);
 			});
 			//FB.XFBML.parse();
 			return this;
