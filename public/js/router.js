@@ -108,6 +108,7 @@ define([
         },
 
      showModalView: function (name, params) {
+         $("video").trigger("pause");
 		 var self = this;
 		   if (this.modalView) {
                 this.modalView.undelegateEvents();
