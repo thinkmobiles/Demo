@@ -11,8 +11,7 @@ define([
             authorized: false,
             admin: false,
             user: null,
-            date: null,
-            tariffPlans: null
+            date: null
         });
 
         // create router
@@ -27,9 +26,7 @@ define([
 //		Custom.navigateToLastUrl();
 		
         // check login an then set first rout
-        Communication.checkLogin(function(err, data){
-            Custom.runApplication(err, data);
-        });
+        Communication.checkLogin(Custom.runApplication);
 
     };
     return {

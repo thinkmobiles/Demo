@@ -12,8 +12,7 @@ define([
 		events: {
 			"click .pdf": "trackDocument",
 			"click .questionSection table .checkbox" : "checkedQuestion",
-			"ended .mainVideo":"endedMainVideo",
-			"click .showSurvay":"showSurvay",
+			"click .showSurvay":"showSurvey",
 			"click .listVideo li":"clickOnVideo",
 			"click .ui-dialog-titlebar-close": "clickOnClose",
 			"click .contactMe": "contactMe",
@@ -88,14 +87,16 @@ define([
 		},
 		
 		contactMe: function(){
+			if(!this.videoId && !this.userId){
+				return Backbone.history.navigate("#/contact", {trigger: true});
+			}
 			Backbone.history.navigate("#/contactMe/"+this.videoId+"/"+this.userId + "/" + window.location.hash.split("/")[1]+(this.indexList.length?"/"+this.indexList:""), {trigger: true});
 		},
 
 		clickOnClose: function(){
 			var videoEl =this.$el.find(".surveyVideo")[0]||this.$el.find(".mainVideo")[0];
 			this.trackVideo(videoEl, false);
-			console.log(videoEl.currentTime);
-			Backbone.history.navigate("/home/"+this.videoId+"/"+this.userId, {trigger: true});
+			Backbone.history.navigate("#/home", {trigger: true});
 		},
 
 		clickOnVideo:function(e){
@@ -113,13 +114,11 @@ define([
 
 		},
 
-		endedMainVideo:function(e){
-			this.dialog.remove();
-			custom.toUrl("chooseImportant",this.videoId,this.userId);
-			//$(".videoSection").hide();
-			//$(".questionSection").show();
-		},
+
 		trackQuestion: function () {
+			if(!this.videoId && !this.userId){
+				return;
+			}
 			var self = this;
 			var questions = [];
 			var obj;
@@ -156,7 +155,7 @@ define([
 
 
 		},
-		showSurvay: function(e){
+		showSurvey: function(e){
 			var self = this;
 
 			$(".error").removeClass("error");
@@ -184,17 +183,13 @@ define([
 				//self.currentSurvay.push(self.content.toJSON().content.survey[index]);
 			});
 			this.trackQuestion();
-			Backbone.history.navigate("#/relatedVideo/"+this.videoId+"/"+this.userId+"/"+indexList.join(","), {trigger: true});
-			/*$(".questionSection").hide();
-			$(".relatedVideo").show();
-			$(".veryImp.checked").each(function(){
-				var index = $(this).closest("table").find("tr").index($(this).closest("tr"))-1;
-				self.currentSurvay.push(self.content.toJSON().content.survey[index]);
-			});
-			$(".relatedVideo").html(_.template(relatedVideo)({
-					videoList:self.currentSurvay
-				}
-			));*/
+			var url = "#/relatedVideo/";
+			if(this.videoId && this.userId){
+				url += this.videoId + "/" + this.userId + "/";
+			}
+			url+=indexList.join(",");
+			Backbone.history.navigate(url, {trigger: true});
+
 		},
 
 		checkedQuestion: function(e){
@@ -217,8 +212,10 @@ define([
 		},
 
 		trackDocument: function (e) {
+			if(!this.videoId && !this.userId){
+				return;
+			}
 			var document = $(e.target).attr('href');
-			//var doc = document.split('/').pop();
 			var data = {
 				userId: this.userId,
 				contentId: this.videoId,
@@ -247,6 +244,9 @@ define([
 		},
 
 		trackVideo: function(videoEl, isEnd){
+			if(!this.videoId && !this.userId){
+				return;
+			}
 			var pos = videoEl.currentSrc.indexOf('video');
 			var video = decodeURI(videoEl.currentSrc.slice(pos));
 			var stopTime = Math.round(videoEl.currentTime);
@@ -312,7 +312,8 @@ define([
 			});
 			this.$el.find(".mainVideo").on('ended',function(){
 				self.dialog.remove();
-				Backbone.history.navigate("#/chooseImportant/"+self.videoId+"/"+self.userId, {trigger: true});
+				//Backbone.history.navigate("#/chooseImportant/"+self.videoId+"/"+self.userId, {trigger: true});
+				custom.toUrl("chooseImportant",self.videoId,self.userId);
 			});
 			//FB.XFBML.parse();
 			return this;

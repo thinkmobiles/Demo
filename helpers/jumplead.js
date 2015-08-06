@@ -66,17 +66,15 @@ var JumpleadModule = function (db) {
                 }
                 UserModel.findById(userId, function (err, user) {
                     UserModel.update({jumpleadEmail: user.jumpleadEmail}, {
-                            $set: {
-                                accessToken: body.access_token
-                            }
-                        }, {multi: true}, function (err) {
-                            if (err) {
-                                return callback(err);
-                            }
-                            return callback(null);
+                        $set: {
+                            accessToken: body.access_token
                         }
-                    )
-                    ;//findByIdAndUpdate
+                    }, {multi: true}, function (err) {
+                        if (err) {
+                            return callback(err);
+                        }
+                        return callback(null);
+                    });//findByIdAndUpdate
                 });
             });//request
         });//findById
@@ -84,7 +82,7 @@ var JumpleadModule = function (db) {
 
 
     this.setContact = function (contentId, contact, callback) {
-        UserModel.findOne({contentId:contentId}, function (err, user) {
+        UserModel.findOne({contentId: contentId}, function (err, user) {
             if (err) {
                 return callback(err);
             } else if (!user) {
@@ -114,11 +112,11 @@ var JumpleadModule = function (db) {
             }, function (error, response, body) {
                 if (body.status == '401') {
                     return (function () {
-                        self.refToken(userId, function (err) {
+                        self.refToken(user._id, function (err) {
                             if (err) {
                                 return callback(err)
                             }
-                            return self.setContact(userId, contact, callback)
+                            return self.setContact(contentId, contact, callback)
                         });
                     })();
                 } else if (body.error) {
@@ -170,7 +168,7 @@ var JumpleadModule = function (db) {
                     e.message = 'Contact not found';
                     return callback(e)
                 }
-                if(body == 'ID is not valid'){
+                if (body == 'ID is not valid') {
                     var e = new Error();
                     e.status = 404;
                     e.message = 'Contact not found';
@@ -261,7 +259,7 @@ var JumpleadModule = function (db) {
                 } catch (e) {
                     console.log(e);
                 }
-                if (body.status == '401' || body.status == '404' ||body.status == '403'|| body.error||!body.data) {
+                if (body.status == '401' || body.status == '404' || body.status == '403' || body.error || !body.data) {
                     var err = new Error();
                     err.message = "Some trouble with jumplead";
                     err.status = 500;
@@ -291,7 +289,7 @@ var JumpleadModule = function (db) {
             } catch (e) {
                 console.log(e);
             }
-            if(!body.access_token||!body.refresh_token){
+            if (!body.access_token || !body.refresh_token) {
                 var err = new Error();
                 err.message = "Some trouble with jumplead";
                 err.status = 500;

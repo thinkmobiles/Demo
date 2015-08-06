@@ -627,11 +627,11 @@ var routeHandler = function (db) {
                     error.status = 404;
                     return next(error);
                 } else if (user.isDisabled) {
-                    error.message = 'Sory, but this content disabled now';
+                    error.message = 'Sorry, but this content disabled now';
                     error.status = 403;
                     return next(error);
                 }
-                ContentModel.findById(user._id, function (err, foundContent) {
+                ContentModel.findOne({ownerId: user._id}, function (err, foundContent) {
                     if (err) {
                         return next(err);
                     }
@@ -640,90 +640,89 @@ var routeHandler = function (db) {
                         error.status = 404;
                         return next(error);
                     }
-                    res.status(200).send(foundContent);
+                    return res.status(200).send({content:foundContent});
                 });
             });
-
-
-        }
-        if (prospectId == '{{ctid}}') {
-            error.message = 'You have to paste this link to Jumplead email template, where tht link for each prospect will be generated';
-            error.status = 400;
-            return next(error);
-        }
-
-        async.waterfall([
-
-            function (waterfallCb) {
-                ContentModel.findById(contentId, function (err, foundContent) {
-                    if (err) {
-                        return waterfallCb(err);
-                    }
-                    if (!foundContent) {
-                        error.message = 'Content Not Found';
-                        error.status = 404;
-                        return waterfallCb(error);
-                    }
-                    content = foundContent;
-                    waterfallCb(null, foundContent);
-                });
-            },
-
-            function (content, waterfallCb) {
-                UserModel.findById(content.ownerId, function (err, user) {
-                    if (err) {
-                        return waterfallCb(err);
-                    }
-                    if (!user) {
-                        error.message = 'User Not Found';
-                        error.status = 404;
-                        return waterfallCb(error);
-                    } else if (user.isDisabled) {
-                        error.message = 'Sory, but this content disabled now';
-                        error.status = 403;
-                        return waterfallCb(error);
-                    }
-
-                    userId = user._id;
-                    waterfallCb(null, user);
-                });
-            },
-
-            function (user, waterfallCb) {
-                ProspectModel.findOne({jumpleadId: prospectId}, function (err, doc) {
-                    if (err) {
-                        return waterfallCb(err);
-                    }
-                    if (!doc) {
-                        jumplead.getContact(user._id, prospectId, function (err, prospect) {
-                            if (err) {
-                                return waterfallCb(err);
-                            }
-                            var obj = {
-                                jumpleadId: prospect.id,
-                                firstName: prospect.first_name,
-                                lastName: prospect.last_name,
-                                email: prospect.email
-                            };
-                            return waterfallCb(null, obj);
-                        });
-                    } else {
-
-                        updateProspect(userId, doc.jumpleadId);
-                        return waterfallCb(null, doc);
-                    }
-                });
-            }], function (err, prospect) {
-            if (err) {
-                return next(err);
+        }else {
+            if (prospectId == '{{ctid}}') {
+                error.message = 'You have to paste this link to Jumplead email template, where tht link for each prospect will be generated';
+                error.status = 400;
+                return next(error);
             }
-            data = {
-                content: content,
-                contact: prospect
-            };
-            createTrackDoc(contentId, prospect);
-            res.status(200).send(data);
-        });
+
+            async.waterfall([
+
+                function (waterfallCb) {
+                    ContentModel.findById(contentId, function (err, foundContent) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        if (!foundContent) {
+                            error.message = 'Content Not Found';
+                            error.status = 404;
+                            return waterfallCb(error);
+                        }
+                        content = foundContent;
+                        waterfallCb(null, foundContent);
+                    });
+                },
+
+                function (content, waterfallCb) {
+                    UserModel.findById(content.ownerId, function (err, user) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        if (!user) {
+                            error.message = 'User Not Found';
+                            error.status = 404;
+                            return waterfallCb(error);
+                        } else if (user.isDisabled) {
+                            error.message = 'Sorry, but this content disabled now';
+                            error.status = 403;
+                            return waterfallCb(error);
+                        }
+
+                        userId = user._id;
+                        waterfallCb(null, user);
+                    });
+                },
+
+                function (user, waterfallCb) {
+                    ProspectModel.findOne({jumpleadId: prospectId}, function (err, doc) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        if (!doc) {
+                            jumplead.getContact(user._id, prospectId, function (err, prospect) {
+                                if (err) {
+                                    return waterfallCb(err);
+                                }
+                                var obj = {
+                                    jumpleadId: prospect.id,
+                                    firstName: prospect.first_name,
+                                    lastName: prospect.last_name,
+                                    email: prospect.email
+                                };
+                                return waterfallCb(null, obj);
+                            });
+                        } else {
+
+                            updateProspect(userId, doc.jumpleadId);
+                            return waterfallCb(null, doc);
+                        }
+                    });
+                }], function (err, prospect) {
+                if (err) {
+                    return next(err);
+                }
+                data = {
+                    content: content,
+                    contact: prospect
+                };
+                createTrackDoc(contentId, prospect);
+                res.status(200).send(data);
+            });
+        }
     };
 
 
@@ -800,7 +799,7 @@ var routeHandler = function (db) {
                     },
                     uninterested: function (parallelCb) {
                         analytic.uninterested(doc.ownerId.toString(), from, to, parallelCb);
-                    },
+                    }
                 }, function (err, options) {
                     if (err) {
                         return console.error(err);

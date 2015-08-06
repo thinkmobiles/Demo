@@ -11,7 +11,6 @@ define([
             'click #logOut': 'logout',
             'click .login': 'login',
             'click .navBar': 'toPage',
-            'click .topMenu' :'changeTab',
             "click .topMenu":"toTop"
         },
 
@@ -23,7 +22,7 @@ define([
         },
 
         toTop:function(){
-            $('html, body').animate({ scrollTop: 0 }, 'fast');
+            $('html, body').animate({ scrollTop: 0 }, 'medium');
         },
 
 		toPage:function(){
@@ -38,12 +37,6 @@ define([
 			},550);
 
 		},
-
-        changeTab: function(event) {
-            var holder = $(event.target);
-            var closestEl = holder.closest('.loggedMenu');
-
-        },
 
 
         render: function () {

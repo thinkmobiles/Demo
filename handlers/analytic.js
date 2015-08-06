@@ -21,14 +21,21 @@ var routeHandler = function (db) {
 
     this.contactsByDomain = function (req, res, next) {
         var domain = req.query.domain;
+        var userId = req.session.uId;
+        var error = new Error();
+
+        if (!domain) {
+            error.status = 400;
+            error.message = 'Bad Request';
+            return next(error);
+        }
+
         async.waterfall([
             function (waterfallCb) {
-                var userId = mongoose.Types.ObjectId(req.session.uId);
                 ContentModel.findOne({ownerId: userId}, function (err, doc) {
                     if (err) {
                         return waterfallCb(err);
                     } else if (!doc) {
-                        var error = new Error();
                         error.status = 404;
                         error.message = 'No Data';
                         return waterfallCb(error);
@@ -55,7 +62,7 @@ var routeHandler = function (db) {
                     }
                 }], function (err, docs) {
                     if (err) {
-                        return next(err);
+                        return waterfallCb(err);
                     }
                     waterfallCb(null, docs);
                 });
@@ -68,16 +75,19 @@ var routeHandler = function (db) {
     };
 
     this.uninterested = function (req, res, next) {
+        var userId = req.session.uId;
+        var error = new Error();
+        var reqFrom, reqTo, from, to;
+
         if (!req.query.from || !req.query.to) {
-            var error = new Error();
             error.status = 400;
             error.message = 'Bad Request';
             return next(error);
         }
-        var from = new Date(req.query.from);
-        var date = new Date(req.query.to);
-        var to = new Date(date.setHours(date.getHours() + 24));
-        var userId = req.session.uId;
+        reqFrom = new Date(req.query.from);
+        reqTo = new Date(req.query.to);
+        from = new Date(reqFrom.setHours(0));
+        to = new Date(reqTo.setHours(24));
 
         analytic.uninterested(userId, from, to, function (err, data) {
             if (err) {
@@ -144,14 +154,15 @@ var routeHandler = function (db) {
     };
 
     this.contact = function (req, res, next) {
-        if (!req.query.email) {
-            var error = new Error();
+        var email = req.query.email;
+        var error = new Error();
+        var contentId;
+
+        if (!email) {
             error.status = 400;
             error.message = 'Bad Request';
             return next(error);
         }
-        var email = req.query.email;
-        var contentId;
 
         async.waterfall([
             function (waterfallCb) {
@@ -160,12 +171,11 @@ var routeHandler = function (db) {
                     if (err) {
                         return waterfallCb(err);
                     } else if (!doc) {
-                        var error = new Error();
                         error.status = 404;
                         error.message = 'No Data';
                         return waterfallCb(error);
                     }
-                    contentId =  doc._id
+                    contentId =  doc._id;
                     waterfallCb(null)
                 });
             },
@@ -266,7 +276,7 @@ var routeHandler = function (db) {
                             },
                             videos: {
                                 $addToSet: '$videos'
-                            },
+                            }
                         }
                     }, {
                         $project: {
@@ -290,30 +300,34 @@ var routeHandler = function (db) {
                 return next(err);
             }
             var obj = {
-                name: doc? doc.name:'',
-                questions: doc? doc.questions:[],
-                videos: doc? doc.videos:[],
-                documents: doc? doc.documents:[]
+                name: doc && doc.name ? doc.name : '',
+                questions: doc && doc.questions ? doc.questions : [],
+                videos: doc && doc.videos ? doc.videos : [],
+                documents: doc && doc.documents ? doc.documents : []
             };
             res.status(200).send(obj);
         });
     };
+
+
     this.contacts = function (req, res, next) {
-        if (!req.query.domain) {
-            var error = new Error();
+        var domain = req.query.domain;
+        var error = new Error();
+        var userId = req.session.uId;
+
+        if (!domain) {
             error.status = 400;
             error.message = 'Bad Request';
             return next(error);
         }
-        var domain = req.query.domain;
+
         async.waterfall([
             function (waterfallCb) {
-                var userId = mongoose.Types.ObjectId(req.session.uId);
+
                 ContentModel.findOne({ownerId: userId}, function (err, doc) {
                     if (err) {
                         return waterfallCb(err);
                     } else if (!doc) {
-                        var error = new Error();
                         error.status = 404;
                         error.message = 'No Data';
                         return waterfallCb(error);
@@ -388,22 +402,26 @@ var routeHandler = function (db) {
     };
 
     this.contactMe = function (req, res, next) {
+        var userId = req.session.uId;
+        var error = new Error();
+        var reqFrom, reqTo, from, to;
+
         if (!req.query.from || !req.query.to) {
-            var error = new Error();
             error.status = 400;
             error.message = 'Bad Request';
             return next(error);
         }
-        var from = new Date(req.query.from);
-        var date = new Date(req.query.to);
-        var to = new Date(date.setHours(date.getHours() + 24));
-        var userId = req.session.uId;
+        reqFrom = new Date(req.query.from);
+        reqTo = new Date(req.query.to);
+        from = new Date(reqFrom.setHours(0));
+        to = new Date(reqTo.setHours(24));
+
         async.waterfall([
             function (waterfallCb) {
                 UserModel.findById(userId, function (err, user) {
                     if (err) {
                         return next(err);
-                    } else if (!user||!user.contentId) {
+                    } else if (!user || !user.contentId) {
                         var error = new Error();
                         error.status = 404;
                         error.message = 'No Data';
@@ -412,8 +430,8 @@ var routeHandler = function (db) {
                     waterfallCb(null, user.contentId)
                 });
             },
+
             function (contentId, waterfallCb) {
-                console.log(contentId.toString());
                 ContactMeModel.find({
                     contentId: contentId,
                     sentAt: {$gte: from, $lte: to}
@@ -433,16 +451,19 @@ var routeHandler = function (db) {
     };
 
     this.visits = function (req, res, next) {
+        var userId = req.session.uId;
+        var error = new Error();
+        var reqFrom, reqTo, from, to;
+
         if (!req.query.from || !req.query.to) {
-            var error = new Error();
             error.status = 400;
             error.message = 'Bad Request';
             return next(error);
         }
-        var from = new Date(req.query.from);
-        var date = new Date(req.query.to);
-        var to = new Date(date.setHours(date.getHours() + 24));
-        var userId = req.session.uId;
+        reqFrom = new Date(req.query.from);
+        reqTo = new Date(req.query.to);
+        from = new Date(reqFrom.setHours(0));
+        to = new Date(reqTo.setHours(24));
 
         analytic.visits(userId, from, to, function (err, data) {
             if (err) {
@@ -454,16 +475,19 @@ var routeHandler = function (db) {
 
 
     this.totalVisits = function (req, res, next) {
+        var userId = req.session.uId;
+        var error = new Error();
+        var reqFrom, reqTo, from, to;
+
         if (!req.query.from || !req.query.to) {
-            var error = new Error();
             error.status = 400;
             error.message = 'Bad Request';
             return next(error);
         }
-        var from = new Date(req.query.from);
-        var date = new Date(req.query.to);
-        var to = new Date(date.setHours(date.getHours() + 24));
-        var userId = req.session.uId;
+        reqFrom = new Date(req.query.from);
+        reqTo = new Date(req.query.to);
+        from = new Date(reqFrom.setHours(0));
+        to = new Date(reqTo.setHours(24));
 
         analytic.totalVisits(userId, from, to, function (err, data) {
             if (err) {
@@ -474,16 +498,20 @@ var routeHandler = function (db) {
     };
 
     this.video = function (req, res, next) {
+        var userId = req.session.uId;
+        var error = new Error();
+        var reqFrom, reqTo, from, to;
+
         if (!req.query.from || !req.query.to) {
-            var error = new Error();
             error.status = 400;
             error.message = 'Bad Request';
             return next(error);
         }
-        var from = new Date(req.query.from);
-        var date = new Date(req.query.to);
-        var to = new Date(date.setHours(date.getHours() + 24));
-        var userId = req.session.uId;
+        reqFrom = new Date(req.query.from);
+        reqTo = new Date(req.query.to);
+        from = new Date(reqFrom.setHours(0));
+        to = new Date(reqTo.setHours(24));
+
         analytic.video(userId, from, to, function (err, data) {
             if (err) {
                 return next(err);
@@ -493,17 +521,20 @@ var routeHandler = function (db) {
     };
 
     this.question = function (req, res, next) {
+        var userId = req.session.uId;
+        var error = new Error();
+        var reqFrom, reqTo, from, to;
+
         if (!req.query.from || !req.query.to) {
-            var error = new Error();
             error.status = 400;
             error.message = 'Bad Request';
             return next(error);
         }
-        var reqFrom = new Date(req.query.from);
-        var reqTo = new Date(req.query.to);
-        var from = new Date(reqFrom.setHours(0));
-        var to = new Date(reqTo.setHours(24));
-        var userId = req.session.uId;
+        reqFrom = new Date(req.query.from);
+        reqTo = new Date(req.query.to);
+        from = new Date(reqFrom.setHours(0));
+        to = new Date(reqTo.setHours(24));
+
         analytic.question(userId, from, to, function (err, data) {
             if (err) {
                 return next(err);
@@ -513,16 +544,20 @@ var routeHandler = function (db) {
     };
 
     this.document = function (req, res, next) {
+        var userId = req.session.uId;
+        var error = new Error();
+        var reqFrom, reqTo, from, to;
+
         if (!req.query.from || !req.query.to) {
-            var error = new Error();
             error.status = 400;
             error.message = 'Bad Request';
             return next(error);
         }
-        var from = new Date(req.query.from);
-        var date = new Date(req.query.to);
-        var to = new Date(date.setHours(date.getHours() + 24));
-        var userId = req.session.uId;
+        reqFrom = new Date(req.query.from);
+        reqTo = new Date(req.query.to);
+        from = new Date(reqFrom.setHours(0));
+        to = new Date(reqTo.setHours(24));
+
         analytic.document(userId, from, to, function (err, data) {
             if (err) {
                 return next(err);
