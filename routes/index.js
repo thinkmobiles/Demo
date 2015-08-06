@@ -27,7 +27,8 @@ module.exports = function (app, db) {
         res.sendfile('index.html');
     });
 
-    app.get('/main/:contentId?/:ctid?', handler.getMain);
+    app.get('/campaign/:contentId?/:prospectId?', handler.redirectToMain);
+    app.get('/main/:contentId?/:prospectId?', handler.getMain);
     app.post('/prospectSignUp', handler.prospectSignUp);
     app.get('/share', handler.share);
     app.post('/sendContactMe', handler.sendContactMe);
