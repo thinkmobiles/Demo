@@ -219,7 +219,7 @@ var routeHandler = function (db) {
             },
 
             function (waterfallCb) {
-                jumplead.checkUser(userId, function (err, email) {
+                jumplead.checkUser(res, userId, function (err, email) {
                     if (err) {
                         return waterfallCb(err);
                     }

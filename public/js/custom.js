@@ -13,6 +13,22 @@ define(["moment"],function (moment) {
 	};
 
 	routes.allRoutes = routes.needAuthorize.concat(routes.redirectWhenAuthorize);
+
+
+	var navigateToLastUrl = function(){
+		var url; // the url on boot up
+        url =  Backbone.history.fragment || Backbone.history.getFragment();
+
+        if ((url === "")) url = 'home';
+        if (Backbone.history.fragment) {
+            Backbone.history.fragment = '';
+        }
+		if (routes.allRoutes.indexOf(url)!==-1)return;
+		url = "#/"+url;
+		return  Backbone.history.navigate(url, {trigger: true});
+	}
+	
+	
 	
     var runApplication = function (err, data) {
         var url; // the url on boot up
@@ -389,6 +405,7 @@ define(["moment"],function (moment) {
 		drawSitesVisits:drawSitesVisits,
 		drawQuestionsPie:drawQuestionsPie,
 		routes:routes,
-		toUrl:toUrl
+		toUrl:toUrl,
+		navigateToLastUrl:navigateToLastUrl
     };
 });

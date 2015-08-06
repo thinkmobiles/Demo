@@ -23,6 +23,8 @@ define([
         // start tracking the history
         Backbone.history.start({silent: true});
 
+//		Custom.navigateToLastUrl();
+		
         // check login an then set first rout
         Communication.checkLogin(Custom.runApplication);
 
