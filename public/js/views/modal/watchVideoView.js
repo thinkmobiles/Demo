@@ -27,7 +27,7 @@ define([
 			this.indexList = options&&options.indexList?options.indexList:[];
 			var page = options&&options.page?options.page:null;
 			this.currentSurvay = [];
-			window.addEventListener ("beforeunload", function() {
+			window.addEventListener("beforeunload", function() {
 				var videoEl =self.$el.find(".surveyVideo")[0]||self.$el.find(".mainVideo")[0];
 				self.trackVideo(videoEl, false);
 				console.log(videoEl.currentTime);
@@ -37,9 +37,10 @@ define([
 				self.content = content;
 				self.render();
 				if (page==="important"){
+					$(".mainVideo").trigger("pause");
 					$(".videoSection").remove();
 					$(".questionSection").show();
-					$(".mainVideo").trigger("pause");
+
 				}
 				if (page==="related"){
 					$(".mainVideo").trigger("pause");
@@ -98,7 +99,12 @@ define([
 		clickOnClose: function(){
 			var videoEl =this.$el.find(".surveyVideo")[0]||this.$el.find(".mainVideo")[0];
 			this.trackVideo(videoEl, false);
-			Backbone.history.navigate("#/home", {trigger: true});
+			if (!this.videoId) {
+				Backbone.history.navigate("/home");
+			}else{
+				Backbone.history.navigate("/home/"+this.videoId+"/"+this.userId);
+			}
+
 		},
 
 		clickOnVideo:function(e){

@@ -153,7 +153,7 @@ define([
 		},
 
         showModal:function(){
-			if (this.options&&this.options.videoId&&this.options.userId&&!this.options.showedModal){
+			if (this.options&&this.options.videoId&&this.options.userId){
 				Backbone.history.navigate("#/chooseViewer/"+this.videoId+"/"+this.userId, {trigger: true});
 			}else{
 				Backbone.history.navigate("#/watchVideo", {trigger: true});
@@ -199,13 +199,12 @@ define([
         render: function () {
 			var self = this;
             this.$el.html(_.template(HomeTemplate));
-			if (this.options&&this.options.videoId&&this.options.userId&&!this.options.showedModal){
-				Backbone.history.navigate("#/chooseViewer/"+this.videoId+"/"+this.userId, {trigger: true});
-				$(".showModal").attr("href","#/home/"+this.videoId+"/"+this.userId);
-			}else{
-				//Backbone.history.navigate("#/watchVideo", {trigger: true});
+			if (this.options&&this.options.videoId&&this.options.userId){
+				if (!this.options.showedModal){
+					Backbone.history.navigate("#/chooseViewer/"+this.videoId+"/"+this.userId, {trigger: true});
+				}
+				$(".showModal").attr("href","#/chooseViewer/"+this.videoId+"/"+this.userId);
 			}
-
 			if (App.interval){
 				clearInterval(App.interval);				
 			}
