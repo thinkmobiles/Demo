@@ -260,10 +260,7 @@ var JumpleadModule = function (db) {
                     console.log(e);
                 }
                 if (body.status == '401' || body.status == '404' || body.status == '403' || body.error || !body.data) {
-                    var err = new Error();
-                    err.message = "Some trouble with jumplead";
-                    err.status = 500;
-                    return callback(error || err);
+                    return res.redirect(process.env.WEB_HOST + '/#/message?text=Some trouble with jumplead');
                 }
                 return callback(null, body.data.email);
             });
