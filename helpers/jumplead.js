@@ -242,7 +242,7 @@ var JumpleadModule = function (db) {
         });
     };
 
-    this.checkUser = function (userId, callback) {
+    this.checkUser = function (res, userId, callback) {
         UserModel.findById(userId, function (err, user) {
             if (err) {
                 return callback(err);
