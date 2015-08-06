@@ -274,7 +274,7 @@ var routeHandler = function (db) {
             if (!found) {
                 return res.status(404).send({err: 'Content Not Found'});
             }
-            var url = process.env.HOME_PAGE + found._id + '/{{ctid}}';
+            var url = process.env.WEB_HOST+'/campaign/' + found._id + '/{{ctid}}';
             res.status(201).send({url: url, content:found});
         });
     };
@@ -330,7 +330,7 @@ var routeHandler = function (db) {
                         if (err) {
                             return waterfallCb(err);
                         }
-                        var url = process.env.HOME_PAGE + result._id + '/{{ctid}}';
+                        var url = process.env.WEB_HOST+'/campaign/' + result._id + '/{{ctid}}';
                         res.status(201).send({url: url});
                         waterfallCb(null, result);
                     });
@@ -403,7 +403,7 @@ var routeHandler = function (db) {
                         if (err) {
                             return waterfallCb(err);
                         }
-                        var url = process.env.HOME_PAGE + id + '/{{ctid}}';
+                        var url = process.env.WEB_HOST+'/campaign/' + id + '/{{ctid}}';
                         waterfallCb(null, url)
                     });
                     localFs.defaultPublicDir = 'public';

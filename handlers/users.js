@@ -608,11 +608,18 @@ var routeHandler = function (db) {
         });
     };
 
+    this.redirectToMain = function (req, res, next) {
+        var contentId = req.params.contentId;
+        var prospectId = req.params.prospectId;
+        if(!contentId&&!prospectId) {
+            return res.redirect(process.env.HOME_PAGE);
+        }
+        return res.redirect(process.env.HOME_PAGE+contentId+'/'+prospectId);
+    };
 
-    // url = '/:contentId/:ctid'
     this.getMain = function (req, res, next) {
         var contentId = req.params.contentId;
-        var prospectId = req.params.ctid;
+        var prospectId = req.params.prospectId;
         var error = new Error();
         var userId;
         var content;
