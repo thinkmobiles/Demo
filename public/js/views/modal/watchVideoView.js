@@ -39,8 +39,10 @@ define([
 				if (page==="important"){
 					$(".videoSection").remove();
 					$(".questionSection").show();
+					$(".mainVideo").trigger("pause");
 				}
 				if (page==="related"){
+					$(".mainVideo").trigger("pause");
 					$(".videoSection").remove();
 					$(".relatedVideo").show();
 					var indexList = options&&options.indexList?options.indexList:null;
