@@ -16,7 +16,7 @@ var routeHandler = function (db) {
 
     this.question = function (req, res, next) {
 
-        if (!req.body.document || !req.body.userId || !req.body.contentId) {
+        if (!req.body.userId || !req.body.contentId) {
             return res.status(403).send("Invalid parameters");
         }
         var data = req.body;
