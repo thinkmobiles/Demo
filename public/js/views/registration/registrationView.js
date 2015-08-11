@@ -65,8 +65,12 @@ define([
 				isError = true;
 				self.$el.find(".registration .userName").addClass("error");
 			}
+			if (!self.$el.find(".registration .organization").val() ){
+				isError = true;
+				self.$el.find(".registration .organization").addClass("error");
+			}
 			
-			if (self.$el.find(".registration .phone").val()&&!validation.validPhone(self.$el.find(".registration .phone").val())){
+			if (!validation.validPhone(self.$el.find(".registration .phone").val())){
 				isError = true;
 				self.$el.find(".registration .phone").addClass("error");
 			}
@@ -104,10 +108,10 @@ define([
                 success: function (model) {
 					console.log(model);
 					//ToDo: Develop
-					//window.location = 'https://account.mooloop.com/oauth/authorize?response_type=code&client_id=FcDOCBsnZ2TtKbHTGULY&redirect_uri=http://demo.com:8838/redirect&scope=jumplead.contacts,jumplead.personal';
+					window.location = 'https://account.mooloop.com/oauth/authorize?response_type=code&client_id=FcDOCBsnZ2TtKbHTGULY&redirect_uri=http://demo.com:8838/redirect&scope=jumplead.contacts,jumplead.personal';
 
                     //ToDo: Production
-                    window.location = 'https://account.mooloop.com/oauth/authorize?response_type=code&client_id=uemnB2ZAA92gv5CoTCHc&redirect_uri=http://134.249.164.53:8838/redirect&scope=jumplead.contacts,jumplead.personal';
+                    //window.location = 'https://account.mooloop.com/oauth/authorize?response_type=code&client_id=uemnB2ZAA92gv5CoTCHc&redirect_uri=http://134.249.164.53:8838/redirect&scope=jumplead.contacts,jumplead.personal';
 				},
                 error: function (err) {
 					console.log(err);

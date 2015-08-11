@@ -109,8 +109,10 @@ define([
             var id = $(e.target).parents(".accountContainer").find(".customTable .current").data("id");
 			var model =  this.usersCollection.get(id);
 			var name = model.get("firstName")+" "+model.get("lastName");
+			var start = model.get("subscriptionStart")||moment()._d;
+			var end = model.get("subscriptionEnd")||moment().add(3, 'month')._d;
 			this.showDialog("Confirm User",name,"CANCEL", "CONFIRM", function(){
-				self.updateUser(id, {isConfirmed: true});
+				self.updateUser(id, {isConfirmed: true, subscriptionStart: start, subscriptionEnd: end});
 			});
         },
 
