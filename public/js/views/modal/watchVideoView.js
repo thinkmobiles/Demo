@@ -18,7 +18,7 @@ define([
 			"click .contactMe": "contactMe",
 			"click .social .fb": "shareOnFacebook",
 			"click .hoverList": "showList",
-			"mousemove .videoConatiner": "toggleArrow",
+			"mousemove .surveyVideo": "toggleArrow",
 			"mouseenter .hoverList": "showArrow",
 			"mouseleave .listVideo": "hideList",
 			"mouseleave .hoverList": "hideArrow"
@@ -74,13 +74,13 @@ define([
 
 		showList: function (e) {
 			var self = this;
-			self.$el.find(".listVideo").stop().delay(100).show("drop", { direction: "right" }, 500);
-			self.$el.find(".hoverList span").stop().animate({ opacity: 0 }, 400);
+			self.$el.find(".hoverList span").stop().animate({ opacity: 0 }, 100);
+			self.$el.find(".listVideo").stop().show("drop", { direction: "right" }, 500);
 		},
 
 		hideList: function (e) {
 			var self = this;
-			self.$el.find(".listVideo").stop().delay(800).hide("drop", { direction: "right" }, 500);
+			self.$el.find(".listVideo").stop().delay(1500).hide("drop", { direction: "right" }, 500);
 			self.$el.find(".hoverList span").stop().animate({ opacity: 0 }, 100);
 		},
 
@@ -91,11 +91,11 @@ define([
 
 		toggleArrow: function (e) {
 			var self = this;
-			self.$el.find(".hoverList span").stop().animate({ opacity: 1 }, 400);
+			self.$el.find(".hoverList span").stop().animate({ opacity: 0.3 }, 100);
 		},
 		hideArrow: function (e) {
 			var self = this;
-			self.$el.find(".hoverList span").stop().delay(400).animate({ opacity: 0 }, 400);
+			self.$el.find(".hoverList span").stop().animate({ opacity: 0 }, 400);
 		},
 
 		shareOnFacebook:function(){
@@ -344,7 +344,10 @@ define([
 				dialogClass: "register-dialog",
 				width: 1180
 			});
-			this.hideList();
+			setTimeout(function () {
+				self.$el.find(".listVideo").stop().hide("drop", { direction: "right" }, 500);
+			}, 3000);
+
 			this.$el.find("video").on('ended',function(){
 				var videoEl =self.$el.find(".mainVideo")[0];
 				self.trackVideo(videoEl, true);
