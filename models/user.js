@@ -6,8 +6,6 @@ module.exports = (function () {
     var NAME_MAX_LENGTH = CONSTANTS.USERNAME_MAX_LENGTH;
     var ORGANIZATION_MIN_LENGTH = CONSTANTS.ORGANIZATION_MIN_LENGTH;
     var ORGANIZATION_MAX_LENGTH = CONSTANTS. ORGANIZATION_MAX_LENGTH;
-    var PASS_MIN_LENGTH = CONSTANTS.PASS_MIN_LENGTH;
-    var PASS_MAX_LENGTH = CONSTANTS.PASS_MAX_LENGTH;
 
     var mongoose = require('mongoose');
     var ObjectId = mongoose.Schema.Types.ObjectId;
@@ -20,7 +18,7 @@ module.exports = (function () {
         lastName: {type: String, required: true, minlength: NAME_MIN_LENGTH, maxlength: NAME_MAX_LENGTH},
         userName: {type: String, required: true,  minlength: NAME_MIN_LENGTH, maxlength: NAME_MAX_LENGTH},
         organization: {type: String, required: true, minlength: ORGANIZATION_MIN_LENGTH, maxlength: ORGANIZATION_MAX_LENGTH},
-        pass: {type: String, required: true/*, minlength: PASS_MIN_LENGTH, maxlength: PASS_MAX_LENGTH*/},
+        pass: {type: String, required: true},
         isConfirmed: {type: Boolean, default: false},
         isAdmin: {type: Boolean, default: false},
         isDisabled: {type: Boolean, default: false},
@@ -30,8 +28,8 @@ module.exports = (function () {
         contentId: {type: ObjectId, ref: 'Content'},
         accessToken: {type: String},
         refreshToken: {type: String},
-        subscriptionStart: {type: Date /*,default: Date.now()*/},
-        subscriptionEnd: {type: Date /*,default: Date.now()*/},
+        subscriptionStart: {type: Date},
+        subscriptionEnd: {type: Date},
         createdAt: {type: Date, default: Date.now},
         updatedAt: {type: Date, default: Date.now}
 

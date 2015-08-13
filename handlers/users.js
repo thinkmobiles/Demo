@@ -67,18 +67,7 @@ var routeHandler = function (db) {
         if (!REG_EXP.EMAIL_REGEXP.test(userData.email)) {
             return callback(badRequests.InvalidEmail());
         }
-
-        userData.email = normalizeEmail(userData.email);
-
-        ProspectModel.findOne({email: userData.email}, function (err, user) {
-            if (err) {
-                callback(err);
-            } else if (user) {
-                callback(badRequests.EmailInUse());
-            } else {
-                callback();
-            }
-        });
+        callback();
 
     };
 
@@ -589,7 +578,7 @@ var routeHandler = function (db) {
 
             //create prospect:
             function (cb) {
-                jumplead.setContact(options.ownerId, options, function (err, contact) {
+                jumplead.setContact(options.contentId, options, function (err, contact) {
                     if (err) {
                         return cb(err);
                     }

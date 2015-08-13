@@ -9,16 +9,16 @@ define([
 			"click .cancel":"back",
 			"click .buttons .registerBtn" :"send"
         },
+		
         initialize: function () {
             this.render();
         },
 		
 		back: function(){
 			Backbone.history.navigate("#/home", {trigger: true});
+			$('html, body').animate({ scrollTop: 0 }, 'medium');
 		},
 
-		
-		
 		send: function(){
 			var self = this;
 			var isError = false;
@@ -71,11 +71,12 @@ define([
 					title: self.$el.find(".contactPage .title").val()
                 },
                 success: function (response) {
-					Backbone.history.navigate("#/home",{ trigger:true })
-					App.notification("Sended");
+					Backbone.history.navigate("#/home",{ trigger:true });
+					App.notification("We have received your message and will get back to you as soon as possible!");
+					$('html, body').animate({ scrollTop: 0 }, 'medium');
                 },
                 error: function (err) {
-					App.notification("Some error");
+					App.notification("Some error, please try again");
 				}
             });
 		},

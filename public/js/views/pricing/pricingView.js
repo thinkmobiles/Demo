@@ -5,11 +5,16 @@ define([
 
 		el:"#wrapper",
         events:{
+            "click .contactUs": "contact",
         },
         initialize: function () {
             this.render();
         },
-		
+        contact: function () {
+            Backbone.history.navigate("#/contact", {trigger: true});
+            $("body").removeClass("withLogin");
+            $('html, body').animate({ scrollTop: 0 }, 'medium');
+        },
 
 		
         render: function () {
