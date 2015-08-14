@@ -18,8 +18,11 @@ define([
 			"click .contactMe": "contactMe",
 			"click .social .fb": "shareOnFacebook",
 			"click .hoverList": "showList",
+
 			"mousemove .surveyVideo": "toggleArrow",
+			"mouseleave .surveyVideo": "hideArrow",
 			"mouseenter .hoverList": "showArrow",
+			"mouseenter .listVideo": "showList",
 			"mouseleave .listVideo": "hideList",
 			"mouseleave .hoverList": "hideArrow"
 		},
@@ -74,13 +77,14 @@ define([
 
 		showList: function (e) {
 			var self = this;
+			self.$el.find(".listVideo").stop();
 			self.$el.find(".hoverList span").stop().animate({ opacity: 0 }, 100);
-			self.$el.find(".listVideo").stop().show("drop", { direction: "right" }, 500);
+			self.$el.find(".listVideo").stop().animate({ opacity: 1, marginRight: 0 }, 500);
 		},
 
 		hideList: function (e) {
 			var self = this;
-			self.$el.find(".listVideo").stop().delay(1500).hide("drop", { direction: "right" }, 500);
+			self.$el.find(".listVideo").stop().delay(1500).animate({ opacity: 0, marginRight: -130 }, 500);
 			self.$el.find(".hoverList span").stop().animate({ opacity: 0 }, 100);
 		},
 
@@ -345,7 +349,7 @@ define([
 				width: 1180
 			});
 			setTimeout(function () {
-				self.$el.find(".listVideo").stop().hide("drop", { direction: "right" }, 500);
+				self.$el.find(".listVideo").stop().animate({ opacity: 0, marginRight: -130 }, 500);
 			}, 3000);
 
 			this.$el.find("video").on('ended',function(){
