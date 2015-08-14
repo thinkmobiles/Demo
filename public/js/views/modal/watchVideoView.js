@@ -18,8 +18,11 @@ define([
 			"click .contactMe": "contactMe",
 			"click .social .fb": "shareOnFacebook",
 			"click .hoverList": "showList",
+
 			"mousemove .surveyVideo": "toggleArrow",
+			"mouseleave .surveyVideo": "hideArrow",
 			"mouseenter .hoverList": "showArrow",
+			"mouseenter .listVideo": "showList",
 			"mouseleave .listVideo": "hideList",
 			"mouseleave .hoverList": "hideArrow"
 		},
@@ -74,6 +77,7 @@ define([
 
 		showList: function (e) {
 			var self = this;
+			self.$el.find(".listVideo").stop();
 			self.$el.find(".hoverList span").stop().animate({ opacity: 0 }, 100);
 			self.$el.find(".listVideo").stop().animate({ opacity: 1, marginRight: 0 }, 500);
 		},
