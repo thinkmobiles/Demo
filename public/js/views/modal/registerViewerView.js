@@ -63,10 +63,6 @@ define([
                 this.$el.find("#title").addClass("error");
                 isError = true;
             }
-            if (!this.$el.find("#comments").val()) {
-                this.$el.find("#comments").addClass("error");
-                isError = true;
-            }
 
 
             if (isError)return;
@@ -77,8 +73,8 @@ define([
                     phone: this.$el.find("#phone").val(),
                     organization: this.$el.find("#organization").val(),
                     title: this.$el.find("#title").val(),
-                    comments: this.$el.find("#comments").val(),
-                    ownerId: self.content.videoId
+                    comments: this.$el.find("#comments").val()||'',
+                    contentId: self.content.videoId
                 },
                 {
                     wait: true,
@@ -98,6 +94,8 @@ define([
 
                     },
                     error: function (err) {
+                        App.notification("Some trouble happened, please try again!");
+                        Backbone.history.navigate("/home", {trigger: true});
                         console.log(JSON.stringify(err));
                     }
                 });

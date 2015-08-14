@@ -16,7 +16,12 @@ define([
 			"click .listVideo li":"clickOnVideo",
 			"click .ui-dialog-titlebar-close": "clickOnClose",
 			"click .contactMe": "contactMe",
-			"click .social .fb": "shareOnFacebook"
+			"click .social .fb": "shareOnFacebook",
+			"click .hoverList": "showList",
+			"mousemove .surveyVideo": "toggleArrow",
+			"mouseenter .hoverList": "showArrow",
+			"mouseleave .listVideo": "hideList",
+			"mouseleave .hoverList": "hideArrow"
 		},
 
 
@@ -65,6 +70,32 @@ define([
 					});
 				}
 			});
+		},
+
+		showList: function (e) {
+			var self = this;
+			self.$el.find(".hoverList span").stop().animate({ opacity: 0 }, 100);
+			self.$el.find(".listVideo").stop().show("drop", { direction: "right" }, 500);
+		},
+
+		hideList: function (e) {
+			var self = this;
+			self.$el.find(".listVideo").stop().delay(1500).hide("drop", { direction: "right" }, 500);
+			self.$el.find(".hoverList span").stop().animate({ opacity: 0 }, 100);
+		},
+
+		showArrow: function (e) {
+			var self = this;
+			self.$el.find(".hoverList span").stop().animate({ opacity: 1 }, 400);
+		},
+
+		toggleArrow: function (e) {
+			var self = this;
+			self.$el.find(".hoverList span").stop().animate({ opacity: 0.3 }, 100);
+		},
+		hideArrow: function (e) {
+			var self = this;
+			self.$el.find(".hoverList span").stop().animate({ opacity: 0 }, 400);
 		},
 
 		shareOnFacebook:function(){
@@ -118,9 +149,8 @@ define([
 			this.$el.find(".pdfList").html(_.template(pdfTemplate)({
 				pdfUri:self.currentSurvay[index].pdfUri
 			}));
-
-
 		},
+
 
 
 		trackQuestion: function () {
@@ -299,6 +329,7 @@ define([
 
 		render: function () {
 			var self = this;
+
 			var formString = _.template(modalTemplate)({
 				content:this.content.toJSON().content,
 				host:"http://134.249.164.53:8838/",
@@ -313,6 +344,9 @@ define([
 				dialogClass: "register-dialog",
 				width: 1180
 			});
+			setTimeout(function () {
+				self.$el.find(".listVideo").stop().hide("drop", { direction: "right" }, 500);
+			}, 3000);
 
 			this.$el.find("video").on('ended',function(){
 				var videoEl =self.$el.find(".mainVideo")[0];
