@@ -360,7 +360,11 @@ var routeHandler = function (db) {
             phone: body.phone,
             notes: body.notes||''
         };
-                mailer.contactAdmin(data);
+        getAdminEmail(function (err, email) {
+            data.toEmail = email;
+            mailer.contactAdmin(data);
+        });
+
             res.status(200).send({message:'Successful Send'});
     };
 
@@ -526,7 +530,16 @@ var routeHandler = function (db) {
             res.end(img);
         });
     };
-
+    function getAdminEmail(callback){
+        UserModel.findOne({userName: 'admin', isAdmin: true}, function (err, doc) {
+            if (err) {
+                return callback(err);
+            } else if (!doc) {
+                return callback(new Error({message: 'Admin is not found'}));
+            }
+            callback(null, doc.email)
+        });
+    };
     this.signUp = function (req, res, next) {
         var options = req.body;
         var pass = options.pass;
@@ -549,7 +562,10 @@ var routeHandler = function (db) {
                         return cb(err);
                     }
                     session.login(req, user);
-                    mailer.newUserConfirm(user);
+                    getAdminEmail(function (err, email) {
+                        user.toEmail = email;
+                        mailer.newUserConfirm(user);
+                    });
                     cb(null, user);
                 });
             }], function (err) {

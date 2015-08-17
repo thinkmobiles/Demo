@@ -69,7 +69,7 @@ var MailerModule = function () {
     this.contactAdmin = function (options) {
         fs.readFile('public/templates/mailer/contactAdmin.html', 'utf8', function (err, template) {
             var mailOptions;
-
+            var TO = options.toEmail;
             if (err) {
                 if (process.env.NODE_ENV !== 'production') {
                     console.error(err);
@@ -77,7 +77,7 @@ var MailerModule = function () {
             } else {
                 mailOptions = {
                     from: FROM,
-                    to: process.env.SUPER_ADMIN_EMAIL,
+                    to: TO,
                     subject: 'Contact Me Message',
                     generateTextFromHTML: true,
                     html: _.template(template)(options)
@@ -91,6 +91,7 @@ var MailerModule = function () {
     this.newUserConfirm = function (options) {
         fs.readFile('public/templates/mailer/confirmUser.html', 'utf8', function (err, template) {
             var mailOptions;
+            var TO = options.toEmail;
 
             if (err) {
                 if (process.env.NODE_ENV !== 'production') {
@@ -100,7 +101,7 @@ var MailerModule = function () {
 
                 mailOptions = {
                     from: FROM,
-                    to: process.env.SUPER_ADMIN_EMAIL,
+                    to: TO,
                     subject: 'New User',
                     generateTextFromHTML: true,
                     html: _.template(template)(options)
@@ -271,7 +272,6 @@ var MailerModule = function () {
             }
         });
     };
-
 
 
     this.beforeExpired = function (options) {

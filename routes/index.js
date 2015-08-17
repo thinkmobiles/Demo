@@ -42,14 +42,15 @@ module.exports = function (app, db) {
     app.get('/currentUser',session.isAuthenticated, handler.currentUser);
     app.get('/redirect', handler.redirect);
     app.post('/admin/contact', handler.contactAdmin);
-    app.use('/content', contentRouter);
 
+    //ToDo: for develop only
     //app.get('/sendDaily', handler.sendDaily);
     //app.get('/sendWeekly', handler.sendWeekly);
 
     // ----------------------------------------------------------
     // Routers:
     // ----------------------------------------------------------
+    app.use('/content', contentRouter);
     app.use('/track', trackRouter);
     app.use('/analytic', analyticRouter);
     app.use('/admin', adminRouter);
