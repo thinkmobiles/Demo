@@ -1,9 +1,9 @@
 {
-  "name": "ProjectManagement",
+  "name": "DemoRocket",
   "version": "1.0.0",
   "private": true,
   "authors": [
-    "Roman <roma.buchuk@gmail.com>"
+    "Ivan <ivan.lyah@thinkmobiles.com>"
   ],
   "moduleType": [
     "node"
@@ -17,13 +17,13 @@
     "tests"
   ],
   "dependencies": {
-    "backbone": "~1.2.1",
-    "jquery": "~2.1.4",
-    "jqueryui": "~1.11.4",
-    "text": "~2.0.14",
-    "moment": "~2.10.3",
-    "requirejs": "~2.1.18",
-    "less": "~2.5.1",
-    "d3": "~3.5.6"
+    "backbone": "1.2.1",
+    "jquery": "2.1.4",
+    "jqueryui": "1.11.4",
+    "text": "2.0.14",
+    "moment": "2.10.3",
+    "requirejs": "2.1.18",
+    "less": "2.5.1",
+    "d3": "3.5.6"
   }
 }
