@@ -20,7 +20,8 @@ require.config({
 		moment: './libs/moment/min/moment.min',
         templates: '../templates', // templates dir not error
         text: './libs/text/text',
-        common: 'common'
+        common: 'common',
+        "dropzone": "./libs/dropzone/dist/dropzone"
     },
     shim: {
         'ajaxForm': ['jQuery'],

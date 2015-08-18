@@ -3,7 +3,7 @@
         <form action="/upload" enctype="multipart/form-data" method="post" id="videoForm" name="videoForm">
             <input name="countQuestion" value="1" type="hidden" class="countQuestion"/>
             <input name="removedQuestions" value="" type="hidden" class="countQuestion"/>
-            <h2>STEP1: CHOOSE YOUR MAIN VIDEO</h2>
+            <h2>STEP 1: CHOOSE YOUR MAIN VIDEO</h2>
 
             <div class="left">
                 <span>Please enter brief description:</span><br/>
@@ -18,7 +18,9 @@
                     </div>
                     <div class="right">
                     </div>
+                    <div class=" dropzone">
                     <input type="file" name="video" accept="video/mp4,video/x-m4v,video/*"/>
+                    </div>
                 </div>
                 <br/>
                 <span>Or paste a link:</span>
@@ -34,7 +36,7 @@
             <div class="clear">
             </div>
 
-            <h2>STEP2: PLEASE ENTER QUESTION</h2>
+            <h2>STEP 2: PLEASE ENTER SURVEY QUESTIONS</h2>
             <span>Potential leads will be asked to indicate their level of interest in a topic. Levels of interest include: Not Important, Somewhat Important and Very Important</span>
 
             <div class="clear">
@@ -43,7 +45,7 @@
             <div class="videoContainer">
                 <div class="videoElement">
                     <div class="left">
-                        <span>Please enter brief description:</span>
+                        <span>Please enter question:</span>
                         <textarea name="question1" class="questionText"></textarea>
                     </div>
                     <div class="right">

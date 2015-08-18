@@ -431,7 +431,7 @@ define([
 				var reader = new FileReader();
 				reader.onload = function(event){
 					self.drawImage(event.target.result);
-				}
+				};
 				reader.readAsDataURL(e.target.files[0]);     
 			}
 		},
