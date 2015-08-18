@@ -21,7 +21,7 @@ require.config({
         templates: '../templates', // templates dir not error
         text: './libs/text/text',
         common: 'common',
-        "dropzone": "./libs/dropzone/dist/dropzone"
+        "dmuploader": "./libs/dmuploader.min"
     },
     shim: {
         'ajaxForm': ['jQuery'],
