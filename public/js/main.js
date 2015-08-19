@@ -66,7 +66,7 @@ require(['app'], function (app) {
 		inter = setTimeout(function(){
 			$(".notification").hide(100);
 		},5000);
-	}
+	};
 
 
 	var cacheContent = {};

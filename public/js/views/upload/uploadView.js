@@ -74,19 +74,11 @@ define([
 			e.preventDefault();
 			var files = e.originalEvent.dataTransfer.files;
 
-			if ($(e.target).closest(".uploadContainer").find("input[type='file']").attr("name").indexOf("video")!==-1&&e.originalEvent.dataTransfer.files.length===1&&e.originalEvent.dataTransfer.files[0].type.indexOf("video")!==-1){
+			if (($(e.target).closest(".uploadContainer").find("input[type='file']").attr("name").indexOf("video")!==-1&&e.originalEvent.dataTransfer.files.length===1&&e.originalEvent.dataTransfer.files[0].type.indexOf("video")!==-1)||($(e.target).closest(".uploadContainer").find("input[type='file']").attr("name").indexOf("file")!==-1&&e.originalEvent.dataTransfer.files[0].type.indexOf("application/pdf")!==-1)||($(e.target).closest(".uploadContainer").find("input[type='file']").attr("name").indexOf("logo")!==-1&&e.originalEvent.dataTransfer.files.length===1&&e.originalEvent.dataTransfer.files[0].type.indexOf("image")!==-1)){
 				$(e.target).closest(".uploadContainer").find("input[type='file']").prop("files", e.originalEvent.dataTransfer.files);
-
+			}else{
+				App.notification('Invalid file format')
 			}
-			if ($(e.target).closest(".uploadContainer").find("input[type='file']").attr("name").indexOf("file")!==-1&&e.originalEvent.dataTransfer.files[0].type.indexOf("application/pdf")!==-1){
-				$(e.target).closest(".uploadContainer").find("input[type='file']").prop("files", e.originalEvent.dataTransfer.files);
-
-			}
-			if ($(e.target).closest(".uploadContainer").find("input[type='file']").attr("name").indexOf("logo")!==-1&&e.originalEvent.dataTransfer.files.length===1&&e.originalEvent.dataTransfer.files[0].type.indexOf("image")!==-1){
-				$(e.target).closest(".uploadContainer").find("input[type='file']").prop("files", e.originalEvent.dataTransfer.files);
-
-			}
-			console.log(e.originalEvent.dataTransfer.files);
 			$(e.target).closest(".uploadContainer").css('border', '1px solid #DBDBDB');
 
 		},
