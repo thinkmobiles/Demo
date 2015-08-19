@@ -24,10 +24,22 @@ define([
 			"keyup .uploadContainer input[type='text']": "changeInput",
             "click .uploadContainer.file input[type='file']": "clickOnFile",
 			"click .link-dialog .ui-dialog-titlebar-close": "decline",
-			"click .editContent": "showEdit"
+			"click .editContent": "showEdit",
+			"dragenter .uploadContainer.file input":"dragenter",
+			"dragleave .uploadContainer.file input":"dragleave",
+			"dragover .uploadContainer.file input":"dragover",
+			"drop .uploadContainer.file input":"drop"
         },
 
 		initialize: function () {
+			window.addEventListener("dragover",function(e){
+				e = e || event;
+				e.preventDefault();
+			},false);
+			window.addEventListener("drop",function(e){
+				e = e || event;
+				e.preventDefault();
+			},false);
 			this.countQuestion = 0;
 			this.removedQuestions = [];
 			var self = this;
@@ -55,6 +67,32 @@ define([
 					console.log(model);
 				}
 			});
+		},
+
+		drop:function (e) {
+			e.stopPropagation();
+			e.preventDefault();
+			var files = e.originalEvent.dataTransfer.files;
+
+			if (($(e.target).closest(".uploadContainer").find("input[type='file']").attr("name").indexOf("video")!==-1&&e.originalEvent.dataTransfer.files.length===1&&e.originalEvent.dataTransfer.files[0].type.indexOf("video")!==-1)||($(e.target).closest(".uploadContainer").find("input[type='file']").attr("name").indexOf("file")!==-1&&e.originalEvent.dataTransfer.files[0].type.indexOf("application/pdf")!==-1)||($(e.target).closest(".uploadContainer").find("input[type='file']").attr("name").indexOf("logo")!==-1&&e.originalEvent.dataTransfer.files.length===1&&e.originalEvent.dataTransfer.files[0].type.indexOf("image")!==-1)){
+				$(e.target).closest(".uploadContainer").find("input[type='file']").prop("files", e.originalEvent.dataTransfer.files);
+			}else{
+				App.notification('Invalid file format')
+			}
+			$(e.target).closest(".uploadContainer").css('border', '1px solid #DBDBDB');
+
+		},
+		
+		dragenter:function(e){
+			e.stopPropagation();
+			e.preventDefault();
+			$(e.target).closest(".uploadContainer").css('border', '2px solid #0B85A1');
+		},
+		dragleave:function(e){
+			console.log("leave");
+			e.stopPropagation();
+			e.preventDefault();
+			$(e.target).closest(".uploadContainer").css('border', '1px solid #DBDBDB');
 		},
 
 		update: function(e){
@@ -448,7 +486,7 @@ define([
 			myImage.onload = function(){
 				var c=document.getElementById("preview");
 				var ctx=c.getContext("2d");
-				ctx.clearRect(0, 0, c.width, c.height)
+				ctx.clearRect(0, 0, c.width, c.height);
 				ctx.drawImage(myImage,0,0,100,100);
 			};	
 		},

@@ -21,7 +21,7 @@ require.config({
         templates: '../templates', // templates dir not error
         text: './libs/text/text',
         common: 'common',
-        "dropzone": "./libs/dropzone/dist/dropzone"
+        "dmuploader": "./libs/dmuploader.min"
     },
     shim: {
         'ajaxForm': ['jQuery'],
@@ -66,7 +66,7 @@ require(['app'], function (app) {
 		inter = setTimeout(function(){
 			$(".notification").hide(100);
 		},5000);
-	}
+	};
 
 
 	var cacheContent = {};
