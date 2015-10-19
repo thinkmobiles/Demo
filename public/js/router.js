@@ -24,7 +24,7 @@ define([
 			"relatedVideo(/:videoId/:userId)(/:indexList)" :  "relatedVideo",
             "registration"              :  "registration",
 			"analytics"              :  "analytics",
-			"users"              :  "users",
+			"users"                  :  "users",
 			"pricing"              :  "pricing",
 			"aboutUs"              :  "aboutUs",
 			"contact"              : "contact",

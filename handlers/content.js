@@ -380,7 +380,7 @@ var routeHandler = function (db) {
                         function (seriesCb) {
                             var index = [];
 
-                            //ToDo: optimisation!!!
+                            //ToDo: optimization!!!
                             for (var i = data.countQuestion; i > 0; i--) {
                                 index.push(i);
                             }
@@ -394,7 +394,7 @@ var routeHandler = function (db) {
                                 });
                             }, function (err) {
                                 if (err) {
-                                    return seriesCb(err);
+                                    return seriesCb(err)
                                 }
                                 seriesCb(null);
                             });
