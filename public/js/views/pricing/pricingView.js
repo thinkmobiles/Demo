@@ -7,7 +7,8 @@ define([
         events:{
             "click .contactUs": "contact",
             "click .arrow.left": "prevSlide",
-            "click .arrow.right": "nextSlide"
+            "click .arrow.right": "nextSlide",
+            "click .circles ul li": "showSlide"
         },
         initialize: function () {
             var self = this;
@@ -23,6 +24,24 @@ define([
             $('html, body').animate({ scrollTop: 0 }, 'medium');
         },
 
+
+        showSlide: function(e){
+            if (App.slider['pricing']){
+                clearInterval(App.slider['pricing']);
+            }
+            var self = this;
+            this.$el.find(".purchasingSlider .purchasing.selected").stop().animate({
+                opacity:0
+            },300,function(){
+              $(this).removeClass("selected").css({opacity:1});
+                var k = self.$el.find(".circles ul li").index($(e.target));
+                self.$el.find(".circles li").removeClass('selected').eq(k).addClass("selected");
+                self.$el.find(".purchasingSlider .purchasing").eq(k).addClass("selected").css({opacity:0}).stop().animate({
+                    opacity:1
+                },300,function(){
+                });
+            })
+        },
 
         prevSlide: function(e){
             if (e&&App.slider['pricing']){
@@ -41,6 +60,7 @@ define([
                 }else{
                     k = n-1
                 }
+                self.$el.find(".circles li").removeClass('selected').eq(k).addClass("selected");
                 self.$el.find(".purchasingSlider .purchasing").eq(k).addClass("selected").css({opacity:0}).stop().animate({
                     opacity:1
                 },300,function(){
