@@ -12,7 +12,8 @@ define([
             'click .login': 'login',
             'click .navBar': 'toPage',
             "click .topMenu": "toTop",
-            "click #menu-toggle": "openMenu"
+            "click #menu-toggle": "toggleMenu",
+            "click li a": "hideMenu"
 
         },
 
@@ -22,9 +23,19 @@ define([
             this.render();
         },
 
-        openMenu: function () {
-                this.$el.find('#menu-toggle').toggleClass('open');
-                this.$el.find('#main-menu').toggle();
+        hideMenu: function () {
+            var self = this;
+            this.$el.find('#menu-toggle').removeClass('open', function () {
+                self.$el.find('#main-menu').fadeOut( 300, "linear")
+            });
+        },
+
+        toggleMenu: function () {
+            var self = this;
+                this.$el.find('#menu-toggle').toggleClass('open', function () {
+                    self.$el.find('#main-menu').fadeToggle( 300, "linear")
+                });
+
         },
 
         toTop: function () {
