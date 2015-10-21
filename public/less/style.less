@@ -2715,5 +2715,417 @@ svg {
     outline: none;
   }
 }
+.homePage >h1>br{
+  display: none;
+}
+.contactLine {
+  width: 144px;
+  border: none;
+  border-top: 4px solid rgb(68, 203, 255);
+  display: none;
+}
+.callUs {
+  background-color: rgba(93, 95, 124, 0.502);
+  width: 100%;
+  height: 90px;
+  text-align: center;
+  display: none;
+  position: fixed;
+  bottom: 0;
+  z-index: 990;
+  p{
+    color: #fff;
+    font-size: 24px;
+    padding-top: 10px;
+    a{
+      color: inherit;
+      text-decoration: none;
+    }
+  }
+}
+.mediaFooter{
+  display: none;
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+  height: 1100px;
+  background: url("../i/contact-bg.png") no-repeat 100% 100%;
+  position: relative;
+ .mediaFooterInner{
+   background-image: -moz-linear-gradient( 90deg, rgb(0,0,0) 0%, rgb(255,255,255) 100%);
+   background-image: -webkit-linear-gradient( 90deg, rgb(0,0,0) 0%, rgb(255,255,255) 100%);
+   background-image: -ms-linear-gradient( 90deg, rgb(0,0,0) 0%, rgb(255,255,255) 100%);
+   opacity: 0.031;
+   height: 100%;
+   width: 100%;
+ }
+  .contactInner{
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0 11%;
+    box-sizing: border-box;
+  }
+  h2{
+    font-size: 40px;
+    color: rgb(38, 50, 56);
+    text-transform: uppercase;
+    padding-top: 165px;
+    padding-bottom: 20px;
+    margin: 0;
+  }
+  .contactUs {
+    border-radius: 8px;
+    width: 75.5%;
+    font-size: 36px;
+    font-weight: bold;
+    float: none;
+    margin: 70px  auto 0;
+    clear: both;
+    border: none;
+   }
+  p.address{
+    margin-top: 70px;
+  }
+  p {
+    font-family: "LatoLight";
+    font-size: 30px;
+    color: rgb(38, 50, 56);
+    line-height: 1.5;
+    text-align: left;
+  }
+
+  p:before{
+    content: "";
+    display: block;
+    height: 40px;
+    width: 40px;
+    float: left;
+    margin-bottom: 80px;
+    margin-right: 25px;
+  }
+  p.address:before{
+    .i('location.png');
+    background-size: 100% 100%;
+  }
+    p.mail:before{
+      .i('mail.png');
+      background-size: 100% 30px;
+  }
+
+}
+/*----------------social--------------------*/
+.social {
+  margin: 0;
+  padding: 0;
+  li {
+    display: inline-block;
+    list-style: none;
+    margin: 110px 25px 0;
+    a{
+      display: block;
+    }
+    a:before{
+      content: "";
+      display: block;
+      width: 40px;
+      height: 40px;
+      background-position: center;
+    }
+  }
+  li.facebook a:before{
+    .i("Icon-facebook.png");
+  }
+  li.twitter a:before{
+    .i("Icon-twitter.png");
+  }
+  li.google a:before{
+    .i("Icon-gplus.png");
+  }
+
+}
+/*----------toggle menu-------------------*/
+.menu-toggle {
+  width: 60px;
+  height: 45px;
+  -webkit-transform: rotate(0deg);
+  -moz-transform: rotate(0deg);
+  -o-transform: rotate(0deg);
+  transform: rotate(0deg);
+  -webkit-transition: .5s ease-in-out;
+  -moz-transition: .5s ease-in-out;
+  -o-transition: .5s ease-in-out;
+  transition: .5s ease-in-out;
+  cursor: pointer;
+  display: none;
+  position: absolute;
+  right: 5%;
+  top: 25px;
+}
+.menu-toggle span {
+  display: block;
+  position: absolute;
+  height: 9px;
+  width: 100%;
+  background: #fff;
+  border-radius: 9px;
+  opacity: 1;
+  left: 0;
+  -webkit-transform: rotate(0deg);
+  -moz-transform: rotate(0deg);
+  -o-transform: rotate(0deg);
+  transform: rotate(0deg);
+  -webkit-transition: .25s ease-in-out;
+  -moz-transition: .25s ease-in-out;
+  -o-transition: .25s ease-in-out;
+  transition: .25s ease-in-out;
+}
+.menu-toggle span:nth-child(1) {
+  top: 0px;
+  -webkit-transform-origin: left center;
+  -moz-transform-origin: left center;
+  -o-transform-origin: left center;
+  transform-origin: left center;
+}
+
+.menu-toggle span:nth-child(2) {
+  top: 18px;
+  -webkit-transform-origin: left center;
+  -moz-transform-origin: left center;
+  -o-transform-origin: left center;
+  transform-origin: left center;
+}
+.menu-toggle span:nth-child(3) {
+  top: 36px;
+  -webkit-transform-origin: left center;
+  -moz-transform-origin: left center;
+  -o-transform-origin: left center;
+  transform-origin: left center;
+}
+
+.menu-toggle.open span:nth-child(1) {
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  transform: rotate(45deg);
+  top: -3px;
+  left: 8px;
+}
+
+.menu-toggle.open span:nth-child(2) {
+  width: 0%;
+  opacity: 0;
+}
+
+.menu-toggle.open span:nth-child(3) {
+  -webkit-transform: rotate(-45deg);
+  -moz-transform: rotate(-45deg);
+  -o-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+  top: 39px;
+  left: 8px;
+}
+/*--------------------------media-------------------------------*/
+@media (max-width: 640px){
+  body{
+    min-width: auto!important;
+    background-color: #EDF3F5;
+  }
+  #topMenu,
+  #wrapper,
+  .homePage,
+  .whatIs .inner,
+  .container .inner,
+  .contactPage .inner,
+   footer .inner,
+  .contactPage .inner input,
+  .contactPage .inner .required,
+  .contactPage .inner textarea,
+  .contactPage .buttons,
+  .homeContainer,
+  .whatSay .inner,
+  .topMenu .inner{
+    width: 100%;
+    box-sizing: border-box;
+  }
+  /*---------------contact us------------------*/
+  .contactPage h2{
+    font-size: 40px;
+    margin-bottom: 20px;
+  }
+  .contactPage .inner input,
+  .contactPage .inner textarea{
+    margin-left: 0;
+    border-radius: 3px;
+    font-size: 24px;
+  }
+  .contactPage .inner input{
+  height: 70px;
+  }
+  .contactPage,
+  .homeContainer{
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+  }
+  .contactPage{
+  padding: 0 5%;
+ }
+  footer,
+  .contactPage .buttons  button.cancel,
+  .data .required:nth-child(2),
+  .data .required:nth-child(3),
+  .data .required:nth-child(4),
+  .data .required:nth-child(5),
+  .contactPage br,
+  .whatIs,
+  .whatSay .inner .line
+  {
+    display: none;
+  }
+  .contactPage{
+    height: 920px;
+    box-sizing: border-box;
+  }
+  .contactPage .buttons .registerBtn,
+  .homePage .blue,
+  .contactUs{
+    background-color: rgb(68, 203, 255);
+    border-bottom: 1px solid #1FACFF;
+    box-shadow:  0px 2px 0px 0px #41BEF0;
+    height: 73px;
+  }
+
+  .contactPage .buttons .registerBtn{
+    float: none;
+    margin:  0 auto;
+    font-size: 36px;
+    width: 52%;
+  }
+  /*------------------home--------------------------*/
+  .homePage{
+    position: relative;
+  }
+  .homePage .blue{
+    float: none;
+    margin: 0 auto 0 auto;
+    font-size: 36px;
+    font-weight: bold;
+    width: 60%;
+    border-radius: 8px;
+  }
+  .contactLine,
+  .mediaFooter,
+  .callUs{
+    display: block;
+  }
+  .homePage h1{
+    font-size: 40px;
+    line-height: 1.35;
+    text-align: center;
+    display: inline;
+    color: rgb(38, 50, 56);
+    font-weight: bold;
+  }
+  .homeContainer .bg{
+    background-size: cover;
+    background-color: rgba(0,0,0, .5);
+   .filter(18px);
+    transition: all .5s;
+  }
+  .homeContainer{
+    height: 1135px;
+    .inner{
+      padding-right: 5%;
+      padding-left: 5%;
+      background-color: rgba(0,0,0, .3);
+      height: 100%;
+    }
+  }
+  .homePage span {
+    font-size: 32px;
+    color: rgb(255, 255, 255);
+    line-height: 1.125;
+    font-family: "LatoLight";
+  }
+  .homePage >h1>br,
+  .menu-toggle{
+    display: block;
+  }
+  /*------------------home2------------------------*/
+  .whatSay {
+    min-height: 920px;
+    box-sizing: border-box;
+    .inner {
+      position: relative;
+      h2 {
+        font-size: 40px;
+        color: rgb(38, 50, 56);
+        line-height: 1.35;
+        padding: 0 20%;
+        margin-bottom: 20px;
+      }
+      .messages {
+        margin-top: 70px;
+        > div {
+          padding: 0 6%;
+        }
+      }
+      em {
+        font-size: 28px;
+        color: rgb(38, 50, 56);
+        font-style: italic;
+        line-height: 1.571;
+        font-family: "LatoLight";
+      }
+    }
+  }
+  .whatSay .inner .arrows{
+    width: 100%;
+    top: 54%;
+    position: absolute;
+  }
+  .whatSay .inner .arrows .arrow-left{
+    background: url("../i/forward.png") no-repeat center;
+  }
+  .whatSay .inner .arrows .arrow-right{
+    background: url("../i/next-arrow.png") no-repeat center;
+  }
+  /*----------------*/
+  /* top menu*/
+  .topMenu,
+  .topMenu.small{
+    height: 95px;
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+  .topMenu.small{
+    background-color: rgba(0, 0, 0, 0.2)!important;
+    border-bottom: none;
+  }
+
+  .topMenu .inner #logo{
+    display: none;
+  }
+  .topMenu .inner ul {
+    width: 100%;
+    margin-top: 95px;
+    text-align: center;
+    background-color: #fff;
+    display: none;
+    li {
+      float: none;
+      line-height: 73px;
+      a{
+        line-height: inherit;
+        color: #44cbff;
+      }
+    }
+
+  }
+}
+
+
+
 
 
