@@ -24,24 +24,40 @@ define([
 
 
         initialize: function (options) {
+			var self = this;
 			this.options = options;
 			this.videoId = options&&options.videoId?options.videoId:"";
 			this.userId = options&&options.userId?options.userId:"";
 			this.modal = null;
             this.render();
-        },
-		
-		loginBtn: function(e){
-			e.stopPropagation();
-			$("body").addClass("withLogin");
-			setTimeout(function(){
-				$(".signIn .username .userName")[0].focus();
-			},550);
-			
+			$(window).on("resize", _.debounce(function () {
+				return self.updateCSS.call(self);
+			}, 500));
 		},
 
-		toTop:function(){
-			$('html, body').animate({ scrollTop: 0 }, 'fast');
+		updateCSS: function (self) {
+			var self = this;
+				if (App.slider['advertising']) {
+					clearInterval(App.slider['advertising']);
+				}
+				if (window.innerWidth <= 640) {
+					App.slider['advertising'] = setInterval(function () {
+						self.nextSlide()
+					}, 2000);
+				}
+		},
+
+		loginBtn: function (e) {
+			e.stopPropagation();
+			$("body").addClass("withLogin");
+			setTimeout(function () {
+				$(".signIn .username .userName")[0].focus();
+			}, 550);
+
+		},
+
+		toTop: function () {
+			$('html, body').animate({scrollTop: 0}, 'fast');
 		},
 		
 		prevSlide: function(e){
@@ -65,11 +81,7 @@ define([
 					opacity:1
 				},300,function(){
 				});
-
 			})
-
-
-
 		},
 
 		nextSlide: function(e){
@@ -93,7 +105,6 @@ define([
 					opacity:1
 				},300,function(){
 				});
-
 			})
 		},
 

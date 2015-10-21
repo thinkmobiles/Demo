@@ -58,6 +58,7 @@ define([
         loadWrapperView: function (name, params, callback) {
             var WrongRout = null;
 			var self = this;
+            $(window).off("resize");
             // show only permitted pages
             if (!App.sessionData.get('authorized')) {
                 // access only authorized views
@@ -92,6 +93,7 @@ define([
         },
 
         changeWrapperView: function (wrapperView) {
+
             if (this.wrapperView) {
                 this.wrapperView.undelegateEvents();
             }

@@ -7,36 +7,42 @@ define([
         el: '#topMenu',
 
         events: {
-			//"click .showModal":"showModal",
+            //"click .showModal":"showModal",
             'click #logOut': 'logout',
             'click .login': 'login',
             'click .navBar': 'toPage',
-            "click .topMenu":"toTop"
-        },
+            "click .topMenu": "toTop",
+            "click #menu-toggle": "openMenu"
 
+        },
 
         initialize: function () {
             // keep menu actual
-			this.listenTo(App.sessionData, 'change:authorized', this.render);
+            this.listenTo(App.sessionData, 'change:authorized', this.render);
             this.render();
         },
 
-        toTop:function(){
-            $('html, body').animate({ scrollTop: 0 }, 'medium');
+        openMenu: function () {
+                this.$el.find('#menu-toggle').toggleClass('open');
+                this.$el.find('#main-menu').toggle();
         },
 
-		toPage:function(){
-			$("body").removeClass("withLogin");
-		},
+        toTop: function () {
+            $('html, body').animate({scrollTop: 0}, 'medium');
+        },
 
-		login: function(e){
-			e.stopPropagation();
-			$("body").addClass("withLogin");
-			setTimeout(function(){
-				$(".signIn .username .userName")[0].focus();
-			},550);
+        toPage: function () {
+            $("body").removeClass("withLogin");
+        },
 
-		},
+        login: function (e) {
+            e.stopPropagation();
+            $("body").addClass("withLogin");
+            setTimeout(function () {
+                $(".signIn .username .userName")[0].focus();
+            }, 550);
+
+        },
 
 
         render: function () {
@@ -44,10 +50,10 @@ define([
             console.log(App.sessionData.get("authorized"));
 
             this.$el.html(_.template(topMenuTemplate)({
-				authorized: App.sessionData.get("authorized"),
-				admin: App.sessionData.get("admin"),
-				user: App.sessionData.get("user")
-			}));
+                authorized: App.sessionData.get("authorized"),
+                admin: App.sessionData.get("admin"),
+                user: App.sessionData.get("user")
+            }));
             return this;
         }
     });

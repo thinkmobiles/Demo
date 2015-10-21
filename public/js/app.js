@@ -13,7 +13,7 @@ define([
             user: null,
             date: null
         });
-
+        App.slider = [];
         // create router
         appRouter = new Router();
 

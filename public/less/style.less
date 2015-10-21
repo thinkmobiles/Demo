@@ -268,8 +268,32 @@ body {
     border: 1px solid white;
     float: left;
   }
-}
 
+}
+.advertising{
+  .arrow{
+    >span{
+      border: 1px solid black;
+    }
+  }
+  .circles{
+    position: relative;
+    float: left;
+
+    li{
+      float: left;
+      list-style: none;
+      margin: 10px 10px;
+      border: 1px solid dodgerblue;
+      border-radius: 50%;
+      width: 5px;
+      height: 5px;
+      &.selected{
+        background: dodgerblue;
+      }
+    }
+  }
+}
 .opacity {
   .lh(50px);
   width: 245px;
@@ -1455,6 +1479,28 @@ footer {
     margin: 0 auto;
     margin-top: 160px;
     text-align: left;
+  }
+  .arrow{
+    >span{
+      border: 1px solid black;
+    }
+  }
+  .circles{
+    position: relative;
+    float: left;
+
+    li{
+      float: left;
+      list-style: none;
+      margin: 10px 10px;
+      border: 1px solid dodgerblue;
+      border-radius: 50%;
+      width: 5px;
+      height: 5px;
+      &.selected{
+        background: dodgerblue;
+      }
+    }
   }
 }
 
