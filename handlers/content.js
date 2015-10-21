@@ -8,7 +8,7 @@ var LocalFs = require('./fileStorage/localFs')();
 var localFs = new LocalFs();
 var path = require('path');
 var REG_EXP = require('../constants/regExp');
-var pdfutils = require('pdfutils').pdfutils;
+var pdfutils = '';// require('pdfutils').pdfutils;
 var badRequests = require('../helpers/badRequests');
 var fs = require('fs');
 var routeHandler = function (db) {
@@ -380,7 +380,7 @@ var routeHandler = function (db) {
                         function (seriesCb) {
                             var index = [];
 
-                            //ToDo: optimisation!!!
+                            //ToDo: optimization!!!
                             for (var i = data.countQuestion; i > 0; i--) {
                                 index.push(i);
                             }
@@ -394,7 +394,7 @@ var routeHandler = function (db) {
                                 });
                             }, function (err) {
                                 if (err) {
-                                    return seriesCb(err);
+                                    return seriesCb(err)
                                 }
                                 seriesCb(null);
                             });

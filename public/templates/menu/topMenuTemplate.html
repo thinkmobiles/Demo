@@ -1,8 +1,12 @@
 <nav class="navBar topMenu">
   <div class="inner">
     <a href="#/home" id="logo"><img width="230" src="i/logo.png"/></a>
-
-    <ul>
+      <div id="menu-toggle" class="menu-toggle">
+          <span></span>
+          <span></span>
+          <span></span>
+      </div>
+    <ul id="main-menu">
 	  <% if (!authorized){%>
       <li><a href="#/watchVideo" class="active showModal">WATCH DEMO</a></li>
 

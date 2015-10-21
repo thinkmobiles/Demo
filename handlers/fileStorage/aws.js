@@ -41,6 +41,11 @@ module.exports = function(protoObject) {
             });
         };
 
+        // This URL will expire in one minute (60 seconds)
+        var params = {Bucket: 'myBucket', Key: 'myKey', Expires: 60};
+        var url = s3.getSignedUrl('getObject', params);
+        console.log("The URL is", url);
+
         this.getFileUrl = function ( folderName, fileName, options, callback ) {
 
         };
