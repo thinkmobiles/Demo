@@ -59,6 +59,9 @@ define([
             var WrongRout = null;
 			var self = this;
             $(window).off("resize");
+            App.slider.forEach(function (elem) {
+                clearInterval(elem);
+            });
             // show only permitted pages
             if (!App.sessionData.get('authorized')) {
                 // access only authorized views
