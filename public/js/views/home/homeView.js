@@ -116,17 +116,10 @@ define([
                 clearInterval(App.slider['advertising']);
             }
             var self = this;
-            this.$el.find(".advertising .item.selected").stop().animate({
-                opacity: 0
-            }, 300, function () {
-                $(this).removeClass("selected").css({opacity: 1});
-                var k = self.$el.find(".circles ul li").index($(e.target));
-                self.$el.find(".circles li").removeClass('selected').eq(k).addClass("selected");
-                self.$el.find(".advertising .item").eq(k).addClass("selected").css({opacity: 0}).stop().animate({
-                    opacity: 1
-                }, 300, function () {
-                });
-            })
+            var k = self.$el.find(".circles ul li").index($(e.target));
+            self.$el.find(".circles li").removeClass('selected').eq(k).addClass("selected");
+            this.$el.find(".advertising .item").removeClass("selected").eq(k).addClass("selected")
+
         },
 
         prevAdvertising: function (e) {
@@ -136,22 +129,14 @@ define([
             var self = this;
             var count = this.$el.find(".advertising .item").length;
             var n = this.$el.find(".advertising .item").index(this.$el.find(".advertising .item.selected"));
-            this.$el.find(".advertising .item.selected").stop().animate({
-                opacity: 0
-            }, 300, function () {
-                $(this).removeClass("selected").css({opacity: 1});
-                var k = 0;
-                if (!n) {
-                    k = count - 1
-                } else {
-                    k = n - 1
-                }
-                self.$el.find(".circles li").removeClass('selected').eq(k).addClass("selected");
-                self.$el.find(".advertising .item").eq(k).addClass("selected").css({opacity: 0}).stop().animate({
-                    opacity: 1
-                }, 300, function () {
-                });
-            })
+            var k = 0;
+            if (!n) {
+                k = count - 1
+            } else {
+                k = n - 1
+            }
+            self.$el.find(".circles li").removeClass('selected').eq(k).addClass("selected");
+            self.$el.find(".advertising .item").removeClass("selected").eq(k).addClass("selected");
         },
 
         nextAdvertising: function (e) {
@@ -161,22 +146,14 @@ define([
             var self = this;
             var count = this.$el.find(".advertising .item").length;
             var n = this.$el.find(".advertising .item").index(this.$el.find(".advertising .item.selected"));
-            this.$el.find(".advertising .item.selected").stop().animate({
-                opacity: 0
-            }, 300, function () {
-                $(this).removeClass("selected").css({opacity: 1});
-                var k = 0;
-                if (n === count - 1) {
-                    k = 0
-                } else {
-                    k = n + 1
-                }
-                self.$el.find(".circles li").removeClass('selected').eq(k).addClass("selected");
-                self.$el.find(".advertising .item").eq(k).addClass("selected").css({opacity: 0}).stop().animate({
-                    opacity: 1
-                }, 300, function () {
-                });
-            })
+            var k = 0;
+            if (n === count - 1) {
+                k = 0
+            } else {
+                k = n + 1
+            }
+            self.$el.find(".circles li").removeClass('selected').eq(k).addClass("selected");
+            this.$el.find(".advertising .item").removeClass("selected").eq(k).addClass("selected");
         },
 
         changeField: function (e) {
