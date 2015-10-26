@@ -22,7 +22,7 @@
   <ul class="pdfList">
 	<%_.forEach(videoList[0].pdfUri,function(url){%>
 	<li>
-	  <a href="<%=url%>" target="_blank" class="pdf"><%=url.split("\\").pop().split("/").pop()%></a>
+	  <a href="<%=url%>" target="_blank" class="pdf"><%=decodeURIComponent(url.split("\\").pop().split("/").pop())%></a>
       <div class="preview">
         <div class="arrow">
         </div>
