@@ -343,30 +343,27 @@ body {
       float: right;
     }
   }
-  .arrows{
-    >div{
-      border: 1px solid black;
-    }
-  }
-  .circles{
-    position: relative;
-    float: left;
 
-    li{
-      float: left;
-      list-style: none;
-      margin: 10px 10px;
-      border: 1px solid dodgerblue;
-      border-radius: 50%;
-      width: 5px;
-      height: 5px;
-      &.selected{
-        background: dodgerblue;
-      }
+}
+.circles{
+  position: relative;
+  display: none;
+
+  li{
+    float: left;
+    list-style: none;
+    margin: 10px 10px;
+    border: 1px solid #C7C7C7;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    &.selected{
+      background: #41BEF0;
+      border-color: #46AAD3;
     }
   }
 }
-
 .whatSay {
   background-color: #edf3f5;
   border-top: 1px solid #edf3f5;
@@ -1278,7 +1275,6 @@ footer {
   h2 {
     text-align: center;
     margin-top: 0px;
-    text-align: center;
     font-family: "LatoSemiBold";
     font-size: 34px;
   }
@@ -1370,7 +1366,6 @@ footer {
   h2 {
     text-align: center;
     margin-top: 0px;
-    text-align: center;
     font-family: "LatoSemiBold";
     font-size: 34px;
   }
@@ -1391,9 +1386,9 @@ footer {
     margin-right: 20px;
     margin-bottom: 20px;
     min-height: 458px;
-    -webkit-transition: all 0.1s;
-    -moz-transition: all 0.1s;
-    transition: all 0.1s;
+    -webkit-transition: all 0.5s;
+    -moz-transition: all 0.5s;
+    transition: all 0.5s;
     &:last-child {
       margin-right: 0;
     }
@@ -1479,28 +1474,7 @@ footer {
     margin-top: 160px;
     text-align: left;
   }
-  .arrow{
-    >span{
-      border: 1px solid black;
-    }
-  }
-  .circles{
-    position: relative;
-    float: left;
 
-    li{
-      float: left;
-      list-style: none;
-      margin: 10px 10px;
-      border: 1px solid dodgerblue;
-      border-radius: 50%;
-      width: 5px;
-      height: 5px;
-      &.selected{
-        background: dodgerblue;
-      }
-    }
-  }
 }
 
 .contactPage {
@@ -1510,7 +1484,6 @@ footer {
   h2 {
     text-align: center;
     margin-top: 0px;
-    text-align: center;
     font-family: "LatoSemiBold";
     font-size: 34px;
   }
@@ -2893,8 +2866,8 @@ svg {
 }
 /*----------toggle menu-------------------*/
 .menu-toggle {
-  width: 60px;
-  height: 45px;
+  width: 42px;
+  height: 31px;
   -webkit-transform: rotate(0deg);
   -moz-transform: rotate(0deg);
   -o-transform: rotate(0deg);
@@ -2912,7 +2885,7 @@ svg {
 .menu-toggle span {
   display: block;
   position: absolute;
-  height: 9px;
+  height: 6px;
   width: 100%;
   background: #fff;
   border-radius: 9px;
@@ -2936,14 +2909,14 @@ svg {
 }
 
 .menu-toggle span:nth-child(2) {
-  top: 18px;
+  top: 12px;
   -webkit-transform-origin: left center;
   -moz-transform-origin: left center;
   -o-transform-origin: left center;
   transform-origin: left center;
 }
 .menu-toggle span:nth-child(3) {
-  top: 36px;
+  top: 24px;
   -webkit-transform-origin: left center;
   -moz-transform-origin: left center;
   -o-transform-origin: left center;
@@ -2955,7 +2928,7 @@ svg {
   -moz-transform: rotate(45deg);
   -o-transform: rotate(45deg);
   transform: rotate(45deg);
-  top: -3px;
+  top: 0px;
   left: 8px;
 }
 
@@ -2969,7 +2942,7 @@ svg {
   -moz-transform: rotate(-45deg);
   -o-transform: rotate(-45deg);
   transform: rotate(-45deg);
-  top: 39px;
+  top: 30px;
   left: 8px;
 }
 /*--------------------------media-------------------------------*/
@@ -2978,12 +2951,11 @@ svg {
     min-width: auto!important;
     background-color: #EDF3F5;
   }
+
   #topMenu,
   #wrapper,
   .homePage,
-  .whatIs .inner,
-  .container .inner,
-  .contactPage .inner,
+  #wrapper div .inner,
    footer .inner,
   .contactPage .inner input,
   .contactPage .inner .required,
@@ -2991,7 +2963,8 @@ svg {
   .contactPage .buttons,
   .homeContainer,
   .whatSay .inner,
-  .topMenu .inner{
+  .topMenu .inner,
+  .whatIs .inner .left{
     width: 100%;
     box-sizing: border-box;
   }
@@ -3018,19 +2991,17 @@ svg {
   .contactPage{
   padding: 0 5%;
  }
-  footer,
+
   .contactPage .buttons  button.cancel,
   .data .required:nth-child(2),
   .data .required:nth-child(3),
   .data .required:nth-child(4),
   .data .required:nth-child(5),
-  .contactPage br,
-  .whatIs,
-  .whatSay .inner .line
+  .contactPage br
   {
     width: 100%;
     box-sizing: border-box;
-    display: block;
+    display: none;
   }
   .contactPage{
     height: 920px;
@@ -3038,7 +3009,8 @@ svg {
   }
   .contactPage .buttons .registerBtn,
   .homePage .blue,
-  .contactUs{
+  .contactUs,
+  .whatIs .inner .blue{
     background-color: rgb(68, 203, 255);
     border-bottom: 1px solid #1FACFF;
     box-shadow:  0px 2px 0px 0px #41BEF0;
@@ -3117,7 +3089,7 @@ svg {
       .messages {
         margin-top: 70px;
         > div {
-          padding: 0 6%;
+          padding: 0 7%;
         }
       }
       em {
@@ -3129,16 +3101,37 @@ svg {
       }
     }
   }
-  .whatSay .inner .arrows{
-    width: 100%;
+  #wrapper .inner .arrows,
+  #wrapper .inner .arrows
+  {
+    width: 96%;
     top: 54%;
+    left: 2%;
     position: absolute;
+    z-index: 999;
   }
-  .whatSay .inner .arrows .arrow-left{
-    background: url("../i/forward.png") no-repeat center;
+  .whatIs .inner .arrows{
+    top: 15%;
   }
-  .whatSay .inner .arrows .arrow-right{
-    background: url("../i/next-arrow.png") no-repeat center;
+  #wrapper .inner .arrows .arrow-left,
+  #wrapper .inner .arrows .arrow-right,
+  {
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 32px;
+    height: 45px;
+    cursor: pointer;
+    text-indent: -9999px;
+  }
+  #wrapper .inner .arrows .arrow-left
+  {
+   .i("forward.png");
+    float: left;
+  }
+  #wrapper .inner .arrows .arrow-right
+  {
+   .i("next-arrow.png");
+    float: right;
   }
   /*----------------*/
   /* top menu*/
@@ -3151,13 +3144,19 @@ svg {
     background-color: rgba(0, 0, 0, 0.2)!important;
     border-bottom: none;
   }
-
-  .topMenu .inner #logo{
+  #wrapper .inner .line{
+    margin-bottom: 80px;
+    border-top: 4px solid rgb(68, 203, 255);
+    width: 144px;
+  }
+  .topMenu .inner #logo,
+  footer,
+  .whatSay .inner .line{
     display: none;
   }
   .topMenu .inner ul {
     width: 100%;
-    margin-top: 95px;
+    padding-top: 95px;
     text-align: center;
     background-color: #fff;
     display: none;
@@ -3171,8 +3170,128 @@ svg {
     }
 
   }
+  .whatIs{
+    height: 1100px;
+    h2{
+      font-size: 40px;
+      line-height: 1.35;
+      padding: 0 15%;
+    }
+  }
+
+  .whatIs  .advertising {
+    position: relative;
+    .item{
+      width: 100%;
+      min-height: 230px;
+      display: none;
+      span{
+        padding: 0 14%;
+        text-align: center;
+        display: block;
+        font-size: 32px;
+        font-family: "LatoLight";
+        line-height: 1.125;
+      }
+      &.selected{
+        display: block;
+      }
+    }
+
+    h4{
+      display: none;
+    }
+
+    img {
+      display: none;
+    }
+    .blue{
+      margin: 100px auto 0 auto;
+      float: none;
+      font-size: 36px;
+      width: 365px;
+    }
+  }
+  #wrapper .circles{
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin-top: 20px;
+    ul{
+      display: inline-block;
+      padding: 0;
+    }
+  }
+  /*---------Pricing---------*/
+  .pricing {
+
+     .inner >p{
+      display: none;
+    }
+    .purchasingSlider{
+      position: relative;
+    }
+    .purchasingSlider .purchasing {
+      display: none;
+      width: 71.87%;
+      margin: 0 auto;
+      float: none;
+      min-height: 670px;
+      background-color: #EBEBEB;
+      >h3 {
+        font-size: 32px;
+        background-color: #CACACA;
+      }
+      ul li{
+        font-size: 28px;
+        font-family: 'LatoLight';
+        color: rgb(120, 144, 156);
+        padding: 16px 0;
+        border-color: #D7D8D9;
+      }
+      &.selected {
+        display: block;
+      }
+      &:hover{
+        transition: all 0;
+        transform: scale(1);
+      }
+      .purchasing-butt {
+        background-color: rgb(61, 190, 152);
+        box-shadow: 0px 1px 0px 0px #41F0A8;
+        border-bottom: 1px solid #1BA198;
+        width: 190px;
+        height: 62px;
+        margin-top: 35px;
+       p{
+         font-size: 25.77px;
+         font-weight: bold;
+          height: 8px;
+       }
+      }
+      p.purchasePrice{
+        font-size: 28px;
+      }
+
+    }
+  }
+  .topMenu {
+    .open span {
+      background-color: #44cbff;
+      transition: .5s;
+    }
+    #main-menu {
+      li a {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        margin: 0;
+      }
+    }
+  }
+
 }
-@media (min-width: 640px){
+@media (min-width: 641px){
   #main-menu{
     display: block!important;
   }

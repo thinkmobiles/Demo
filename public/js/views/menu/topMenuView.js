@@ -24,18 +24,21 @@ define([
         },
 
         hideMenu: function () {
-            var self = this;
-            this.$el.find('#menu-toggle').removeClass('open', function () {
-                self.$el.find('#main-menu').fadeOut( 300, "linear")
-            });
+            if (window.innerWidth <= 640) {
+                var self = this;
+                this.$el.find('#menu-toggle').removeClass('open', function () {
+                    self.$el.find('#main-menu').fadeOut(300, "linear")
+                });
+            }
         },
 
         toggleMenu: function () {
-            var self = this;
+            if (window.innerWidth <= 640) {
+                var self = this;
                 this.$el.find('#menu-toggle').toggleClass('open', function () {
-                    self.$el.find('#main-menu').fadeToggle( 300, "linear")
+                    self.$el.find('#main-menu').slideToggle(500, "swing")
                 });
-
+            }
         },
 
         toTop: function () {
