@@ -288,8 +288,7 @@ define([
 			if(!this.videoId && !this.userId){
 				return;
 			}
-			var pos = videoEl.currentSrc.indexOf('video');
-			var video = decodeURI(videoEl.currentSrc.slice(pos));
+			var video = videoEl.currentSrc;
 			var stopTime = Math.round(videoEl.currentTime);
 
 			var videoData = {
