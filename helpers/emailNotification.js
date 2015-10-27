@@ -83,6 +83,9 @@ var Schedule = function (db) {
                     //send notification to company email
                     function (docs, waterfallCb) {
                         async.each(docs, function (doc, cb) {
+                            if(!doc.contentId|| !doc.contentId.name || !doc.contentId.email){
+                                return cb(null);
+                            }
                             var name = doc.firstName + ' ' + doc.lastName;
                             var data = {
                                 companyName: doc.contentId.name,
