@@ -14,7 +14,7 @@ var awsStorage = new AwsStorage();
 
 var path = require('path');
 var REG_EXP = require('../constants/regExp');
-var pdfutils = require('pdfutils').pdfutils;
+var pdfutils = "";//require('pdfutils').pdfutils;
 var badRequests = require('../helpers/badRequests');
 var fs = require('fs');
 var routeHandler = function (db) {
