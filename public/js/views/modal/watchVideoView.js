@@ -27,7 +27,6 @@ define([
 			"mouseleave .hoverList": "hideArrow"
 		},
 
-
 		initialize: function (options) {
 			var self = this;
 			this.videoId = options&&options.videoId?options.videoId:"";
