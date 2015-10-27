@@ -109,7 +109,7 @@
 
         <div class="uploadContainer file long">
           <div class="left">
-            <input type="text" placeholder="Or drop file here" readonly="readonly" value="<%=content.logoUri.split('/').pop()%>" disabled/>
+            <input type="text" placeholder="Or drop file here" readonly="readonly" value="<%=decodeURIComponent(content.logoUri.split('/').pop())%>" disabled/>
           </div>
           <div class="right">
           </div>
