@@ -26,7 +26,7 @@
       <div class="preview">
         <div class="arrow">
         </div>
-		<img height="110" width="80" src="<%=url.replace('.pdf','.png')%>" alt="<%=url.split('\\').pop().split('/').pop()%>"/>
+		<img height="110" width="80" src="<%=url.replace('.pdf','.png')%>" alt="<%=decodeURIComponent(url.split('\\').pop().split('/').pop())%>"/>
       </div>
 	</li>
 	<%})%>
