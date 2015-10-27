@@ -23,7 +23,7 @@
 
         <div class="uploadContainer file">
           <div class="left">
-            <input type="text" placeholder="Drop file here" readonly="readonly" value="<%=content.mainVideoUri.split('/').pop()%>" disabled/>
+            <input type="text" placeholder="Drop file here" readonly="readonly" value="<%=decodeURIComponent(content.mainVideoUri.split('/').pop())%>" disabled/>
           </div>
           <div class="right">
           </div>

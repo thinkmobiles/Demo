@@ -47,7 +47,7 @@ var awsStorage = require('./aws')(protoObject);
 var localStorage = require('./localFs');
 var Storages = {
     aws: awsStorage,
-    azure: azureStorage,
+    //azure: azureStorage,
     localFs: localStorage
 };
 

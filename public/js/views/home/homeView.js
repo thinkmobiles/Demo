@@ -292,7 +292,6 @@ define([
             if (App.slider['message']) {
                 clearInterval(App.slider['message']);
             }
-
             App.slider['message'] = setInterval(function () {
                 self.nextSlide()
             }, 5000);
