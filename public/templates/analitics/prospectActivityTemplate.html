@@ -18,7 +18,7 @@
 	<% if(videos.length){%>
 	<%_.each(videos,function(video, index){%>
 	<span>
-	  <%=video.video.split("/").pop().split(".").shift()%>   <span class="silver">(<%=video.time%>)</span><%=index==videos.length-1?"":","%>
+	  <%=decodeURIComponent(video.video.split("/").pop().split(".").shift())%>   <span class="silver">(<%=video.time%>)</span><%=index==videos.length-1?"":","%>
 	</span>
 	<%})%>
 	<%} else{%>
@@ -29,7 +29,7 @@
   <ul>
 	<%_.each(documents,function(item, index){%>
 	<span>
-	  <%=item.split("/").pop().split(".").shift()%><%=index==documents.length-1?"":","%>
+	  <%=decodeURIComponent(item.split("/").pop().split(".").shift())%><%=index==documents.length-1?"":","%>
 	</span>
 	<%})%>
 	  <%} else{%>
