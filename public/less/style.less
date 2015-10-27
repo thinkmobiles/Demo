@@ -2767,7 +2767,7 @@ svg {
   text-align: center;
   width: 100%;
   box-sizing: border-box;
-  height: 1100px;
+  height: 940px;
   background: url("../i/contact-bg.png") no-repeat 100% 100%;
   position: relative;
  .mediaFooterInner{
@@ -2790,7 +2790,7 @@ svg {
     font-size: 40px;
     color: rgb(38, 50, 56);
     text-transform: uppercase;
-    padding-top: 165px;
+    padding-top: 125px;
     padding-bottom: 20px;
     margin: 0;
   }
@@ -2880,7 +2880,7 @@ svg {
   display: none;
   position: absolute;
   right: 5%;
-  top: 25px;
+  top: 16px;
 }
 .menu-toggle span {
   display: block;
@@ -2946,6 +2946,7 @@ svg {
   left: 8px;
 }
 /*--------------------------media-------------------------------*/
+
 @media (max-width: 640px){
   body{
     min-width: auto!important;
@@ -3054,7 +3055,7 @@ svg {
     transition: all .5s;
   }
   .homeContainer{
-    height: 1135px;
+    height: 955px;
     .inner{
       padding-right: 5%;
       padding-left: 5%;
@@ -3074,7 +3075,7 @@ svg {
   }
   /*------------------home2------------------------*/
   .whatSay {
-    min-height: 920px;
+    min-height: 720px;
     box-sizing: border-box;
     .inner {
       position: relative;
@@ -3108,7 +3109,7 @@ svg {
     position: absolute;
     z-index: 999;
   }
-  .whatIs .inner .arrows{
+  #wrapper .inner .advertising .arrows{
     top: 15%;
   }
   #wrapper .inner .arrows .arrow-left,
@@ -3135,7 +3136,7 @@ svg {
   /* top menu*/
   .topMenu,
   .topMenu.small{
-    height: 95px;
+    height: 65px;
     background-color: rgba(0, 0, 0, 0.2);
   }
   .topMenu.small{
@@ -3169,7 +3170,7 @@ svg {
 
   }
   .whatIs{
-    height: 1100px;
+    padding-bottom: 60px;
     h2{
       font-size: 40px;
       line-height: 1.35;
@@ -3286,7 +3287,35 @@ svg {
         margin: 0;
       }
     }
+
   }
+}
+@media (max-width: 480px){
+  .homePage h1,
+  #wrapper .inner h2,
+  #footer h2{
+    font-size: 26px;
+  }
+  .homePage span,
+  .whatIs .advertising .item span,
+  .whatSay .inner em,
+  .mediaFooter p{
+    font-size: 22px;
+    padding: 16% 10%;
+  }
+  #wrapper .blue,
+  #footer .contactUs
+   {
+    font-size: 25px;
+    width: 60%;
+  }
+  .whatIs .inner .line{
+    margin-bottom: 0;
+  }
+  .mediaFooter p{
+    padding: 0;
+  }
+
 }
 @media (min-width: 641px){
   #main-menu{
