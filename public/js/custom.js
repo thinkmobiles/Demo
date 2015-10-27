@@ -239,7 +239,7 @@ define(["moment"],function (moment) {
 			.scale(xRange)
 			.tickSize(5)
 			.tickSubdivide(true)
-			.tickFormat(function(d){return  d.split("/").pop()}),
+			.tickFormat(function(d){return  decodeURIComponent(d.split("/").pop())}),
 
 			yAxis = d3.svg.axis()
 			.scale(yRange)
