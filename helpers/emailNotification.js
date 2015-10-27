@@ -20,7 +20,8 @@ var Schedule = function (db) {
             var time = new Date(Date.now() - 2 * hour);
             var conditions = {
                 'isSent': false,
-                'updatedAt': {$lte: time}
+                'updatedAt': {$lte: time},
+                'contentId': { $exists: true}
             };
             var update = {
                 isSent: true

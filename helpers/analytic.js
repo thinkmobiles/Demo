@@ -417,12 +417,12 @@ var AnalyticModule = function (db) {
                         {
                             $project: {
                                 _id: 0,
-                                count: 1,
+                                count: 1
                             }
                         }, {
                             $group: {
                                 _id: 'null',
-                                total: {$sum: '$count'},
+                                total: {$sum: '$count'}
                             }
                         }, {
                             $project: {
