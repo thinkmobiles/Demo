@@ -12,3 +12,6 @@ process.env.HOME_PAGE = "http://194.42.200.114:8838/#/home/";
 process.env.mailerService = 'Gmail';
 process.env.mailerUserName = "gogi.gogishvili";
 process.env.mailerPassword = "gogi123456789";
+
+process.env.AMAZON_ACCESS_KEY_ID = 'AKIAJPUAJM7ESJZR33OQ';
+process.env.AMAZON_SECRET_ACCESS_KEY = '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';
