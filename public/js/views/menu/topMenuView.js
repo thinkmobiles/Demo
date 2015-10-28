@@ -35,7 +35,7 @@ define([
         toggleMenu: function () {
             if (window.innerWidth <= 640) {
                 var self = this;
-                this.$el.find('#wrapper-toggle').toggleClass('open', function () {
+                this.$el.find('.toggle-wrapper').toggleClass('open', function () {
                     self.$el.find('#main-menu').slideToggle(500, "swing")
                 });
             }
