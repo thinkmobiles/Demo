@@ -105,23 +105,19 @@
 }
 
 html, body {
+  font-size: 100%;
   .mp;
   //width:100%;
   position: relative;
   font-family: "LatoRegular";
 }
-
-body {
-  min-width: 1150px;
-}
-
 #topMenu {
   width: 1070px;
 }
 
 .topMenu {
   height: 120px;
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.4);
   position: fixed;
   top: 0px;
   width: 100%;
@@ -231,13 +227,13 @@ body {
   top: 210px;
   h1 {
     .mp;
-    font-size: 38px;
+    font-size: 2.375rem;
     color: #333333;
     font-weight: normal;
   }
   span {
     display: block;
-    font-size: 24px;
+    font-size: 1.5rem;
     color: white;
     padding: 40px 0 40px 0;
   }
@@ -294,7 +290,7 @@ body {
       margin-top: 0px;
       text-align: center;
       font-family: "LatoSemiBold";
-      font-size: 34px;
+      font-size: 2.125rem;
     }
     .line {
       width: 60px;
@@ -2797,7 +2793,7 @@ svg {
   .contactUs {
     border-radius: 8px;
     width: 75.5%;
-    font-size: 36px;
+    font-size: 2rem;
     font-weight: bold;
     float: none;
     margin: 70px  auto 0;
@@ -2809,10 +2805,11 @@ svg {
   }
   p {
     font-family: "LatoLight";
-    font-size: 30px;
+    font-size: 1.875rem;
     color: rgb(38, 50, 56);
     line-height: 1.5;
     text-align: left;
+    clear: both;
   }
 
   p:before{
@@ -2841,7 +2838,7 @@ svg {
   li {
     display: inline-block;
     list-style: none;
-    margin: 110px 25px 0;
+    margin: 30% 5% 0;
     a{
       display: block;
     }
@@ -2949,10 +2946,6 @@ svg {
 /*--------------------------media-------------------------------*/
 
 @media (max-width: 640px){
-  body{
-    min-width: auto!important;
-    background-color: #EDF3F5;
-  }
   #topMenu,
   #wrapper,
   .homePage,
@@ -3005,6 +2998,9 @@ svg {
   .signIn{
     text-align: center;
     position: relative;
+    .username, .pass{
+      width: 73%;
+    }
     h2{
       border-bottom: 4px solid #44CBFF;
       display: table;
@@ -3056,7 +3052,7 @@ svg {
   .contactPage .buttons .registerBtn{
     float: none;
     margin:  0 auto;
-    font-size: 36px;
+    font-size: 2rem;
     width: 52%;
   }
   /*------------------home--------------------------*/
@@ -3068,7 +3064,7 @@ svg {
   .homePage .blue{
     float: none;
     margin: 0 auto 0 auto;
-    font-size: 36px;
+    font-size: 2.25rem;
     font-weight: bold;
     width: 60%;
     border-radius: 8px;
@@ -3081,7 +3077,6 @@ svg {
     display: block;
   }
   .homePage h1{
-    font-size: 40px;
     line-height: 1.35;
     text-align: center;
     display: inline;
@@ -3104,7 +3099,6 @@ svg {
     }
   }
   .homePage span {
-    font-size: 32px;
     color: rgb(255, 255, 255);
     line-height: 1.125;
     font-family: "LatoLight";
@@ -3171,13 +3165,12 @@ svg {
     height: 65px;
     background-color: rgba(0, 0, 0, 0.2);
   }
+
   .topMenu.small{
     background-color: rgba(0, 0, 0, 0.2)!important;
     border-bottom: none;
-    a{
-      visibility: hidden;
-      opacity: 0;
-      transition: 1s;
+    a#logo{
+      visibility: visible;
     }
   }
   #wrapper .inner .line{
@@ -3208,7 +3201,6 @@ svg {
   .whatIs{
     padding-bottom: 60px;
     h2{
-      font-size: 40px;
       line-height: 1.35;
       padding: 0 15%;
     }
@@ -3224,7 +3216,6 @@ svg {
         padding: 0 14%;
         text-align: center;
         display: block;
-        font-size: 32px;
         font-family: "LatoLight";
         line-height: 1.125;
       }
@@ -3243,8 +3234,6 @@ svg {
     .blue{
       margin: 100px auto 0 auto;
       float: none;
-      font-size: 36px;
-      width: 365px;
     }
   }
   #wrapper .circles{
@@ -3271,7 +3260,7 @@ svg {
       width: 71.87%;
       margin: 0 auto;
       float: none;
-      min-height: 670px;
+      padding-bottom: 10%;
       background-color: #EBEBEB;
       >h3 {
         font-size: 32px;
@@ -3281,7 +3270,7 @@ svg {
         font-size: 28px;
         font-family: 'LatoLight';
         color: rgb(120, 144, 156);
-        padding: 16px 0;
+        padding: 4% 0;
         border-color: #D7D8D9;
       }
       &.selected {
@@ -3340,33 +3329,48 @@ svg {
     filter: blur(2px);
   }
   .topMenu .inner #logo {
-    height: 64px;
-    line-height: 79px;
+    height: 73px;
+    line-height: 73px;
     color: #c7c7c7;
-    margin-left: 122px;
+    margin-left: 34%;
     position: relative;
-    z-index: 999;
+    z-index: 106;
+    img{
+      width: 50%;
+    }
   }
-}
-@media (max-width: 480px){
-  .homePage h1,
+  /*-----------font-size--------------*/
   #wrapper .inner h2,
   #footer h2,
   .pricing .purchasingSlider .purchasing > h3{
-    font-size: 26px;
+    font-size: 2.5rem;
   }
-  .homePage span,
   .whatSay .inner em{
-    font-size: 22px;
+    font-size: 2.1rem;
     padding: 16% 10%;
   }
-  .pricing .purchasingSlider .purchasing ul li,
+}
+@media (max-width: 480px){
+  html{
+    font-size: 10px;
+  }
+
+
+
   .mediaFooter p{
     font-size: 22px;
   }
-  .whatIs .advertising .item span{
+  .pricing .purchasingSlider .purchasing ul li,
+  .pricing .purchasingSlider .purchasing p.purchasePrice,
+  .pricing .purchasingSlider .purchasing .purchasing-butt p{
+    font-size: 16px;
+  }
+  .pricing .purchasingSlider .purchasing > h3{
+    font-size: 24px;
+  }
+  .whatIs .advertising .item span,
+  .homePage span{
     padding: 8% 16%;
-    font-size: 22px;
   }
   .contactPage .inner input{
     height: 45px;
@@ -3376,7 +3380,6 @@ svg {
   .contactPage .buttons .registerBtn,
   .pricing .purchasingSlider .purchasing .purchasing-butt{
     height: 50px;
-    font-size: 25px;
     width: 60%;
   }
   #wrapper .whatIs .inner .line{
@@ -3387,7 +3390,7 @@ svg {
     padding: 0;
   }
   .homeContainer{
-    height: 860px;
+    height: 740px;
   }
   #wrapper .circles{
     margin-top: 0;
@@ -3397,6 +3400,12 @@ svg {
   }
 
 }
+@media (max-width: 360px){
+  html{
+    font-size: 8px;
+  }
+}
+
 @media (min-width: 641px){
   #main-menu{
     display: block!important;
