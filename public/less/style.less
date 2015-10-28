@@ -2965,7 +2965,8 @@ svg {
   .homeContainer,
   .whatSay .inner,
   .topMenu .inner,
-  .whatIs .inner .left{
+  .whatIs .inner .left,
+  .signIn{
     width: 100%;
     box-sizing: border-box;
   }
@@ -2998,11 +2999,45 @@ svg {
   .data .required:nth-child(3),
   .data .required:nth-child(4),
   .data .required:nth-child(5),
-  .contactPage br
-  {
-    width: 100%;
-    box-sizing: border-box;
+  .contactPage br{
     display: none;
+  }
+  .signIn{
+    text-align: center;
+    position: relative;
+    h2{
+      border-bottom: 4px solid #44CBFF;
+      display: table;
+      padding-bottom: 20px;
+      margin: 180px auto 50px;
+    }
+  }
+  .signIn form > div{
+    float: none;
+    display: inline-block;
+    margin-right: 0;
+  }
+  .signIn .text{
+    text-align: left;
+    a.forgot{
+      display: none;
+    }
+  }
+  .signIn .ava{
+    display: block;
+    img{
+      width: 120px;
+      height: 120px;
+      margin-bottom: 20px;
+    }
+  }
+  .signIn .lock{
+    background-color: #56D66B;
+    position: absolute;
+    right: 0;
+    margin-top: 5px;
+    width: 40px;
+    height: 40px;
   }
   .contactPage{
     height: 920px;
@@ -3026,8 +3061,9 @@ svg {
   }
   /*------------------home--------------------------*/
   .homePage{
-    position: relative;
-    top: 150px;
+    position: absolute;
+    top: 170px;
+    left: 0;
   }
   .homePage .blue{
     float: none;
@@ -3039,7 +3075,9 @@ svg {
   }
   .contactLine,
   .mediaFooter,
-  .callUs{
+  .callUs,
+  .homePage >h1>br,
+  .menu-toggle{
     display: block;
   }
   .homePage h1{
@@ -3070,10 +3108,6 @@ svg {
     color: rgb(255, 255, 255);
     line-height: 1.125;
     font-family: "LatoLight";
-  }
-  .homePage >h1>br,
-  .menu-toggle{
-    display: block;
   }
   /*------------------home2------------------------*/
   .whatSay {
@@ -3114,8 +3148,7 @@ svg {
     top: 15%;
   }
   #wrapper .inner .arrows .arrow-left,
-  #wrapper .inner .arrows .arrow-right,
-  {
+  #wrapper .inner .arrows .arrow-right{
     background-repeat: no-repeat;
     background-position: center;
     width: 32px;
@@ -3123,13 +3156,11 @@ svg {
     cursor: pointer;
     text-indent: -9999px;
   }
-  #wrapper .inner .arrows .arrow-left
-  {
+  #wrapper .inner .arrows .arrow-left {
    .i("forward.png");
     float: left;
   }
-  #wrapper .inner .arrows .arrow-right
-  {
+  #wrapper .inner .arrows .arrow-right {
    .i("next-arrow.png");
     float: right;
   }
@@ -3143,13 +3174,17 @@ svg {
   .topMenu.small{
     background-color: rgba(0, 0, 0, 0.2)!important;
     border-bottom: none;
+    a{
+      visibility: hidden;
+      opacity: 0;
+      transition: 1s;
+    }
   }
   #wrapper .inner .line{
     margin-bottom: 80px;
     border-top: 4px solid rgb(68, 203, 255);
     width: 144px;
   }
-  .topMenu .inner #logo,
   footer,
   .whatSay .inner .line{
     display: none;
@@ -3266,7 +3301,8 @@ svg {
        p{
          font-size: 25.77px;
          font-weight: bold;
-          height: 8px;
+          height: auto;
+         margin: 0;
        }
       }
       p.purchasePrice{
@@ -3283,21 +3319,40 @@ svg {
     #main-menu {
       position: relative;
       z-index: 105;
+      top: -95px;
+      max-height: 100vh;
       li a {
         display: block;
         width: 100%;
         box-sizing: border-box;
         margin: 0;
         border-top: 1px solid #eee;
+        padding: 10px 20px;
       }
     }
 
+  }
+  body.withLogin .homeContainer .bg{
+    -webkit-filter: blur(2px);
+    -moz-filter: blur(2px);
+    -o-filter: blur(2px);
+    -ms-filter: blur(2px);
+    filter: blur(2px);
+  }
+  .topMenu .inner #logo {
+    height: 64px;
+    line-height: 79px;
+    color: #c7c7c7;
+    margin-left: 122px;
+    position: relative;
+    z-index: 999;
   }
 }
 @media (max-width: 480px){
   .homePage h1,
   #wrapper .inner h2,
-  #footer h2{
+  #footer h2,
+  .pricing .purchasingSlider .purchasing > h3{
     font-size: 26px;
   }
   .homePage span,
@@ -3305,19 +3360,29 @@ svg {
     font-size: 22px;
     padding: 16% 10%;
   }
+  .pricing .purchasingSlider .purchasing ul li,
+  .mediaFooter p{
+    font-size: 22px;
+  }
   .whatIs .advertising .item span{
     padding: 8% 16%;
     font-size: 22px;
   }
+  .contactPage .inner input{
+    height: 45px;
+  }
   #wrapper .blue,
-  #footer .contactUs
-   {
+  #footer .contactUs,
+  .contactPage .buttons .registerBtn,
+  .pricing .purchasingSlider .purchasing .purchasing-butt{
+    height: 50px;
     font-size: 25px;
     width: 60%;
   }
   #wrapper .whatIs .inner .line{
     margin-bottom: 0;
   }
+
   .mediaFooter p{
     padding: 0;
   }
