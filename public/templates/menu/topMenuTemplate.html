@@ -1,11 +1,13 @@
 <nav class="navBar topMenu">
   <div class="inner">
+	  <div id="toggle-wrapper">
     <a href="#/home" id="logo"><img width="230" src="i/logo.png"/></a>
       <div id="menu-toggle" class="menu-toggle">
           <span></span>
           <span></span>
           <span></span>
       </div>
+	  </div>
     <ul id="main-menu">
 	  <% if (!authorized){%>
       <li><a href="#/watchVideo" class="active showModal">WATCH DEMO</a></li>
