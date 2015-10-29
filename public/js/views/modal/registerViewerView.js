@@ -120,16 +120,18 @@ define([
                 closeOnEscape: false,
                 appendTo:"#topMenu",
                 dialogClass: "watch-dialog",
+                width: 700,
                 position: {
-                    my: "center center+73px",
+                    my: "center center+50px",
                     at: "center center"
                 },
                 create: function (e) {
-                    $(e.target).parent().css({'position':'fixed', 'min-width': '700px'});
-                    $(document).find('#topMenu').addClass('small');
                     if (window.innerWidth <= 640) {
                         $(document).find('#wrapper').css({'display': 'none'});
                         $(document).find('#footer').css({'display': 'none'});
+                    }else{
+                        $(e.target).parent().css({'position':'fixed'});
+                        $(document).find('.topMenu').addClass('small');
                     }
                 }
             });

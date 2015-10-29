@@ -93,15 +93,16 @@ define([
                 dialogClass: "watch-dialog",
                 width: 425,
 				position: {
-					my: "center center+12%",
-					at: "center center12%"
+					my: "center center",
+					at: "center center"
 				},
 				create: function (e) {
-					$(e.target).parent().css({'position': 'fixed'});
-					$(document).find('#topMenu').addClass('small');
 					if (window.innerWidth <= 640) {
 						$(document).find('#wrapper').css({'display': 'none'});
 						$(document).find('#footer').css({'display': 'none'});
+					}else{
+						$(e.target).parent().css({'position':'fixed'});
+						$(document).find('.topMenu').addClass('small');
 					}
 				}
             });

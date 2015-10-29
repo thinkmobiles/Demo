@@ -341,10 +341,24 @@ define([
 			});
 			this.dialog = $(formString).dialog({
 				modal:true,
+				resizable: false,
+				draggable: false,
 				closeOnEscape: false,
-				appendTo:"#wrapper",
-				dialogClass: "register-dialog",
-				width: 1180
+				appendTo:"#topMenu",
+				dialogClass: "watch-dialog",
+				width: 1180,
+				position: {
+					my: "center center",
+					at: "center center"
+				},
+				create: function (e) {
+					$(e.target).parent().css({'position':'fixed'});
+					$(document).find('.topMenu').addClass('small');
+					if (window.innerWidth <= 640) {
+						$(document).find('#wrapper').css({'display': 'none'});
+						$(document).find('#footer').css({'display': 'none'});
+					}
+				}
 			});
 			setTimeout(function () {
 				self.$el.find(".listVideo").stop().animate({ opacity: 0, marginRight: -130 }, 500);
