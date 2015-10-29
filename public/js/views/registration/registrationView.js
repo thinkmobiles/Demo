@@ -52,7 +52,7 @@ define([
 			if (!validation.validEmail(self.$el.find(".registration .email").val())){
 				isError = true;
 				self.$el.find(".registration .email").addClass("error");
-				App.notification("sgsdfgsdfgsdfg");
+				App.notification("Some error message");
 			}
 			if (!validation.validName(self.$el.find(".registration .firstName").val())){
 				isError = true;

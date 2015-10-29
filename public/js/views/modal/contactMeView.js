@@ -7,7 +7,7 @@ define([
     var View;
 	
     View = Backbone.View.extend({
-		el:"#wrapper",
+		el:"#topMenu",
         events: {
             "click .send":"send",
 			"click .ui-dialog-titlebar-close":"clickOnClose"
@@ -89,9 +89,21 @@ define([
 				resizable: false,
 				draggable: false,
                 closeOnEscape: false,
-				appendTo:"#wrapper",
+				appendTo:"#topMenu",
                 dialogClass: "watch-dialog",
-                width: 425
+                width: 425,
+				position: {
+					my: "center center+12%",
+					at: "center center12%"
+				},
+				create: function (e) {
+					$(e.target).parent().css({'position': 'fixed'});
+					$(document).find('#topMenu').addClass('small');
+					if (window.innerWidth <= 640) {
+						$(document).find('#wrapper').css({'display': 'none'});
+						$(document).find('#footer').css({'display': 'none'});
+					}
+				}
             });
             return this;
         }

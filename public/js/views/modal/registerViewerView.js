@@ -7,7 +7,7 @@ define([
     var View;
 
     View = Backbone.View.extend({
-        el: "#wrapper",
+        el: "#topMenu",
         events: {
             "click .ui-dialog-titlebar-close": "closeDialog",
             "click .continue": "register",
@@ -114,11 +114,24 @@ define([
         render: function () {
             var formString = _.template(modalTemplate)({});
             this.dialog = $(formString).dialog({
-                modal: true,
+                modal:true,
+                resizable: false,
+                draggable: false,
                 closeOnEscape: false,
-                appendTo: "#wrapper",
-                dialogClass: "register-dialog",
-                width: 700
+                appendTo:"#topMenu",
+                dialogClass: "watch-dialog",
+                position: {
+                    my: "center center+73px",
+                    at: "center center"
+                },
+                create: function (e) {
+                    $(e.target).parent().css({'position':'fixed', 'min-width': '700px'});
+                    $(document).find('#topMenu').addClass('small');
+                    if (window.innerWidth <= 640) {
+                        $(document).find('#wrapper').css({'display': 'none'});
+                        $(document).find('#footer').css({'display': 'none'});
+                    }
+                }
             });
             return this;
         }

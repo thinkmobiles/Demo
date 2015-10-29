@@ -39,6 +39,8 @@ define([
             new FooterView();
 			$(document).on("click", ".ui-dialog-titlebar-close", function (e) {
 				$(".ui-dialog").remove();
+                $(document).find('#wrapper').css({'display': 'block'});
+                $(document).find('#footer').css({'display': 'block'});
             });
 			$(document).on("click", function (e) {
 				if (!$(e.target).closest(".customSelect").length){
