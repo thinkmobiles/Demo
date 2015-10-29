@@ -103,25 +103,20 @@
 .clear {
   clear: both;
 }
-
 html, body {
+  font-size: 100%;
   .mp;
   //width:100%;
   position: relative;
   font-family: "LatoRegular";
 }
-
-body {
-  min-width: 1150px;
-}
-
 #topMenu {
   width: 1070px;
 }
 
 .topMenu {
   height: 120px;
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.4);
   position: fixed;
   top: 0px;
   width: 100%;
@@ -231,13 +226,13 @@ body {
   top: 210px;
   h1 {
     .mp;
-    font-size: 38px;
+    font-size: 2.375rem;
     color: #333333;
     font-weight: normal;
   }
   span {
     display: block;
-    font-size: 24px;
+    font-size: 1.5rem;
     color: white;
     padding: 40px 0 40px 0;
   }
@@ -263,7 +258,6 @@ body {
     background-color: transparent;;
     border-radius: 5px;
     color: white;
-    border: none;
     font-size: 20px;
     border: 1px solid white;
     float: left;
@@ -279,7 +273,6 @@ body {
   background-color: transparent;;
   border-radius: 5px;
   color: white;
-  border: none;
   font-size: 20px;
   border: 1px solid white;
   float: left;
@@ -294,7 +287,7 @@ body {
       margin-top: 0px;
       text-align: center;
       font-family: "LatoSemiBold";
-      font-size: 34px;
+      font-size: 2.125rem;
     }
     .line {
       width: 60px;
@@ -329,7 +322,7 @@ body {
       }
       span {
         font-family: "LatoRegular";
-        font-size: 18px;
+        font-size: 1.125rem;
         color: #646566;
         line-height: 27px;
       }
@@ -931,7 +924,6 @@ footer {
     display: none;
   }
   .buttons {
-    margin-top: 50px;
     width: 430px;
     margin: 50px auto 0 auto;
     .decline {
@@ -991,7 +983,6 @@ footer {
   padding-left: 38px !important;
 
   h3 {
-    color: #333333;
     font-family: "LatoSemiBold";
     font-size: 21px;
     color: #333333;
@@ -1002,7 +993,6 @@ footer {
     &:after {
       content: '*';
       color: #e85044;
-      font-size: 18px;
       position: absolute;
       right: 35px;
       top: 18px;
@@ -1500,7 +1490,6 @@ footer {
     &:after {
       content: '*';
       color: #e85044;
-      font-size: 18px;
       position: absolute;
       right: 25px;
       top: 45px;
@@ -1613,7 +1602,6 @@ footer {
     &:after {
       content: '*';
       color: #e85044;
-      font-size: 18px;
       position: absolute;
       right: 25px;
       top: 45px;
@@ -2478,7 +2466,6 @@ div.tooltip {
 
   &.show {
     -webkit-transform: rotateX(0deg) scale(1);
-    -webkit-transform: rotateX(0deg) scale(1);
     -moz-transform: rotateX(0deg) scale(1);
     -ms-transform: rotateX(0deg) scale(1);
     margin-top: 0px;
@@ -2600,7 +2587,6 @@ svg {
 #preview {
   width: 100px;
   height: 100px;
-  display: block;
   position: absolute;
   left: -110px;
   top: 5px;
@@ -2797,7 +2783,7 @@ svg {
   .contactUs {
     border-radius: 8px;
     width: 75.5%;
-    font-size: 36px;
+    font-size: 2rem;
     font-weight: bold;
     float: none;
     margin: 70px  auto 0;
@@ -2809,10 +2795,11 @@ svg {
   }
   p {
     font-family: "LatoLight";
-    font-size: 30px;
+    font-size: 1.875rem;
     color: rgb(38, 50, 56);
     line-height: 1.5;
     text-align: left;
+    clear: both;
   }
 
   p:before{
@@ -2841,7 +2828,7 @@ svg {
   li {
     display: inline-block;
     list-style: none;
-    margin: 110px 25px 0;
+    margin: 30% 5% 0;
     a{
       display: block;
     }
@@ -2865,7 +2852,8 @@ svg {
 
 }
 /*----------toggle menu-------------------*/
-.menu-toggle {
+.toggle-wrapper {
+  .menu-toggle {
   width: 42px;
   height: 31px;
   -webkit-transform: rotate(0deg);
@@ -2916,43 +2904,54 @@ svg {
   -o-transform-origin: left center;
   transform-origin: left center;
 }
-.menu-toggle span:nth-child(3) {
-  top: 24px;
-  -webkit-transform-origin: left center;
-  -moz-transform-origin: left center;
-  -o-transform-origin: left center;
-  transform-origin: left center;
+  .menu-toggle span:nth-child(3) {
+    top: 24px;
+    -webkit-transform-origin: left center;
+    -moz-transform-origin: left center;
+    -o-transform-origin: left center;
+    transform-origin: left center;
+  }
+  #logo{
+    visibility: hidden;
+  }
+&.open{
+  #logo{
+    visibility: visible;
+  }
+
+  .menu-toggle span:nth-child(1) {
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    transform: rotate(45deg);
+    top: 0px;
+    left: 8px;
+  }
+
+  .menu-toggle span:nth-child(2) {
+    width: 0%;
+    opacity: 0;
+  }
+
+  .menu-toggle span:nth-child(3) {
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+    top: 30px;
+    left: 8px;
+  }
 }
 
-.menu-toggle.open span:nth-child(1) {
-  -webkit-transform: rotate(45deg);
-  -moz-transform: rotate(45deg);
-  -o-transform: rotate(45deg);
-  transform: rotate(45deg);
-  top: 0px;
-  left: 8px;
 }
-
-.menu-toggle.open span:nth-child(2) {
-  width: 0%;
-  opacity: 0;
-}
-
-.menu-toggle.open span:nth-child(3) {
-  -webkit-transform: rotate(-45deg);
-  -moz-transform: rotate(-45deg);
-  -o-transform: rotate(-45deg);
-  transform: rotate(-45deg);
-  top: 30px;
-  left: 8px;
+#topMenu nav:not(.small){
+  #logo{
+    visibility: visible;
+  }
 }
 /*--------------------------media-------------------------------*/
 
 @media (max-width: 640px){
-  body{
-    min-width: auto!important;
-    background-color: #EDF3F5;
-  }
   #topMenu,
   #wrapper,
   .homePage,
@@ -2972,14 +2971,16 @@ svg {
   }
   /*---------------contact us------------------*/
   .contactPage h2{
-    font-size: 40px;
     margin-bottom: 20px;
+  }
+  .small.topMenu{
+
   }
   .contactPage .inner input,
   .contactPage .inner textarea{
     margin-left: 0;
     border-radius: 3px;
-    font-size: 24px;
+    font-size: 1.8rem;
   }
   .contactPage .inner input{
   height: 70px;
@@ -3005,6 +3006,9 @@ svg {
   .signIn{
     text-align: center;
     position: relative;
+    .username, .pass{
+      width: 73%;
+    }
     h2{
       border-bottom: 4px solid #44CBFF;
       display: table;
@@ -3056,7 +3060,7 @@ svg {
   .contactPage .buttons .registerBtn{
     float: none;
     margin:  0 auto;
-    font-size: 36px;
+    font-size: 2rem;
     width: 52%;
   }
   /*------------------home--------------------------*/
@@ -3068,7 +3072,7 @@ svg {
   .homePage .blue{
     float: none;
     margin: 0 auto 0 auto;
-    font-size: 36px;
+    font-size: 2.25rem;
     font-weight: bold;
     width: 60%;
     border-radius: 8px;
@@ -3077,11 +3081,10 @@ svg {
   .mediaFooter,
   .callUs,
   .homePage >h1>br,
-  .menu-toggle{
+  .toggle-wrapper .menu-toggle{
     display: block;
   }
   .homePage h1{
-    font-size: 40px;
     line-height: 1.35;
     text-align: center;
     display: inline;
@@ -3104,15 +3107,14 @@ svg {
     }
   }
   .homePage span {
-    font-size: 32px;
     color: rgb(255, 255, 255);
     line-height: 1.125;
     font-family: "LatoLight";
   }
   /*------------------home2------------------------*/
   .whatSay {
-    min-height: 720px;
     box-sizing: border-box;
+    margin-bottom: 0;
     .inner {
       position: relative;
       h2 {
@@ -3171,14 +3173,10 @@ svg {
     height: 65px;
     background-color: rgba(0, 0, 0, 0.2);
   }
+
   .topMenu.small{
     background-color: rgba(0, 0, 0, 0.2)!important;
     border-bottom: none;
-    a{
-      visibility: hidden;
-      opacity: 0;
-      transition: 1s;
-    }
   }
   #wrapper .inner .line{
     margin-bottom: 80px;
@@ -3198,17 +3196,12 @@ svg {
     li {
       float: none;
       line-height: 73px;
-      a{
-        line-height: inherit;
-        color: #44cbff;
-      }
     }
 
   }
   .whatIs{
     padding-bottom: 60px;
     h2{
-      font-size: 40px;
       line-height: 1.35;
       padding: 0 15%;
     }
@@ -3218,15 +3211,14 @@ svg {
     position: relative;
     .item{
       width: 100%;
-      height: 230px;
       display: none;
       span{
         padding: 0 14%;
         text-align: center;
         display: block;
-        font-size: 32px;
         font-family: "LatoLight";
         line-height: 1.125;
+        font-size: 2rem;
       }
       &.selected{
         display: block;
@@ -3243,8 +3235,6 @@ svg {
     .blue{
       margin: 100px auto 0 auto;
       float: none;
-      font-size: 36px;
-      width: 365px;
     }
   }
   #wrapper .circles{
@@ -3271,7 +3261,7 @@ svg {
       width: 71.87%;
       margin: 0 auto;
       float: none;
-      min-height: 670px;
+      padding-bottom: 10%;
       background-color: #EBEBEB;
       >h3 {
         font-size: 32px;
@@ -3281,7 +3271,7 @@ svg {
         font-size: 28px;
         font-family: 'LatoLight';
         color: rgb(120, 144, 156);
-        padding: 16px 0;
+        padding: 4% 0;
         border-color: #D7D8D9;
       }
       &.selected {
@@ -3320,14 +3310,15 @@ svg {
       position: relative;
       z-index: 105;
       top: -95px;
-      max-height: 100vh;
       li a {
         display: block;
         width: 100%;
         box-sizing: border-box;
         margin: 0;
         border-top: 1px solid #eee;
-        padding: 10px 20px;
+        padding: 5px 20px;
+        line-height: inherit;
+        color: #44cbff;
       }
     }
 
@@ -3340,33 +3331,42 @@ svg {
     filter: blur(2px);
   }
   .topMenu .inner #logo {
-    height: 64px;
-    line-height: 79px;
+    height: 73px;
+    line-height: 73px;
     color: #c7c7c7;
-    margin-left: 122px;
+    margin-left: 34%;
     position: relative;
-    z-index: 999;
+    z-index: 106;
+    img{
+      width: 50%;
+    }
   }
-}
-@media (max-width: 480px){
-  .homePage h1,
+  /*-----------font-size--------------*/
   #wrapper .inner h2,
   #footer h2,
   .pricing .purchasingSlider .purchasing > h3{
-    font-size: 26px;
+    font-size: 2.5rem;
   }
-  .homePage span,
   .whatSay .inner em{
-    font-size: 22px;
+    font-size: 2.1rem;
     padding: 16% 10%;
   }
-  .pricing .purchasingSlider .purchasing ul li,
-  .mediaFooter p{
-    font-size: 22px;
+}
+@media (max-width: 480px){
+  html{
+    font-size: 10px;
   }
-  .whatIs .advertising .item span{
+  .pricing .purchasingSlider .purchasing ul li,
+  .pricing .purchasingSlider .purchasing p.purchasePrice,
+  .pricing .purchasingSlider .purchasing .purchasing-butt p{
+    font-size: 16px;
+  }
+  .pricing .purchasingSlider .purchasing > h3{
+    font-size: 24px;
+  }
+  .whatIs .advertising .item span,
+  .homePage span{
     padding: 8% 16%;
-    font-size: 22px;
   }
   .contactPage .inner input{
     height: 45px;
@@ -3376,7 +3376,6 @@ svg {
   .contactPage .buttons .registerBtn,
   .pricing .purchasingSlider .purchasing .purchasing-butt{
     height: 50px;
-    font-size: 25px;
     width: 60%;
   }
   #wrapper .whatIs .inner .line{
@@ -3387,7 +3386,7 @@ svg {
     padding: 0;
   }
   .homeContainer{
-    height: 860px;
+    height: 640px;
   }
   #wrapper .circles{
     margin-top: 0;
@@ -3397,6 +3396,12 @@ svg {
   }
 
 }
+@media (max-width: 360px){
+  html{
+    font-size: 8px;
+  }
+}
+
 @media (min-width: 641px){
   #main-menu{
     display: block!important;
