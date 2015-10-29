@@ -1352,7 +1352,7 @@ footer {
   text-align: center;
   padding-top: 1px;
   overflow: hidden;
-  margin-bottom: 460px;
+  margin-bottom: 260px;
   h2 {
     text-align: center;
     margin-top: 0px;
@@ -2911,12 +2911,14 @@ svg {
     -o-transform-origin: left center;
     transform-origin: left center;
   }
-  #logo{
-    visibility: hidden;
-  }
 &.open{
   #logo{
-    visibility: visible;
+    opacity: 1;
+    -webkit-transition: all 1s;
+    -moz-transition: all 1s ;
+    -ms-transition: all 1s ;
+    -o-transition: all 1s ;
+    transition: all 1s ;
   }
 
   .menu-toggle span:nth-child(1) {
@@ -2946,7 +2948,12 @@ svg {
 }
 #topMenu nav:not(.small){
   #logo{
-    visibility: visible;
+    opacity: 1;
+    -webkit-transition: all 1s;
+    -moz-transition: all 1s ;
+    -ms-transition: all 1s ;
+    -o-transition: all 1s ;
+    transition: all 1s ;
   }
 }
 /*--------------------------media-------------------------------*/
@@ -3006,6 +3013,9 @@ svg {
   .signIn{
     text-align: center;
     position: relative;
+    form{
+      position: relative;
+    }
     .username, .pass{
       width: 73%;
     }
@@ -3039,13 +3049,10 @@ svg {
     background-color: #56D66B;
     position: absolute;
     right: 0;
+    top: 72.5%;
     margin-top: 5px;
     width: 40px;
     height: 40px;
-  }
-  .contactPage{
-    height: 920px;
-    box-sizing: border-box;
   }
   .contactPage .buttons .registerBtn,
   .homePage .blue,
@@ -3069,13 +3076,15 @@ svg {
     top: 170px;
     left: 0;
   }
-  .homePage .blue{
+  .homePage .blue,
+  .register .continue{
     float: none;
     margin: 0 auto 0 auto;
     font-size: 2.25rem;
     font-weight: bold;
     width: 60%;
     border-radius: 8px;
+
   }
   .contactLine,
   .mediaFooter,
@@ -3141,7 +3150,7 @@ svg {
   }
   #wrapper .inner .arrows {
     width: 96%;
-    top: 54%;
+    top: 45%;
     left: 2%;
     position: absolute;
     z-index: 101;
@@ -3249,7 +3258,7 @@ svg {
   }
   /*---------Pricing---------*/
   .pricing {
-
+      margin-bottom: 40px;
      .inner >p{
       display: none;
     }
@@ -3334,22 +3343,54 @@ svg {
     height: 73px;
     line-height: 73px;
     color: #c7c7c7;
-    margin-left: 34%;
     position: relative;
     z-index: 106;
+    width: 100%;
+    text-align: center;
     img{
-      width: 50%;
+      width: 45%;
+      min-width: 150px;
     }
   }
   /*-----------font-size--------------*/
   #wrapper .inner h2,
-  #footer h2,
-  .pricing .purchasingSlider .purchasing > h3{
+  #footer h2 {
     font-size: 2.5rem;
   }
   .whatSay .inner em{
     font-size: 2.1rem;
     padding: 16% 10%;
+  }
+  .aboutUs p{
+    padding: 0 5%;
+  }
+  #logo{
+    opacity: 0;
+    -webkit-transition: all 1s;
+    -moz-transition: all 1s ;
+    -ms-transition: all 1s ;
+    -o-transition: all 1s ;
+    transition: all 1s ;
+  }
+  div .watch-dialog, .register-dialog{
+    width: 100%!important;
+    left: 0!important;
+    padding-top: 95px;
+    top: 0!important;
+    box-sizing: border-box;
+  }
+  .register .continue{
+    margin: 30px auto;
+  }
+  .register .left,
+  .register .right{
+    width: 80%;
+    input, textarea{
+      width: 100%;
+    }
+  }
+  .register h3{
+    margin-top: 0;
   }
 }
 @media (max-width: 480px){
@@ -3399,6 +3440,19 @@ svg {
 @media (max-width: 360px){
   html{
     font-size: 8px;
+  }
+  .signIn .lock{
+    display: block;
+    width: 60px;
+    height: 50px;
+    margin: 0 auto;
+    position: inherit;
+  }
+  .signIn h2{
+    margin-top: 110px;
+  }
+  .pricing .purchasingSlider .purchasing > h3{
+    font-size: 21px;
   }
 }
 
