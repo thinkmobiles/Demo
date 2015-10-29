@@ -52,6 +52,7 @@ define([
 			if (!validation.validEmail(self.$el.find(".registration .email").val())){
 				isError = true;
 				self.$el.find(".registration .email").addClass("error");
+				App.notification("sgsdfgsdfgsdfg");
 			}
 			if (!validation.validName(self.$el.find(".registration .firstName").val())){
 				isError = true;
@@ -76,7 +77,7 @@ define([
 			}
 			
 			var pass = self.$el.find(".registration .pass").val();
-            var rate = checkPass.scorePassword(pass)
+            var rate = checkPass.scorePassword(pass);
 			
 			if (!pass || rate<30){
 				isError = true;

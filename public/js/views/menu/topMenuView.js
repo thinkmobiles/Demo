@@ -12,8 +12,8 @@ define([
             'click .login': 'login',
             'click .navBar': 'toPage',
             "click .topMenu": "toTop",
-            "click #menu-toggle": "toggleMenu",
-            "click li a": "hideMenu"
+            "click #menu-toggle,#main-menu": "toggleMenu",
+            "click #toggle-wrapper a": "hideMenu"
 
         },
 
@@ -26,8 +26,8 @@ define([
         hideMenu: function () {
             if (window.innerWidth <= 640) {
                 var self = this;
-                this.$el.find('#menu-toggle').removeClass('open', function () {
-                    self.$el.find('#main-menu').fadeOut(300, "linear")
+                this.$el.find('.toggle-wrapper').removeClass('open', function () {
+                    self.$el.find('#main-menu').slideUp(500, "swing");
                 });
             }
         },
@@ -51,6 +51,7 @@ define([
 
         login: function (e) {
             e.stopPropagation();
+            this.toggleMenu();
             $("body").addClass("withLogin");
             setTimeout(function () {
                 $(".signIn .username .userName")[0].focus();
