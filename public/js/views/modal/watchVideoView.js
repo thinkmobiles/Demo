@@ -8,7 +8,7 @@ define([
 	var View;
 
 	View = Backbone.View.extend({
-		el:"#wrapper",
+		el:"#topMenu",
 		events: {
 			"click .pdf": "trackDocument",
 			"click .questionSection table .checkbox" : "checkedQuestion",
@@ -34,6 +34,17 @@ define([
 			this.indexList = options&&options.indexList?options.indexList:[];
 			var page = options&&options.page?options.page:null;
 			this.currentSurvay = [];
+
+			$(window).on("orientationchange",function(event){
+				var angle = ($(window)[0]&&$(window)[0].screen&&$(window)[0].screen.orientation)?$(window)[0].screen.orientation.angle:null;
+				console.log(angle);
+					if(angle == 0) {
+						self.$el.find(".watch-dialog").removeClass('landscape').addClass('portrait')
+					} else {
+						self.$el.find(".watch-dialog").removeClass('portrait').addClass('landscape')
+					}
+			});
+
 			window.addEventListener("beforeunload", function() {
 				var videoEl =self.$el.find(".surveyVideo")[0]||self.$el.find(".mainVideo")[0];
 				self.trackVideo(videoEl, false);
@@ -360,6 +371,7 @@ define([
 					}
 				}
 			});
+			$(window).trigger('orientationchange');
 			setTimeout(function () {
 				self.$el.find(".listVideo").stop().animate({ opacity: 0, marginRight: -130 }, 500);
 			}, 3000);
