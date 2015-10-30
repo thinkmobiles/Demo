@@ -66,51 +66,50 @@ define([
                 if (!validation.validName(self.$el.find(".registration .firstName").val())) {
                     isError = true;
                     self.$el.find(".registration .firstName").addClass("error");
-                    message = (message == '') ? "That is not a valid first name." : message;
+                    message = (message == '') ? "That is not a valid first name. Field can not contain '~ < > ^ * ₴' signs only a-z A-Z" : message;
                 }
 
                 //lastName
                 if (!validation.validName(self.$el.find(".registration .lastName").val())) {
                     isError = true;
                     self.$el.find(".registration .lastName").addClass("error");
-                    message = (message == '') ? "That is not a valid last name." : message;
+                    message = (message == '') ? "That is not a valid last name. Field can not contain '~ < > ^ * ₴' signs only a-z A-Z" : message;
                 }
 
                 //userName
                 if (!validation.validLogin(self.$el.find(".registration .userName").val())) {
                     isError = true;
                     self.$el.find(".registration .userName").addClass("error");
-                    message = (message == '') ? "That is not a valid user name." : message;
+                    message = (message == '') ? "That is not a valid user name. It should contain only the following symbols: A-Z, a-z, 0-9, _ @" : message;
                 }
 
                 //organization
                 if (!self.$el.find(".registration .organization").val()||self.$el.find(".registration .organization").val()<2||self.$el.find(".registration .organization").val()>30) {
                     isError = true;
                     self.$el.find(".registration .organization").addClass("error");
-                    message = (message == '') ? "That is not a valid organization name." : message;
+                    message = (message == '') ? "That is not a valid organization name. Field can not contain '~ < > ^ * ₴' signs only a-z A-Z" : message;
                 }
 
                 //phone
                 if (!validation.validPhone(self.$el.find(".registration .phone").val())) {
                     isError = true;
                     self.$el.find(".registration .phone").addClass("error");
-                    message = (message == '') ? "That is not a valid phone number." : message;
+                    message = (message == '') ? "That is not a valid phone number. It should contain only numbers and '+ - ( )' signs" : message;
                 }
             //pass
-            if (!validation.validatePass(self.$el.find(".registration .pass").val())) {
+                if (!validation.validPass(self.$el.find(".registration .pass").val())) {
                     isError = true;
                     self.$el.find(".registration .phone").addClass("error");
-                    message = (message == '') ? "That is not a valid phone number." : message;
-                }
+                    message = (message == '') ? "That is not a valid password. Password can not contain '~ < > ^ * ₴' signs" : message;
+                }else{
+                    var pass = self.$el.find(".registration .pass").val();
+                    var rate = checkPass.scorePassword(pass);
 
-                //pass
-                var pass = self.$el.find(".registration .pass").val();
-                var rate = checkPass.scorePassword(pass);
-
-                if (!pass || rate < 30) {
-                    isError = true;
-                    self.$el.find(".registration .pass").addClass("error");
-                    message = (message == '') ?  "Password is too weak": message;
+                    if (!pass || rate < 30) {
+                        isError = true;
+                        self.$el.find(".registration .pass").addClass("error");
+                        message = (message == '') ?  "Your password is weak. Please choose a stronger password": message;
+                    }
                 }
 
                 if (!self.$el.find(".registration .conf").val() || self.$el.find(".registration .conf").val() !== self.$el.find(".registration .pass").val()) {
