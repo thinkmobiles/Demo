@@ -87,6 +87,13 @@
   -ms-filter: blur(@blur);
   filter: blur(@blur);
 }
+.transition(@property,@time){
+  -webkit-transition: @property @time;
+  -moz-transition: @property @time;
+  -ms-transition: @property @time;
+  -o-transition: @property @time;
+  transition: @property @time;
+}
 
 @img-path: "../i";
 
@@ -1352,7 +1359,7 @@ footer {
   text-align: center;
   padding-top: 1px;
   overflow: hidden;
-  margin-bottom: 460px;
+  margin-bottom: 260px;
   h2 {
     text-align: center;
     margin-top: 0px;
@@ -2470,9 +2477,7 @@ div.tooltip {
     -ms-transform: rotateX(0deg) scale(1);
     margin-top: 0px;
     opacity: 0.9;
-    -webkit-transition: all 0.3s;
-    -moz-transition: all 0.3s;
-    transition: all 0.3s;
+    .transition(all,.3s);
   }
   &:after {
     content: "";
@@ -2683,12 +2688,10 @@ svg {
   transform: scale(0.5);
 
   opacity: 0;
-  -webkit-transition: all 0.4s;
-  -moz-transition: all 0.4s;
-  transition: all 0.4s;
   margin: 0 auto;
   left: inherit !important;
   position: relative;
+  .transition(all, 0.4s);
   &.show {
     -webkit-transform: scale(1);
     -moz-transform: scale(1);
@@ -2852,74 +2855,63 @@ svg {
 
 }
 /*----------toggle menu-------------------*/
-.toggle-wrapper {
-  .menu-toggle {
+.toggle-wrapper .menu-toggle {
   width: 42px;
   height: 31px;
   -webkit-transform: rotate(0deg);
   -moz-transform: rotate(0deg);
   -o-transform: rotate(0deg);
   transform: rotate(0deg);
-  -webkit-transition: .5s ease-in-out;
-  -moz-transition: .5s ease-in-out;
-  -o-transition: .5s ease-in-out;
-  transition: .5s ease-in-out;
+  .transition(all, .5s);
+  transition-timing-function: ease-in-out;
   cursor: pointer;
   display: none;
   position: absolute;
   right: 5%;
   top: 16px;
   z-index: 107;
-}
-.menu-toggle span {
-  display: block;
-  position: absolute;
-  height: 6px;
-  width: 100%;
-  background: #fff;
-  border-radius: 9px;
-  opacity: 1;
-  left: 0;
-  -webkit-transform: rotate(0deg);
-  -moz-transform: rotate(0deg);
-  -o-transform: rotate(0deg);
-  transform: rotate(0deg);
-  -webkit-transition: .25s ease-in-out;
-  -moz-transition: .25s ease-in-out;
-  -o-transition: .25s ease-in-out;
-  transition: .25s ease-in-out;
-}
-.menu-toggle span:nth-child(1) {
-  top: 0px;
-  -webkit-transform-origin: left center;
-  -moz-transform-origin: left center;
-  -o-transform-origin: left center;
-  transform-origin: left center;
-}
 
-.menu-toggle span:nth-child(2) {
-  top: 12px;
-  -webkit-transform-origin: left center;
-  -moz-transform-origin: left center;
-  -o-transform-origin: left center;
-  transform-origin: left center;
-}
-  .menu-toggle span:nth-child(3) {
-    top: 24px;
+  span {
+    display: block;
+    position: absolute;
+    height: 6px;
+    width: 100%;
+    background: #fff;
+    border-radius: 9px;
+    opacity: 1;
+    left: 0;
+    -webkit-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+    .transition(all, .25s);
+    transition-timing-function: linear;
+  }
+  span:nth-child(3),
+  span:nth-child(1),
+  span:nth-child(2) {
     -webkit-transform-origin: left center;
     -moz-transform-origin: left center;
     -o-transform-origin: left center;
     transform-origin: left center;
   }
-  #logo{
-    visibility: hidden;
-  }
-&.open{
-  #logo{
-    visibility: visible;
+  span:nth-child(1) {
+    top: 0px;
   }
 
-  .menu-toggle span:nth-child(1) {
+  span:nth-child(2) {
+    top: 12px;
+  }
+  span:nth-child(3) {
+    top: 24px;
+  }
+}
+.toggle-wrapper.open {
+  #logo {
+    opacity: 1;
+    .transition(all, 1s);
+  }
+  span:nth-child(1) {
     -webkit-transform: rotate(45deg);
     -moz-transform: rotate(45deg);
     -o-transform: rotate(45deg);
@@ -2928,12 +2920,12 @@ svg {
     left: 8px;
   }
 
-  .menu-toggle span:nth-child(2) {
+  span:nth-child(2) {
     width: 0%;
     opacity: 0;
   }
 
-  .menu-toggle span:nth-child(3) {
+  span:nth-child(3) {
     -webkit-transform: rotate(-45deg);
     -moz-transform: rotate(-45deg);
     -o-transform: rotate(-45deg);
@@ -2942,11 +2934,10 @@ svg {
     left: 8px;
   }
 }
-
-}
 #topMenu nav:not(.small){
   #logo{
-    visibility: visible;
+    opacity: 1;
+   .transition(all, 1s);
   }
 }
 /*--------------------------media-------------------------------*/
@@ -2956,44 +2947,44 @@ svg {
   #wrapper,
   .homePage,
   #wrapper div .inner,
-   footer .inner,
   .contactPage .inner input,
   .contactPage .inner .required,
   .contactPage .inner textarea,
   .contactPage .buttons,
   .homeContainer,
-  .whatSay .inner,
   .topMenu .inner,
   .whatIs .inner .left,
-  .signIn{
+  .signIn,
+  .videoWatch .right, .videoWatch  .left {
     width: 100%;
     box-sizing: border-box;
   }
   /*---------------contact us------------------*/
+
   .contactPage h2{
     margin-bottom: 20px;
   }
-  .small.topMenu{
 
+  .contactPage {
+    padding: 0 5%;
+    .inner {
+      input, textarea {
+        margin-left: 0;
+        border-radius: 3px;
+        font-size: 1.8rem;
+      }
+      input {
+        height: 70px;
+      }
+    }
   }
-  .contactPage .inner input,
-  .contactPage .inner textarea{
-    margin-left: 0;
-    border-radius: 3px;
-    font-size: 1.8rem;
-  }
-  .contactPage .inner input{
-  height: 70px;
-  }
+
   .contactPage,
   .homeContainer{
     width: 100%;
     box-sizing: border-box;
     text-align: center;
   }
-  .contactPage{
-  padding: 0 5%;
- }
 
   .contactPage .buttons  button.cancel,
   .data .required:nth-child(2),
@@ -3006,6 +2997,14 @@ svg {
   .signIn{
     text-align: center;
     position: relative;
+    form{
+      position: relative;
+      > div{
+        float: none;
+        display: inline-block;
+        margin-right: 0;
+      }
+    }
     .username, .pass{
       width: 73%;
     }
@@ -3015,38 +3014,31 @@ svg {
       padding-bottom: 20px;
       margin: 180px auto 50px;
     }
-  }
-  .signIn form > div{
-    float: none;
-    display: inline-block;
-    margin-right: 0;
-  }
-  .signIn .text{
-    text-align: left;
-    a.forgot{
-      display: none;
+    .text{
+      text-align: left;
+      a.forgot{
+        display: none;
+      }
+    }
+    .ava {
+      display: block;
+      img {
+        width: 120px;
+        height: 120px;
+        margin-bottom: 20px;
+      }
+    }
+    .lock{
+      background-color: #56D66B;
+      position: absolute;
+      right: 0;
+      top: 72.5%;
+      margin-top: 5px;
+      width: 40px;
+      height: 40px;
     }
   }
-  .signIn .ava{
-    display: block;
-    img{
-      width: 120px;
-      height: 120px;
-      margin-bottom: 20px;
-    }
-  }
-  .signIn .lock{
-    background-color: #56D66B;
-    position: absolute;
-    right: 0;
-    margin-top: 5px;
-    width: 40px;
-    height: 40px;
-  }
-  .contactPage{
-    height: 920px;
-    box-sizing: border-box;
-  }
+
   .contactPage .buttons .registerBtn,
   .homePage .blue,
   .contactUs,
@@ -3068,8 +3060,12 @@ svg {
     position: absolute;
     top: 170px;
     left: 0;
+    span{
+     padding: 8%  15%;
+    }
   }
-  .homePage .blue{
+  .homePage .blue,
+  .register .continue{
     float: none;
     margin: 0 auto 0 auto;
     font-size: 2.25rem;
@@ -3077,6 +3073,7 @@ svg {
     width: 60%;
     border-radius: 8px;
   }
+
   .contactLine,
   .mediaFooter,
   .callUs,
@@ -3118,7 +3115,6 @@ svg {
     .inner {
       position: relative;
       h2 {
-        font-size: 40px;
         color: rgb(38, 50, 56);
         line-height: 1.35;
         padding: 0 20%;
@@ -3127,11 +3123,10 @@ svg {
       .messages {
         margin-top: 70px;
         > div {
-          padding: 0 7%;
+          padding: 0 11%;
         }
       }
       em {
-        font-size: 28px;
         color: rgb(38, 50, 56);
         font-style: italic;
         line-height: 1.571;
@@ -3141,7 +3136,7 @@ svg {
   }
   #wrapper .inner .arrows {
     width: 96%;
-    top: 54%;
+    top: 45%;
     left: 2%;
     position: absolute;
     z-index: 101;
@@ -3149,22 +3144,26 @@ svg {
   #wrapper .inner .advertising .arrows{
     top: 15%;
   }
-  #wrapper .inner .arrows .arrow-left,
-  #wrapper .inner .arrows .arrow-right{
-    background-repeat: no-repeat;
-    background-position: center;
-    width: 32px;
-    height: 45px;
-    cursor: pointer;
-    text-indent: -9999px;
+  #wrapper .inner .arrows{
+    .arrow-left,
+    .arrow-right {
+      background-repeat: no-repeat;
+      background-position: center;
+      width: 32px;
+      height: 45px;
+      cursor: pointer;
+      text-indent: -9999px;
+    }
   }
-  #wrapper .inner .arrows .arrow-left {
-   .i("forward.png");
-    float: left;
-  }
-  #wrapper .inner .arrows .arrow-right {
-   .i("next-arrow.png");
-    float: right;
+  #wrapper .inner .arrows {
+    .arrow-left {
+      .i("forward.png");
+      float: left;
+    }
+    .arrow-right {
+      .i("next-arrow.png");
+      float: right;
+    }
   }
   /*----------------*/
   /* top menu*/
@@ -3249,7 +3248,7 @@ svg {
   }
   /*---------Pricing---------*/
   .pricing {
-
+      margin-bottom: 40px;
      .inner >p{
       display: none;
     }
@@ -3268,7 +3267,7 @@ svg {
         background-color: #CACACA;
       }
       ul li{
-        font-size: 28px;
+        font-size: 24px;
         font-family: 'LatoLight';
         color: rgb(120, 144, 156);
         padding: 4% 0;
@@ -3324,46 +3323,117 @@ svg {
 
   }
   body.withLogin .homeContainer .bg{
-    -webkit-filter: blur(2px);
-    -moz-filter: blur(2px);
-    -o-filter: blur(2px);
-    -ms-filter: blur(2px);
-    filter: blur(2px);
+    .filter(2px);
   }
   .topMenu .inner #logo {
     height: 73px;
     line-height: 73px;
     color: #c7c7c7;
-    margin-left: 34%;
     position: relative;
     z-index: 106;
+    width: 100%;
+    text-align: center;
     img{
-      width: 50%;
+      width: 45%;
+      min-width: 150px;
     }
   }
   /*-----------font-size--------------*/
-  #wrapper .inner h2,
-  #footer h2,
-  .pricing .purchasingSlider .purchasing > h3{
-    font-size: 2.5rem;
+  #wrapper .inner,
+  #footer {
+    h2 {
+      font-size: 2.5rem;
+    }
   }
   .whatSay .inner em{
     font-size: 2.1rem;
-    padding: 16% 10%;
+  }
+  .aboutUs p{
+    padding: 0 5%;
+  }
+  #logo{
+    opacity: 0;
+   .transition(all, 1s)
+  }
+  div .watch-dialog,
+  .register-dialog{
+    width: 100%!important;
+    left: 0!important;
+    min-height: 100vh;
+    padding-top: 95px;
+    top: 0!important;
+    box-sizing: border-box;
+    position: absolute!important;
+    h3{
+      text-align: center;
+    }
+    .register{
+      padding: 0 5%;
+      .required:after{
+        right: 0%;
+      }
+    }
+     .videoWatch {
+       .videoSection video,
+       .videoConatiner video {
+         width: 100%;
+         margin: 0;
+         height: auto;
+       }
+       .videoConatiner{
+         width: 100%;
+         height: auto;
+       }
+       .left button{
+         float: left;
+         margin-left: 3%;
+       }
+       h2{
+         text-align: center;
+         padding: 0 2%;
+       }
+       table td{
+         padding: 0 3%;
+       }
+     }
+  }
+
+  .register .continue{
+    margin: 30px auto;
+    font-size: 24px;
+  }
+  .register .left,
+  .register .right{
+    width: 90%;
+    input, textarea{
+      width: 100%;
+    }
+  }
+  .register h3{
+    margin-top: 0;
+  }
+  .videoWatch .right, .videoWatch  .left,
+  {
+    position: static;
+    padding: 0;
+  }
+  .ui-widget-overlay {
+    z-index: 1;
   }
 }
 @media (max-width: 480px){
   html{
     font-size: 10px;
   }
-  .pricing .purchasingSlider .purchasing ul li,
-  .pricing .purchasingSlider .purchasing p.purchasePrice,
-  .pricing .purchasingSlider .purchasing .purchasing-butt p{
-    font-size: 16px;
+  .pricing .purchasingSlider .purchasing{
+    ul li, p.purchasePrice, .purchasing-butt p{
+      font-size: 16px;
+    }
+    > h3{
+      font-size: 24px;
+    }
   }
-  .pricing .purchasingSlider .purchasing > h3{
-    font-size: 24px;
-  }
+
   .whatIs .advertising .item span,
   .homePage span{
     padding: 8% 16%;
@@ -3386,7 +3456,7 @@ svg {
     padding: 0;
   }
   .homeContainer{
-    height: 640px;
+    height: 775px;
   }
   #wrapper .circles{
     margin-top: 0;
@@ -3400,14 +3470,47 @@ svg {
   html{
     font-size: 8px;
   }
+  .signIn .lock{
+    display: block;
+    width: 60px;
+    height: 50px;
+    margin: 0 auto;
+    position: inherit;
+  }
+  .signIn h2{
+    margin-top: 110px;
+  }
+  .pricing .purchasingSlider .purchasing > h3{
+    font-size: 21px;
+  }
 }
 
 @media (min-width: 641px){
   #main-menu{
     display: block!important;
   }
+  .pricing .arrows{
+    display: none;
+  }
 }
+/*-------Landscape-----------*/
+@media (max-width: 640px) and (orientation: landscape) {
+  div .ui-dialog .videoWatch .videoSection video,
+  div .ui-dialog .videoWatch .videoConatiner video{
+    position: fixed;
+    width: 100%!important;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    background-color: #000;
+    z-index: 9999;
+  }
+  div .watch-dialog{
+    z-index: 120!important;
+    color: inherit;
+  }
+}
+@media (max-width: 640px) and (orientation: portrait) {
 
 
-
-
+}

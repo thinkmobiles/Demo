@@ -8,7 +8,7 @@ define([
 	var View;
 
 	View = Backbone.View.extend({
-		el:"#wrapper",
+		el:"#topMenu",
 		events: {
 			"click .pdf": "trackDocument",
 			"click .questionSection table .checkbox" : "checkedQuestion",
@@ -34,6 +34,8 @@ define([
 			this.indexList = options&&options.indexList?options.indexList:[];
 			var page = options&&options.page?options.page:null;
 			this.currentSurvay = [];
+
+
 			window.addEventListener("beforeunload", function() {
 				var videoEl =self.$el.find(".surveyVideo")[0]||self.$el.find(".mainVideo")[0];
 				self.trackVideo(videoEl, false);
@@ -47,7 +49,7 @@ define([
 					$(".mainVideo").trigger("pause");
 					$(".videoSection").remove();
 					$(".questionSection").show();
-
+					$(".watch-dialog").removeClass('video-dialog');
 				}
 				if (page==="related"){
 					$(".mainVideo").trigger("pause");
@@ -341,10 +343,24 @@ define([
 			});
 			this.dialog = $(formString).dialog({
 				modal:true,
+				resizable: false,
+				draggable: false,
 				closeOnEscape: false,
-				appendTo:"#wrapper",
-				dialogClass: "register-dialog",
-				width: 1180
+				appendTo:"#topMenu",
+				dialogClass: "watch-dialog video-dialog",
+				width: 1180,
+				position: {
+					my: "center center",
+					at: "center center"
+				},
+				create: function (e) {
+					$(e.target).parent().css({'position':'fixed'});
+					$(document).find('.topMenu').addClass('small');
+					if (window.innerWidth <= 640) {
+						$(document).find('#wrapper').css({'display': 'none'});
+						$(document).find('#footer').css({'display': 'none'});
+					}
+				}
 			});
 			setTimeout(function () {
 				self.$el.find(".listVideo").stop().animate({ opacity: 0, marginRight: -130 }, 500);

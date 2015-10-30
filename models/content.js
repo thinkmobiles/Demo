@@ -6,6 +6,7 @@ module.exports = (function () {
 
     var surveySchema= new mongoose.Schema({
         question: {type: String},
+        order: {type:Number},
         videoUri: {type: String},
         pdfUri: [{type: String}]
     },{versionKey: false, _id: false});

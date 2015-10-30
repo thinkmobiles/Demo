@@ -61,7 +61,7 @@ require(['app'], function (app) {
     };
 	var inter = 0;
 	App.notification = function(text){
-		if (inter)clearInterval(inter);
+		if (inter)clearTimeout(inter);
 		$(".notification").show(100).text(text||"Error");
 		inter = setTimeout(function(){
 			$(".notification").hide(100);

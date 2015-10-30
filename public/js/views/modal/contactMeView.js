@@ -7,7 +7,7 @@ define([
     var View;
 	
     View = Backbone.View.extend({
-		el:"#wrapper",
+		el:"#topMenu",
         events: {
             "click .send":"send",
 			"click .ui-dialog-titlebar-close":"clickOnClose"
@@ -34,23 +34,35 @@ define([
 			var contactModel = new ContactModel();
 			var hasError = false;
 			this.$el.find(".error").removeClass("error");
-			
+			var message = '';
+			var ENTER_REQUIRED_FIELDS = 'Please enter all required fields!';
+
+			if (!self.$el.find(".desc").val() || !self.$el.find(".email").val() || !self.$el.find(".name").val()){
+				hasError = true;
+				message = (message == '') ? ENTER_REQUIRED_FIELDS : message;
+			}
 			if (!validation.validName(this.$el.find(".name").val())){
 				this.$el.find(".name").addClass("error");
 				hasError = true;
+				message = (message == '') ? "That is not a valid name. Field can not contain '~ < > ^ * ₴' signs only a-z A-Z" : message;
 			}
 
 			if (!validation.validEmail(this.$el.find(".email").val())){
 				this.$el.find(".email").addClass("error");
 				hasError = true;
+				message = (message == '') ? (self.$el.find(".registration .email").val() + " is not a valid email.") : message;
 			}
 
 			if (!this.$el.find(".desc").val()){
 				this.$el.find(".desc").addClass("error");
 				hasError = true;
+				message = (message == '') ? "Description can not be empty" : message;
 			}
-			
-			if (hasError)return;
+
+			if (hasError) {
+				App.notification(message);
+				return;
+			}
 			
 			contactModel.save({
 				contentId : this.videoId,
@@ -89,9 +101,22 @@ define([
 				resizable: false,
 				draggable: false,
                 closeOnEscape: false,
-				appendTo:"#wrapper",
+				appendTo:"#topMenu",
                 dialogClass: "watch-dialog",
-                width: 425
+                width: 425,
+				position: {
+					my: "center center",
+					at: "center center"
+				},
+				create: function (e) {
+					if (window.innerWidth <= 640) {
+						$(document).find('#wrapper').css({'display': 'none'});
+						$(document).find('#footer').css({'display': 'none'});
+					}else{
+						$(e.target).parent().css({'position':'fixed'});
+						$(document).find('.topMenu').addClass('small');
+					}
+				}
             });
             return this;
         }
