@@ -3384,6 +3384,17 @@ svg {
          width: 100%;
          height: auto;
        }
+       .left button{
+         float: left;
+         margin-left: 3%;
+       }
+       h2{
+         text-align: center;
+         padding: 0 2%;
+       }
+       table td{
+         padding: 0 3%;
+       }
      }
   }
 
@@ -3488,11 +3499,17 @@ svg {
     height: 100vh;
     top: 0;
     left: 0;
+    background-color: #000;
+    z-index: 9999;
   }
   div .watch-dialog{
     z-index: 120!important;
     color: inherit;
   }
 }
+@media (max-width: 640px) and (orientation: portrait) {
+  .ui-widget-overlay {
+    z-index: 1;
+  }
 
-
+}
