@@ -311,7 +311,7 @@ html, body {
       border-radius: 5px;
       color: white;
       border: none;
-      font-size: 20px;
+      font-size: 1.25rem;
       float: left;
       margin-right: 20px;
       cursor: pointer;
@@ -3061,16 +3061,22 @@ svg {
     top: 170px;
     left: 0;
     span{
-     padding: 8%  15%;
+     padding: 8%  9%;
+      color: #fff;
+      line-height: 1.125;
+      font-family: "LatoLight";
+      font-size: 2rem;
     }
   }
   .homePage .blue,
-  .register .continue{
+  .register .continue,
+  .whatIs .inner .blue{
     float: none;
     margin: 0 auto 0 auto;
     font-size: 2.25rem;
     font-weight: bold;
-    width: 60%;
+    width: auto;
+    padding: 0 7%;
     border-radius: 8px;
   }
 
@@ -3090,8 +3096,7 @@ svg {
   }
   .homeContainer .bg{
     background-size: cover;
-    background-color: rgba(0,0,0, .5);
-   .filter(18px);
+   .filter(0);
     transition: all .5s;
   }
   .homeContainer{
@@ -3099,14 +3104,8 @@ svg {
     .inner{
       padding-right: 5%;
       padding-left: 5%;
-      background-color: rgba(0,0,0, .3);
       height: 100%;
     }
-  }
-  .homePage span {
-    color: rgb(255, 255, 255);
-    line-height: 1.125;
-    font-family: "LatoLight";
   }
   /*------------------home2------------------------*/
   .whatSay {
@@ -3170,11 +3169,10 @@ svg {
   .topMenu,
   .topMenu.small{
     height: 65px;
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: rgba(88,100,121, 0.702);
   }
-
   .topMenu.small{
-    background-color: rgba(0, 0, 0, 0.2)!important;
+    background-color: rgba(88,100,121, 0.702)!important;
     border-bottom: none;
   }
   #wrapper .inner .line{
@@ -3203,6 +3201,7 @@ svg {
     h2{
       line-height: 1.35;
       padding: 0 15%;
+      color: #263238;
     }
   }
 
@@ -3218,6 +3217,7 @@ svg {
         font-family: "LatoLight";
         line-height: 1.125;
         font-size: 2rem;
+        color: #263238;
       }
       &.selected{
         display: block;
