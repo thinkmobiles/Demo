@@ -100,7 +100,6 @@ define(
             maxLengthMsg: function (maxLength) {
                 return "field should be at least " + maxLength + " characters long"
             },
-            invalidMoneyAmountMsg: "field should contain a number with max 2 digits after dot",
             invalidEmailMsg: "field should contain a valid email address",
             requiredMsg: "field can not be empty",
             invalidCharsMsg: "field can not contain '~ < > ^ * ₴' signs",

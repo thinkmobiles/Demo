@@ -49,7 +49,7 @@ define([
 					$(".mainVideo").trigger("pause");
 					$(".videoSection").remove();
 					$(".questionSection").show();
-
+					$(".watch-dialog").removeClass('video-dialog');
 				}
 				if (page==="related"){
 					$(".mainVideo").trigger("pause");
@@ -347,7 +347,7 @@ define([
 				draggable: false,
 				closeOnEscape: false,
 				appendTo:"#topMenu",
-				dialogClass: "watch-dialog",
+				dialogClass: "watch-dialog video-dialog",
 				width: 1180,
 				position: {
 					my: "center center",
