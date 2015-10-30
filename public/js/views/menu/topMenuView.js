@@ -47,12 +47,23 @@ define([
 
         toPage: function () {
             $("body").removeClass("withLogin");
+            if (this.modalView) {
+                this.modalView.undelegateEvents();
+            }
         },
 
         login: function (e) {
             e.stopPropagation();
             this.toggleMenu();
             $("body").addClass("withLogin");
+            if (this.modalView) {
+                this.modalView.undelegateEvents();
+            }
+            if (window.innerWidth <= 640) {
+                $(document).find('#wrapper').css({'display': 'block'});
+                $(document).find('#footer').css({'display': 'block'});
+            }
+            $(".ui-dialog").remove();
             setTimeout(function () {
                 $(".signIn .username .userName")[0].focus();
             }, 550);

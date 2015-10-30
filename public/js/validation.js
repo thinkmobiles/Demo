@@ -303,6 +303,7 @@ define(
             validStreet: validateStreet,
             validDate: validDate,
 			validLogin: validateLogin,
+			validPass: validatePass,
             validPhone: validatePhone,
             validName: validateName,
             validGroupsName: validateGroupsName,

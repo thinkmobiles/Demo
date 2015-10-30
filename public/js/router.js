@@ -58,6 +58,11 @@ define([
 
         // load and create view if is exist
         loadWrapperView: function (name, params, callback) {
+            if (window.innerWidth <= 640) {
+                $(document).find('#wrapper').css({'display': 'block'});
+                $(document).find('#footer').css({'display': 'block'});
+            }
+            $(".ui-dialog").remove();
             var WrongRout = null;
 			var self = this;
             $(window).off("resize");
