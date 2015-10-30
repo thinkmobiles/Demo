@@ -56,12 +56,6 @@ define([
                 message = (message == '') ? ENTER_REQUIRED_FIELDS : message;
             }
 
-            if (!validation.validEmail(self.$el.find(".registration .email").val())) {
-                isError = true;
-                self.$el.find(".registration .email").addClass("error");
-                message = (message == '') ? (self.$el.find(".registration .email").val() + " is not a valid email.") : message;
-            }
-
             //firstName
             if (!validation.validName(self.$el.find(".registration .firstName").val())) {
                 isError = true;
@@ -74,13 +68,6 @@ define([
                 isError = true;
                 self.$el.find(".registration .lastName").addClass("error");
                 message = (message == '') ? "That is not a valid last name. Field can not contain '~ < > ^ * ₴' signs only a-z A-Z" : message;
-            }
-
-            //userName
-            if (!validation.validLogin(self.$el.find(".registration .userName").val())) {
-                isError = true;
-                self.$el.find(".registration .userName").addClass("error");
-                message = (message == '') ? "That is not a valid user name. It should contain only the following symbols: A-Z, a-z, 0-9, _ @" : message;
             }
 
             //organization
@@ -96,6 +83,21 @@ define([
                 self.$el.find(".registration .phone").addClass("error");
                 message = (message == '') ? "That is not a valid phone number. It should contain only numbers and '+ - ( )' signs" : message;
             }
+
+            //userName
+            if (!validation.validLogin(self.$el.find(".registration .userName").val())) {
+                isError = true;
+                self.$el.find(".registration .userName").addClass("error");
+                message = (message == '') ? "That is not a valid user name. It should contain only the following symbols: A-Z, a-z, 0-9, _ @" : message;
+            }
+
+            //email
+            if (!validation.validEmail(self.$el.find(".registration .email").val())) {
+                isError = true;
+                self.$el.find(".registration .email").addClass("error");
+                message = (message == '') ? (self.$el.find(".registration .email").val() + " is not a valid email.") : message;
+            }
+
             //pass
             if (!validation.validPass(self.$el.find(".registration .pass").val())) {
                 isError = true;
