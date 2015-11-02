@@ -2988,7 +2988,7 @@ svg {
 }
 /*--------------------------media-------------------------------*/
 
-@media (max-width: 667px){
+@media (max-width: 736px){
   #topMenu,
   #wrapper,
   .homePage,
@@ -3108,8 +3108,8 @@ svg {
   .whatIs .inner .blue,
   .contactPage .buttons .registerBtn,
   .mediaFooter .contactUs{
-    float: none;
-    margin: 0 auto 0 auto;
+    float: none!important;
+    margin: 0 auto;
     font-size: 2.25rem;
     font-weight: bold;
     width: auto;
@@ -3377,6 +3377,7 @@ svg {
     img{
       width: 45%;
       min-width: 150px;
+      max-width: 270px;
     }
   }
   /*-----------font-size--------------*/
@@ -3577,7 +3578,7 @@ svg {
   }
 }
 
-@media (min-width: 668px){
+@media (min-width: 737px){
   #main-menu{
     display: block!important;
   }
@@ -3590,16 +3591,17 @@ svg {
   }
 }
 /*-------Landscape-----------*/
-@media (max-width: 667px) and (orientation: landscape) {
+@media (max-width: 736px) and (orientation: landscape) {
   div .ui-dialog .videoWatch {
-    .videoSection video,
-    .videoConatiner video {
+    .videoSection >video,
+    .videoConatiner >video {
       position: fixed;
       width: 100% !important;
       height: 100vh;
       top: 0;
       left: 0;
       background-color: #000;
+      z-index: 125;
     }
   }
   div .watch-dialog.video-dialog{

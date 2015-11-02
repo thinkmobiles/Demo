@@ -24,7 +24,7 @@ define([
         },
 
         hideMenu: function () {
-            if (window.innerWidth <= 640) {
+            if (window.innerWidth <= 736) {
                 var self = this;
                 this.$el.find('.toggle-wrapper').removeClass('open', function () {
                     self.$el.find('#main-menu').slideUp(500, "swing");
@@ -33,7 +33,7 @@ define([
         },
 
         toggleMenu: function () {
-            if (window.innerWidth <= 640) {
+            if (window.innerWidth <= 736) {
                 var self = this;
                 this.$el.find('.toggle-wrapper').toggleClass('open', function () {
                     self.$el.find('#main-menu').slideToggle(500, "swing")
@@ -59,7 +59,7 @@ define([
             if (this.modalView) {
                 this.modalView.undelegateEvents();
             }
-            if (window.innerWidth <= 640) {
+            if (window.innerWidth <= 736) {
                 $(document).find('#wrapper').css({'display': 'block'});
                 $(document).find('#footer').css({'display': 'block'});
             }
