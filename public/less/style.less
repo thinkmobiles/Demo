@@ -1737,10 +1737,11 @@ footer {
   height: 404px;
   position: relative;
   background-color: black;
+  overflow: hidden;
   .hoverList {
     .mp;
     position: absolute;
-    height: calc(~"100% - 35px");
+    height: 100%;
     top: 0px;
     right: 0px;
     width: 150px;
@@ -1752,14 +1753,13 @@ footer {
       background-repeat: no-repeat;
       cursor: pointer;
       position: absolute;
-      top: 50%;
-      width: 133px;
-      height: 170px;
+      top: calc(~"50% - 40px");
+      right: 0;
+      width: 50px;
+      height: 80px;
       display: block;
-      margin-top: -51px;
-      margin-left: 32px;
       opacity: 0;
-      background-size: contain;
+      background-size: 100% 100%;
     }
     a{
       cursor: pointer;
@@ -1773,7 +1773,7 @@ footer {
     right: 0px;
     width: 130px;
     list-style: none;
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(0, 0, 0, 0.5);
     overflow: auto;
 
     li {
@@ -1798,7 +1798,51 @@ footer {
     }
   }
 }
+@-webkit-keyframes scroll {
+  0% {
+    -webkit-transform: translate(0, 0);
+    transform: translate(0, 0);
+  }
+  100% {
+    -webkit-transform: translate(-100%, 0);
+    transform: translate(-100%, 0)
+  }
+}
 
+@-moz-keyframes scroll {
+  0% {
+    -moz-transform: translate(0, 0);
+    transform: translate(0, 0);
+  }
+  100% {
+    -moz-transform: translate(-100%, 0);
+    transform: translate(-100%, 0)
+  }
+}
+
+
+@keyframes scroll {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(-100%, 0)
+  }
+}
+.marquee {
+  display: block;
+  width: 94%;
+  white-space: nowrap;
+  overflow: hidden;
+  padding: 0 3%;
+}
+
+.marquee span:hover {
+  display: inline-block;
+  -webkit-animation: scroll 5s infinite linear;
+  -moz-animation: scroll 5s infinite linear;
+  animation: scroll 5s infinite linear;
+}
 ///=============================================
 /* Pie Chart */
 .bar_container {
@@ -1902,15 +1946,18 @@ footer {
   position: fixed;
   padding: 30px 50px;
   min-width: 200px;
-  text-align: center;
   top: 130px;
   right: 50px;
-  z-index: 101;
+  z-index: 110;
   background-color: rgba(0, 0, 0, 0.5);
-  border: 1px solid silver;
-  color: white;
+  border-radius: 8px;
+  width: auto;
+  max-width: 20%;
   font-size: 18px;
   display: none;
+  color: #fff;
+  line-height: 1.5;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2), 2px 4px 6px rgba(0,0,0,0.2);
 }
 
 .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
@@ -2757,16 +2804,7 @@ svg {
   width: 100%;
   box-sizing: border-box;
   height: 825px;
-  background: url("../i/contact-bg.png") no-repeat 100% 100%;
   position: relative;
- .mediaFooterInner{
-   background-image: -moz-linear-gradient( 90deg, rgb(0,0,0) 0%, rgb(255,255,255) 100%);
-   background-image: -webkit-linear-gradient( 90deg, rgb(0,0,0) 0%, rgb(255,255,255) 100%);
-   background-image: -ms-linear-gradient( 90deg, rgb(0,0,0) 0%, rgb(255,255,255) 100%);
-   opacity: 0.031;
-   height: 100%;
-   width: 100%;
- }
   .contactInner{
     position: absolute;
     top: 0;
@@ -2777,7 +2815,7 @@ svg {
   }
   h2{
     font-size: 40px;
-    color: rgb(38, 50, 56);
+    color: #414243;
     text-transform: uppercase;
     padding-top: 105px;
     padding-bottom: 20px;
@@ -2799,7 +2837,7 @@ svg {
   p {
     font-family: "LatoLight";
     font-size: 1.875rem;
-    color: rgb(38, 50, 56);
+    color: #414243;
     line-height: 1.5;
     text-align: left;
     clear: both;
@@ -2942,7 +2980,7 @@ svg {
 }
 /*--------------------------media-------------------------------*/
 
-@media (max-width: 640px){
+@media (max-width: 667px){
   #topMenu,
   #wrapper,
   .homePage,
@@ -2986,12 +3024,7 @@ svg {
     text-align: center;
   }
 
-  .contactPage .buttons  button.cancel,
-  .data .required:nth-child(2),
-  .data .required:nth-child(3),
-  .data .required:nth-child(4),
-  .data .required:nth-child(5),
-  .contactPage br{
+  .contactPage .buttons  button.cancel{
     display: none;
   }
   .signIn{
@@ -3049,12 +3082,6 @@ svg {
     height: 73px;
   }
 
-  .contactPage .buttons .registerBtn{
-    float: none;
-    margin:  0 auto;
-    font-size: 2rem;
-    width: 52%;
-  }
   /*------------------home--------------------------*/
   .homePage{
     position: absolute;
@@ -3070,7 +3097,9 @@ svg {
   }
   .homePage .blue,
   .register .continue,
-  .whatIs .inner .blue{
+  .whatIs .inner .blue,
+  .contactPage .buttons .registerBtn,
+  .mediaFooter .contactUs{
     float: none;
     margin: 0 auto 0 auto;
     font-size: 2.25rem;
@@ -3123,6 +3152,9 @@ svg {
         margin-top: 70px;
         > div {
           padding: 0 11%;
+        }
+        span.blue{
+          font-size: 1.875rem;
         }
       }
       em {
@@ -3181,7 +3213,8 @@ svg {
     width: 144px;
   }
   footer,
-  .whatSay .inner .line{
+  .whatSay .inner .line,
+  .hoverList{
     display: none;
   }
   .topMenu .inner ul {
@@ -3381,8 +3414,10 @@ svg {
          height: auto;
        }
        .videoConatiner{
+         background-color: #eee;
          width: 100%;
          height: auto;
+         overflow: hidden;
        }
        .left button{
          float: left;
@@ -3418,8 +3453,57 @@ svg {
     padding: 0;
   }
   .ui-widget-overlay {
-    z-index: 1;
+    z-index: 1!important;
   }
+  .ui-widget-header .ui-icon.ui-icon-closethick{
+    .i("close-mobile.png");
+    width: 100%;
+    height: 100%;
+    position: static;
+    background-size: 100% 100%;
+  }
+  .ui-dialog .ui-dialog-titlebar-close{
+    width: 27px;
+    height: 27px;
+    margin: 0;
+    top: auto;
+    right: 4%;
+  }
+  .videoWatch .relatedVideo ul.pdfList{
+    text-align: center;
+    width: 100%;
+    li{
+      float: none;
+      display: inline-block;
+    }
+  }
+  .videoConatiner .listVideo{
+    opacity: 1!important;
+    position: static;
+    width: 100%;
+    li{
+      float: left;
+      width: 25%;
+      padding: 0 3%;
+      height: 82px;
+      video{
+        height: 60px!important;
+      }
+      span{
+        color: #000;
+      }
+    }
+  }
+  .topMenu .inner ul li.userInfo {
+    color: #000;
+    img{
+      position: relative;
+      left: 20%;
+      display: inline-block;
+    }
+
+  }
+
 }
 @media (max-width: 480px){
   html{
@@ -3485,7 +3569,7 @@ svg {
   }
 }
 
-@media (min-width: 641px){
+@media (min-width: 668px){
   #main-menu{
     display: block!important;
   }
@@ -3494,23 +3578,20 @@ svg {
   }
 }
 /*-------Landscape-----------*/
-@media (max-width: 640px) and (orientation: landscape) {
-  div .ui-dialog .videoWatch .videoSection video,
-  div .ui-dialog .videoWatch .videoConatiner video{
-    position: fixed;
-    width: 100%!important;
-    height: 100vh;
-    top: 0;
-    left: 0;
-    background-color: #000;
-    z-index: 9999;
+@media (max-width: 667px) and (orientation: landscape) {
+  div .ui-dialog .videoWatch {
+    .videoSection video,
+    .videoConatiner video {
+      position: fixed;
+      width: 100% !important;
+      height: 100vh;
+      top: 0;
+      left: 0;
+      background-color: #000;
+    }
   }
-  div .watch-dialog{
+  div .watch-dialog.video-dialog{
     z-index: 120!important;
     color: inherit;
   }
-}
-@media (max-width: 640px) and (orientation: portrait) {
-
-
 }

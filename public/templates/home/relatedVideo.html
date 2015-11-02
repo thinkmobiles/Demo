@@ -10,9 +10,9 @@
 	  <li <%if (index==0){%>class="current"<%}%> data-id="<%=index%>">
 		<video width="90" height="50" class="mainVideo" src="<%= video.videoUri %>" preload="metadata" type="video/mp4" >
 		</video>
-	  </li>
-	   <li class="videoTitle<%if (index==0){%> current<%}%>" data-id="<%=index%>">
-		 <div class="text"><%= video.question %></div>
+	   <div class="videoTitle<%if (index==0){%> current<%}%>" data-id="<%=index%>">
+		 <div class="text marquee"><span><%= video.question %></span></div>
+           </div>
 	  </li>
 	  <%})%>
 	</ul>
