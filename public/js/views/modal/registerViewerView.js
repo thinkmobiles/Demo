@@ -126,7 +126,7 @@ define([
                     at: "center center"
                 },
                 create: function (e) {
-                    if (window.innerWidth <= 640) {
+                    if (window.innerWidth <= 736) {
                         $(document).find('#wrapper').css({'display': 'none'});
                         $(document).find('#footer').css({'display': 'none'});
                     }else{

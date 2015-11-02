@@ -58,10 +58,12 @@ define([
 
         // load and create view if is exist
         loadWrapperView: function (name, params, callback) {
-            if (window.innerWidth <= 640) {
+            if (window.innerWidth <= 736) {
                 $(document).find('#wrapper').css({'display': 'block'});
                 $(document).find('#footer').css({'display': 'block'});
+
             }
+            //$("body").mCustomScrollbar('update');
             $(".ui-dialog").remove();
             var WrongRout = null;
 			var self = this;

@@ -43,7 +43,7 @@ define([
             if (App.slider['advertising']) {
                 clearInterval(App.slider['advertising']);
             }
-            if (window.innerWidth <= 640) {
+            if (window.innerWidth <= 700) {
                 App.slider['advertising'] = setInterval(function () {
                     self.nextAdvertising()
                 }, 5000);

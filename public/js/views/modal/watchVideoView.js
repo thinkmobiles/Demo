@@ -67,7 +67,7 @@ define([
 					$(".relatedVideo").html(_.template(relatedVideo)({
 						videoList:self.currentSurvay
 					}));
-
+					$(".custom-scroll").mCustomScrollbar();
 					self.$el.find("video").on('ended',function(){
 						var videoEl =self.$el.find(".surveyVideo")[0];
 						self.trackVideo(videoEl, true);
@@ -356,12 +356,13 @@ define([
 				create: function (e) {
 					$(e.target).parent().css({'position':'fixed'});
 					$(document).find('.topMenu').addClass('small');
-					if (window.innerWidth <= 640) {
+					if (window.innerWidth <= 736) {
 						$(document).find('#wrapper').css({'display': 'none'});
 						$(document).find('#footer').css({'display': 'none'});
 					}
 				}
 			});
+
 			setTimeout(function () {
 				self.$el.find(".listVideo").stop().animate({ opacity: 0, marginRight: -130 }, 500);
 			}, 3000);
