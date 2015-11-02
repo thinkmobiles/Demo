@@ -5,7 +5,7 @@ var AWS = require('aws-sdk');
 var fs = require('fs');
 var async = require('async');
 
-AWS.config.update({region: 'su-west-2'});
+AWS.config.update({region: 'us-west-2'});
 AWS['accessKeyId'] = process.env.AMAZON_ACCESS_KEY_ID;
 AWS['secretAccessKey'] = process.env.AMAZON_SECRET_ACCESS_KEY;
 var s3 = new AWS.S3({httpOptions: {timeout: 50000}});
