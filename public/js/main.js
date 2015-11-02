@@ -15,6 +15,7 @@ require.config({
         jQueryUI: './libs/jqueryui/jquery-ui.min',
         Underscore: './libs/underscore/underscore-min',
         Backbone: './libs/backbone/backbone-min',
+        mCustomScrollbar: './libs/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min',
         less: './libs/less/dist/less.min',
 		d3: './libs/d3/d3.min',
 		moment: './libs/moment/min/moment.min',
@@ -27,7 +28,8 @@ require.config({
         'ajaxForm': ['jQuery'],
         'Backbone': ['Underscore', 'jQuery'],
         'jQueryUI':['jQuery'],
-        'app': ['Backbone', 'less','jQueryUI']
+        'mCustomScrollbar':['jQuery'],
+        'app': ['Backbone', 'less','jQueryUI','mCustomScrollbar']
     }
 });
 

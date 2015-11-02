@@ -67,7 +67,7 @@ define([
 					$(".relatedVideo").html(_.template(relatedVideo)({
 						videoList:self.currentSurvay
 					}));
-
+					$(".custom-scroll").mCustomScrollbar();
 					self.$el.find("video").on('ended',function(){
 						var videoEl =self.$el.find(".surveyVideo")[0];
 						self.trackVideo(videoEl, true);
@@ -362,6 +362,7 @@ define([
 					}
 				}
 			});
+
 			setTimeout(function () {
 				self.$el.find(".listVideo").stop().animate({ opacity: 0, marginRight: -130 }, 500);
 			}, 3000);

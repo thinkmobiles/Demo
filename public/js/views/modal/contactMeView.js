@@ -34,23 +34,35 @@ define([
 			var contactModel = new ContactModel();
 			var hasError = false;
 			this.$el.find(".error").removeClass("error");
-			
+			var message = '';
+			var ENTER_REQUIRED_FIELDS = 'Please enter all required fields!';
+
+			if (!self.$el.find(".desc").val() || !self.$el.find(".email").val() || !self.$el.find(".name").val()){
+				hasError = true;
+				message = (message == '') ? ENTER_REQUIRED_FIELDS : message;
+			}
 			if (!validation.validName(this.$el.find(".name").val())){
 				this.$el.find(".name").addClass("error");
 				hasError = true;
+				message = (message == '') ? "That is not a valid name. Field can contain 'a-z' 'A-Z' signs only" : message;
 			}
 
 			if (!validation.validEmail(this.$el.find(".email").val())){
 				this.$el.find(".email").addClass("error");
 				hasError = true;
+				message = (message == '') ? (self.$el.find(".email").val() + " is not a valid email.") : message;
 			}
 
 			if (!this.$el.find(".desc").val()){
 				this.$el.find(".desc").addClass("error");
 				hasError = true;
+				message = (message == '') ? "Description can not be empty" : message;
 			}
-			
-			if (hasError)return;
+
+			if (hasError) {
+				App.notification(message);
+				return;
+			}
 			
 			contactModel.save({
 				contentId : this.videoId,

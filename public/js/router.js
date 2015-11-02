@@ -61,7 +61,9 @@ define([
             if (window.innerWidth <= 640) {
                 $(document).find('#wrapper').css({'display': 'block'});
                 $(document).find('#footer').css({'display': 'block'});
+
             }
+            //$("body").mCustomScrollbar('update');
             $(".ui-dialog").remove();
             var WrongRout = null;
 			var self = this;
