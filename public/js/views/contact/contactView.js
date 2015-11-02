@@ -66,7 +66,7 @@ define([
 			if (!validation.validEmail(self.$el.find(".contactPage .email").val())) {
 				isError = true;
 				self.$el.find(".contactPage .email").addClass("error");
-				message = (message == '') ? (self.$el.find(".registration .email").val() + " is not a valid email.") : message;
+				message = (message == '') ? (self.$el.find(".contactPage .email").val() + " is not a valid email.") : message;
 			}
 
 			if (!self.$el.find(".contactPage .notes").val() || self.$el.find(".contactPage .notes").val() < 2 || self.$el.find(".contactPage .notes").val() > 100) {

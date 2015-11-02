@@ -19,6 +19,7 @@ var badRequests = require('../helpers/badRequests');
 var fs = require('fs');
 var routeHandler = function (db) {
     var S3_BUCKET = 'demo-rocket-v2';
+
     var S3_ENDPOINT = 'https://s3-us-west-2.amazonaws.com/';
 
     var trackSchema = mongoose.Schemas['Track'];

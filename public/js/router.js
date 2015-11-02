@@ -37,6 +37,7 @@ define([
         initialize: function () {
             new TopMenuView();
             new FooterView();
+            $("body").mCustomScrollbar();
 			$(document).on("click", ".ui-dialog-titlebar-close", function (e) {
 				$(".ui-dialog").remove();
                 $(document).find('#wrapper').css({'display': 'block'});
@@ -61,6 +62,7 @@ define([
             if (window.innerWidth <= 640) {
                 $(document).find('#wrapper').css({'display': 'block'});
                 $(document).find('#footer').css({'display': 'block'});
+
             }
             $(".ui-dialog").remove();
             var WrongRout = null;

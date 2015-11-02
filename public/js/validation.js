@@ -29,14 +29,6 @@ define(
             return loginRegExp.test(validatedString);
         };
 
-        var validateSkype = function (validatedString) {
-            return skypeRegExp.test(validatedString);
-        };
-
-        var validateZip = function (validatedString) {
-            return zipRegExp.test(validatedString);
-        };
-
         var requiredFieldLength = function (validatedString) {
             return validatedString.length >= MIN_LENGTH;
         };
@@ -60,10 +52,6 @@ define(
             return passRegExp.test(validatedString);
         };
 
-        var validateCountryName = function (validatedString) {
-            return countryRegExp.test(validatedString);
-        };
-
         var validateStreet = function (validatedString) {
             return streetRegExp.test(validatedString);
         };
@@ -74,10 +62,6 @@ define(
 
         var validateNumber = function (validatedString) {
             return intNumberRegExp.test(validatedString);
-        };
-
-        var validateMoneyAmount = function (validatedString) {
-            return moneyAmountRegExp.test(validatedString);
         };
 
         var validDate = function (validatedString) {
@@ -105,7 +89,6 @@ define(
             invalidCharsMsg: "field can not contain '~ < > ^ * ₴' signs",
             invalidStreetMsg: "field can contain only letters, numbers and '. , - /' signs",
             invalidPhoneMsg: "field should contain only numbers and '+ - ( )' signs",
-            invalidZipMsg: "field should contain only letters, numbers and '-' sing",
             passwordsNotMatchMsg: "Password and confirm password field do not match"
         };
 
@@ -119,19 +102,6 @@ define(
                     return;
                 }
 
-                /*if (fieldValue.length > 35) {
-                    errorArray.push([fieldName, errorMessages.maxLengthMsg(35)].join(' '));
-                    return;
-                }
-                if (fieldValue.length > 35) {
-                    errorArray.push([fieldName, errorMessages.maxLengthMsg(35)].join(' '));
-                    return;
-                }*/
-
-                if (fieldValue.length > 35) {
-                    errorObj[fieldName].push(errorMessages.maxLengthMsg(35));
-                    return;
-                }
                 if (fieldValue.length > 35) {
                     errorObj[fieldName].push(errorMessages.maxLengthMsg(35));
                     return;
@@ -307,7 +277,6 @@ define(
             validPhone: validatePhone,
             validName: validateName,
             validGroupsName: validateGroupsName,
-            validMoneyAmount: validateMoneyAmount,
             checkLogedField: checkLogedField
         }
     });

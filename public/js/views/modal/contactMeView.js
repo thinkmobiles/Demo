@@ -44,13 +44,13 @@ define([
 			if (!validation.validName(this.$el.find(".name").val())){
 				this.$el.find(".name").addClass("error");
 				hasError = true;
-				message = (message == '') ? "That is not a valid name. Field can not contain '~ < > ^ * ₴' signs only a-z A-Z" : message;
+				message = (message == '') ? "That is not a valid name. Field can contain 'a-z' 'A-Z' signs only" : message;
 			}
 
 			if (!validation.validEmail(this.$el.find(".email").val())){
 				this.$el.find(".email").addClass("error");
 				hasError = true;
-				message = (message == '') ? (self.$el.find(".registration .email").val() + " is not a valid email.") : message;
+				message = (message == '') ? (self.$el.find(".email").val() + " is not a valid email.") : message;
 			}
 
 			if (!this.$el.find(".desc").val()){
