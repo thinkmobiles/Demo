@@ -121,13 +121,10 @@ html, body {
   position: relative;
   font-family: "LatoRegular";
 }
-body{
-  overflow: auto;
-}
+
 #topMenu {
   width: 1070px;
 }
-
 .topMenu {
   height: 120px;
   background-color: rgba(0, 0, 0, 0.4);
@@ -162,14 +159,13 @@ body{
           text-decoration: none;
           line-height: 120px;
           padding: 10px 20px;
-          color: white;
+          color: rgba(255,255,255, .7);
           transition: all 0.5s linear;
           &:focus {
             outline: none;
           }
           &:hover {
-            background-color: rgba(0, 0, 0, 0.2);
-            border-radius: 5px;
+            color: #fff;
           }
         }
 
@@ -206,8 +202,10 @@ body{
         li {
           a {
             line-height: 73px;
-            color: #44cbff;
-
+            color: rgba(68,203,255, .7);
+          }
+          a:hover{
+            color: #44CBFF;
           }
           &.userInfo {
             line-height: 70px;
@@ -586,8 +584,6 @@ body{
   height: 722px;
   position: relative;
   overflow: hidden;
-  //width:100%;
-
   .inner {
     position: relative;
     z-index: 50;
@@ -623,7 +619,6 @@ body{
 
 .signIn {
   visibility: hidden;
-  //display:none;
   transition: all 0.25s linear;
   width: 782px;
   margin: 0 auto;
@@ -1068,9 +1063,9 @@ footer {
 }
 
 .videoWatch {
-  overflow: visible !important;
-  min-height: 400px !important;
-  position: initial !important;
+  min-height: 400px!important;
+  position: static!important;
+  overflow: visible;
   .left {
     float: left;
     width: 680px;
@@ -1436,7 +1431,6 @@ footer {
     }
     ul {
       list-style: none;
-      padding-left: 0;
       padding: 0 20px;
       margin: 0;
       li {
@@ -1753,9 +1747,7 @@ footer {
     top: 0px;
     right: 0px;
     width: 150px;
-    //border: 1px solid cyan;
     cursor: pointer;
-    //z-index:101;
     span {
       .i("video-arrow-left.png");
       background-repeat: no-repeat;
@@ -2736,7 +2728,6 @@ svg {
 
 .confirm-dialog {
   padding: 0px;
-
   -webkit-transform: scale(0.5);
   -moz-transform: scale(0.5);
   -ms-transform: scale(0.5);
@@ -2983,7 +2974,6 @@ svg {
 #topMenu nav:not(.small){
   #logo{
     opacity: 1;
-   .transition(all, 1s);
   }
 }
 /*--------------------------media-------------------------------*/
@@ -3470,6 +3460,7 @@ svg {
     height: 100%;
     position: static;
     background-size: 100% 100%;
+    margin-right: 0;
   }
   .ui-dialog .ui-dialog-titlebar-close{
     width: 27px;
@@ -3605,7 +3596,7 @@ svg {
     }
   }
   div .watch-dialog.video-dialog{
-    z-index: 120!important;
+    z-index: 121!important;
     color: inherit;
   }
 }
