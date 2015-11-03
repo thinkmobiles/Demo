@@ -1,13 +1,13 @@
 process.env.HOST = 'http://127.0.0.1:8838'; //do not change
-process.env.WEB_HOST = 'http://194.42.200.114:8838';
+process.env.WEB_HOST = 'http://projects.thinkmobiles.com:8838';
 process.env.PORT = 8838;
 
 process.env.DB_HOST = 'localhost';
 process.env.DB_NAME = 'rocketDB';
 process.env.CLIENT_SECRET = "cPtrcBklxNUEnVL3VBETsKhsDGQHGF73wkYcwWU9";
 process.env.CLIENT_ID = "uemnB2ZAA92gv5CoTCHc";
-process.env.REDIRECT_URI = "http://194.42.200.114:8838/redirect";
-process.env.HOME_PAGE = "http://194.42.200.114:8838/#/home/";
+process.env.REDIRECT_URI = "http://projects.thinkmobiles.com:8838/redirect";
+process.env.HOME_PAGE = "http://projects.thinkmobiles.com:8838/#/home/";
 
 process.env.mailerService = 'Gmail';
 process.env.mailerUserName = "gogi.gogishvili";
