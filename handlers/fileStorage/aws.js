@@ -33,16 +33,7 @@ module.exports = function (protoObject) {
         };
 
         this.postBuffer = function (bucket, key, body, callback) {
-            s3.putObject({Bucket: bucket, Key: key, Body: body, ACL: 'public-read'}, function (err, data) {
-                if (callback && (typeof callback === 'function')) {
-                    if (err) {
-                        console.log(err);
-                        callback(err, null);
-                    } else {
-                        callback(null, data);
-                    }
-                }
-            });
+            return putObject(bucket, key, body, callback);
         };
 
         this.getFileUrl = function (options, callback) {
@@ -55,20 +46,7 @@ module.exports = function (protoObject) {
             var validBase64;
             var data = file;
             var err;
-            //check and if need change arguments of target method
-            //==========================================================================
-            //self.validateIncomingParameters(arguments);
-            //==========================================================================
 
-            //if(data) {
-            //    validBase64 = self.checkBase64(data);
-            //    if(validBase64) {
-            //        data = self.convertFromBase64( base64 );
-            //    } else {
-            //        err = new Error(INVALID_BASE64_STRING);
-            //        err.status = 400;
-            //    }
-            //}
             var fileStream = fs.createReadStream(data.path);
             fileStream.on('error', function (err) {
                 if (err) {

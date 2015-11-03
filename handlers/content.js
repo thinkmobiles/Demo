@@ -14,7 +14,7 @@ var awsStorage = new AwsStorage();
 
 var path = require('path');
 var REG_EXP = require('../constants/regExp');
-var pdfutils = "";//require('pdfutils').pdfutils;
+var pdfutils = require('pdfutils').pdfutils;
 var badRequests = require('../helpers/badRequests');
 var fs = require('fs');
 var routeHandler = function (db) {
@@ -133,7 +133,7 @@ var routeHandler = function (db) {
                 var key = url + file.name.slice(0, -4) + '.png';
                 awsStorage.postBuffer(S3_BUCKET, key, buf, function (err) {
                     if (err) {
-                        console.error(err);
+                       return  console.error(err);
                     }
                 });
             });
@@ -302,10 +302,28 @@ var routeHandler = function (db) {
     };
     this.testS3Save = function (req, res, next) {
         var files = req.files;
-        awsStorage.postFile(S3_BUCKET, 'some???file2.pdf', {data:files['pdf']}, function (err, data) {
+        awsStorage.postFile(S3_BUCKET, 'somefile2.pdf', files['pdf'], function (err, data) {
             if (err) {
                 return next(err);
             }
+            pdfutils(files['pdf'].path, function (err, doc) {
+                var stream = doc[0].asPNG({maxWidth: 500, maxHeight: 1000});
+                var buf = new Buffer(0, "base64");
+                stream.on('data', function (data) {
+                    buf = Buffer.concat([buf, data]);
+                });
+                stream.on('end', function () {
+                    var key = files['pdf'].name.slice(0, -4) + '.png';
+                    awsStorage.postBuffer(S3_BUCKET, key, buf, function (err) {
+                        if (err) {
+                            return  console.error(err);
+                        }
+                    });
+                });
+                stream.on('error', function (err) {
+                    return console.error(err);
+                });
+            });
             res.status(200).send(data);
         });
     };
