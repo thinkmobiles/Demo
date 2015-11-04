@@ -1,10 +1,18 @@
-<%_.forEach(pdfUri,function(url){%>
-<li>
-  <a href="<%=url%>" target="_blank" class="pdf"><%=decodeURIComponent(url.split('\\').pop().split('/').pop())%></a>
-  <div class="preview">
-    <div class="arrow">
-    </div>
-	<img height="110" width="80" src="<%=url.replace('.pdf','.png')%>" alt="<%=decodeURIComponent(url.split('\\').pop().split('/').pop())%>"/>
-  </div>
-</li>
-<%})%>
+<%if(pdfUri&&pdfUri.length){%>
+<h3>Related files:</h3>
+<ul>
+    <%_.forEach(pdfUri,function(url){%>
+    <li>
+        <a href="<%=url%>" target="_blank"
+           class="pdf"><%=decodeURIComponent(url.split('\\').pop().split('/').pop())%></a>
+
+        <div class="preview">
+            <div class="arrow">
+            </div>
+            <img height="110" width="80" src="<%=url.replace('.pdf','.png')%>"
+                 alt="<%=decodeURIComponent(url.split('\\').pop().split('/').pop())%>"/>
+        </div>
+    </li>
+    <%})%>
+</ul>
+<%}%>
