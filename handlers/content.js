@@ -81,24 +81,21 @@ var routeHandler = function (db) {
         var url;
 
 
-        if (!files[name]) {
-            var error = new Error();
-            error.message = "Some files missing";
-            error.status = 401;
-            return mainCallback(error);
+        if (!files[name].length && (!files[name].name || !files[name].size)) {
+            return mainCallback(null);
         }
         if (!files[name].length) {
             arr.push(files[name]);
         } else {
             arr = files[name];
         }
-        url = id.toString() +'/survey' + num +'/pdf/';
+        url = id.toString() + '/survey' + num + '/pdf/';
 
         async.each(arr, function (file, eachCb) {
             var pdfUrl = S3_ENDPOINT + S3_BUCKET + '/' + url + encodeURIComponent(file.name);
             var pdfKey = url + file.name;
 
-            awsStorage.postFile(S3_BUCKET, pdfKey,  file, function (err) {
+            awsStorage.postFile(S3_BUCKET, pdfKey, file, function (err) {
                 if (err) {
                     return eachCb(err);
                 }
@@ -455,7 +452,7 @@ var routeHandler = function (db) {
                                     if (err) {
                                         return eachCb(err);
                                     }
-                                    eachCb();
+                                    eachCb(null);
                                 });
                             }, function (err) {
                                 if (err) {

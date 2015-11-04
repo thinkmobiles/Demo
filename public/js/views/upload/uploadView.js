@@ -292,11 +292,11 @@ define([
 			var hasError = false;
 			e.preventDefault();
 			$(".error").removeClass("error");
-
-			if(!$(e.target).closest(".videoElement").find(".left .uploadContainer input[type='file']").get(0).files.length){
-				$(e.target).closest(".videoElement").find(".left .uploadContainer").addClass("error");
-				hasError = !0;
-			}
+            //
+			//if(!$(e.target).closest(".videoElement").find(".left .uploadContainer input[type='file']").get(0).files.length){
+			//	$(e.target).closest(".videoElement").find(".left .uploadContainer").addClass("error");
+			//	hasError = !0;
+			//}
 
 			var videoName = $(e.target).closest(".videoElement").find(".right .uploadContainer input[type='file']").get(0).files.length?self.getFiles($(e.target).closest(".videoElement").find(".right .uploadContainer input[type='file']").get(0).files):$(e.target).closest(".videoElement").find(".right .uploadContainer.link input[type='text']").val();
 		
