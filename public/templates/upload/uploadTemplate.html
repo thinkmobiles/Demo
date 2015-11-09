@@ -3,6 +3,7 @@
         <form action="/upload" enctype="multipart/form-data" method="post" id="videoForm" name="videoForm">
             <input name="countQuestion" value="1" type="hidden" class="countQuestion"/>
             <input name="removedQuestions" value="" type="hidden" class="countQuestion"/>
+
             <h2>STEP 1: CHOOSE YOUR MAIN VIDEO</h2>
 
             <div class="left">
@@ -19,7 +20,7 @@
                     <div class="right">
                     </div>
                     <div class=" dropzone">
-                    <input type="file" name="video" accept="video/mp4,video/x-m4v,video/*"/>
+                        <input type="file" name="video" accept="video/mp4,video/x-m4v,video/*"/>
                     </div>
                 </div>
                 <br/>
@@ -41,126 +42,142 @@
 
             <div class="clear">
             </div>
-            <div class="collapseQuestions"></div>
+
             <div class="videoContainer">
-                <div class="videoElement">
-                    <div class="left">
-                        <span>Please enter question:</span>
-                        <textarea name="question1" class="questionText"></textarea>
-                    </div>
-                    <div class="right">
-                        <span>Upload video from computer:</span>
+                <div id="sortable" class="collapseQuestions">
+                    <!-- container -->
+                    <div class="survey new">
+                        <div class="collapseQuestion hidden" data-id="">
+                            <div class="edit"><span>Edit</span></div>
+                            <div class="close">
+                            </div>
+                            <h2></h2>
+                            <span class="relatedVideo"></span>&nbsp;&nbsp;&nbsp;
+                            <span class="relatedPdf"></span>
+                        </div>
 
-                        <div class="uploadContainer file">
+                        <div class="videoElement">
                             <div class="left">
-                                <input type="text" placeholder="Drop file here" readonly="readonly"/>
+                                <span>Please enter brief description:</span>
+                                <textarea name="question1" class="questionText"></textarea>
                             </div>
                             <div class="right">
-                            </div>
-                            <input type="file" name="video1" accept="video/mp4,video/x-m4v,video/*"/><br/>
-                        </div>
-                        <br/>
-                        <span>Or paste a link:</span>
+                                <span>Upload video from computer:</span>
 
-                        <div class="uploadContainer link">
+                                <div class="uploadContainer file">
+                                    <div class="left">
+                                        <input type="text" placeholder="Drop file here" value="" readonly="readonly"/>
+                                    </div>
+                                    <div class="right">
+                                    </div>
+                                    <input type="file" name="video1" accept="video/mp4,video/x-m4v,video/*"/><br/>
+                                </div>
+                                <br/>
+                                <span>Or paste a link:</span>
+
+                                <div class="uploadContainer link">
+                                    <div class="left">
+                                        <input type="text" name="video1"/>
+                                    </div>
+                                    <div class="right">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clear">
+                            </div>
                             <div class="left">
-                                <input type="text" name="video1"/>
+                                <span>Upload related PDF’s (You can choose more than one file): </span>
+
+                                <div class="uploadContainer file long">
+                                    <div class="left">
+                                        <input type="text" placeholder="Or drop file here" value=""
+                                               readonly="readonly"/>
+                                    </div>
+                                    <div class="right">
+                                    </div>
+                                    <input type="file" name="file1" multiple accept="application/pdf"/><br/>
+                                </div>
                             </div>
                             <div class="right">
+                                <span>&nbsp;</span><br/>
+                                <button class="question">ADD QUESTION</button>
                             </div>
+                            <div class="clear"></div>
                         </div>
-                    </div>
-                    <div class="clear">
-                    </div>
-                    <div class="left">
-                        <span>Upload related PDF’s (You can choose more than one file): </span>
 
-                        <div class="uploadContainer file long">
-                            <div class="left">
-                                <input type="text" placeholder="Or drop file here" readonly="readonly"/>
-                            </div>
-                            <div class="right">
-                            </div>
-                            <input type="file" name="file1" multiple accept="application/pdf"/><br/>
-                        </div>
-                    </div>
-                    <div class="right">
-                        <span>&nbsp;</span><br/>
-                        <button class="question">ADD QUESTION</button>
                     </div>
                 </div>
-            </div>
-            <div class="clear">
-            </div>
-
-            <h2>STEP 3: UPLOAD YOUR LOGO</h2>
-
-            <div class="clear">
-            </div>
-            <div class="left relative">
-                <span>Upload your logo from computer:</span><br/>
-
-                <div class="uploadContainer file long">
-                    <div class="left">
-                        <input type="text" placeholder="Or drop file here" readonly="readonly"/>
-                    </div>
-                    <div class="right">
-                    </div>
-                    <input type="file" name="logo" accept="image/*"/>
+                <div class="clear">
                 </div>
-                <br/>
-				<canvas id="preview" width="100" height="100"></canvas>
-                <div id="arrowPreview">
-                </div>
-            </div>
-            <div class="right">
-                <span>Company Name:</span><br/>
 
-                <div class="left">
-                    <div class="uploadContainer text">
+                <h2>STEP 3: UPLOAD YOUR LOGO</h2>
+
+                <div class="clear">
+                </div>
+                <div class="left relative">
+                    <span>Upload your logo from computer:</span><br/>
+
+                    <div class="uploadContainer file long">
                         <div class="left">
-                            <input type="text" name="name"/>
+                            <input type="text" placeholder="Or drop file here" readonly="readonly"/>
                         </div>
+                        <div class="right">
+                        </div>
+                        <input type="file" name="logo" accept="image/*"/>
+                    </div>
+                    <br/>
+                    <canvas id="preview" width="100" height="100"></canvas>
+                    <div id="arrowPreview">
                     </div>
                 </div>
-            </div>
-            <div class="clear">
-            </div>
+                <div class="right">
+                    <span>Company Name:</span><br/>
 
-            <h2>STEP 4: ENTER «CONTACT ME» INFO</h2>
-
-            <div class="clear">
-            </div>
-            <div class="left">
-                <span>Email:</span><br/>
-
-                <div class="uploadContainer text long">
                     <div class="left">
-                        <input type="text" name="email"/>
-                    </div>
-                </div>
-                <br/>
-            </div>
-            <div class="right">
-                <span>Phone:</span><br/>
-
-                <div class="left">
-                    <div class="uploadContainer text">
-                        <div class="left">
-                            <input type="text" name="phone"/>
+                        <div class="uploadContainer text">
+                            <div class="left">
+                                <input type="text" name="name"/>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="clear">
-            </div>
-            <div class="buttons">
-                <button class="decline">DECLINE</button>
-                <input type="submit" value="SAVE" class="save"/>
-            </div>
-            <div class="clear">
-            </div>
+                <div class="clear">
+                </div>
 
+                <h2>STEP 4: ENTER «CONTACT ME» INFO</h2>
+
+                <div class="clear">
+                </div>
+                <div class="left">
+                    <span>Email:</span><br/>
+
+                    <div class="uploadContainer text long">
+                        <div class="left">
+                            <input type="text" name="email"/>
+                        </div>
+                    </div>
+                    <br/>
+                </div>
+                <div class="right">
+                    <span>Phone:</span><br/>
+
+                    <div class="left">
+                        <div class="uploadContainer text">
+                            <div class="left">
+                                <input type="text" name="phone"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="clear">
+                </div>
+                <div class="buttons">
+                    <button class="decline">DECLINE</button>
+                    <input type="submit" value="SAVE" class="save"/>
+                </div>
+                <div class="clear">
+                </div>
+            </div>
         </form>
     </div>
 

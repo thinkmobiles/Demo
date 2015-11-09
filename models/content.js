@@ -9,7 +9,7 @@ module.exports = (function () {
         order: {type:Number},
         videoUri: {type: String},
         pdfUri: [{type: String}]
-    },{versionKey: false, _id: false});
+    },{versionKey: false/*, _id: false*/});
 
     var contentSchema = mongoose.Schema({
         ownerId: {type: ObjectId, ref: 'User'},

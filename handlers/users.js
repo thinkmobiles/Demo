@@ -622,6 +622,13 @@ var routeHandler = function (db) {
         return res.redirect(process.env.HOME_PAGE+contentId+'/'+prospectId);
     };
 
+    function sortByKey(array, key) {
+        return array.sort(function(a, b) {
+            var x = a[key]; var y = b[key];
+            return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+        });
+    }
+
     this.getMain = function (req, res, next) {
         var contentId = req.params.contentId;
         var prospectId = req.params.prospectId;
@@ -652,12 +659,13 @@ var routeHandler = function (db) {
                         error.status = 404;
                         return next(error);
                     }
+                    foundContent.survey = sortByKey(foundContent.survey,'order');
                     return res.status(200).send({content:foundContent});
                 });
             });
         }else {
             if (prospectId == '{{ctid}}') {
-                error.message = 'You have to paste this link to Jumplead email template, where tht link for each prospect will be generated';
+                error.message = 'You have to paste this link to Jumplead email template, where that link for each prospect will be generated';
                 error.status = 400;
                 return next(error);
             }
@@ -675,6 +683,7 @@ var routeHandler = function (db) {
                             return waterfallCb(error);
                         }
                         content = foundContent;
+                        foundContent.survey = sortByKey(foundContent.survey, 'order');
                         waterfallCb(null, foundContent);
                     });
                 },

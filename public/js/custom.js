@@ -4,6 +4,7 @@ define(["moment"],function (moment) {
 		needAuthorize: [
 			'users',
             'upload',
+            'edit',
             'main'
         ],
 
