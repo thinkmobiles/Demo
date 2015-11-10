@@ -15,6 +15,7 @@ define([
 
         routes: {
             "upload"                    :  "upload",
+            "edit"                      :  "edit",
             "home(/:videoId/:userId)"   :  "home",
 			"chooseViewer(/:videoId/:userId)" :  "chooseViewer",
 			"registerViewer(/:videoId/:userId)" :  "registerViewer",
@@ -155,6 +156,10 @@ define([
         },
         upload: function () {
             this.loadWrapperView('upload');
+        },
+
+        edit: function () {
+            this.loadWrapperView('edit');
         },
 		analytics: function () {
             this.loadWrapperView('analitics');

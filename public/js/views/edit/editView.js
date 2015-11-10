@@ -1,20 +1,20 @@
 define([
-    'text!templates/upload/uploadTemplate.html',
+    'text!templates/edit/editTemplate.html',
+    'text!templates/edit/surveyElement.html',
     'text!templates/upload/surveyElement.html',
-    './progressBarView',
+    '../upload/progressBarView',
     "validation"
 
-], function (EditTemplate, surveyElement, progressBarView, validation) {
+], function (EditTemplate, SurveyElement, NewSurveyElement, progressBarView, validation) {
     var View = Backbone.View.extend({
 
         el: "#wrapper",
         events: {
             "click .removeContent": "remove",
             "click .decline": "decline",
-            "click .save:not(.edit)": "save",
+            "click .save.edit": "update",
             "click .question": "addQuestion",
-            //"click .question.editQuestion": "editQuestion",
-            "click .collapseQuestions .collapseQuestion .edit": "openQuestion",
+            "click .collapseQuestion .edit": "openQuestion",
             "click .collapseQuestions .collapseQuestion .close": "removeQuestion",
             "click .uploadContainer.file": "browse",
             "change .uploadContainer.file input[type='file']": "changeFile",
@@ -22,6 +22,7 @@ define([
             "keyup .uploadContainer input[type='text']": "changeInput",
             "click .uploadContainer.file input[type='file']": "clickOnFile",
             "click .link-dialog .ui-dialog-titlebar-close": "decline",
+            "click .editContent": "showEdit",
             "dragenter .uploadContainer.file input": "dragenter",
             "dragleave .uploadContainer.file input": "dragleave",
             "dragover .uploadContainer.file input": "dragover",
@@ -38,8 +39,24 @@ define([
                 e.preventDefault();
             }, false);
             this.countQuestion = 0;
+            this.removedQuestions = [];
+            this.surveyOrder = [];
             var self = this;
-            self.render();
+            self.isEdit = false;
+            $.ajax({
+                type: "GET",
+                url: "/content",
+                contentType: "application/json",
+                success: function (data) {
+                    self.isEdit = true;
+                    self.render(data)
+                },
+                error: function (model, xhr) {
+                    //self.render();
+                    //console.log(xhr);
+                    //console.log(model);
+                }
+            });
         },
 
         drop: function (e) {
@@ -61,6 +78,7 @@ define([
             e.preventDefault();
             $(e.target).closest(".uploadContainer").css('border', '2px solid #0B85A1');
         },
+
         dragleave: function (e) {
             console.log("leave");
             e.stopPropagation();
@@ -68,7 +86,7 @@ define([
             $(e.target).closest(".uploadContainer").css('border', '1px solid #DBDBDB');
         },
 
-        save: function (e) {
+        update: function (e) {
             var self = this;
             e.preventDefault();
             this.$el.find(".error").removeClass("error");
@@ -88,22 +106,6 @@ define([
                 hasError = true;
             }
 
-
-            if (!this.$el.find(".uploadContainer.file input[name='video']").val() && !this.$el.find(".uploadContainer.link input[name='video']").val()) {
-                this.$el.find(".uploadContainer.file input[name='video']").closest(".uploadContainer").addClass("error");
-                this.$el.find(".uploadContainer.link input[name='video']").closest(".uploadContainer").addClass("error");
-                hasError = true;
-            }
-
-            if (!this.$el.find(".uploadContainer.file input[name='logo']").val()) {
-                this.$el.find(".uploadContainer.file input[name='logo']").closest(".uploadContainer").addClass("error");
-                hasError = true;
-            }
-            if (!this.$el.find(".uploadContainer.file input[name='logo']").val()) {
-                this.$el.find(".uploadContainer.file input[name='logo']").closest(".uploadContainer").addClass("error");
-                hasError = true;
-            }
-
             if (!this.$el.find(".uploadContainer input[name='name']").val()) {
                 this.$el.find(".uploadContainer input[name='name']").closest(".uploadContainer").addClass("error");
                 hasError = true;
@@ -112,7 +114,6 @@ define([
             if (hasError) {
                 return;
             }
-
 
             var form = document.forms.namedItem("videoForm");
 
@@ -156,9 +157,9 @@ define([
             //============================================================
 
 
-            oReq.open("POST", "content/upload", true);
+            oReq.open("POST", "content/update", true);
             oReq.onload = function (oEvent) {
-                if (oReq.status === 201) {
+                if (oReq.status === 200) {
                     try {
                         var res = JSON.parse(oReq.response);
                         $("<div><input type='text' value='" + res.url + "' readonly/></div>").dialog({
@@ -169,7 +170,6 @@ define([
                             width: 725
                         });
                         //window.location="/#home";
-                        self.$el.find()
                     }
                     catch (e) {
                         App.notification(e);
@@ -182,7 +182,38 @@ define([
                     }
                 }
             };
+
             oReq.send(oData);
+        },
+
+        showEdit: function () {
+            this.$el.find("form.disableEdit").removeClass("disableEdit");
+            this.$el.find("input[type='text']").removeAttr("disabled");
+            this.$el.find("textarea").removeAttr("disabled");
+            this.$el.find(".editContent").hide();
+            this.$el.find(".survey:not(.new).videoElement").hide();
+            $("#sortable").sortable("enable");
+        },
+
+        remove: function () {
+            var self = this;
+            var sure = confirm("Are you sure?");
+            if (!sure) {
+                return;
+            }
+            $.ajax({
+                type: "delete",
+                url: "/content",
+                contentType: "application/json",
+                success: function (data) {
+                    Backbone.history.navigate("#/upload", {trigger: true});
+
+                },
+                error: function (model, xhr) {
+                    console.log(xhr);
+                    console.log(model);
+                }
+            });
         },
 
         decline: function (e) {
@@ -199,7 +230,8 @@ define([
         },
 
         removeQuestion: function (e) {
-            var countQuestion = this.$el.find(".survey:not(.new)").length;
+            var self = this;
+            var countQuestion = this.$el.find('.survey').length - 2;
             var current = $(e.target).closest(".survey");
             var n = this.$el.find(".collapseQuestions .survey").index(current);
             this.$el.find(".videoContainer .survey").each(function (index) {
@@ -211,7 +243,26 @@ define([
                 }
             });
             $(this.$el).find(".countQuestion").val(countQuestion);
+            var id = current.data("id");
+            if (id !== 'new') {
+                this.removedQuestions.push(id);
+            }
+            $(this.$el).find(".removedQuestions").val(this.removedQuestions.join(" "));
             current.remove();
+            self.defineOrder();
+        },
+
+        openQuestion: function (e) {
+            this.$el.find(".collapseQuestions").css('min-height',this.$el.find(".collapseQuestions").height());
+            $('#sortable').sortable('disable');
+            this.$el.find(".survey.new").slideUp().remove();
+
+            this.$el.find(".survey .collapseQuestion").show()//.removeClass('hidden');
+            this.$el.find(".videoElement").slideUp();
+
+            $(e.target).closest(".survey").find('.collapseQuestion').hide()//.addClass('hidden');
+            $(e.target).closest(".survey").find('.videoElement').slideDown();
+
         },
 
         clickOnFile: function (e) {
@@ -232,43 +283,36 @@ define([
                 $(e.target).closest(".videoElement").find(".questionText").addClass("error");
                 hasError = !0;
             }
-            if (!videoName) {
-                $(e.target).closest(".videoElement").find(".right .uploadContainer").addClass("error");
-                hasError = !0;
-            }
-            if (!videoName) {
+            if (!videoName && !($(e.target).closest(".videoElement").find(".right .uploadContainer .left input[type='text']").val())) {
                 $(e.target).closest(".videoElement").find(".right .uploadContainer").addClass("error");
                 hasError = !0;
             }
             if (!hasError) {
                 var countQuestion = this.$el.find(".survey").length;
-                $(e.target).closest(".question").addClass('editQuestion').text("SAVE");
+                $(e.target).closest(".question").text("SAVE");
                 $(e.target).closest(".survey").addClass('canSort').removeClass("new");
                 $(e.target).closest(".survey").find('.collapseQuestion h2').text($(e.target).closest(".videoElement").find(".questionText").val());
-                $(e.target).closest(".survey").find('.collapseQuestion .relatedVideo').html("Related video: <b>" + videoName + "</b>");
+                if (videoName) {
+                    $(e.target).closest(".survey").find('.collapseQuestion .relatedVideo').html("Related video: <b>" + videoName + "</b>");
+                }
                 if (pdfName) {
                     $(e.target).closest(".survey").find('.collapseQuestion .relatedPdf').html("Related PDF: <b>" + pdfName + "</b>");
                 }
-                $(e.target).closest(".survey").find(".collapseQuestion").removeClass("hidden");
-                $(e.target).closest(".videoElement").hide();
+                $(e.target).closest(".survey").find(".collapseQuestion").slideDown().removeClass("hidden");
+                $(e.target).closest(".videoElement").slideUp();
 
-                this.$el.find(".collapseQuestions").append(_.template(surveyElement)({index: countQuestion+1}));
+                this.$el.find(".collapseQuestions").append(_.template(NewSurveyElement)({index: countQuestion + 1}));//.hide().slideDown();
                 this.$el.find(".countQuestion").val(countQuestion);
+                self.defineOrder();
             }
+            $('#sortable').sortable('enable');
         },
 
-
-        openQuestion: function (e) {
-            this.$el.find(".survey.new").remove();
-            this.$el.find(".survey .collapseQuestion").removeClass('hidden');
-            $(e.target).closest(".survey").find('.collapseQuestion').addClass('hidden');
-            this.$el.find(".videoElement").slideUp();
-            $(e.target).closest(".survey").find('.videoElement').delay(200).slideDown();
-
-        },
 
         browse: function (e) {
-            $(e.target).closest(".uploadContainer").find("input[type='file']").click();
+            if (!$(e.target).closest(".disableEdit").length) {
+                $(e.target).closest(".uploadContainer").find("input[type='file']").click();
+            }
         },
 
         getFiles: function (files) {
@@ -292,30 +336,70 @@ define([
             }
         },
 
-        render: function () {
-            this.$el.html(_.template(EditTemplate));
-            $("#sortable").sortable({
-                cursor: "move",
-                //cursorAt: { top: 70 },
-                items: "> div.canSort",
-                opacity: 0.8,
-                revert: true,
-                scroll: false,
-                containment: '.login',
-                placeholder: 'sortable-placeholder',
-                disabled: false,
-                beforeStop: function (e) {
-                    $(e.target).closest('.videoContainer').find(".survey").each(function (i) {
-                        var index = i + 1;
-                        $(this).find(".videoElement .questionText").attr("name", "question" + index);
-                        $(this).find(".videoElement .right .uploadContainer.file input[type='file']").attr("name", "video" + index);
-                        $(this).find(".videoElement .right .uploadContainer.link input").attr("name", "video" + index);
-                        $(this).find(".videoElement .left .uploadContainer.file input[type='file']").attr("name", "file" + index);
-                    });
-                }
+        render: function (data) {
+            var self = this;
+            this.$el.html(_.template(EditTemplate)({
+                content: data.content,
+                url: data.url,
+                count: data.content.survey.length + 1
+            }));
+
+            var countQuestion = data.content.survey.length;
+            $(this.$el).find(".countQuestion").val(countQuestion);
+            _.each(data.content.survey.reverse(), function (item, index) {
+                var pdf = _.map(item.pdfUri, function (item) {
+                    return item.split("/").pop();
+                });
+                pdf = pdf.join(" ");
+                var arr = item.videoUri.split("/");
+                i = arr[arr.length - 1].split('').pop();
+                $(self.$el).find(".collapseQuestions").prepend(_.template(SurveyElement)({
+                    surveyId: item._id,
+                    question: item.question,
+                    video: decodeURIComponent(item.videoUri.split("/").pop()),
+                    pdf: decodeURIComponent(pdf),
+                    index: item.order
+                }));
+
+                $("#sortable").sortable({
+                    cursor: "move",
+                    items: "> div.canSort",
+                    opacity: 0.8,
+                    revert: true,
+                    scroll: false,
+                    containment: '.login',
+                    placeholder: 'sortable-placeholder',
+                    disabled: true,
+                    beforeStop: function (e, ui) {
+                        self.defineOrder();
+                    }
+                });
             });
+
+            this.drawImage(data.content.logoUri);
+            //this.showEdit();
+            this.defineOrder();
             return this;
         },
+
+        defineOrder: function () {
+            var self = this;
+            self.surveyOrder = [];
+            this.$el.find('.collapseQuestions .survey').each(function (i) {
+                var index = i + 1;
+                if ($(this).hasClass('canSort')) {
+                    self.surveyOrder.push($(this).attr("data-id"));
+                }
+
+                $(this).find(".videoElement .questionText").attr("name", "question" + index);
+                $(this).find(".videoElement .right .uploadContainer.file input[type='file']").attr("name", "video" + index);
+                $(this).find(".videoElement .right .uploadContainer.link input").attr("name", "video" + index);
+                $(this).find(".videoElement .left .uploadContainer.file input[type='file']").attr("name", "file" + index);
+            });
+            this.$el.find('.surveyOrder').val(self.surveyOrder.join(' '));
+            console.log(self.surveyOrder.join(' '));
+        },
+
         drawImage: function (src) {
             this.$el.find("#preview").show();
             this.$el.find("#arrowPreview").show();
@@ -328,6 +412,7 @@ define([
                 ctx.drawImage(myImage, 0, 0, 100, 100);
             };
         }
+
     });
 
     return View;

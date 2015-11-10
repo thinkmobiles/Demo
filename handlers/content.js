@@ -35,6 +35,92 @@ var routeHandler = function (db) {
     var ContactMeModel = db.model('ContactMe', contactMeSchema);
 
 
+    function updateSurveyVideo(num, id, surveyId, files, data, callback) {
+        var name = 'video' + num;
+        var question = 'question' + num;
+        var url = id.toString() + '/survey' + num + '/';
+        var videoKey = url + files[name].name;
+        var videoUrl = S3_ENDPOINT + S3_BUCKET + '/' + url + encodeURIComponent(files[name].name);
+
+        if (files[name].name) {
+            awsStorage.postFile(S3_BUCKET, videoKey, files[name], function (err) {
+                if (err) {
+                    return callback(err);
+                }
+                ContentModel.findOneAndUpdate({_id: id, "survey._id": surveyId},
+                    {
+                        $set: {
+                            "survey.$.videoUri": videoUrl,
+                            "survey.$.question": data[question],
+                            "survey.$.order": num
+                        }
+                    }, function (err) {
+                        if (err) {
+                            return callback(err);
+                        }
+                        return callback(null)
+                    });
+            });
+        } else {
+            ContentModel.findOneAndUpdate({_id: id, "survey._id": surveyId},
+                {
+                    $set: {
+                        "survey.$.videoUri": data[name],
+                        "survey.$.question": data[question],
+                        "survey.$.order": num
+                    }
+                }, function (err) {
+                    if (err) {
+                        return callback(err);
+                    }
+                    return callback(null)
+                });
+        }
+    };
+    function updateSurveyFiles(num, id, surveyId, files, data, mainCallback) {
+        var name = 'file' + num;
+        var arr = [];
+        var url;
+
+
+        if (!files[name].length && (!files[name].name || !files[name].size)) {
+            return mainCallback(null);
+        }
+        if (!files[name].length) {
+            arr.push(files[name]);
+        } else {
+            arr = files[name];
+        }
+        url = id.toString() + '/survey' + num + '/pdf/';
+
+        async.each(arr, function (file, eachCb) {
+            var pdfUrl = S3_ENDPOINT + S3_BUCKET + '/' + url + encodeURIComponent(file.name);
+            var pdfKey = url + file.name;
+
+            awsStorage.postFile(S3_BUCKET, pdfKey, file, function (err) {
+                if (err) {
+                    return eachCb(err);
+                }
+                savePdfPreview(url, file);
+
+                ContentModel.findOneAndUpdate({
+                    "_id": id,
+                    "survey._id": surveyId
+                }, {$addToSet: {"survey.$.pdfUri": pdfUrl}}, function (err) {
+                    if (err) {
+                        return eachCb(err);
+                    }
+                    eachCb(null);
+                });
+            });
+        }, function (err) {
+            if (err) {
+                return mainCallback(err);
+            }
+            mainCallback(null);
+        });
+    };
+
     function saveSurveyVideo(num, id, files, data, callback) {
         var question = 'question' + num;
         var name = 'video' + num;
@@ -44,14 +130,16 @@ var routeHandler = function (db) {
         var videoUrl = S3_ENDPOINT + S3_BUCKET + '/' + url + encodeURIComponent(files[name].name);
 
         if (files[name].name) {
-            awsStorage.postFile(S3_BUCKET, videoKey,  files[name], function (err) {
+            awsStorage.postFile(S3_BUCKET, videoKey, files[name], function (err) {
                 if (err) {
                     return callback(err);
                 }
                 insSurvey = {
                     question: data[question],
-                    videoUri: videoUrl
+                    videoUri: videoUrl,
+                    order: num
                 };
+
                 ContentModel.findByIdAndUpdate(id, {$addToSet: {survey: insSurvey}}, function (err) {
                     if (err) {
                         return callback(err);
@@ -62,7 +150,8 @@ var routeHandler = function (db) {
         } else {
             insSurvey = {
                 question: data[question],
-                videoUri: data[name]
+                videoUri: data[name],
+                order: num
             };
             ContentModel.findByIdAndUpdate(id, {$addToSet: {survey: insSurvey}}, function (err) {
                 if (err) {
@@ -119,7 +208,7 @@ var routeHandler = function (db) {
         });
     };
 
-    function savePdfPreview(url, file){
+    function savePdfPreview(url, file) {
         pdfutils(file.path, function (err, doc) {
             var stream = doc[0].asPNG({maxWidth: 500, maxHeight: 1000});
             var buf = new Buffer(0, "base64");
@@ -130,7 +219,7 @@ var routeHandler = function (db) {
                 var key = url + file.name.slice(0, -4) + '.png';
                 awsStorage.postBuffer(S3_BUCKET, key, buf, function (err) {
                     if (err) {
-                       return  console.error(err);
+                        return console.error(err);
                     }
                 });
             });
@@ -139,6 +228,7 @@ var routeHandler = function (db) {
             });
         });
     }
+
     function saveMainVideo(id, files, mainCb) {
         var url = id.toString() + '/';
         var videoUrl = S3_ENDPOINT + S3_BUCKET + '/' + url + encodeURIComponent(files['video'].name);
@@ -265,6 +355,13 @@ var routeHandler = function (db) {
         return callback();
     };
 
+    function sortByKey(array, key) {
+        return array.sort(function (a, b) {
+            var x = a[key];
+            var y = b[key];
+            return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+        });
+    }
 
     this.content = function (req, res, next) {
         ContentModel.findOne({ownerId: req.session.uId}, function (err, found) {
@@ -275,13 +372,14 @@ var routeHandler = function (db) {
             if (!found) {
                 return res.status(404).send({err: 'Content Not Found'});
             }
+            found.survey = sortByKey(found.survey, 'order');
             var url = process.env.WEB_HOST + '/campaign/' + found._id + '/{{ctid}}';
             res.status(201).send({url: url, content: found});
         });
     };
 
     this.testS3Delete = function (req, res, next) {
-        awsStorage.removeFile(S3_BUCKET, '562df14d680008701f000001/Overview.mp4',null, function (err, data) {
+        awsStorage.removeFile(S3_BUCKET, '562df14d680008701f000001/Overview.mp4', null, function (err, data) {
             if (err) {
                 return next(err);
             }
@@ -297,6 +395,16 @@ var routeHandler = function (db) {
             res.status(200).send(data);
         });
     };
+
+    this.testS3Move = function (req, res, next) {
+        awsStorage.moveDir(S3_BUCKET, '564065e92226c4c43a000002/survey4', '564065e92226c4c43a000002/old/survey4', function (err, data) {
+            if (err) {
+                return next(err);
+            }
+            res.status(200).send(data);
+        });
+    };
+
     this.testS3Save = function (req, res, next) {
         var files = req.files;
         awsStorage.postFile(S3_BUCKET, 'somefile2.pdf', files['pdf'], function (err, data) {
@@ -313,7 +421,7 @@ var routeHandler = function (db) {
                     var key = files['pdf'].name.slice(0, -4) + '.png';
                     awsStorage.postBuffer(S3_BUCKET, key, buf, function (err) {
                         if (err) {
-                            return  console.error(err);
+                            return console.error(err);
                         }
                     });
                 });
@@ -327,7 +435,7 @@ var routeHandler = function (db) {
 
     this.testS3Get = function (req, res, next) {
         var data = req.query;
-        awsStorage.getFileUrl({bucket:S3_BUCKET, key:'some%20file2.pdf'}, function (err, data) {
+        awsStorage.getFileUrl({bucket: S3_BUCKET, key: 'some%20file2.pdf'}, function (err, data) {
             if (err) {
                 return next(err);
             } // an error occurred
@@ -337,7 +445,7 @@ var routeHandler = function (db) {
 
     this.testS3List = function (req, res, next) {
         var data = req.query;
-        awsStorage.listFiles(S3_BUCKET, '' , function (err, data) {
+        awsStorage.listFiles(S3_BUCKET, '', function (err, data) {
             if (err) {
                 return next(err);
             } // an error occurred
@@ -525,159 +633,374 @@ var routeHandler = function (db) {
         var content;
         var data = req.body;
         var files = req.files;
-        var sep = path.sep;
         var delSurvey = data.removedQuestions ? data.removedQuestions.split(' ') : [];
-        var prefix = S3_ENDPOINT+S3_BUCKET+'/';
+        var surveyOrder = data.surveyOrder ? data.surveyOrder.split(' ') : [];
+        var countQuestion = data.countQuestion;
+        var prefix = S3_ENDPOINT + S3_BUCKET + '/';
         var id;
         var url;
 
-        async.waterfall([
-            function (waterfallCb) {
-                //validation
-                waterfallCb(null);
-            },
+        async.series([
+                function (seriesCb) {
+                    //validation
+                    seriesCb(null);
+                },
 
-            function (waterfallCb) {
-                var obj = {
-                    name: data.name,
-                    email: data.email,
-                    phone: data.phone,
-                    mainVideoDescription: data.desc
-                };
-                ContentModel.findOneAndUpdate({ownerId: userId}, obj, function (err, doc) {
-                    if (err) {
-                        return waterfallCb(err);
-                    }
-                    content = doc;
-                    id = doc._id;
-                    waterfallCb(null)
-                });
-            },
-
-            //update main video
-            function (waterfallCb) {
-                var updateMainVideoUri;
-
-                if (!data.video && !files.video.name) {
-                    return waterfallCb(null);
-                } else if (data.video) {
-                    updateMainVideoUri = data.video;
-                    ContentModel.findByIdAndUpdate(id, {mainVideoUri: updateMainVideoUri}, function (err, doc) {
+                //update text fields
+                function (seriesCb) {
+                    var obj = {
+                        name: data.name,
+                        email: data.email,
+                        phone: data.phone,
+                        mainVideoDescription: data.desc
+                    };
+                    ContentModel.findOneAndUpdate({ownerId: userId}, obj, function (err, doc) {
                         if (err) {
-                            return waterfallCb(err);
+                            return seriesCb(err);
                         }
-                        return waterfallCb(null)
-                    });
-                } else if (files.video.name) {
-                    var key = decodeURIComponent(content.mainVideoUri.replace(prefix, ''));
-                    awsStorage.removeFile(S3_BUCKET, key, function (err) {
-                        if (err) {
-                            return waterfallCb(err);
-                        }
+                        content = doc;
+                        id = doc._id;
                         url = id.toString() + '/';
-                        var videoUrl = S3_ENDPOINT + S3_BUCKET + '/' + url + encodeURIComponent(files['video'].name);
-                        var videoKey = url + files['video'].name;
+                        var sendDataUrl = process.env.HOME_PAGE + url+ '{{ctid}}';
+                        res.status(200).send({url: sendDataUrl});
+                        seriesCb(null)
+                    });
+                },
 
-                        awsStorage.postFile(S3_BUCKET, videoKey, {data: files['video']}, function (err) {
-                            if (err) {
-                                return waterfallCb(err);
-                            }
-                            ContentModel.findByIdAndUpdate(id, {mainVideoUri: videoUrl}, function (err) {
-                                if (err) {
-                                    return waterfallCb(err);
-                                }
-                                 waterfallCb(null)
+                //move survey to temporary folder (S3)
+                function (seriesCb) {
+                    var count = content.survey.length;
+                    var i = 0;
+
+                    async.whilst(
+                        function () {
+                            return i < count;
+                        },
+                        function (callback) {
+                            i++;
+                            var oldPrefix = url+ 'survey' + i;
+                            var newPrefix = url+ 'temp/survey' + i;
+
+
+                            awsStorage.moveDir(S3_BUCKET, oldPrefix, newPrefix, function (err) {
+                               if(err){
+                                   return callback(err);
+                               }
+                                callback(null);
                             });
-                        });
-                    });
-                }
-            },
-
-            //update logo video
-            function (waterfallCb) {
-                var updateLogoUri;
-
-                if (!files.logo.name) {
-                    return waterfallCb(null);
-                }
-                var key = decodeURIComponent(content.logoUri.replace(prefix, ''));
-                awsStorage.removeFile(S3_BUCKET, key, function (err) {
-                    if (err) {
-                        return waterfallCb(err);
-                    }
-                    url = id.toString() + '/';
-                    var logoUrl = S3_ENDPOINT + S3_BUCKET + '/' + url + encodeURIComponent(files['logo'].name);
-                    var logoKey = url + files['logo'].name;
-
-                    awsStorage.postFile(S3_BUCKET, logoKey, {data: files['logo']}, function (err) {
-                        if (err) {
-                            return waterfallCb(err);
-                        }
-                        ContentModel.findByIdAndUpdate(id, {logoUri: logoUrl}, function (err) {
+                        },
+                        function (err) {
                             if (err) {
-                                return waterfallCb(err);
+                                return seriesCb(err);
                             }
-                            waterfallCb(null)
+                            seriesCb(null);
                         });
-                    });
-                });
-            },
+                },
 
-            //delete survey video
-            function (waterfallCb) {
-                if (!delSurvey.length) {
-                    return waterfallCb(null);
-                }
-                async.each(delSurvey, function (num, eachCb) {
-                    num = parseInt(num);
-                    var arr = content.survey[num].videoUri.split(sep);
-                    var prefix = id.toString() + '/' + arr[arr.length - 2];
+                function (seriesCb) {
+                    async.parallel([
 
+                            //update main video
+                            function (mainParallelCb) {
+                                var updateMainVideoUri;
+                                var videoUrl;
+                                var videoKey;
+                                var key;
+
+                                if (!data.video && !files.video.name && !files.video.size) {
+                                    return mainParallelCb(null);
+
+                                } else if (data.video) {
+                                    updateMainVideoUri = data.video;
+
+                                    ContentModel.findByIdAndUpdate(id, {mainVideoUri: updateMainVideoUri}, function (err) {
+                                        if (err) {
+                                            return mainParallelCb(err);
+                                        }
+                                        mainParallelCb(null)
+                                    });
+                                } else if (files.video.name) {
+                                    key = decodeURIComponent(content.mainVideoUri.replace(prefix, ''));
+                                    videoUrl = S3_ENDPOINT + S3_BUCKET + '/' + url + encodeURIComponent(files['video'].name);
+                                    videoKey = url + files['video'].name;
+
+                                    async.parallel([
+                                        function (parallelCb) {
+                                            awsStorage.removeFile(S3_BUCKET, key, function (err) {
+                                                if (err) {
+                                                    return parallelCb(err);
+                                                }
+                                                parallelCb(null);
+                                            });
+                                        },
+
+                                        function (parallelCb) {
+                                            awsStorage.postFile(S3_BUCKET, videoKey, files['video'], function (err) {
+                                                if (err) {
+                                                    return parallelCb(err);
+                                                }
+                                                parallelCb(null);
+                                            });
+                                        },
+
+                                        function (parallelCb) {
+                                            ContentModel.findByIdAndUpdate(id, {mainVideoUri: videoUrl}, function (err) {
+                                                if (err) {
+                                                    return parallelCb(err);
+                                                }
+                                                parallelCb(null);
+                                            });
+                                        }
+                                    ], function (err) {
+                                        if (err) {
+                                            return mainParallelCb(err);
+                                        }
+                                        mainParallelCb(null)
+                                    });
+                                }
+                            },
+
+                            //update logo
+                            function (mainParallelCb) {
+                                if (!files.logo.name) {
+                                    return mainParallelCb(null);
+                                }
+
+                                var key = decodeURIComponent(content.logoUri.replace(prefix, ''));
+                                var logoUrl = S3_ENDPOINT + S3_BUCKET + '/' + url + encodeURIComponent(files['logo'].name);
+                                var logoKey = url + files['logo'].name;
+
+
+                                async.parallel([
+                                    function (parallelCb) {
+                                        awsStorage.removeFile(S3_BUCKET, key, function (err) {
+                                            if (err) {
+                                                return parallelCb(err);
+                                            }
+                                            parallelCb(null);
+                                        });
+                                    },
+
+                                    function (parallelCb) {
+                                        awsStorage.postFile(S3_BUCKET, logoKey, files['logo'], function (err) {
+                                            if (err) {
+                                                return parallelCb(err);
+                                            }
+                                            parallelCb(null);
+                                        });
+                                    },
+
+                                    function (parallelCb) {
+                                        ContentModel.findByIdAndUpdate(id, {logoUri: logoUrl}, function (err) {
+                                            if (err) {
+                                                return parallelCb(err);
+                                            }
+                                            parallelCb(null);
+                                        });
+                                    }
+                                ], function (err) {
+                                    if (err) {
+                                        return mainParallelCb(err);
+                                    }
+                                    mainParallelCb(null)
+                                });
+                            },
+
+                            //delete survey
+                            function (mainParallelCb) {
+                                if (!delSurvey.length) {
+                                    return mainParallelCb(null);
+                                }
+                                async.each(delSurvey, function (id, eachCb) {
+                                    ContentModel.findByIdAndUpdate(id, {$pull: {survey: {_id: id}}}, function (err, doc) {
+                                        if (err) {
+                                            return eachCb(err);
+                                        }
+                                        eachCb(null);
+                                    });
+                                }, function (err) {
+                                    if (err) {
+                                        return mainParallelCb(err);
+                                    }
+                                    mainParallelCb(null);
+                                });
+                            },
+
+                            //update survey
+                            function (mainParallelCb) {
+                                var i = 0;
+                                async.whilst(
+                                    function () {
+                                        return i < countQuestion;
+                                    },
+
+                                    //===============================================whilst START====================================================
+                                    function (whilstCb) {
+                                        i++;
+                                        var surveyId = surveyOrder[i-1];
+                                        if (surveyId == 'new') {
+                                            async.applyEachSeries([saveSurveyVideo, saveSurveyFiles], i, id, files, data, function (err) {
+                                                if (err) {
+                                                    return whilstCb(err);
+                                                }
+                                                whilstCb(null);
+                                            });
+                                        } else {
+
+                                            var videoName = 'video' + i;
+                                            var pdfName = 'file' + i;
+                                            var questionName = 'question' + i;
+                                            var survey = _.find(content.survey, function (elem) {
+                                                return elem._id.toString() == surveyId;
+                                            });
+                                            var oldOrder = survey.order;
+
+
+                                            async.parallel([
+                                                //update video
+                                                function (parallelCb) {
+                                                    if ((files[videoName].name && files[videoName].size) || data[videoName]) {
+                                                        var key = decodeURIComponent(survey.videoUri.replace(prefix, 'temp/'));
+
+                                                        async.parallel([
+                                                                function (callback) {
+                                                                    awsStorage.removeFile(S3_BUCKET, key, function (err) {
+                                                                        if (err) {
+                                                                            return callback(err);
+                                                                        }
+                                                                        callback(null);
+                                                                    });
+                                                                },
+
+                                                                function (callback) {
+                                                                    updateSurveyVideo(i, id, surveyId, files, data, function (err) {
+                                                                        if (err) {
+                                                                            return callback(err);
+                                                                        }
+                                                                        callback(null);
+                                                                    });
+                                                                }
+                                                            ],
+                                                            function (err) {
+                                                                if (err) {
+                                                                    return parallelCb(err);
+                                                                }
+                                                                parallelCb(null);
+                                                            });
+
+                                                    } else {
+                                                        ContentModel.findOneAndUpdate({
+                                                            "_id": id,
+                                                            "survey._id": surveyId
+                                                        }, {
+                                                            $set: {
+                                                                "survey.$.question": data[questionName],
+                                                                "survey.$.order": i
+                                                            }
+                                                        }, function (err) {
+                                                            if (err) {
+                                                                return parallelCb(err);
+                                                            }
+                                                            parallelCb(null);
+                                                        });
+                                                    }
+                                                },
+
+                                                //update pdf
+                                                function (parallelCb) {
+                                                    if (!files[pdfName].length && (!files[pdfName].name || !files[pdfName].size)) {
+                                                        return parallelCb(null);
+                                                    }
+                                                    var prefix = id.toString + '/temp/survey' + oldOrder + '/pdf'
+
+                                                    async.parallel([
+                                                            function (callback) {
+                                                                awsStorage.removeDir(S3_BUCKET, prefix, function (err) {
+                                                                    if (err) {
+                                                                        return callback(err);
+                                                                    }
+                                                                    callback(null);
+                                                                });
+                                                            },
+
+                                                            function (callback) {
+                                                                ContentModel.findOneAndUpdate({
+                                                                    "_id": id,
+                                                                    "survey._id": surveyId
+                                                                }, {$unset: {"survey.$.pdfUri": []}}, function (err) {
+                                                                    if (err) {
+                                                                        return callback(err);
+                                                                    }
+                                                                    callback(null);
+                                                                });
+                                                            },
+
+                                                            function (callback) {
+                                                                updateSurveyFiles(i, id, surveyId, files, data, function (err) {
+                                                                    if (err) {
+                                                                        return callback(err);
+                                                                    }
+                                                                    callback(null);
+                                                                });
+                                                            }
+                                                        ],
+                                                        function (err) {
+                                                            if (err) {
+                                                                return parallelCb(err);
+                                                            }
+                                                            parallelCb(null);
+                                                        });
+                                                }
+                                            ], function (err) {
+                                                if (err) {
+                                                    return whilstCb(err);
+                                                }
+
+                                                var newPrefix =url+ 'survey' + i;
+                                                var oldPrefix = url+'temp/survey' + oldOrder;
+                                                awsStorage.moveDir(S3_BUCKET, oldPrefix, newPrefix, function (err) {
+                                                    if (err) {
+                                                        return whilstCb(err);
+                                                    }
+                                                    whilstCb(null);
+                                                });
+                                            });
+                                        }
+                                    },
+                                    //===============================================whilst END====================================================
+                                    function (err) {
+                                        if (err) {
+                                            return mainParallelCb(err);
+                                        }
+                                        mainParallelCb(null);
+                                    });
+                            }],
+                        function (err) {
+                            if (err) {
+                                return seriesCb(err);
+                            }
+                            seriesCb(null);
+                        }
+                    )
+                },
+
+                //delete temporary folder  (S3)
+                function (seriesCb) {
+                    var prefix = url + 'temp';
                     awsStorage.removeDir(S3_BUCKET, prefix, function (err) {
                         if (err) {
-                            return waterfallCb(err);
+                            return seriesCb(err);
                         }
-                        ContentModel.findByIdAndUpdate(id, {$pull: {survey: {question: content.survey[num].question}}}, function (err, doc) {
-                            if (err) {
-                                return eachCb(err);
-                            }
-                            eachCb(null);
-                        });
+                        seriesCb(null);
                     });
-                }, function (err) {
-                    if (err) {
-                        return waterfallCb(err);
-                    }
-                    waterfallCb(null);
-                });
-            },
-
-            function (waterfallCb) {
-                if (data.countQuestion == data.countQuestion)
-                    var index = [];
-                for (var i = data.countQuestion; i > content.survey.length; i--) {
-                    index.push(i);
                 }
-                async.each(index, function (i, eachCb) {
-                    async.applyEachSeries([saveSurveyVideo, saveSurveyFiles], i, id, files, data, function (err) {
-                        if (err) {
-                            return eachCb(err);
-                        }
-                        eachCb();
-                    });
-                }, function (err) {
-                    if (err) {
-                        return waterfallCb(err);
-                    }
-                    waterfallCb(null);
-                });
-            }], function (err) {
-            if (err) {
-                return next(err)
-            }
-            var url = process.env.HOME_PAGE + id.toString() + '/{{ctid}}';
-            res.status(200).send({url: url});
-        });
+            ],
+            function (err) {
+                if (err) {
+                    return console.error(err)
+                }
+                console.log('Content updated')
+            });
     };
 };
 
