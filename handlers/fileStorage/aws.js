@@ -72,37 +72,37 @@ module.exports = function (protoObject) {
         };
 
         this.moveDir = function (bucket, oldPrefix, newPrefix, callback) {
-            var self= this;
+            var self = this;
             s3.listObjects({Bucket: bucket, Prefix: oldPrefix}, function (err, data) {
-                if (data.Contents.length) {
-                    async.each(data.Contents, function (file, cb) {
-                        var params = {
-                            Bucket: bucket,
-                            CopySource: bucket + '/' + file.Key,
-                            Key: file.Key.replace(oldPrefix, newPrefix)
-                        };
-                        s3.copyObject(params, function (copyErr, copyData) {
-                            if (copyErr) {
-                                console.log(copyErr);
-                                return cb(copyErr);
-                            }
-                            else {
-                                console.log('Copied: ', params.Key);
-                                cb();
-                            }
-                        });
-                    },  function (err, data) {
-                        if (callback && (typeof callback === 'function')) {
-                            if (err) {
-                                console.log(err);
-                                callback(err, null);
-                            } else {
-                                self.removeDir(bucket, oldPrefix);
-                                callback(null, data);
-                            }
-                        }
-                    });
+                if (err) {
+                    return callback(err, null);
+                } else if (!data.Contents.length) {
+                    return callback(null);
                 }
+                async.each(data.Contents, function (file, eachCb) {
+                    var params = {
+                        Bucket: bucket,
+                        CopySource: bucket + '/' + file.Key,
+                        Key: file.Key.replace(oldPrefix, newPrefix)
+                    };
+
+                    s3.copyObject(params, function (copyErr) {
+                        if (copyErr) {
+                            return eachCb(copyErr);
+                        }
+                        console.log('Copied: ', params.Key);
+                        eachCb(null);
+                    });
+                }, function (err, data) {
+                    if (callback && (typeof callback === 'function')) {
+                        if (err) {
+                            return callback(null);
+                        }
+                        self.removeDir(bucket, oldPrefix);
+                        callback(null, data);
+                    }
+                });
+
             });
         };
 
@@ -110,25 +110,26 @@ module.exports = function (protoObject) {
             s3.listObjects({Bucket: bucket, Prefix: prefix}, function (err, data) {
                 if (err) {
                     return callback(err, null);
-                } else {
-                    async.each(data.Contents, function (elem, eachCb) {
-                        s3.deleteObject({Bucket: bucket, Key: elem.Key}, function (err, data) {
-                            if (err) {
-                                return eachCb(err);
-                            }
-                            eachCb(null);
-                        });
-                    }, function (err, data) {
-                        if (callback && (typeof callback === 'function')) {
-                            if (err) {
-                                console.log(err);
-                                callback(err, null);
-                            } else {
-                                callback(null, data);
-                            }
-                        }
-                    });
+                } else if (!data.Contents.length) {
+                    return callback(null);
                 }
+                async.each(data.Contents, function (elem, eachCb) {
+                    s3.deleteObject({Bucket: bucket, Key: elem.Key}, function (err, data) {
+                        if (err) {
+                            return eachCb(err);
+                        }
+                        eachCb(null);
+                    });
+                }, function (err, data) {
+                    if (callback && (typeof callback === 'function')) {
+                        if (err) {
+                            console.log(err);
+                            callback(err, null);
+                        } else {
+                            callback(null, data);
+                        }
+                    }
+                });
             });
         };
 
