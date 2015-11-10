@@ -377,7 +377,7 @@ define([
             });
 
             this.drawImage(data.content.logoUri);
-            this.showEdit();
+            //this.showEdit();
             this.defineOrder();
             return this;
         },
