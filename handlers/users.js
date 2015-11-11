@@ -346,7 +346,7 @@ var routeHandler = function (db) {
         var error = new Error();
         var data;
 
-        if (!body.lastName||!body.firstName || !body.email || !body.phone ||!body.title) {
+        if (!body.lastName || !body.firstName || !body.email || !body.phone || !body.title) {
             error.message = 'Some field is empty';
             error.status = 403;
             return next(error)
@@ -358,14 +358,14 @@ var routeHandler = function (db) {
             title: body.title,
             company: body.company,
             phone: body.phone,
-            notes: body.notes||''
+            notes: body.notes || ''
         };
         getAdminEmail(function (err, email) {
             data.toEmail = email;
             mailer.contactAdmin(data);
         });
 
-            res.status(200).send({message:'Successful Send'});
+        res.status(200).send({message: 'Successful Send'});
     };
 
 
@@ -530,7 +530,7 @@ var routeHandler = function (db) {
             res.end(img);
         });
     };
-    function getAdminEmail(callback){
+    function getAdminEmail(callback) {
         UserModel.findOne({userName: 'admin', isAdmin: true}, function (err, doc) {
             if (err) {
                 return callback(err);
@@ -572,7 +572,7 @@ var routeHandler = function (db) {
             if (err) {
                 return next(err);
             }
-            res.status(201).send({message: 'Well done! We\'ll send you an email as soon as this is complete, this shouldn\'t take more than 2 working days.'});
+            res.status(201).send({message: 'Thank you for your interest in DemoRocket!  We’ve received your information and will be contacting you shortly.'});
 
         });
     };
@@ -616,15 +616,16 @@ var routeHandler = function (db) {
     this.redirectToMain = function (req, res, next) {
         var contentId = req.params.contentId;
         var prospectId = req.params.prospectId;
-        if(!contentId&&!prospectId) {
+        if (!contentId && !prospectId) {
             return res.redirect(process.env.HOME_PAGE);
         }
-        return res.redirect(process.env.HOME_PAGE+contentId+'/'+prospectId);
+        return res.redirect(process.env.HOME_PAGE + contentId + '/' + prospectId);
     };
 
     function sortByKey(array, key) {
-        return array.sort(function(a, b) {
-            var x = a[key]; var y = b[key];
+        return array.sort(function (a, b) {
+            var x = a[key];
+            var y = b[key];
             return ((x < y) ? -1 : ((x > y) ? 1 : 0));
         });
     }
@@ -636,8 +637,8 @@ var routeHandler = function (db) {
         var userId;
         var content;
         var data;
-        if(!contentId&&!prospectId){
-            UserModel.findOne({userName:'admin'}, function (err, user) {
+        if (!contentId && !prospectId) {
+            UserModel.findOne({userName: 'admin'}, function (err, user) {
                 if (err) {
                     return next(err);
                 }
@@ -659,11 +660,11 @@ var routeHandler = function (db) {
                         error.status = 404;
                         return next(error);
                     }
-                    foundContent.survey = sortByKey(foundContent.survey,'order');
-                    return res.status(200).send({content:foundContent});
+                    foundContent.survey = sortByKey(foundContent.survey, 'order');
+                    return res.status(200).send({content: foundContent});
                 });
             });
-        }else {
+        } else {
             if (prospectId == '{{ctid}}') {
                 error.message = 'You have to paste this link to Jumplead email template, where that link for each prospect will be generated';
                 error.status = 400;

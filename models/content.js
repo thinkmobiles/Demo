@@ -12,12 +12,15 @@ module.exports = (function () {
     },{versionKey: false/*, _id: false*/});
 
     var contentSchema = mongoose.Schema({
+        nameOfCampaign: {type: String},
+
         ownerId: {type: ObjectId, ref: 'User'},
+        creatorId: {type: ObjectId, ref: 'User'},
         name: {type: String/*, required: true, unique: true*/},
-        logoUri: {type: String},
         phone: {type: String},
         email: {type: String},
 
+        logoUri: {type: String},
         mainVideoName: {type: String},
         mainVideoDescription: {type: String},
         mainVideoUri: { type: String},

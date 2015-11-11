@@ -1,3 +1,4 @@
+var USER_ROLES = require('../constants/index');
 var Session = function (db) {
 
     this.login = function (req, options) {
