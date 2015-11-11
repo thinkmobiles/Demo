@@ -21,11 +21,12 @@
 	  <li class="userInfo"><span><img src="<%=user.avatar%>" width="50" height="50"/>Welcome, <strong><%=user.firstName%> <%=user.lastName%></strong></span></li>
 
 	  <% if (admin){%>
-	  <li><a href="#/upload">CREATE</a></li>
+	  <li><a href="#/edit">CREATE</a></li>
+		<!--<li><a href="#/edit">EDIT</a></li>-->
 	  <li><a href="#/users">USERS</a></li>
 	  <%}else{%>
-	  <li><a href="#/upload">CREATE</a></li>
-		<li><a href="#/edit">EDIT</a></li>
+	  <li><a href="#/edit">CREATE</a></li>
+		<!--<li><a href="#/edit">EDIT</a></li>-->
 	  <li><a href="#/analytics">ANALYTICS</a></li>
 
 	  <%}%>
