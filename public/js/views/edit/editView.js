@@ -52,9 +52,7 @@ define([
                     self.render(data)
                 },
                 error: function (model, xhr) {
-                    //self.render();
-                    //console.log(xhr);
-                    //console.log(model);
+                    Backbone.history.navigate("#/upload", {trigger: true});
                 }
             });
         },
