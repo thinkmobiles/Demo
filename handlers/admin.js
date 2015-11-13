@@ -8,8 +8,13 @@ var path = require('path');
 var fs = require('fs');
 var _ = require('../public/js/libs/underscore/underscore-min');
 var mailer = require('../helpers/mailer');
-var LocalFs = require('./fileStorage/localFs')();
-var localFs = new LocalFs();
+
+var AwsStorage = require('../helpers/aws')();
+var s3 = new AwsStorage();
+
+var AWS = require('../constants/AWS');
+var USER_ROLES = require('../constants/userRoles');
+
 
 var routeHandler = function (db) {
 
