@@ -163,7 +163,6 @@ var routeHandler = function (db) {
         }
         var contentId;
         var userId = req.params.id;
-        var sep = path.sep;
 
         UserModel.findById(userId, function (err, user) {
             if (err) {
@@ -173,6 +172,7 @@ var routeHandler = function (db) {
                 return res.status(404).send({err: 'User Not Found'});
             }
             contentId = user.contentId;
+
             ContentModel.findByIdAndRemove(contentId, function (err, doc) {
                 if (err) {
                     console.error(err);
@@ -182,7 +182,7 @@ var routeHandler = function (db) {
                         console.error(err);
                     }
                 });
-                ContactMeModel.findByIdAndRemove(userId, function (err) {
+                ContactMeModel.remove({contentId: contentId}, function (err) {
                     if (err) {
                         console.error(err);
                     }
@@ -194,8 +194,8 @@ var routeHandler = function (db) {
                     }
                     console.log('TrackModel updated')
                 });
-                var dirPath = localFs.defaultPublicDir + sep + 'video' + sep + user._id.toString();
-                rmDir(dirPath);
+                var dirPath = contentId.toString();
+                s3.removeDir(S3_BUCKET, dirPath);
 
                 var message = 'User removed';
                 res.status(200).send({message: message});
