@@ -103,7 +103,7 @@ require(['app'], function (app) {
             success: function (data) {
                 App.sessionData.set({
 					authorized: true,
-					admin:data.isAdmin,
+					role:data.role,
                     user: data
                 });
 				if (callback)callback();

@@ -26,6 +26,7 @@ define([
             "registration"              :  "registration",
 			"analytics"              :  "analytics",
 			"users"                  :  "users",
+			"subordinates"                  :  "subordinates",
 			"pricing"              :  "pricing",
 			"aboutUs"              :  "aboutUs",
 			"contact"              : "contact",
@@ -162,10 +163,13 @@ define([
             this.loadWrapperView('edit');
         },
 		analytics: function () {
-            this.loadWrapperView('analitics');
+            this.loadWrapperView('analytics');
         },
 		users: function () {
             this.loadWrapperView('users');
+        },
+        subordinates: function () {
+            this.loadWrapperView('subordinates');
         },
         registration: function () {
             this.loadWrapperView('registration');

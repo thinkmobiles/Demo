@@ -2,6 +2,7 @@ define(["moment"],function (moment) {
 
 	var routes = {
 		needAuthorize: [
+			'subordinates',
 			'users',
             'upload',
             'edit',
@@ -47,13 +48,14 @@ define(["moment"],function (moment) {
             App.sessionData.set({
                 authorized: true,
                 user: data,
-				admin:data.isAdmin
+				role:data.role
             });
 			
         } else {
             App.sessionData.set({
                 authorized: false,
-                user: null
+                user: null,
+                role: null
             });
         }
 		

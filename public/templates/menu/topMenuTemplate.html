@@ -20,14 +20,16 @@
 	  <%}else{%>
 	  <li class="userInfo"><span><img src="<%=user.avatar%>" width="50" height="50"/>Welcome, <strong><%=user.firstName%> <%=user.lastName%></strong></span></li>
 
-	  <% if (admin){%>
+	  <% if (role==0){%>
 	  <li><a href="#/upload">CREATE</a></li>
 	  <li><a href="#/users">USERS</a></li>
-	  <%}else{%>
+	  <%}else if(role==1){%>
 	  <li><a href="#/upload">CREATE</a></li>
 		<li><a href="#/edit">EDIT</a></li>
+		<li><a href="#/subordinates">USERS</a></li>
 	  <li><a href="#/analytics">ANALYTICS</a></li>
-
+	  <%}else if(role==2){%>
+	  <li><a href="#/analytics">ANALYTICS</a></li>
 	  <%}%>
 	  <li><a href="/logout">LOGOUT</a></li>
 	  <%}%>

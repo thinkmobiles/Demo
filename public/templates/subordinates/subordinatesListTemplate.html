@@ -1,0 +1,37 @@
+<h3>PENDING USER ACCOUNTS</h3>
+
+<div class="tableBt">
+  <a href="javascript:;" class="saveBtn">
+	<span>Save</span>
+  </a>
+  <a href="javascript:;" class="cancelBtn">
+	<span>Cancel</span>
+  </a>
+  <a href="javascript:;" class="editBtn">
+	<span>Edit</span>
+  </a>
+  <a href="javascript:;" class="confirm">
+	<span>Confirm</span>
+  </a>
+  <a href="javascript:;" class="delete">
+	<span>Delete</span>
+  </a>
+</div>
+
+
+<table class="customTable"  cellspacing="0" cellpadding="0">
+  <tr>
+	<th><span>First</span><br/><span>Name</span></th>
+	<th><span>Last</span><br/><span>Name</span></th>
+	<th><span>Username</span></th>
+	<th><span>Email</span></th>
+  </tr>
+  <%_.each(users,function(user, index){%>
+  <tr data-id="<%=user._id%>" class="<%=index==current?'current':''%>">
+	<td><span><%=user.firstName %></span></td>
+	<td><span><%=user.lastName %></span></td>
+	<td><span><%=user.userName %></span></td>
+	<td><span><%=user.email %></span></td>
+  </tr>
+  <%})%>
+</table>

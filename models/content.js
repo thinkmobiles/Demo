@@ -9,13 +9,14 @@ module.exports = (function () {
         order: {type:Number},
         videoUri: {type: String},
         pdfUri: [{type: String}]
-    },{versionKey: false/*, _id: false*/});
+    },{versionKey: false});
 
     var contentSchema = mongoose.Schema({
         nameOfCampaign: {type: String},
 
-        ownerId: {type: ObjectId, ref: 'User'},
-        creatorId: {type: ObjectId, ref: 'User'},
+        owner: {type: ObjectId, ref: 'User'},
+        creator: {type: ObjectId, ref: 'User'},
+
         name: {type: String/*, required: true, unique: true*/},
         phone: {type: String},
         email: {type: String},

@@ -9,7 +9,7 @@ define([
         var appRouter;
         App.sessionData = new Backbone.Model({
             authorized: false,
-            admin: false,
+            role: null,
             user: null,
             date: null
         });

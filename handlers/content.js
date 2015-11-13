@@ -4,23 +4,17 @@
 var async = require('async');
 var mongoose = require('mongoose');
 var _ = require('../public/js/libs/underscore/underscore-min');
-var LocalFs = require('./fileStorage/localFs')();
-var localFs = new LocalFs();
-
-
-var AwsStorage = require('./fileStorage/aws')();
-var awsStorage = new AwsStorage();
-
-
-var path = require('path');
-var REG_EXP = require('../constants/regExp');
+var AwsStorage = require('../helpers/aws')();
 var pdfutils = require('pdfutils').pdfutils;
-var badRequests = require('../helpers/badRequests');
-var fs = require('fs');
-var routeHandler = function (db) {
-    var S3_BUCKET = 'demo-rocket-v2';
+var s3 = new AwsStorage();
 
-    var S3_ENDPOINT = 'https://s3-us-west-2.amazonaws.com/';
+var REG_EXP = require('../constants/regExp');
+var USER_ROLES = require('../constants/userRoles');
+var AWS = require('../constants/AWS');
+
+var routeHandler = function (db) {
+    var S3_BUCKET = AWS.S3_BUCKET;
+    var S3_ENDPOINT = AWS.S3_ENDPOINT;
 
     var trackSchema = mongoose.Schemas['Track'];
     var TrackModel = db.model('Track', trackSchema);
@@ -43,7 +37,7 @@ var routeHandler = function (db) {
         var videoUrl = S3_ENDPOINT + S3_BUCKET + '/' + url + encodeURIComponent(files[name].name);
 
         if (files[name].name) {
-            awsStorage.postFile(S3_BUCKET, videoKey, files[name], function (err) {
+            s3.postFile(S3_BUCKET, videoKey, files[name], function (err) {
                 if (err) {
                     return callback(err);
                 }
@@ -97,7 +91,7 @@ var routeHandler = function (db) {
             var pdfUrl = S3_ENDPOINT + S3_BUCKET + '/' + url + encodeURIComponent(file.name);
             var pdfKey = url + file.name;
 
-            awsStorage.postFile(S3_BUCKET, pdfKey, file, function (err) {
+            s3.postFile(S3_BUCKET, pdfKey, file, function (err) {
                 if (err) {
                     return eachCb(err);
                 }
@@ -130,7 +124,7 @@ var routeHandler = function (db) {
         var videoUrl = S3_ENDPOINT + S3_BUCKET + '/' + url + encodeURIComponent(files[name].name);
 
         if (files[name].name) {
-            awsStorage.postFile(S3_BUCKET, videoKey, files[name], function (err) {
+            s3.postFile(S3_BUCKET, videoKey, files[name], function (err) {
                 if (err) {
                     return callback(err);
                 }
@@ -184,7 +178,7 @@ var routeHandler = function (db) {
             var pdfUrl = S3_ENDPOINT + S3_BUCKET + '/' + url + encodeURIComponent(file.name);
             var pdfKey = url + file.name;
 
-            awsStorage.postFile(S3_BUCKET, pdfKey, file, function (err) {
+            s3.postFile(S3_BUCKET, pdfKey, file, function (err) {
                 if (err) {
                     return eachCb(err);
                 }
@@ -217,7 +211,7 @@ var routeHandler = function (db) {
             });
             stream.on('end', function () {
                 var key = url + file.name.slice(0, -4) + '.png';
-                awsStorage.postBuffer(S3_BUCKET, key, buf, function (err) {
+                s3.postBuffer(S3_BUCKET, key, buf, function (err) {
                     if (err) {
                         return console.error(err);
                     }
@@ -239,7 +233,7 @@ var routeHandler = function (db) {
         async.series([
             //save video
             function (seriesCb) {
-                awsStorage.postFile(S3_BUCKET, videoKey, files['video'], function (err) {
+                s3.postFile(S3_BUCKET, videoKey, files['video'], function (err) {
                     if (err) {
                         return seriesCb(err);
                     }
@@ -249,7 +243,7 @@ var routeHandler = function (db) {
 
             //save logo
             function (seriesCb) {
-                awsStorage.postFile(S3_BUCKET, logoKey, files['logo'], function (err) {
+                s3.postFile(S3_BUCKET, logoKey, files['logo'], function (err) {
                     if (err) {
                         return seriesCb(err);
                     }
@@ -364,22 +358,47 @@ var routeHandler = function (db) {
     }
 
     this.content = function (req, res, next) {
-        ContentModel.findOne({ownerId: req.session.uId}, function (err, found) {
+        var uId = req.session.uId;
+        var url;
+        var content;
+        var error = new Error();
+
+        async.waterfall([
+            function (waterfallCb) {
+                UserModel.findById(uId, function (err, user) {
+                    if (err) {
+                        return waterfallCb(err);
+                    }
+                    if (user.role == USER_ROLES.ADMIN || user.role == USER_ROLES.SUPER_ADMIN) {
+                        return waterfallCb(null, user.creator);
+                    }
+                    waterfallCb(null, uId);
+                });
+            },
+
+            function (userId, waterfallCb) {
+                ContentModel.findOne({ownerId: userId}, function (err, content) {
+                    if (err) {
+                        return waterfallCb(err);
+                    }else if (!content) {
+                        error.status = 400;
+                        error.message = 'Content Not Found';
+                        return waterfallCb(error);
+                    }
+
+                    content.survey = sortByKey(content.survey, 'order');
+                    url = process.env.WEB_HOST + '/campaign/' + content._id + '/{{ctid}}';
+                });
+            }], function (err) {
             if (err) {
                 return next(err);
             }
-            console.log(found);
-            if (!found) {
-                return res.status(404).send({err: 'Content Not Found'});
-            }
-            found.survey = sortByKey(found.survey, 'order');
-            var url = process.env.WEB_HOST + '/campaign/' + found._id + '/{{ctid}}';
-            res.status(201).send({url: url, content: found});
+            res.status(201).send({url: url, content: content});
         });
     };
 
     this.testS3Delete = function (req, res, next) {
-        awsStorage.removeFile(S3_BUCKET, '562df14d680008701f000001/Overview.mp4', null, function (err, data) {
+        s3.removeFile(S3_BUCKET, '562df14d680008701f000001/Overview.mp4', null, function (err, data) {
             if (err) {
                 return next(err);
             }
@@ -388,7 +407,7 @@ var routeHandler = function (db) {
     };
 
     this.testS3DeleteDir = function (req, res, next) {
-        awsStorage.removeDir(S3_BUCKET, '562df14d680008701f000001', function (err, data) {
+        s3.removeDir(S3_BUCKET, '562df14d680008701f000001', function (err, data) {
             if (err) {
                 return next(err);
             }
@@ -397,7 +416,7 @@ var routeHandler = function (db) {
     };
 
     this.testS3Move = function (req, res, next) {
-        awsStorage.moveDir(S3_BUCKET, '564065e92226c4c43a000002/survey4', '564065e92226c4c43a000002/old/survey4', function (err, data) {
+        s3.moveDir(S3_BUCKET, '564065e92226c4c43a000002/survey4', '564065e92226c4c43a000002/old/survey4', function (err, data) {
             if (err) {
                 return next(err);
             }
@@ -407,7 +426,7 @@ var routeHandler = function (db) {
 
     this.testS3Save = function (req, res, next) {
         var files = req.files;
-        awsStorage.postFile(S3_BUCKET, 'somefile2.pdf', files['pdf'], function (err, data) {
+        s3.postFile(S3_BUCKET, 'somefile2.pdf', files['pdf'], function (err, data) {
             if (err) {
                 return next(err);
             }
@@ -419,7 +438,7 @@ var routeHandler = function (db) {
                 });
                 stream.on('end', function () {
                     var key = files['pdf'].name.slice(0, -4) + '.png';
-                    awsStorage.postBuffer(S3_BUCKET, key, buf, function (err) {
+                    s3.postBuffer(S3_BUCKET, key, buf, function (err) {
                         if (err) {
                             return console.error(err);
                         }
@@ -435,7 +454,7 @@ var routeHandler = function (db) {
 
     this.testS3Get = function (req, res, next) {
         var data = req.query;
-        awsStorage.getFileUrl({bucket: S3_BUCKET, key: 'some%20file2.pdf'}, function (err, data) {
+        s3.getFileUrl({bucket: S3_BUCKET, key: 'some%20file2.pdf'}, function (err, data) {
             if (err) {
                 return next(err);
             } // an error occurred
@@ -445,7 +464,7 @@ var routeHandler = function (db) {
 
     this.testS3List = function (req, res, next) {
         var data = req.query;
-        awsStorage.listFiles(S3_BUCKET, '', function (err, data) {
+        s3.listFiles(S3_BUCKET, '', function (err, data) {
             if (err) {
                 return next(err);
             } // an error occurred
@@ -456,7 +475,8 @@ var routeHandler = function (db) {
     this.upload = function (req, res, next) {
         var data = req.body;
         var files = req.files;
-        var userId = req.session.uId;
+        var ownerId;
+        var currentUserId = req.session.uId;
         var content;
         var insObj;
         var id;
@@ -464,6 +484,21 @@ var routeHandler = function (db) {
         async.waterfall([
 
                 //validation
+                function (waterfallCb) {
+                    UserModel.findById(currentUserId, function (err, user) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        if (user.role == USER_ROLES.ADMIN || user.role == USER_ROLES.SUPER_ADMIN) {
+                            ownerId = currentUserId;
+                        } else {
+                            ownerId = user.creator;
+                        }
+                        waterfallCb(null);
+
+                    });
+                },
+
                 function (waterfallCb) {
                     validation(req, function (err) {
                         if (err) {
@@ -474,30 +509,41 @@ var routeHandler = function (db) {
                     });
                 },
 
-                function (waterfallCb) {
-                    ContentModel.findOne({ownerId: userId}, function (err, doc) {
-                        if (err) {
-                            return waterfallCb(err);
-                        }
-                        if (doc) {
-                            var error = new Error();
-                            error.status = 401;
-                            error.message = 'You already have content';
-                            return waterfallCb(error);
-                        }
-                        insObj = {
-                            ownerId: userId,
-                            name: data.name,
-                            email: data.email,
-                            phone: data.phone,
-                            mainVideoDescription: data.desc
-                        };
-                        waterfallCb(null, insObj);
-                    });
-                },
+                /*     function (waterfallCb) {
+                 ContentModel.findOne({ownerId: userId}, function (err, doc) {
+                 if (err) {
+                 return waterfallCb(err);
+                 }
+                 if (doc) {
+                 var error = new Error();
+                 error.status = 401;
+                 error.message = 'You already have content';
+                 return waterfallCb(error);
+                 }
+                 insObj = {
+                 nameOfCampaign: data.nameOfCampaign,
+                 ownerId: userId,
+                 name: data.name,
+                 email: data.email,
+                 phone: data.phone,
+                 mainVideoDescription: data.desc
+                 };
+                 waterfallCb(null, insObj);
+                 });
+                 },*/
 
                 // create content model
                 function (insObj, waterfallCb) {
+                    insObj = {
+                        nameOfCampaign: data.nameOfCampaign,
+                        ownerId: ownerId,
+                        creatorId: currentUserId,
+                        name: data.name,
+                        email: data.email,
+                        phone: data.phone,
+                        mainVideoDescription: data.desc
+                    };
+
                     ContentModel.create(insObj, function (err, result) {
                         if (err) {
                             return waterfallCb(err);
@@ -511,7 +557,12 @@ var routeHandler = function (db) {
 
                 // update user => set contentId
                 function (result, waterfallCb) {
-                    UserModel.findByIdAndUpdate(userId, {$set: {contentId: id}}, function (err, user) {
+                    UserModel.findByIdAndUpdate(userId, {
+                        $addToSet: {
+                            id: id,
+                            name: data.nameOfCampaign
+                        }
+                    }, function (err) {
                         if (err) {
                             return waterfallCb(err);
                         }
@@ -529,7 +580,7 @@ var routeHandler = function (db) {
                                 var logoUrl = S3_ENDPOINT + S3_BUCKET + '/' + url + encodeURIComponent(files['logo'].name);
                                 var logoKey = id.toString() + '/' + files['logo'].name;
 
-                                awsStorage.postFile(S3_BUCKET, logoKey, files['logo'], function (err, data) {
+                                s3.postFile(S3_BUCKET, logoKey, files['logo'], function (err, data) {
                                     if (err) {
                                         return seriesCb(err);
                                     }
@@ -589,7 +640,6 @@ var routeHandler = function (db) {
     this.remove = function (req, res, next) {
         var contentId;
         var userId = req.session.uId;
-        var sep = path.sep;
 
         ContentModel.findOneAndRemove({ownerId: req.session.uId}, function (err, doc) {
             if (err) {
@@ -620,7 +670,7 @@ var routeHandler = function (db) {
                 console.log('TrackModel updated')
             });
             var dirPath = contentId.toString();
-            awsStorage.removeDir(S3_BUCKET, dirPath);
+            s3.removeDir(S3_BUCKET, dirPath);
 
             var message = 'Content removed';
             res.status(200).send({message: message});
@@ -652,7 +702,8 @@ var routeHandler = function (db) {
                         name: data.name,
                         email: data.email,
                         phone: data.phone,
-                        mainVideoDescription: data.desc
+                        mainVideoDescription: data.desc,
+                        nameOfCampaign: data.nameOfCampaign
                     };
                     ContentModel.findOneAndUpdate({ownerId: userId}, obj, function (err, doc) {
                         if (err) {
@@ -661,7 +712,7 @@ var routeHandler = function (db) {
                         content = doc;
                         id = doc._id;
                         url = id.toString() + '/';
-                        var sendDataUrl = process.env.HOME_PAGE + url+ '{{ctid}}';
+                        var sendDataUrl = process.env.HOME_PAGE + url + '{{ctid}}';
                         res.status(200).send({url: sendDataUrl});
                         seriesCb(null)
                     });
@@ -678,14 +729,14 @@ var routeHandler = function (db) {
                         },
                         function (callback) {
                             i++;
-                            var oldPrefix = url+ 'survey' + i;
-                            var newPrefix = url+ 'temp/survey' + i;
+                            var oldPrefix = url + 'survey' + i;
+                            var newPrefix = url + 'temp/survey' + i;
 
 
-                            awsStorage.moveDir(S3_BUCKET, oldPrefix, newPrefix, function (err) {
-                               if(err){
-                                   return callback(err);
-                               }
+                            s3.moveDir(S3_BUCKET, oldPrefix, newPrefix, function (err) {
+                                if (err) {
+                                    return callback(err);
+                                }
                                 callback(null);
                             });
                         },
@@ -726,7 +777,7 @@ var routeHandler = function (db) {
 
                                     async.parallel([
                                         function (parallelCb) {
-                                            awsStorage.removeFile(S3_BUCKET, key, function (err) {
+                                            s3.removeFile(S3_BUCKET, key, function (err) {
                                                 if (err) {
                                                     return parallelCb(err);
                                                 }
@@ -735,7 +786,7 @@ var routeHandler = function (db) {
                                         },
 
                                         function (parallelCb) {
-                                            awsStorage.postFile(S3_BUCKET, videoKey, files['video'], function (err) {
+                                            s3.postFile(S3_BUCKET, videoKey, files['video'], function (err) {
                                                 if (err) {
                                                     return parallelCb(err);
                                                 }
@@ -773,7 +824,7 @@ var routeHandler = function (db) {
 
                                 async.parallel([
                                     function (parallelCb) {
-                                        awsStorage.removeFile(S3_BUCKET, key, function (err) {
+                                        s3.removeFile(S3_BUCKET, key, function (err) {
                                             if (err) {
                                                 return parallelCb(err);
                                             }
@@ -782,7 +833,7 @@ var routeHandler = function (db) {
                                     },
 
                                     function (parallelCb) {
-                                        awsStorage.postFile(S3_BUCKET, logoKey, files['logo'], function (err) {
+                                        s3.postFile(S3_BUCKET, logoKey, files['logo'], function (err) {
                                             if (err) {
                                                 return parallelCb(err);
                                             }
@@ -837,7 +888,7 @@ var routeHandler = function (db) {
                                     //===============================================whilst START====================================================
                                     function (whilstCb) {
                                         i++;
-                                        var surveyId = surveyOrder[i-1];
+                                        var surveyId = surveyOrder[i - 1];
                                         if (surveyId == 'new') {
                                             async.applyEachSeries([saveSurveyVideo, saveSurveyFiles], i, id, files, data, function (err) {
                                                 if (err) {
@@ -864,7 +915,7 @@ var routeHandler = function (db) {
 
                                                         async.parallel([
                                                                 function (callback) {
-                                                                    awsStorage.removeFile(S3_BUCKET, key, function (err) {
+                                                                    s3.removeFile(S3_BUCKET, key, function (err) {
                                                                         if (err) {
                                                                             return callback(err);
                                                                         }
@@ -915,7 +966,7 @@ var routeHandler = function (db) {
 
                                                     async.parallel([
                                                             function (callback) {
-                                                                awsStorage.removeDir(S3_BUCKET, prefix, function (err) {
+                                                                s3.removeDir(S3_BUCKET, prefix, function (err) {
                                                                     if (err) {
                                                                         return callback(err);
                                                                     }
@@ -956,9 +1007,9 @@ var routeHandler = function (db) {
                                                     return whilstCb(err);
                                                 }
 
-                                                var newPrefix =url+ 'survey' + i;
-                                                var oldPrefix = url+'temp/survey' + oldOrder;
-                                                awsStorage.moveDir(S3_BUCKET, oldPrefix, newPrefix, function (err) {
+                                                var newPrefix = url + 'survey' + i;
+                                                var oldPrefix = url + 'temp/survey' + oldOrder;
+                                                s3.moveDir(S3_BUCKET, oldPrefix, newPrefix, function (err) {
                                                     if (err) {
                                                         return whilstCb(err);
                                                     }
@@ -987,7 +1038,7 @@ var routeHandler = function (db) {
                 //delete temporary folder  (S3)
                 function (seriesCb) {
                     var prefix = url + 'temp';
-                    awsStorage.removeDir(S3_BUCKET, prefix, function (err) {
+                    s3.removeDir(S3_BUCKET, prefix, function (err) {
                         if (err) {
                             return seriesCb(err);
                         }

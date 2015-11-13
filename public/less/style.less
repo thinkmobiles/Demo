@@ -829,7 +829,7 @@ footer {
 }
 
 .login {
-  padding-top: 100px;
+  padding-top: 150px;
   .inner {
     width: 785px;
   }
@@ -1631,6 +1631,31 @@ footer {
   text-align: center;
   padding-top: 1px;
 
+  .role{
+    text-align: left;
+    margin-left: 21%;
+    margin-top: 3%;
+
+    span{
+      display: inline-block;
+      margin-right: 7%;
+      &:before{
+        cursor: pointer;
+        margin-right: 3px;
+        content: "";
+        display: block;
+        float: left;
+        width: 15px;
+        height: 15px;
+        background: #ddd;
+        border-radius: 50%;
+        border: 0.3px solid #2e2e2e;
+      }
+      &.active:before{
+        background-color: #e85044;
+      }
+    }
+  }
   h3 {
     margin: 0;
   }
@@ -1692,6 +1717,9 @@ footer {
     margin: 150px auto 100px auto;
     font-family: "LatoSemiBold";
     font-weight: bold;
+    &.create{
+      margin: 50px auto 100px auto;
+    }
     .cancel {
       .lh(50px);
       width: 180px;
@@ -1708,9 +1736,10 @@ footer {
       cursor: pointer;
       font-family: "LatoSemiBold";
       font-weight: bold;
+
     }
 
-    .registerBtn {
+    .registerBtn,.createBtn{
       .lh(50px);
       width: 180px;
       display: block;

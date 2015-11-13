@@ -237,7 +237,9 @@ define([
         showModal: function () {
             if (this.options && this.options.videoId && this.options.userId) {
                 Backbone.history.navigate("#/chooseViewer/" + this.videoId + "/" + this.userId, {trigger: true});
-            } else {
+            } else  if (this.options && this.options.videoId) {
+                Backbone.history.navigate("#/registerViewer/" + this.videoId, {trigger: true});
+            }else{
                 Backbone.history.navigate("#/watchVideo", {trigger: true});
             }
             /*if(this.modal){

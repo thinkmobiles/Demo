@@ -1,0 +1,47 @@
+<h3>CONFIRMED USER ACCOUNTS</h3>
+
+<div class="tableBt">
+  <a href="javascript:;" class="saveBtn">
+	<span>Save</span>
+  </a>
+  <a href="javascript:;" class="cancelBtn">
+	<span>Cancel</span>
+  </a>
+  <a href="javascript:;" class="editBtn">
+	<span>Edit</span>
+  </a>
+  <a href="javascript:;" class="disable">
+	<span class="dis">Disable</span>
+	<span class="enb">Enable</span>
+  </a>
+  <a href="javascript:;" class="delete">
+	<span>Delete</span>
+  </a>
+</div>
+
+<table class="customTable"  cellspacing="0" cellpadding="0">
+  <tr>
+	<th><span>First</span><br/><span>Name</span></th>
+	<th><span>Last</span><br/><span>Name</span></th>
+	<th><span>Organization</span></th>
+	<th><span>Phone</span></th>
+	<th><span>Email</span></th>
+	<th><span>Username</span></th>
+	<th><span>Status</span></th>
+	<th><span>Subscription</span><br/><span>Start</span></th>
+	<th><span>Subscription</span><br/><span>End</span></th>
+  </tr>
+  <%_.each(users,function(user,index){%>
+  <tr data-id="<%=user._id%>" class="<%=index==current?'current':''%>">
+	<td><span><%=user.firstName %></span></td>
+	<td><span><%=user.lastName %></span></td>
+	<td><span><%=user.organization %></span></td>
+	<td><span><%=user.phone %></span></td>
+	<td><span><%=user.email %></span></td>
+	<td><span><%=user.userName %></span></td>
+	<td><span class="status"><%=user.isDisabled?"Disabled":"Enabled" %></span></td>
+	<td><span class="view"><%=user.subscriptionStart %></span><span class="edit"><input type="text" value="<%=user.subscriptionStart %>"/></span></td>
+	<td><span class="view"><%=user.subscriptionEnd %></span><span class="edit"><input type="text" value="<%=user.subscriptionEnd %>"/></span></td>
+  </tr>
+  <%})%>
+</table>

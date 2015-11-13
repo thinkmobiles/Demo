@@ -14,17 +14,20 @@ module.exports = (function () {
         avatar: {type: String},
         email: {type: String, required: true},
         jumpleadEmail: {type: String},
+
         firstName: {type: String, required: true, minlength: NAME_MIN_LENGTH, maxlength: NAME_MAX_LENGTH},
         lastName: {type: String, required: true, minlength: NAME_MIN_LENGTH, maxlength: NAME_MAX_LENGTH},
         userName: {type: String, required: true, minlength: NAME_MIN_LENGTH, maxlength: NAME_MAX_LENGTH},
         organization: {type: String, required: true, minlength: ORGANIZATION_MIN_LENGTH, maxlength: ORGANIZATION_MAX_LENGTH},
         pass: {type: String, required: true},
+        phone: {type: String, default: ""},
+
         isConfirmed: {type: Boolean, default: false},
-        //isAdmin: {type: Boolean, default: false},
         isDisabled: {type: Boolean, default: false},
+
         confirmToken: {type: String},
         forgotToken: {type: String},
-        phone: {type: String, default: ""},
+
         role:  {type: Number, default: 1},
         campaign: [
             {
@@ -33,6 +36,7 @@ module.exports = (function () {
             }
         ],
 
+        creator: {type: ObjectId, ref: 'User'},
         subordinate: [
             {type: ObjectId, ref: 'User'}
         ],

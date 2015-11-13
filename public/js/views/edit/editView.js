@@ -91,6 +91,12 @@ define([
             e.preventDefault();
             this.$el.find(".error").removeClass("error");
             var hasError = false;
+
+            if (!this.$el.find(".uploadContainer input[name='nameOfCampaign']").val()) {
+                this.$el.find(".uploadContainer input[name='nameOfCampaign']").closest(".uploadContainer").addClass("error");
+                hasError = true;
+            }
+
             if (!this.$el.find("textarea[name='desc']").val()) {
                 this.$el.find("textarea[name='desc']").addClass("error");
                 hasError = true;

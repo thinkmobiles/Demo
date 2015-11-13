@@ -1,6 +1,7 @@
 'use strict';
 
 var CONSTANTS = require('../constants/index');
+var USER_ROLES = require('../constants/userRoles');
 
 var async = require('async');
 var crypto = require("crypto");
@@ -12,10 +13,6 @@ var REG_EXP = require('../constants/regExp');
 var badRequests = require('../helpers/badRequests');
 var Analytic = require('../helpers/analytic');
 var _ = require('../public/js/libs/underscore/underscore-min');
-var LocalFs = require('./fileStorage/localFs')();
-var localFs = new LocalFs();
-var path = require('path');
-var fs = require('fs');
 var Jumplead = require('../helpers/jumplead');
 var Sessions = require('../handlers/sessions');
 var mailer = require('../helpers/mailer');
@@ -126,6 +123,7 @@ var routeHandler = function (db) {
 
     function createUser(userData, callback) {
         userData.isConfirmed = false;
+        userData.role = USER_ROLES.USER;
         userData.isDisabled = false;
         userData.confirmToken = randToken.generate(24);
         var newUser = new UserModel(userData);
@@ -370,7 +368,7 @@ var routeHandler = function (db) {
 
 
     this.currentUser = function (req, res, next) {
-        UserModel.findById(req.session.uId, function (err, doc) {
+        UserModel.findById(req.session.uId, {pass:0, __v:0}, function (err, doc) {
             if (err) {
                 return next(err);
             } else if (!doc) {
@@ -540,12 +538,12 @@ var routeHandler = function (db) {
             callback(null, doc.email)
         });
     };
+
     this.signUp = function (req, res, next) {
         var options = req.body;
         var pass = options.pass;
         options.pass = getEncryptedPass(pass);
         async.series([
-
             //validation:
             function (cb) {
                 validateUserSignUp(options, function (err) {
@@ -555,6 +553,7 @@ var routeHandler = function (db) {
                     cb();
                 });
             },
+
             //create user:
             function (cb) {
                 createUser(options, function (err, user) {
@@ -562,6 +561,7 @@ var routeHandler = function (db) {
                         return cb(err);
                     }
                     session.login(req, user);
+
                     getAdminEmail(function (err, email) {
                         user.toEmail = email;
                         mailer.newUserConfirm(user);
@@ -616,7 +616,9 @@ var routeHandler = function (db) {
     this.redirectToMain = function (req, res, next) {
         var contentId = req.params.contentId;
         var prospectId = req.params.prospectId;
-        if (!contentId && !prospectId) {
+        if (!contentId || !prospectId) {
+            return res.redirect(process.env.HOME_PAGE);
+        } else if (contentId && !prospectId || prospectId === '{{ctid}}') {
             return res.redirect(process.env.HOME_PAGE);
         }
         return res.redirect(process.env.HOME_PAGE + contentId + '/' + prospectId);
@@ -634,11 +636,10 @@ var routeHandler = function (db) {
         var contentId = req.params.contentId;
         var prospectId = req.params.prospectId;
         var error = new Error();
-        var userId;
-        var content;
-        var data;
+        var userId, content, data;
+
         if (!contentId && !prospectId) {
-            UserModel.findOne({userName: 'admin'}, function (err, user) {
+            UserModel.findOne({userName: 'admin', role: USER_ROLES.SUPER_ADMIN}, function (err, user) {
                 if (err) {
                     return next(err);
                 }
@@ -646,46 +647,42 @@ var routeHandler = function (db) {
                     error.message = 'User Not Found';
                     error.status = 404;
                     return next(error);
-                } else if (user.isDisabled) {
-                    error.message = 'Sorry, but this content disabled now';
-                    error.status = 403;
-                    return next(error);
                 }
-                ContentModel.findOne({ownerId: user._id}, function (err, foundContent) {
+                ContentModel.findOne({ownerId: user._id}, function (err, doc) {
                     if (err) {
                         return next(err);
                     }
-                    if (!foundContent) {
+                    if (!doc) {
                         error.message = 'Content Not Found';
                         error.status = 404;
                         return next(error);
                     }
-                    foundContent.survey = sortByKey(foundContent.survey, 'order');
-                    return res.status(200).send({content: foundContent});
+                    doc.survey = sortByKey(doc.survey, 'order');
+                    return res.status(200).send({content: doc});
                 });
             });
         } else {
-            if (prospectId == '{{ctid}}') {
-                error.message = 'You have to paste this link to Jumplead email template, where that link for each prospect will be generated';
-                error.status = 400;
-                return next(error);
-            }
+            //if (prospectId == '{{ctid}}') {
+            //    error.message = 'You have to paste this link to Jumplead email template, where that link for each prospect will be generated';
+            //    error.status = 400;
+            //    return next(error);
+            //}
 
             async.waterfall([
 
                 function (waterfallCb) {
-                    ContentModel.findById(contentId, function (err, foundContent) {
+                    ContentModel.findById(contentId, function (err, doc) {
                         if (err) {
                             return waterfallCb(err);
                         }
-                        if (!foundContent) {
+                        if (!doc) {
                             error.message = 'Content Not Found';
                             error.status = 404;
                             return waterfallCb(error);
                         }
-                        content = foundContent;
-                        foundContent.survey = sortByKey(foundContent.survey, 'order');
-                        waterfallCb(null, foundContent);
+                        doc.survey = sortByKey(doc.survey, 'order');
+                        content = doc;
+                        waterfallCb(null, doc);
                     });
                 },
 
@@ -693,17 +690,17 @@ var routeHandler = function (db) {
                     UserModel.findById(content.ownerId, function (err, user) {
                         if (err) {
                             return waterfallCb(err);
-                        }
-                        if (!user) {
+                        } else if (!user) {
                             error.message = 'User Not Found';
                             error.status = 404;
+
                             return waterfallCb(error);
                         } else if (user.isDisabled) {
                             error.message = 'Sorry, but this content disabled now';
                             error.status = 403;
+
                             return waterfallCb(error);
                         }
-
                         userId = user._id;
                         waterfallCb(null, user);
                     });
@@ -713,8 +710,7 @@ var routeHandler = function (db) {
                     ProspectModel.findOne({jumpleadId: prospectId}, function (err, doc) {
                         if (err) {
                             return waterfallCb(err);
-                        }
-                        if (!doc) {
+                        } else if (!doc) {
                             jumplead.getContact(user._id, prospectId, function (err, prospect) {
                                 if (err) {
                                     return waterfallCb(err);
@@ -738,6 +734,7 @@ var routeHandler = function (db) {
                     return next(err);
                 }
                 data = {
+                    personalized: true,
                     content: content,
                     contact: prospect
                 };
