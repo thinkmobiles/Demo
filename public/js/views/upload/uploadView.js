@@ -132,7 +132,9 @@ define([
 
                     if (self.percentComplete === 100) {
                         //remove dialog
-                        self.modalProgres.hide();
+                        $(document).find('#bar_container').fadeOut();
+                        $(document).find('#rendering').fadeIn();
+                        //self.modalProgres.hide();
                     }
                 }
             }, false);
@@ -160,6 +162,7 @@ define([
             oReq.onload = function (oEvent) {
                 if (oReq.status === 201) {
                     try {
+                        self.modalProgres.remove()
                         var res = JSON.parse(oReq.response);
                         $("<div><input type='text' value='" + res.url + "' readonly/></div>").dialog({
                             modal: true,
@@ -169,6 +172,8 @@ define([
                             width: 725
                         });
                         //window.location="/#home";
+
+                        App.sessionData.set({contentId:res.id});
                         self.$el.find()
                     }
                     catch (e) {
@@ -177,6 +182,7 @@ define([
                 } else {
                     try {
                         App.notification(JSON.parse(oReq.responseText).error);
+                        Backbone.history.navigate("#/home", {trigger: true});
                     } catch (e) {
                         App.notification();
                     }

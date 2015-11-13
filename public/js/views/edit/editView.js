@@ -131,7 +131,8 @@ define([
 
                     if (self.percentComplete === 100) {
                         //remove dialog
-                        self.modalProgres.hide();
+                        $(document).find('#bar_container').fadeOut();
+                        $(document).find('#rendering').fadeIn();
                     }
                 }
             }, false);
@@ -159,6 +160,7 @@ define([
             oReq.onload = function (oEvent) {
                 if (oReq.status === 200) {
                     try {
+                        self.modalProgres.hide()
                         var res = JSON.parse(oReq.response);
                         $("<div><input type='text' value='" + res.url + "' readonly/></div>").dialog({
                             modal: true,
@@ -167,6 +169,7 @@ define([
                             dialogClass: "link-dialog",
                             width: 725
                         });
+
                         //window.location="/#home";
                     }
                     catch (e) {
@@ -204,6 +207,9 @@ define([
                 url: "/content",
                 contentType: "application/json",
                 success: function (data) {
+                    App.sessionData.set({
+                        contentId: null
+                    });
                     Backbone.history.navigate("#/upload", {trigger: true});
 
                 },

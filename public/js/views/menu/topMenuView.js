@@ -20,6 +20,7 @@ define([
         initialize: function () {
             // keep menu actual
             this.listenTo(App.sessionData, 'change:authorized', this.render);
+            this.listenTo(App.sessionData, 'change:contentId', this.render);
             this.render();
         },
 
@@ -78,7 +79,8 @@ define([
             this.$el.html(_.template(topMenuTemplate)({
                 authorized: App.sessionData.get("authorized"),
                 admin: App.sessionData.get("admin"),
-                user: App.sessionData.get("user")
+                user: App.sessionData.get("user"),
+                contentId: App.sessionData.get("contentId")
             }));
             return this;
         }

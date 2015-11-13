@@ -503,8 +503,6 @@ var routeHandler = function (db) {
                             return waterfallCb(err);
                         }
                         id = result._id;
-                        var url = process.env.WEB_HOST + '/campaign/' + id + '/{{ctid}}';
-                        res.status(201).send({url: url});
                         waterfallCb(null, result);
                     });
                 },
@@ -573,16 +571,17 @@ var routeHandler = function (db) {
                         if (err) {
                             return waterfallCb(err);
                         }
-                        var url = process.env.WEB_HOST + '/campaign/' + id + '/{{ctid}}';
-                        waterfallCb(null, url)
+                        //var url = process.env.WEB_HOST + '/campaign/' + id + '/{{ctid}}';
+                        waterfallCb(null)
                     });
                 }],
 
-            function (err, url) {
+            function (err) {
                 if (err) {
-                    return console.error(err);
+                    return next(err);
                 }
-                console.log('success upload. url ' + url);
+                var url = process.env.WEB_HOST + '/campaign/' + id + '/{{ctid}}';
+                res.status(201).send({url: url, id: id});
             });
     };
 
