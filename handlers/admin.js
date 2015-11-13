@@ -13,7 +13,6 @@ var AwsStorage = require('../helpers/aws')();
 var s3 = new AwsStorage();
 
 var AWS = require('../constants/AWS');
-var USER_ROLES = require('../constants/userRoles');
 
 
 var routeHandler = function (db) {
