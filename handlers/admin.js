@@ -17,6 +17,8 @@ var AWS = require('../constants/AWS');
 
 var routeHandler = function (db) {
 
+    var S3_BUCKET = AWS.S3_BUCKET;
+
     var trackSchema = mongoose.Schemas['Track'];
     var TrackModel = db.model('Track', trackSchema);
 
