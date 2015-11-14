@@ -50,6 +50,8 @@ var routeHandler = function (db) {
             firstName: 1,
             lastName: 1,
             userName: 1,
+            isDisabled: 1,
+            role: 1,
             email: 1
         }, function (err, docs) {
             if (err) {
@@ -92,8 +94,9 @@ var routeHandler = function (db) {
     };
 
     this.createSubordinate = function (req, res, next) {
+        var uId = req.session.uId;
         var options = req.body;
-        async.series([
+        async.waterfall([
             ////validation:
             //function (seriesCb) {
             //    validateUserSignUp(options, function (err) {
@@ -105,16 +108,26 @@ var routeHandler = function (db) {
             //},
 
             //create user:
-            function (seriesCb) {
+            function (waterfallCb) {
                 options.isConfirmed = false;
                 options.isDisabled = false;
+                options.creator = uId;
                 options.confirmToken = randToken.generate(24);
                 //mailer.sendInviteToSubordinate(options);
                 UserModel.create(options, function (err, user) {
                     if (err) {
-                        return seriesCb(err);
+                        return waterfallCb(err);
                     }
-                    seriesCb(null, user);
+                    waterfallCb(null, user);
+                });
+            },
+
+            function (user, waterfallCb) {
+                UserModel.findByIdAndUpdate(uId, {$addToSet: {subordinates: user._id}}, function (err) {
+                    if (err) {
+                        return waterfallCb(err);
+                    }
+                    waterfallCb(null);
                 });
             }], function (err) {
             if (err) {
@@ -153,18 +166,24 @@ var routeHandler = function (db) {
     };
 
     this.remove = function (req, res, next) {
+        var creator = req.session.uId;
         if (!req.params.id) {
             var e = new Error();
             e.message = 'Not enough params';
             e.status = 400;
             return next(e);
         }
-        var userId = req.params.id;
+                var userId = req.params.id;
 
-        UserModel.findByIdAndRemove(userId, function (err, found) {
+        UserModel.findByIdAndUpdate(creator, {$pull: {subordinates: userId}}, function (err, found) {
             if (err) {
                 console.error(err);
             }
+            UserModel.findByIdAndRemove(userId, function (err, found) {
+                if (err) {
+                    console.error(err);
+                }
+            });
         });
 
         var message = 'User removed';

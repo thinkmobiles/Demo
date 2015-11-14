@@ -18,8 +18,8 @@ module.exports = (function () {
         firstName: {type: String, required: true, minlength: NAME_MIN_LENGTH, maxlength: NAME_MAX_LENGTH},
         lastName: {type: String, required: true, minlength: NAME_MIN_LENGTH, maxlength: NAME_MAX_LENGTH},
         userName: {type: String, required: true, minlength: NAME_MIN_LENGTH, maxlength: NAME_MAX_LENGTH},
-        organization: {type: String, required: true, minlength: ORGANIZATION_MIN_LENGTH, maxlength: ORGANIZATION_MAX_LENGTH},
-        pass: {type: String, required: true},
+        organization: {type: String, minlength: ORGANIZATION_MIN_LENGTH, maxlength: ORGANIZATION_MAX_LENGTH},
+        pass: {type: String},
         phone: {type: String, default: ""},
 
         isConfirmed: {type: Boolean, default: false},
@@ -37,7 +37,7 @@ module.exports = (function () {
         ],
 
         creator: {type: ObjectId, ref: 'User'},
-        subordinate: [
+        subordinates: [
             {type: ObjectId, ref: 'User'}
         ],
 

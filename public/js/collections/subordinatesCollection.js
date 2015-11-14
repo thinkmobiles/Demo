@@ -1,5 +1,5 @@
 define([
-    'models/confirmedUsersModel'
+    'models/subordinatesModel'
 ], function (model) {
     var Collection = Backbone.Collection.extend({
         model: model,
