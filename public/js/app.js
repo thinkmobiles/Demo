@@ -11,6 +11,7 @@ define([
             authorized: false,
             admin: false,
             user: null,
+            contentId: null,
             date: null
         });
         App.slider = [];

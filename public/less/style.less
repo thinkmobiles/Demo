@@ -1879,14 +1879,23 @@ footer {
 /* Pie Chart */
 .bar_container {
   h2 {
+    z-index: 999;
     font-family: "LatoSemiBold";
     text-align: center;
     margin-top: -10px;
   }
   h4 {
+    z-index: 999;
     font-family: "LatoLight";
     text-align: center;
     margin-top: -25px;
+  }
+  .gen{
+    font-size: 16px;
+    color: #777;
+    position: absolute;
+    top: 50%;
+    left: 40%;
   }
 }
 
@@ -3025,6 +3034,48 @@ svg {
 #topMenu nav:not(.small) {
   #logo {
     opacity: 1;
+  }
+}
+
+.loader {
+  margin: 0 auto;
+  font-size: 18px;
+  position: relative;
+  text-indent: -9999em;
+  border-top: 1.1em solid rgba(0, 0, 0, 0.1);
+  border-right: 1.1em solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1.1em solid rgba(0, 0, 0, 0.1);
+  border-left: 1.1em solid #81CE97;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-animation: load8 1.8s infinite linear;
+  animation: load8 1.8s infinite linear;
+}
+.loader,
+.loader:after {
+  border-radius: 50%;
+  width: 10em;
+  height: 10em;
+}
+@-webkit-keyframes load8 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@keyframes load8 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
   }
 }
 
