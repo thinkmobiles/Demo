@@ -1,6 +1,6 @@
 'use strict';
 
-var _ = require('../public/js/libs/underscore/underscore-min');
+var _ = require('lodash');
 var moment = require('moment');
 var mongoose = require('mongoose');
 var request = require('request');

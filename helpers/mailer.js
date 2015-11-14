@@ -1,7 +1,7 @@
 'use strict';
 
 var MailerModule = function () {
-    var _ = require('./../public/js/libs/underscore/underscore.js');
+    var _ = require('lodash');
     var nodemailer = require("nodemailer");
     var fs = require('fs');
     var FROM = "DemoRocket <" + 'info@demorocket.com' + ">";

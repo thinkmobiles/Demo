@@ -11,7 +11,7 @@ var REG_EXP = require('../constants/regExp');
 
 var badRequests = require('../helpers/badRequests');
 var Analytic = require('../helpers/analytic');
-var _ = require('../public/js/libs/underscore/underscore-min');
+var _ = require('lodash');
 var path = require('path');
 var fs = require('fs');
 var Jumplead = require('../helpers/jumplead');

@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 var http = require('http');
 var request = require('request');
 
-var _ = require('../public/js/libs/underscore/underscore-min');
+var _ = require('lodash');
 
 var moment = require('moment');
 var routeHandler = function (db) {

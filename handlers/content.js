@@ -3,7 +3,7 @@
 
 var async = require('async');
 var mongoose = require('mongoose');
-var _ = require('../public/js/libs/underscore/underscore-min');
+var _ = require('lodash');
 
 var AwsStorage = require('../helpers/aws')();
 var s3 = new AwsStorage();

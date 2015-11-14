@@ -1,6 +1,6 @@
 var async = require('async');
 var mongoose = require('mongoose');
-var _ = require('../public/js/libs/underscore/underscore-min');
+var _ = require('lodash');
 var Analytic = require('../helpers/analytic');
 
 var routeHandler = function (db) {
