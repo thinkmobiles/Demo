@@ -107,6 +107,7 @@ define([
             var campaigns = this.campaignsCollection.toJSON();
             this.$el.find("#campaigns").html(_.template(CampaignsListTemplate)({
                 campaigns: campaigns,
+                moment: moment,
                 current: this.campaignChoosed
             }));
             return this;

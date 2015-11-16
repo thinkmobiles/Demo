@@ -16,7 +16,7 @@
     <%_.each(campaigns,function(campaign, index){%>
     <tr data-id="<%=campaign.id%>" class="<%=index==current?'current':''%>">
         <td><span><%=campaign.name %></span></td>
-        <td><span><%=campaign.createdAt %></span></td>
+        <td><span><%=moment(campaign.createdAt).format('DD MMM YYYY') %></span></td>
     </tr>
     <%})%>
 </table>
