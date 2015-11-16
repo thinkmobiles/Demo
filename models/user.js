@@ -29,7 +29,7 @@ module.exports = (function () {
         forgotToken: {type: String},
 
         role:  {type: Number, default: 1},
-        campaign: [
+        campaigns: [
             {
                 id: {type: ObjectId, ref: 'Content'},
                 name: {type: String}

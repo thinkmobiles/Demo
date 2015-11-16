@@ -380,7 +380,7 @@ var routeHandler = function (db) {
                 ContentModel.findOne({ownerId: userId}, function (err, content) {
                     if (err) {
                         return waterfallCb(err);
-                    }else if (!content) {
+                    } else if (!content) {
                         error.status = 400;
                         error.message = 'Content Not Found';
                         return waterfallCb(error);
@@ -489,7 +489,7 @@ var routeHandler = function (db) {
                         if (err) {
                             return waterfallCb(err);
                         }
-                        if (user.role == USER_ROLES.ADMIN || user.role == USER_ROLES.SUPER_ADMIN) {
+                        if (user.role == USER_ROLES.ADMIN || user.role == USER_ROLES.USER) {
                             ownerId = currentUserId;
                         } else {
                             ownerId = user.creator;
@@ -549,18 +549,18 @@ var routeHandler = function (db) {
                             return waterfallCb(err);
                         }
                         id = result._id;
-                        var url = process.env.WEB_HOST + '/campaign/' + id + '/{{ctid}}';
-                        res.status(201).send({url: url});
                         waterfallCb(null, result);
                     });
                 },
 
                 // update user => set contentId
                 function (result, waterfallCb) {
-                    UserModel.findByIdAndUpdate(userId, {
+                    UserModel.findByIdAndUpdate(ownerId, {
                         $addToSet: {
-                            id: id,
-                            name: data.nameOfCampaign
+                            campaigns: {
+                                id: id,
+                                name: data.nameOfCampaign
+                            }
                         }
                     }, function (err) {
                         if (err) {
@@ -629,11 +629,12 @@ var routeHandler = function (db) {
                     });
                 }],
 
-            function (err, url) {
+            function (err) {
                 if (err) {
-                    return console.error(err);
+                    return next(err);
                 }
-                console.log('success upload. url ' + url);
+                var url = process.env.WEB_HOST + '/campaign/' + id + '/{{ctid}}';
+                res.status(201).send({url: url});
             });
     };
 

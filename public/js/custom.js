@@ -3,6 +3,7 @@ define(["moment"],function (moment) {
 	var routes = {
 		needAuthorize: [
 			'subordinates',
+			'campaigns',
 			'users',
             'upload',
             'edit',
