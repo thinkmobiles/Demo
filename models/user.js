@@ -31,8 +31,7 @@ module.exports = (function () {
         role: {type: Number, default: 1},
         campaigns: [
             {
-                _id: false,
-                id: {type: ObjectId, ref: 'Content'},
+                _id: {type: ObjectId, ref: 'Content'},
                 name: {type: String},
                 createdAt: {type: Date}
             }

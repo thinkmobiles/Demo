@@ -247,7 +247,7 @@ define([
 
             decline: function (e) {
                 e.preventDefault();
-                Backbone.history.navigate("#/home", {trigger: true});
+                Backbone.history.navigate("#/campaigns", {trigger: true});
             }
             ,
 

@@ -11,12 +11,7 @@ module.exports = function (db) {
     var handler = new ContentHandler(db);
     var session = new SessionHandler(db);
 
-    router.post('/s3save',multipart, handler.testS3Save);
-    router.get('/s3move', handler.testS3Move);
-    router.delete('/s3delete', handler.testS3Delete);
-    router.delete('/s3deleteDir', handler.testS3DeleteDir);
-    router.get('/s3get', handler.testS3Get);
-    router.get('/s3list', handler.testS3List);
+
 
 
     router.get('/list', session.isAuthenticatedAdminRights, handler.campaignsList);

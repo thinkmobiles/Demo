@@ -395,123 +395,18 @@ var routeHandler = function (db) {
 
             res.status(200).send({url: url, content: content});
         });
-        //async.waterfall([
-        //    function (waterfallCb) {
-        //        UserModel.findById(uId, function (err, user) {
-        //            if (err) {
-        //                return waterfallCb(err);
-        //            }
-        //            if (user.role == USER_ROLES.ADMIN || user.role == USER_ROLES.SUPER_ADMIN) {
-        //                return waterfallCb(null, user.creator);
-        //            }
-        //            waterfallCb(null, uId);
-        //        });
-        //    },
-        //
-        //    function (userId, waterfallCb) {
-        //        ContentModel.findOne({ownerId: userId}, function (err, content) {
-        //            if (err) {
-        //                return waterfallCb(err);
-        //            } else if (!content) {
-        //                error.status = 400;
-        //                error.message = 'Content Not Found';
-        //                return waterfallCb(error);
-        //            }
-        //
-        //            content.survey = sortByKey(content.survey, 'order');
-        //            url = process.env.WEB_HOST + '/campaign/' + content._id + '/{{ctid}}';
-        //        });
-        //    }], function (err) {
-        //    if (err) {
-        //        return next(err);
-        //    }
-        //    res.status(201).send({url: url, content: content});
-        //});
     };
 
-    this.testS3Delete = function (req, res, next) {
-        s3.removeFile(S3_BUCKET, '562df14d680008701f000001/Overview.mp4', null, function (err, data) {
-            if (err) {
-                return next(err);
-            }
-            res.status(200).send(data);
-        });
-    };
 
-    this.testS3DeleteDir = function (req, res, next) {
-        s3.removeDir(S3_BUCKET, '562df14d680008701f000001', function (err, data) {
-            if (err) {
-                return next(err);
-            }
-            res.status(200).send(data);
-        });
-    };
-
-    this.testS3Move = function (req, res, next) {
-        s3.moveDir(S3_BUCKET, '564065e92226c4c43a000002/survey4', '564065e92226c4c43a000002/old/survey4', function (err, data) {
-            if (err) {
-                return next(err);
-            }
-            res.status(200).send(data);
-        });
-    };
-
-    this.testS3Save = function (req, res, next) {
-        var files = req.files;
-        s3.postFile(S3_BUCKET, 'somefile2.pdf', files['pdf'], function (err, data) {
-            if (err) {
-                return next(err);
-            }
-            pdfutils(files['pdf'].path, function (err, doc) {
-                var stream = doc[0].asPNG({maxWidth: 500, maxHeight: 1000});
-                var buf = new Buffer(0, "base64");
-                stream.on('data', function (data) {
-                    buf = Buffer.concat([buf, data]);
-                });
-                stream.on('end', function () {
-                    var key = files['pdf'].name.slice(0, -4) + '.png';
-                    s3.postBuffer(S3_BUCKET, key, buf, function (err) {
-                        if (err) {
-                            return console.error(err);
-                        }
-                    });
-                });
-                stream.on('error', function (err) {
-                    return console.error(err);
-                });
-            });
-            res.status(200).send(data);
-        });
-    };
-
-    this.testS3Get = function (req, res, next) {
-        var data = req.query;
-        s3.getFileUrl({bucket: S3_BUCKET, key: 'some%20file2.pdf'}, function (err, data) {
-            if (err) {
-                return next(err);
-            } // an error occurred
-            res.status(200).send(data);           // successful response
-        });
-    };
-
-    this.testS3List = function (req, res, next) {
-        var data = req.query;
-        s3.listFiles(S3_BUCKET, '', function (err, data) {
-            if (err) {
-                return next(err);
-            } // an error occurred
-            res.status(200).send(data);           // successful response
-        });
-    };
 
     this.upload = function (req, res, next) {
         var data = req.body;
         var files = req.files;
         var ownerId;
         var currentUserId = req.session.uId;
-        var content;
         var insObj;
         var id;
+        var url;
 
         async.waterfall([
 
@@ -581,6 +476,7 @@ var routeHandler = function (db) {
                             return waterfallCb(err);
                         }
                         id = result._id;
+                        url = id.toString() + '/';
                         waterfallCb(null, result);
                     });
                 },
@@ -590,7 +486,7 @@ var routeHandler = function (db) {
                     UserModel.findByIdAndUpdate(ownerId, {
                         $addToSet: {
                             campaigns: {
-                                id: id,
+                                _id: id,
                                 name: data.nameOfCampaign,
                                 createdAt: new Date()
                             }
@@ -607,13 +503,13 @@ var routeHandler = function (db) {
                 function (waterfallCb) {
                     async.series([
                         function (seriesCb) {
-                            if (files['video'].name) {
+                            if (files['video'].name && files['video'].size) {
                                 saveMainVideo(id, files, seriesCb);
                             } else {
                                 var logoUrl = S3_ENDPOINT + S3_BUCKET + '/' + url + encodeURIComponent(files['logo'].name);
                                 var logoKey = id.toString() + '/' + files['logo'].name;
 
-                                s3.postFile(S3_BUCKET, logoKey, files['logo'], function (err, data) {
+                                s3.postFile(S3_BUCKET, logoKey, files['logo'], function (err) {
                                     if (err) {
                                         return seriesCb(err);
                                     }
@@ -697,7 +593,7 @@ var routeHandler = function (db) {
             },
 
             function (parallelCb) {
-                UserModel.findByIdAndUpdate(ownerId, {$pull: {'campaigns': {'id': contentId}}}, function (err, found) {
+                UserModel.findByIdAndUpdate(ownerId, {$pull: {'campaigns': {'_id': contentId}}}, function (err, found) {
                     if (err) {
                         return parallelCb(err);
                     } else if (!found) {
