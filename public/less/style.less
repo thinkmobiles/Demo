@@ -1640,19 +1640,20 @@ footer {
       margin-right: 7%;
       cursor: pointer;
       &:before{
-        margin-right: 3px;
+        margin: 2px 5px 0;
         content: "";
         display: block;
         float: left;
-        width: 15px;
-        height: 15px;
+        width: 13px;
+        height: 13px;
         border-radius: 50%;
         border: 1px solid #B7B7B7;
+        box-sizing: border-box;
       }
       &.active:before{
         background-color: #EB6B56;
-        border: 2px solid  #fff;
-        outline: 1px solid #EB6B56;
+        border: 3px solid  #fff;
+        box-shadow: 0 0 0 1px #EB6B56;
       }
     }
   }
@@ -2465,7 +2466,7 @@ footer {
       text-align: center;
       height: 50px;
     }
-    td {
+    td{
       border-top: 1px solid #dbdbdb;
       cursor: pointer;
       &.expired {
@@ -2477,9 +2478,7 @@ footer {
     }
     &.current {
       td {
-        //background-color:#f5fbfd;
-        background-color: rgba(229, 235, 237, 0.67);
-
+        background-color: #F5FBFD;
       }
     }
     &.edited {
