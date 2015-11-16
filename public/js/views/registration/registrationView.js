@@ -98,20 +98,13 @@ define([
                 message = (message == '') ? (self.$el.find(".registration .email").val() + " is not a valid email.") : message;
             }
 
-            //pass
-            if (!validation.validPass(self.$el.find(".registration .pass").val())) {
+            var pass = self.$el.find(".registration .pass").val();
+            var rate = checkPass.scorePassword(pass);
+
+            if (rate < 30) {
                 isError = true;
                 self.$el.find(".registration .pass").addClass("error");
-                message = (message == '') ? "That is not a valid password. Password can not contain '~ < > ^ * ₴' signs" : message;
-            } else {
-                var pass = self.$el.find(".registration .pass").val();
-                var rate = checkPass.scorePassword(pass);
-
-                if (rate < 30) {
-                    isError = true;
-                    self.$el.find(".registration .pass").addClass("error");
-                    message = (message == '') ? "Your password is weak. Please choose a stronger password" : message;
-                }
+                message = (message == '') ? "Your password is weak. Please choose a stronger password" : message;
             }
 
             if (!self.$el.find(".registration .conf").val() || self.$el.find(".registration .conf").val() !== self.$el.find(".registration .pass").val()) {

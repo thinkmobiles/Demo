@@ -184,8 +184,8 @@ var MailerModule = function () {
                 templateOptions = {
                     firstName: options.firstName,
                     lastName: options.lastName,
-                    userName: options.lastName,
-                    url: process.env.HOME_PAGE + '/confirm/' + options.confirmToken
+                    userName: options.userName,
+                    url: process.env.WEB_HOST + '/#/confirm/' + options.confirmToken
                 };
 
                 mailOptions = {

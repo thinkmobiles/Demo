@@ -9,6 +9,7 @@ var mailer = require('../helpers/mailer');
 var randToken = require('rand-token');
 
 var USER_ROLES = require('../constants/userRoles');
+var CONSTANTS = require('../constants/index');
 var AWS = require('../constants/AWS');
 
 var routeHandler = function (db) {
@@ -93,6 +94,29 @@ var routeHandler = function (db) {
         });
     };
 
+    this.confirmSubordinate = function (req, res, next) {
+        var error = new Error();
+        if (!req.body.password || !req.body.token) {
+            error.message = "Bad request";
+            error.status = 400;
+            return next(error);
+        }
+        var token = req.body.token;
+        var pass = getEncryptedPass(req.body.password);
+
+        UserModel.findOneAndUpdate({confirmToken: token}, {isConfirmed: true, confirmToken: null, pass:pass}, {new:true},function (err, doc) {
+            if (err) {
+                return next(err);
+            }
+            if (!doc) {
+                error.status = 400;
+                error.message = 'User Not Found!';
+                return next(error);
+            }
+            res.status(200).send({message: 'Success! You account confirmed'});
+        });
+    };
+
     this.createSubordinate = function (req, res, next) {
         var uId = req.session.uId;
         var options = req.body;
@@ -113,7 +137,8 @@ var routeHandler = function (db) {
                 options.isDisabled = false;
                 options.creator = uId;
                 options.confirmToken = randToken.generate(24);
-                //mailer.sendInviteToSubordinate(options);
+                options.avatar = CONSTANTS.AVATAR;
+                mailer.sendInviteToSubordinate(options);
                 UserModel.create(options, function (err, user) {
                     if (err) {
                         return waterfallCb(err);
@@ -173,7 +198,7 @@ var routeHandler = function (db) {
             e.status = 400;
             return next(e);
         }
-                var userId = req.params.id;
+        var userId = req.params.id;
 
         UserModel.findByIdAndUpdate(creator, {$pull: {subordinates: userId}}, function (err, found) {
             if (err) {

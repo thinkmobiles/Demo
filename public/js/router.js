@@ -33,6 +33,7 @@ define([
 			"contact"              : "contact",
 			"forgot"              : "forgot",
 			"resetPassword(/:token)"              : "resetPassword",
+            "confirm(/:token)"              : "confirmUser",
 			"message?text=:text":       "showNotification",
             "*any"                      :  "any"
         },
@@ -192,6 +193,10 @@ define([
 		},
 		resetPassword: function (token) {
 			this.loadWrapperView('resetPassword', {token:token});
+		},
+
+        confirmUser: function (token) {
+			this.loadWrapperView('confirmUser', {token:token});
 		},
         home: function (videoId, userId) {
             this.loadWrapperView('home',{
