@@ -485,7 +485,7 @@ var routeHandler = function (db) {
                     UserModel.findByIdAndUpdate(ownerId, {
                         $addToSet: {
                             campaigns: {
-                                id: id,
+                                _id: id,
                                 name: data.nameOfCampaign,
                                 createdAt: new Date()
                             }
