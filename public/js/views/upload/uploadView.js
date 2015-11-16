@@ -211,6 +211,7 @@ define([
                 } else {
                     try {
                         App.notification(JSON.parse(oReq.responseText).error);
+                        self.modalProgres.hide()
                     } catch (e) {
                         Backbone.history.navigate("#/home", {trigger: true});
                         App.notification('Some error occurs');
@@ -222,7 +223,7 @@ define([
 
         decline: function (e) {
             e.preventDefault();
-            Backbone.history.navigate("#/home", {trigger: true});
+            Backbone.history.navigate("#/campaigns", {trigger: true});
         },
 
         changeInput: function (e) {

@@ -404,9 +404,9 @@ var routeHandler = function (db) {
         var files = req.files;
         var ownerId;
         var currentUserId = req.session.uId;
-        var content;
         var insObj;
         var id;
+        var url;
 
         async.waterfall([
 
@@ -476,6 +476,7 @@ var routeHandler = function (db) {
                             return waterfallCb(err);
                         }
                         id = result._id;
+                        url = id.toString() + '/';
                         waterfallCb(null, result);
                     });
                 },
@@ -502,13 +503,13 @@ var routeHandler = function (db) {
                 function (waterfallCb) {
                     async.series([
                         function (seriesCb) {
-                            if (files['video'].name) {
+                            if (files['video'].name && files['video'].size) {
                                 saveMainVideo(id, files, seriesCb);
                             } else {
                                 var logoUrl = S3_ENDPOINT + S3_BUCKET + '/' + url + encodeURIComponent(files['logo'].name);
                                 var logoKey = id.toString() + '/' + files['logo'].name;
 
-                                s3.postFile(S3_BUCKET, logoKey, files['logo'], function (err, data) {
+                                s3.postFile(S3_BUCKET, logoKey, files['logo'], function (err) {
                                     if (err) {
                                         return seriesCb(err);
                                     }
@@ -592,7 +593,7 @@ var routeHandler = function (db) {
             },
 
             function (parallelCb) {
-                UserModel.findByIdAndUpdate(ownerId, {$pull: {'campaigns': {'id': contentId}}}, function (err, found) {
+                UserModel.findByIdAndUpdate(ownerId, {$pull: {'campaigns': {'_id': contentId}}}, function (err, found) {
                     if (err) {
                         return parallelCb(err);
                     } else if (!found) {
