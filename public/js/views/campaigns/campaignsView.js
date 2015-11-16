@@ -29,7 +29,7 @@ define([
             var index = $(e.target).closest(".customTable").find("tr").index($(e.target).closest("tr"));
 
             if (index) {
-                this.subordinateChoosed = index -1;
+                this.campaignChoosed = index -1;
 
                 $(e.target).closest(".customTable").find("tr.current").removeClass("current");
                 $(e.target).closest("tr").addClass("current");
