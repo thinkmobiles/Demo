@@ -73,45 +73,76 @@ define([
             e.preventDefault();
             this.$el.find(".error").removeClass("error");
             var hasError = false;
+            var message = '';
+
+            if (!this.$el.find(".uploadContainer input[name='nameOfCampaign']").val()) {
+                this.$el.find(".uploadContainer input[name='nameOfCampaign']").addClass("error");
+                message = (message == '') ? "Please input name of campaign" : message;
+                hasError = true;
+            }
+
             if (!this.$el.find("textarea[name='desc']").val()) {
                 this.$el.find("textarea[name='desc']").addClass("error");
+                message = (message == '') ? "Please input some brief description" : message;
                 hasError = true;
             }
-
-            if (!validation.validPhone(this.$el.find("input[name='phone']").val())) {
-                this.$el.find("input[name='phone']").closest(".uploadContainer").addClass("error");
-                hasError = true;
-            }
-
-            if (!validation.validEmail(this.$el.find("input[name='email']").val())) {
-                this.$el.find(".uploadContainer input[name='email']").closest(".uploadContainer").addClass("error");
-                hasError = true;
-            }
-
 
             if (!this.$el.find(".uploadContainer.file input[name='video']").val() && !this.$el.find(".uploadContainer.link input[name='video']").val()) {
                 this.$el.find(".uploadContainer.file input[name='video']").closest(".uploadContainer").addClass("error");
                 this.$el.find(".uploadContainer.link input[name='video']").closest(".uploadContainer").addClass("error");
+                message = (message == '') ? "Please choose video" : message;
                 hasError = true;
             }
 
             if (!this.$el.find(".uploadContainer.file input[name='logo']").val()) {
                 this.$el.find(".uploadContainer.file input[name='logo']").closest(".uploadContainer").addClass("error");
-                hasError = true;
-            }
-            if (!this.$el.find(".uploadContainer.file input[name='logo']").val()) {
-                this.$el.find(".uploadContainer.file input[name='logo']").closest(".uploadContainer").addClass("error");
+                message = (message == '') ? "Please upload logo" : message;
                 hasError = true;
             }
 
             if (!this.$el.find(".uploadContainer input[name='name']").val()) {
                 this.$el.find(".uploadContainer input[name='name']").closest(".uploadContainer").addClass("error");
+                message = (message == '') ? "Please input company name" : message;
                 hasError = true;
             }
 
+
+            if (!this.$el.find("input[name='email']").val()) {
+                this.$el.find(".uploadContainer input[name='email']").closest(".uploadContainer").addClass("error");
+                message = (message == '') ? "Please input email" : message;
+                hasError = true;
+            }
+
+            if (!validation.validEmail(this.$el.find("input[name='email']").val())) {
+                this.$el.find(".uploadContainer input[name='email']").closest(".uploadContainer").addClass("error");
+                message = (message == '') ? (self.$el.find(".uploadContainer input[name='email']").val() + " is not a valid email.") : message;
+                hasError = true;
+            }
+
+            if (!this.$el.find("input[name='phone']").val()) {
+                this.$el.find("input[name='phone']").closest(".uploadContainer").addClass("error");
+                message = (message == '') ? "Please input phone number": message;
+                hasError = true;
+            }
+
+            if (!validation.validPhone(this.$el.find("input[name='phone']").val())) {
+                this.$el.find("input[name='phone']").closest(".uploadContainer").addClass("error");
+                message = (message == '') ? "That is not a valid phone number. It should contain only numbers and '+ - ( )' signs" : message;
+                hasError = true;
+            }
+
+            if (!$(e.target).closest(".videoContainer").find(".canSort").length) {
+                $(e.target).closest(".videoContainer").find(".questionText").addClass("error");
+                $(e.target).closest(".videoContainer").find(".right .uploadContainer").addClass("error");
+                message = (message == '') ? "Please create survey question" : message;
+                hasError = !0;
+            }
+
             if (hasError) {
+                App.notification(message);
                 return;
             }
+
 
 
             var form = document.forms.namedItem("videoForm");
@@ -132,7 +163,9 @@ define([
 
                     if (self.percentComplete === 100) {
                         //remove dialog
-                        self.modalProgres.hide();
+                        $(document).find('#bar_container').hide();
+                        $(document).find('#rendering').fadeIn();
+                        //self.modalProgres.hide();
                     }
                 }
             }, false);
@@ -160,6 +193,7 @@ define([
             oReq.onload = function (oEvent) {
                 if (oReq.status === 201) {
                     try {
+                        self.modalProgres.hide()
                         var res = JSON.parse(oReq.response);
                         $("<div><input type='text' value='" + res.url + "' readonly/></div>").dialog({
                             modal: true,
@@ -178,7 +212,8 @@ define([
                     try {
                         App.notification(JSON.parse(oReq.responseText).error);
                     } catch (e) {
-                        App.notification();
+                        Backbone.history.navigate("#/home", {trigger: true});
+                        App.notification('Some error occurs');
                     }
                 }
             };

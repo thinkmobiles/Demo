@@ -1,8 +1,12 @@
 <div class="bar_container">
     <h2>GENERATING NEW DEMO</h2><br/>
-    <h4>Please wait until all of your data is uploaded</h4>
     <div id="main_container">
-
+        <div id="rendering" class="rendering" style="display: none">
+            <span class="gen">GENERATING...</span>
+            <div class="loader"></div>
+        </div>
+        <div id="bar_container">
+            <h4>Please wait until all of your data is uploaded</h4>
             <div id="pbar" class="progress-pie-chart" data-percent="0">
                 <div class="ppc-progress">
                     <div class="ppc-progress-fill"></div>
@@ -13,7 +17,8 @@
                     </div>
                 </div>
             </div>
-        <div class="bar-border">
+            <div class="bar-border">
+            </div>
         </div>
         <progress style="display: none" id="progress_bar" value="0" max="100"></progress>
     </div>

@@ -19,8 +19,9 @@ module.exports = function (db) {
     router.get('/s3list', handler.testS3List);
 
 
-    router.get('/', session.isAuthenticatedAdminRights, handler.content);
-    router.delete('/', session.isAuthenticatedAdminRights, handler.remove);
+    router.get('/list', session.isAuthenticatedAdminRights, handler.campaignsList);
+    router.get('/:id', session.isAuthenticatedAdminRights, handler.content);
+    router.delete('/:id', session.isAuthenticatedAdminRights, handler.remove);
     router.post('/upload',multipart, session.isAuthenticatedAdminRights, handler.upload);
     router.post('/update',multipart, session.isAuthenticatedAdminRights, handler.update);
     return router;

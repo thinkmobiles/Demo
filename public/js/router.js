@@ -15,7 +15,7 @@ define([
 
         routes: {
             "upload"                    :  "upload",
-            "edit"                      :  "edit",
+            "edit/:campaignId"          :  "edit",
             "home(/:videoId/:userId)"   :  "home",
 			"chooseViewer(/:videoId/:userId)" :  "chooseViewer",
 			"registerViewer(/:videoId/:userId)" :  "registerViewer",
@@ -160,8 +160,8 @@ define([
             this.loadWrapperView('upload');
         },
 
-        edit: function () {
-            this.loadWrapperView('edit');
+        edit: function (campaignId) {
+            this.loadWrapperView('edit', campaignId);
         },
 		analytics: function () {
             this.loadWrapperView('analytics');

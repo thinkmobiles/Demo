@@ -8,6 +8,7 @@ var Session = function (db) {
         req.session.isConfirmed = options.isConfirmed;
         req.session.isDisabled = options.isDisabled;
         req.session.role = options.role;
+        req.session.creator = (options.role===USER_ROLES.USER_ADMINISTRATOR||options.role===USER_ROLES.USER_VIEWER)?options.creator:null;
         return true;
     };
 

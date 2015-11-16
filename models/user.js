@@ -28,11 +28,13 @@ module.exports = (function () {
         confirmToken: {type: String},
         forgotToken: {type: String},
 
-        role:  {type: Number, default: 1},
+        role: {type: Number, default: 1},
         campaigns: [
             {
+                _id: false,
                 id: {type: ObjectId, ref: 'Content'},
-                name: {type: String}
+                name: {type: String},
+                createdAt: {type: Date}
             }
         ],
 
@@ -42,11 +44,11 @@ module.exports = (function () {
         ],
 
         accessToken: {type: String},
-        refreshToken: { type: String },
-        subscriptionStart: { type: Date },
-        subscriptionEnd: { type: Date },
-        createdAt: { type: Date, default: Date.now },
-        updatedAt: { type: Date, default: Date.now }
+        refreshToken: {type: String},
+        subscriptionStart: {type: Date},
+        subscriptionEnd: {type: Date},
+        createdAt: {type: Date, default: Date.now},
+        updatedAt: {type: Date, default: Date.now}
 
     }, {collection: 'Users'});
 

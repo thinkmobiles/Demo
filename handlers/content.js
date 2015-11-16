@@ -357,44 +357,76 @@ var routeHandler = function (db) {
         });
     }
 
+    this.campaignsList = function (req, res, next) {
+        var ownerId;
+        var userRole = req.session.role;
+        if (userRole == USER_ROLES.ADMIN || userRole == USER_ROLES.USER) {
+            ownerId = req.session.uId;
+        } else {
+            ownerId = req.session.creator;
+        }
+
+        UserModel.findById(ownerId, function (err, user) {
+            if (err) {
+                return next(err);
+            }
+            res.status(200).send(user.campaigns);
+        });
+    };
+
+
     this.content = function (req, res, next) {
-        var uId = req.session.uId;
+        var contentId = req.params.id;
         var url;
         var content;
         var error = new Error();
 
-        async.waterfall([
-            function (waterfallCb) {
-                UserModel.findById(uId, function (err, user) {
-                    if (err) {
-                        return waterfallCb(err);
-                    }
-                    if (user.role == USER_ROLES.ADMIN || user.role == USER_ROLES.SUPER_ADMIN) {
-                        return waterfallCb(null, user.creator);
-                    }
-                    waterfallCb(null, uId);
-                });
-            },
-
-            function (userId, waterfallCb) {
-                ContentModel.findOne({ownerId: userId}, function (err, content) {
-                    if (err) {
-                        return waterfallCb(err);
-                    } else if (!content) {
-                        error.status = 400;
-                        error.message = 'Content Not Found';
-                        return waterfallCb(error);
-                    }
-
-                    content.survey = sortByKey(content.survey, 'order');
-                    url = process.env.WEB_HOST + '/campaign/' + content._id + '/{{ctid}}';
-                });
-            }], function (err) {
+        ContentModel.findById(contentId, function (err, content) {
             if (err) {
                 return next(err);
+            } else if (!content) {
+                error.status = 400;
+                error.message = 'Content Not Found';
+                return next(error);
             }
-            res.status(201).send({url: url, content: content});
+
+            content.survey = sortByKey(content.survey, 'order');
+            url = process.env.WEB_HOST + '/campaign/' + content._id + '/{{ctid}}';
+
+            res.status(200).send({url: url, content: content});
         });
+        //async.waterfall([
+        //    function (waterfallCb) {
+        //        UserModel.findById(uId, function (err, user) {
+        //            if (err) {
+        //                return waterfallCb(err);
+        //            }
+        //            if (user.role == USER_ROLES.ADMIN || user.role == USER_ROLES.SUPER_ADMIN) {
+        //                return waterfallCb(null, user.creator);
+        //            }
+        //            waterfallCb(null, uId);
+        //        });
+        //    },
+        //
+        //    function (userId, waterfallCb) {
+        //        ContentModel.findOne({ownerId: userId}, function (err, content) {
+        //            if (err) {
+        //                return waterfallCb(err);
+        //            } else if (!content) {
+        //                error.status = 400;
+        //                error.message = 'Content Not Found';
+        //                return waterfallCb(error);
+        //            }
+        //
+        //            content.survey = sortByKey(content.survey, 'order');
+        //            url = process.env.WEB_HOST + '/campaign/' + content._id + '/{{ctid}}';
+        //        });
+        //    }], function (err) {
+        //    if (err) {
+        //        return next(err);
+        //    }
+        //    res.status(201).send({url: url, content: content});
+        //});
     };
 
     this.testS3Delete = function (req, res, next) {
@@ -533,7 +565,7 @@ var routeHandler = function (db) {
                  },*/
 
                 // create content model
-                function (insObj, waterfallCb) {
+                function (waterfallCb) {
                     insObj = {
                         nameOfCampaign: data.nameOfCampaign,
                         ownerId: ownerId,
@@ -559,7 +591,8 @@ var routeHandler = function (db) {
                         $addToSet: {
                             campaigns: {
                                 id: id,
-                                name: data.nameOfCampaign
+                                name: data.nameOfCampaign,
+                                createdAt: new Date()
                             }
                         }
                     }, function (err) {
@@ -639,38 +672,64 @@ var routeHandler = function (db) {
     };
 
     this.remove = function (req, res, next) {
-        var contentId;
-        var userId = req.session.uId;
+        var contentId = req.params.id;
+        var ownerId;
+        var error = new Error();
+        var userRole = req.session.role;
 
-        ContentModel.findOneAndRemove({ownerId: req.session.uId}, function (err, doc) {
+        if (userRole == USER_ROLES.ADMIN || userRole == USER_ROLES.USER) {
+            ownerId = req.session.uId;
+        } else {
+            ownerId = req.session.creator;
+        }
+        async.parallel([
+            function (parallelCb) {
+                ContentModel.findByIdAndRemove(contentId, function (err, doc) {
+                    if (err) {
+                        return parallelCb(err);
+                    } else if (!doc) {
+                        error.status = 404;
+                        error.message = 'Content Not Found';
+                        return parallelCb(error)
+                    }
+                    parallelCb(null);
+                });
+            },
+
+            function (parallelCb) {
+                UserModel.findByIdAndUpdate(ownerId, {$pull: {'campaigns': {'id': contentId}}}, function (err, found) {
+                    if (err) {
+                        return parallelCb(err);
+                    } else if (!found) {
+                        error.status = 404;
+                        error.message = 'User Not Found';
+                        return parallelCb(error)
+                    }
+                    parallelCb(null);
+                });
+            },
+
+            function (parallelCb) {
+                ContactMeModel.remove({contentId: contentId}, function (err) {
+                    if (err) {
+                        return parallelCb(err);
+                    }
+                    parallelCb(null);
+                });
+            },
+
+            function (parallelCb) {
+                TrackModel.remove({contentId: contentId}, function (err) {
+                    if (err) {
+                        parallelCb(err);
+                    }
+                    parallelCb(null);
+                });
+            }], function (err) {
             if (err) {
                 return next(err);
             }
-            if (!doc) {
-                return res.status(404).send({err: 'Content Not Found'});
-            }
-            contentId = doc._id;
-            UserModel.findByIdAndUpdate(userId, {contentId: null}, function (err, found) {
-                if (err) {
-                    return next(err);
-                }
-                if (!found) {
-                    return res.status(404).send({err: 'Content Not Found'});
-                }
-            });
-            ContactMeModel.remove({contentId: contentId}, function (err) {
-                if (err) {
-                    console.error(err);
-                }
-                console.log('ContactMeModel updated')
-            });
-            TrackModel.remove({contentId: contentId}, function (err) {
-                if (err) {
-                    console.error(err);
-                }
-                console.log('TrackModel updated')
-            });
-            var dirPath = contentId.toString();
+            var dirPath = contentId
             s3.removeDir(S3_BUCKET, dirPath);
 
             var message = 'Content removed';
