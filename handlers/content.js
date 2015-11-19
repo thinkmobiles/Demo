@@ -583,39 +583,81 @@ var routeHandler = function (db) {
     this.remove = function (req, res, next) {
         var contentId;
         var userId = req.session.uId;
-        var sep = path.sep;
 
-        ContentModel.findOneAndRemove({ownerId: req.session.uId}, function (err, doc) {
+        async.series([
+            function (seriesCb) {
+                async.parallel([
+                    function (parallelCb) {
+                        ContentModel.findOneAndRemove({ownerId: userId}, function (err, doc) {
+                            if (err) {
+                                return parallelCb(err);
+                            } else if (!doc) {
+                                error.status = 404;
+                                error.message = 'Content Not Found';
+                                return parallelCb(error)
+                            }
+                            contentId = doc._id;
+                            parallelCb(null);
+                        });
+                    },
+
+                    function (parallelCb) {
+                        UserModel.findByIdAndUpdate(userId, {$unset: {contentId: ""}}, function (err, found) {
+                            if (err) {
+                                return parallelCb(err);
+                            } else if (!found) {
+                                error.status = 404;
+                                error.message = 'User Not Found';
+                                return parallelCb(error)
+                            }
+                            parallelCb(null);
+                        });
+                    }], function (err) {
+                    if (err) {
+                        return seriesCb(err)
+                    }
+                    seriesCb(null);
+                });
+            },
+
+            function (seriesCb) {
+                async.parallel([
+                    function (parallelCb) {
+                        ContactMeModel.remove({contentId: contentId}, function (err) {
+                            if (err) {
+                                return parallelCb(err);
+                            }
+                            parallelCb(null);
+                        });
+                    },
+
+                    function (parallelCb) {
+                        TrackModel.remove({contentId: contentId}, function (err) {
+                            if (err) {
+                                parallelCb(err);
+                            }
+                            parallelCb(null);
+                        });
+                    },
+
+                    function (parallelCb) {
+                        var removeDir = contentId.toString();
+                        s3.removeDir(S3_BUCKET, removeDir, function (err) {
+                            if (err) {
+                                console.error(err);
+                            }
+                            parallelCb(null);
+                        });
+                    }], function (err) {
+                    if (err) {
+                        return seriesCb(err)
+                    }
+                    seriesCb(null);
+                });
+            }], function (err) {
             if (err) {
                 return next(err);
             }
-            if (!doc) {
-                return res.status(404).send({err: 'Content Not Found'});
-            }
-            contentId = doc._id;
-            UserModel.findByIdAndUpdate(userId, {contentId: null}, function (err, found) {
-                if (err) {
-                    return next(err);
-                }
-                if (!found) {
-                    return res.status(404).send({err: 'Content Not Found'});
-                }
-            });
-            ContactMeModel.remove({contentId: contentId}, function (err) {
-                if (err) {
-                    console.error(err);
-                }
-                console.log('ContactMeModel updated')
-            });
-            TrackModel.remove({contentId: contentId}, function (err) {
-                if (err) {
-                    console.error(err);
-                }
-                console.log('TrackModel updated')
-            });
-            var dirPath = contentId.toString();
-            s3.removeDir(S3_BUCKET, dirPath);
-
             var message = 'Content removed';
             res.status(200).send({message: message});
         });
@@ -670,14 +712,14 @@ var routeHandler = function (db) {
                         },
                         function (callback) {
                             i++;
-                            var oldPrefix = url+ 'survey' + i;
-                            var newPrefix = url+ 'temp/survey' + i;
+                            var oldPrefix = url + 'survey' + i;
+                            var newPrefix = url + 'temp/survey' + i;
 
 
                             s3.moveDir(S3_BUCKET, oldPrefix, newPrefix, function (err) {
-                               if(err){
-                                   return callback(err);
-                               }
+                                if (err) {
+                                    return callback(err);
+                                }
                                 callback(null);
                             });
                         },
@@ -803,17 +845,12 @@ var routeHandler = function (db) {
                                 if (!delSurvey.length) {
                                     return mainParallelCb(null);
                                 }
-                                async.each(delSurvey, function (id, eachCb) {
-                                    ContentModel.findByIdAndUpdate(id, {$pull: {survey: {_id: id}}}, function (err, doc) {
-                                        if (err) {
-                                            return eachCb(err);
-                                        }
-                                        eachCb(null);
-                                    });
-                                }, function (err) {
+                                var arrIds = delSurvey.objectID();
+                                ContentModel.findByIdAndUpdate(id, {$pull: {survey: {_id: {$in: arrIds}}}}, function (err, doc) {
                                     if (err) {
                                         return mainParallelCb(err);
                                     }
+
                                     mainParallelCb(null);
                                 });
                             },
@@ -829,7 +866,7 @@ var routeHandler = function (db) {
                                     //===============================================whilst START====================================================
                                     function (whilstCb) {
                                         i++;
-                                        var surveyId = surveyOrder[i-1];
+                                        var surveyId = surveyOrder[i - 1];
                                         if (surveyId == 'new') {
                                             async.applyEachSeries([saveSurveyVideo, saveSurveyFiles], i, id, files, data, function (err) {
                                                 if (err) {
@@ -948,8 +985,8 @@ var routeHandler = function (db) {
                                                     return whilstCb(err);
                                                 }
 
-                                                var newPrefix =url+ 'survey' + i;
-                                                var oldPrefix = url+'temp/survey' + oldOrder;
+                                                var newPrefix = url + 'survey' + i;
+                                                var oldPrefix = url + 'temp/survey' + oldOrder;
                                                 s3.moveDir(S3_BUCKET, oldPrefix, newPrefix, function (err) {
                                                     if (err) {
                                                         return whilstCb(err);
@@ -991,7 +1028,7 @@ var routeHandler = function (db) {
                 if (err) {
                     return next(err)
                 }
-                var sendDataUrl = process.env.HOME_PAGE + url+ '{{ctid}}';
+                var sendDataUrl = process.env.HOME_PAGE + url + '{{ctid}}';
                 res.status(200).send({url: sendDataUrl, id: id});
                 console.log('Content updated')
             });
