@@ -4,6 +4,7 @@ define([
     'text!templates/analytics/prospectTemplate.html',
     'text!templates/analytics/prospectActivityTemplate.html',
     'text!templates/analytics/contactMeTemplate.html',
+    "collections/campaignsCollection",
     "collections/documentAnalyticCollection",
     "collections/questionAnalyticCollection",
     "collections/videoAnalyticCollection",
@@ -15,7 +16,7 @@ define([
     'custom',
     'd3',
     'moment'
-], function (AnaliticsTemplate, QuestionTemplate, ProspectTemplate, ProspectActivityTemplate, ContactMeTemplate, DocumentAnalyticCollection, QuestionAnalyticCollection, VideoAnalyticCollection, VisitAnalyticCollection, ContactTrackCollection, ContactMeCollection, ProspectActivityModel, DomainModel, Custom, d3, moment) {
+], function (AnaliticsTemplate, QuestionTemplate, ProspectTemplate, ProspectActivityTemplate, ContactMeTemplate, CampaignsCollection, DocumentAnalyticCollection, QuestionAnalyticCollection, VideoAnalyticCollection, VisitAnalyticCollection, ContactTrackCollection, ContactMeCollection, ProspectActivityModel, DomainModel, Custom, d3, moment) {
 
     var View;
 
@@ -28,6 +29,8 @@ define([
             "click .customSelect ul li": "updateProspect",
             "click .legend ul li.print:not(.all) span": "print",
             "click .legend ul li.print.all ": "printContacts",
+            "click .campaigns ul li": "renderAnalytic",
+            "click .campaigns .customSelect": "toggleCampaigns",
             "click .customSelect .showList": "showList",
             "click .contactMe tr": "showMessage",
             "click #startDate, #endDate": "showDatepicker"
@@ -36,54 +39,34 @@ define([
 
         initialize: function () {
             var self = this;
-            $.ajax({
-                type: "GET",
-                url: "/content",
-                contentType: "application/json",
-                success: function (data) {
-                    if (!data) {
-                        self.$el.find(".analitics>.noVideo").show();
-                        self.$el.find(".analitics .haveVideo").hide();
-                    } else {
-                        self.$el.find(".analitics>.noVideo").hide();
-                        self.$el.find(".analitics .haveVideo").show();
+            //$.ajax({
+            //    type: "GET",
+            //    url: "/content",
+            //    contentType: "application/json",
+            //    success: function (data) {
+            //        if (!data) {
+            //            self.$el.find(".analitics>.noVideo").show();
+            //            self.$el.find(".analitics .haveVideo").hide();
+            //        } else {
+            //            self.$el.find(".analitics>.noVideo").hide();
+            //            self.$el.find(".analitics .haveVideo").show();
+            //
+            //        }
+            //    },
+            //    error: function (model, xhr) {
+            //        self.$el.find(".analitics>.noVideo").show();
+            //        self.$el.find(".analitics .haveVideo").hide();
+            //    }
+            //});
+            this.campaignsCollection = new CampaignsCollection();
+            this.campaignsCollection.bind('reset', self.render, self);
+        },
 
-                    }
-                },
-                error: function (model, xhr) {
-                    self.$el.find(".analitics>.noVideo").show();
-                    self.$el.find(".analitics .haveVideo").hide();
-                }
-            });
-            this.documentAnalyticCollection = new DocumentAnalyticCollection({
-                from: moment().subtract(7, 'days').format("MM/DD/YYYY"),
-                to: moment().format("MM/DD/YYYY")
-            });
-            this.questionAnalyticCollection = new QuestionAnalyticCollection({
-                from: moment().subtract(7, 'days').format("MM/DD/YYYY"),
-                to: moment().format("MM/DD/YYYY")
-            });
-            this.videoAnalyticCollection = new VideoAnalyticCollection({
-                from: moment().subtract(7, 'days').format("MM/DD/YYYY"),
-                to: moment().format("MM/DD/YYYY")
-            });
-            this.visitAnalyticCollection = new VisitAnalyticCollection({
-                from: moment().subtract(7, 'days').format("MM/DD/YYYY"),
-                to: moment().format("MM/DD/YYYY")
-            });
-            this.contactMeCollection = new ContactMeCollection({
-                from: moment().subtract(7, 'days').format("MM/DD/YYYY"),
-                to: moment().format("MM/DD/YYYY")
-            });
-            this.domainModel = new DomainModel();
-            this.documentAnalyticCollection.bind('reset', self.renderDocumentChart, self);
-            this.questionAnalyticCollection.bind('reset', self.renderQuestionChart, self);
-            this.videoAnalyticCollection.bind('reset', self.renderVideoChart, self);
-            this.visitAnalyticCollection.bind('reset', self.renderVisitChart, self);
-            this.contactMeCollection.bind('reset', self.renderContactMe, self);
-            this.domainModel.bind('change', self.renderDomainList, self);
-
-            this.render();
+        //mainRender: function () {
+        //
+        //},
+        toggleCampaigns: function (e) {
+            $(e.target).closest('.campaigns').find('.campaign-container').toggle();
         },
         print: function (e) {
             var el = $(e.target).closest("div.printPart");
@@ -101,7 +84,7 @@ define([
             $.ajax({
                 type: "GET",
                 url: "analytic/contacts",
-                data:{
+                data: {
                     domain: domain
                 },
                 contentType: "application/json",
@@ -110,9 +93,9 @@ define([
                         return alert('You must choose some domain')
                     }
                     var html = '';
-                        _.each(data, function (elem) {
-                            html+= _.template(ProspectActivityTemplate)(elem);
-                        });
+                    _.each(data, function (elem) {
+                        html += _.template(ProspectActivityTemplate)(elem);
+                    });
                     window.frames["print_frame"].document.body.innerHTML = '<style>' + document.getElementById('less:less-style').innerHTML + '</style>' + '<div class="container analitics"><div id="prospectActivity">' + html + '</div></div>';
                     window.frames["print_frame"].window.focus();
                     window.frames["print_frame"].window.print();
@@ -120,7 +103,7 @@ define([
                 error: function (model, xhr) {
                     console.log(model);
                     console.log(xhr);
-                   alert('some err');
+                    alert('some err');
                 }
             });
 
@@ -177,7 +160,7 @@ define([
             });
             this.$el.find("#prospectActivity").html(_.template(ProspectActivityTemplate)(this.prospectActivityModel.toJSON()));
             var name = this.$el.find(".current .prospectName").text();
-            this.$el.find(".survayName").text(activity.name||name);
+            this.$el.find(".survayName").text(activity.name || name);
 
         },
         updateProspect: function (e) {
@@ -266,13 +249,46 @@ define([
             Custom.drawQuestionsPie(this.questionAnalyticCollection.toJSON());
         },
 
+        renderAnalytic: function (e) {
+            self.campaignId = $(e.target).attr("data-id");
+            $(e.target).closest('ul').find('.current').removeClass('current');
+            $(e.target).addClass('current');
+
+            this.documentAnalyticCollection.update({
+                id: self.campaignId,
+                from: moment().subtract(7, 'days').format("MM/DD/YYYY"),
+                to: moment().format("MM/DD/YYYY")
+            });
+            this.questionAnalyticCollection.update({
+                id: self.campaignId,
+                from: moment().subtract(7, 'days').format("MM/DD/YYYY"),
+                to: moment().format("MM/DD/YYYY")
+            });
+            this.videoAnalyticCollection.update({
+                id: self.campaignId,
+                from: moment().subtract(7, 'days').format("MM/DD/YYYY"),
+                to: moment().format("MM/DD/YYYY")
+            });
+            this.visitAnalyticCollection.update({
+                id: self.campaignId,
+                from: moment().subtract(7, 'days').format("MM/DD/YYYY"),
+                to: moment().format("MM/DD/YYYY")
+            });
+            this.contactMeCollection.update({
+                id: self.campaignId,
+                from: moment().subtract(7, 'days').format("MM/DD/YYYY"),
+                to: moment().format("MM/DD/YYYY")
+            });
+            this.domainModel.update({ id: self.campaignId});
+        },
+
         render: function () {
             var self = this;
-            /*$('.customSelect').focusout(function() {
-             //self.$el.find(".customSelect ul").hide();
-             console.log('focus!!!');
-             });*/
-            this.$el.html(_.template(AnaliticsTemplate));
+            var model =  this.campaignsCollection.first();
+            this.campaignId = model.id;
+
+            this.$el.html(_.template(AnaliticsTemplate)({data:self.campaignsCollection.toJSON()}));
+
             $("#startDate input").datepicker({
                 onSelect: function (selected) {
                     $("#endDate input").datepicker("option", "minDate", selected);
@@ -290,6 +306,39 @@ define([
             });
             $("#endDate input").datepicker('setDate', new Date());
 
+
+            this.documentAnalyticCollection = new DocumentAnalyticCollection({
+                id: self.campaignId,
+                from: moment().subtract(7, 'days').format("MM/DD/YYYY"),
+                to: moment().format("MM/DD/YYYY")
+            });
+            this.questionAnalyticCollection = new QuestionAnalyticCollection({
+                id: self.campaignId,
+                from: moment().subtract(7, 'days').format("MM/DD/YYYY"),
+                to: moment().format("MM/DD/YYYY")
+            });
+            this.videoAnalyticCollection = new VideoAnalyticCollection({
+                id: self.campaignId,
+                from: moment().subtract(7, 'days').format("MM/DD/YYYY"),
+                to: moment().format("MM/DD/YYYY")
+            });
+            this.visitAnalyticCollection = new VisitAnalyticCollection({
+                id: self.campaignId,
+                from: moment().subtract(7, 'days').format("MM/DD/YYYY"),
+                to: moment().format("MM/DD/YYYY")
+            });
+            this.contactMeCollection = new ContactMeCollection({
+                id: self.campaignId,
+                from: moment().subtract(7, 'days').format("MM/DD/YYYY"),
+                to: moment().format("MM/DD/YYYY")
+            });
+            this.domainModel = new DomainModel({ id: self.campaignId});
+            this.documentAnalyticCollection.bind('reset', self.renderDocumentChart, self);
+            this.questionAnalyticCollection.bind('reset', self.renderQuestionChart, self);
+            this.videoAnalyticCollection.bind('reset', self.renderVideoChart, self);
+            this.visitAnalyticCollection.bind('reset', self.renderVisitChart, self);
+            this.contactMeCollection.bind('reset', self.renderContactMe, self);
+            this.domainModel.bind('change', self.renderDomainList, self);
             return this;
         }
 

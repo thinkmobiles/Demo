@@ -15,29 +15,18 @@ var AnalyticModule = function (db) {
     var ContentModel = db.model('Content', contentSchema);
 
     var self = this;
-    this.totalVisits = function (userId, from, to, callback) {
-        var uId = mongoose.Types.ObjectId(userId);
+
+    this.totalVisits = function (contentId, from, to, callback) {
+        var id = mongoose.Types.ObjectId(contentId);
+
         async.waterfall([
-                function (waterfallCb) {
-                    ContentModel.findOne({ownerId: uId}, function (err, doc) {
-                        if (err) {
-                            return waterfallCb(err);
-                        } else if (!doc) {
-                            var error = new Error();
-                            error.status = 404;
-                            error.message = 'No Data';
-                            return waterfallCb(error);
-                        }
-                        waterfallCb(null, doc._id)
-                    });
-                },
                 function (contentId, waterfallCb) {
 
                     TrackModel.aggregate([
                         {
 
                             $match: {
-                                contentId: contentId,
+                                contentId: id,
                                 updatedAt: {
                                     $gte: from, $lte: to
                                 }
@@ -101,13 +90,14 @@ var AnalyticModule = function (db) {
                 callback(null, obj);
             });
     };
-    this.uninterested = function (userId, from, to, callback) {
-        var uId = mongoose.Types.ObjectId(userId);
+    this.uninterested = function (contentId, from, to, callback) {
+        var id = mongoose.Types.ObjectId(contentId);
+
         async.waterfall([
                 function (waterfallCb) {
                     ContentModel.aggregate([{
                         $match: {
-                            ownerId: uId
+                            ownerId: id
                         }
                     }, {
                         $group: {
@@ -171,29 +161,17 @@ var AnalyticModule = function (db) {
     };
 
 
-    this.visits = function (userId, from, to, callback) {
-        var uId = mongoose.Types.ObjectId(userId);
+    this.visits = function (contentId, from, to, callback) {
+        var id = mongoose.Types.ObjectId(contentId);
+
         async.waterfall([
                 function (waterfallCb) {
-                    ContentModel.findOne({ownerId: uId}, function (err, doc) {
-                        if (err) {
-                            return waterfallCb(err);
-                        } else if (!doc) {
-                            var error = new Error();
-                            error.status = 404;
-                            error.message = 'No Data';
-                            return waterfallCb(error);
-                        }
-                        waterfallCb(null, doc._id)
-                    });
-                },
-                function (contentId, waterfallCb) {
 
                     TrackModel.aggregate([
                         {
 
                             $match: {
-                                contentId: contentId,
+                                contentId: id,
                                 updatedAt: {
                                     $gte: from, $lte: to
                                 }
@@ -268,14 +246,14 @@ var AnalyticModule = function (db) {
             });
     };
 
-    this.video = function (userId, from, to, callback) {
-        var uId = mongoose.Types.ObjectId(userId);
+    this.video = function (contentId, from, to, callback) {
+        var id = mongoose.Types.ObjectId(contentId);
 
         async.waterfall([
                 function (waterfallCb) {
                     ContentModel.aggregate([{
                         $match: {
-                            ownerId: uId
+                            _id: id
                         }
                     }, {
                         $group: {
@@ -487,14 +465,15 @@ var AnalyticModule = function (db) {
             });
     };
 
-    this.question = function (userId, from, to, callback) {
-        var uId = mongoose.Types.ObjectId(userId);
+    this.question = function (contentId, from, to, callback) {
+        var id = mongoose.Types.ObjectId(contentId);
+
         async.waterfall([
             function (waterfallCb) {
                 ContentModel.aggregate([
                     {
                         $match: {
-                            ownerId: uId
+                            _id: id
                         }
                     }, {
                         $group: {
@@ -587,14 +566,15 @@ var AnalyticModule = function (db) {
         });
     };
 
-    this.document = function (userId, from, to, callback) {
-        var uId = mongoose.Types.ObjectId(userId);
+    this.document = function (contentId, from, to, callback) {
+        var id = mongoose.Types.ObjectId(contentId);
+
         async.waterfall([
             function (waterfallCb) {
                 ContentModel.aggregate([
                     {
                         $match: {
-                            ownerId: uId
+                            _id: id
                         }
                     }, {
                         $group: {
@@ -638,7 +618,7 @@ var AnalyticModule = function (db) {
                 TrackModel.aggregate([
                     {
                         $match: {
-                            'contentId': data._id,
+                            'contentId': id,
                             'documents.time': {$gte: from, $lte: to}
 
                         }
@@ -675,7 +655,7 @@ var AnalyticModule = function (db) {
             function (trackResp, data, waterfallCb) {
                 TrackModel.aggregate([{
                     $match: {
-                        'contentId': data._id,
+                        'contentId': id,
                         'questTime': {$gte: from, $lte: to}
 
                     }
@@ -719,4 +699,5 @@ var AnalyticModule = function (db) {
         });
     }
 };
+
 module.exports = AnalyticModule;

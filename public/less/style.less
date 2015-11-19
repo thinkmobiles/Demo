@@ -971,7 +971,7 @@ footer {
       cursor: pointer;
     }
   }
-  .collapseQuestions{
+  .collapseQuestions {
     position: relative;
     padding-left: 0;
   }
@@ -1004,7 +1004,7 @@ footer {
       top: 8px;
       cursor: pointer;
     }
-    .edit{
+    .edit {
       .i("edit_quest.png");
       width: 14px;
       height: 14px;
@@ -1630,11 +1630,11 @@ footer {
 .registration {
   text-align: center;
   padding-top: 1px;
-  .role{
+  .role {
     text-align: left;
     margin-left: 21%;
     margin-top: 3%;
-    span{
+    span {
       display: inline-block;
       margin-right: 7%;
       cursor: pointer;
@@ -1644,7 +1644,7 @@ footer {
       -moz-user-select: none;
       -ms-user-select: none;
       user-select: none;
-      &:before{
+      &:before {
         margin: 2px 5px 0;
         content: "";
         display: block;
@@ -1652,13 +1652,13 @@ footer {
         width: 13px;
         height: 13px;
         border-radius: 50%;
-        border: 3px solid  #fff;
+        border: 3px solid #fff;
         box-shadow: 0 0 0 1px #B7B7B7;
         box-sizing: border-box;
       }
-      &.active:before{
+      &.active:before {
         background-color: #EB6B56;
-        border: 3px solid  #fff;
+        border: 3px solid #fff;
         box-shadow: 0 0 0 1px #EB6B56;
       }
     }
@@ -1724,7 +1724,7 @@ footer {
     margin: 150px auto 100px auto;
     font-family: "LatoSemiBold";
     font-weight: bold;
-    &.create{
+    &.create {
       margin: 50px auto 100px auto;
     }
     .cancel {
@@ -1746,7 +1746,7 @@ footer {
 
     }
 
-    .registerBtn,.createBtn{
+    .registerBtn, .createBtn {
       .lh(50px);
       width: 180px;
       display: block;
@@ -1926,7 +1926,7 @@ footer {
     text-align: center;
     margin-top: -25px;
   }
-  .gen{
+  .gen {
     font-size: 16px;
     color: #777;
     position: absolute;
@@ -2242,6 +2242,44 @@ footer {
   }
 }
 
+.campaigns {
+  span {
+    float: left;
+    padding: 10px 62px;
+    background-color: #eee;
+  }
+  .campaign-container {
+    background-color: #f0f0f0;
+    width: 200px;
+    display: block;
+    border: 2px solid #000;
+    position: absolute;
+    z-index: 110;
+    top: 394px;
+    left: 450px;
+    span {
+      background-color: #003eff;
+      width: 100%;
+      padding: 0;
+      margin: 0 auto;
+    }
+    ul {
+      float: left;
+      padding: 10px;
+      li {
+        padding: 0;
+        width:100%;
+        list-style: none;
+        margin: 10px 0;
+        border: 1px solid #eee;
+        &.current {
+          background: #a0a2a3;
+        }
+      }
+    }
+  }
+}
+
 /*chart*/
 .axis path, .axis line {
   fill: none;
@@ -2394,37 +2432,43 @@ footer {
       }
     }
   }
-  &.role{
-    width:80%;
+  &.role {
+    width: 80%;
     margin: 0 auto;
   }
 }
+
 .campaignsLabel,
-.campaignsLabel2{
+.campaignsLabel2 {
   text-align: center;
   padding: 40px 0;
 }
-.campaignsLabel2 span{
-    font-size: 48px;
-    color: rgb(51, 51, 51);
-    line-height: 1.2;
+
+.campaignsLabel2 span {
+  font-size: 48px;
+  color: rgb(51, 51, 51);
+  line-height: 1.2;
 }
-.campaignsLabel2 + .tableBt{
+
+.campaignsLabel2 + .tableBt {
   text-align: center;
 }
-.campaignsLabel span{
-    font-size: 14px;
-    color: rgb(101, 100, 100);
-    text-transform: uppercase;
-    line-height: 1.2;
+
+.campaignsLabel span {
+  font-size: 14px;
+  color: rgb(101, 100, 100);
+  text-transform: uppercase;
+  line-height: 1.2;
 }
-.campaignsLine{
+
+.campaignsLine {
   background-color: rgb(240, 240, 240);
   width: 749px;
   height: 1px;
   border: none;
   margin: 0 auto;
 }
+
 #prospectTable, #contactMe {
   margin-top: 30px;
   table {
@@ -2500,7 +2544,7 @@ footer {
       text-align: center;
       height: 50px;
     }
-    td{
+    td {
       border-top: 1px solid #dbdbdb;
       cursor: pointer;
       &.expired {
@@ -2530,20 +2574,22 @@ footer {
     &.expired {
       background-color: rgba(201, 0, 1, 0.39);
     }
-    td:last-child{
+    td:last-child {
       width: 190px;
     }
   }
 
 }
-.campaignsTable{
+
+.campaignsTable {
   text-align: center;
   width: 298px;
   margin: 30px auto;
-  td{
+  td {
     width: 50%;
   }
 }
+
 .tableBt {
   margin-bottom: 30px;
   a {
@@ -2730,7 +2776,7 @@ svg {
 }
 
 #videoForm {
-  .videoElement{
+  .videoElement {
     //display: none;
     padding-bottom: 20px;
     //padding: 14px 10px;
@@ -2837,7 +2883,6 @@ svg {
   margin-top: 150px;
 }
 
-
 .campaignsContainer {
   margin-top: 150px;
   text-align: center;
@@ -2847,7 +2892,7 @@ svg {
   margin-bottom: 50px;
 }
 
-.accountContainer,.subordinates {
+.accountContainer, .subordinates {
   .saveBtn, .cancelBtn {
     display: none;
   }
@@ -2860,7 +2905,8 @@ svg {
     }
   }
 }
-.subordinates >h3:after{
+
+.subordinates > h3:after {
   content: "";
   width: 93%;
   border-top: 1px solid #eee;
@@ -2869,6 +2915,7 @@ svg {
   position: relative;
   top: 9px;
 }
+
 .confirm-dialog {
   padding: 0px;
   -webkit-transform: scale(0.5);
@@ -3023,12 +3070,14 @@ svg {
   -webkit-animation: load8 1.8s infinite linear;
   animation: load8 1.8s infinite linear;
 }
+
 .loader,
 .loader:after {
   border-radius: 50%;
   width: 10em;
   height: 10em;
 }
+
 @-webkit-keyframes load8 {
   0% {
     -webkit-transform: rotate(0deg);
@@ -3039,6 +3088,7 @@ svg {
     transform: rotate(360deg);
   }
 }
+
 @keyframes load8 {
   0% {
     -webkit-transform: rotate(0deg);
@@ -3049,6 +3099,7 @@ svg {
     transform: rotate(360deg);
   }
 }
+
 /*----------------social--------------------*/
 .social {
   margin: 0;
@@ -3167,7 +3218,8 @@ svg {
     opacity: 1;
   }
 }
-.create.button a{
+
+.create.button a {
   border-radius: 10px;
   background-color: rgb(68, 203, 255);
   box-shadow: inset 0px -1px 0px 0px rgba(235, 107, 86, 0.75);
@@ -3181,6 +3233,7 @@ svg {
   text-transform: capitalize;
   margin: 230px auto 50px auto;
 }
+
 /*--------------------------media-------------------------------*/
 
 @media (max-width: 736px) {

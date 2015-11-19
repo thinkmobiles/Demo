@@ -1,8 +1,25 @@
 <div class="container analitics">
   <iframe name="print_frame" width="0" height="0" frameborder="0" src="about:blank"></iframe>
-  <div class="noVideo">You don't have any uploaded video</div>
+  <div class="noVideo">Please create demo first</div>
 
   <div class="haveVideo">
+
+    <h2 class="nameOfCampaign"><%=data[0].name%></h2>
+    <%if(data.length>1){%>
+    <!-- start dropdown menu-->
+    <div class="campaigns">
+      <span class="customSelect">Select Campaign</span>
+      <div class="campaign-container">
+        <span>Campaigns</span>
+        <ul class="<%=data.length<5?'lg':data.length<10?'md':'sm' %>">
+          <%_.each(data, function(cmp, index){  %>
+          <li data-id="<%=cmp._id%>" class="<%=index==0?'current':''%>"><%=cmp.name %></li>
+          <%});%>
+        </ul>
+      </div>
+      <!-- end dropdown menu-->
+      <%};%>
+    </div>
     <div id="date">
       From:&nbsp;
       <div id="startDate" class="dtPick"><input type="text"/><span class="icon"></span></div>
