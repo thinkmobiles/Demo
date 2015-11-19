@@ -516,11 +516,12 @@ var routeHandler = function (db) {
                 function (waterfallCb) {
                     async.series([
                         function (seriesCb) {
-                            if (files['video'].name) {
+                            if (files['video'].name && files['video'].size) {
                                 saveMainVideo(id, files, seriesCb);
                             } else {
                                 var logoUrl = S3_ENDPOINT + S3_BUCKET + '/' + id.toString() + '/'+ encodeURIComponent(files['logo'].name);
                                 var logoKey = id.toString() + '/' + files['logo'].name;
+                                var videoUri = data.video;
 
                                 s3.postFile(S3_BUCKET, logoKey, files['logo'], function (err, data) {
                                     if (err) {
@@ -528,7 +529,7 @@ var routeHandler = function (db) {
                                     }
                                     ContentModel.findByIdAndUpdate(id, {
                                             $set: {
-                                                mainVideoUri: data.video,
+                                                mainVideoUri: videoUri,
                                                 logoUri: logoUrl
                                             }
                                         },
