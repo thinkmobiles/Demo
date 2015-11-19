@@ -519,7 +519,7 @@ var routeHandler = function (db) {
                             if (files['video'].name) {
                                 saveMainVideo(id, files, seriesCb);
                             } else {
-                                var logoUrl = S3_ENDPOINT + S3_BUCKET + '/' + url + encodeURIComponent(files['logo'].name);
+                                var logoUrl = S3_ENDPOINT + S3_BUCKET + '/' + id.toString() + '/'+ encodeURIComponent(files['logo'].name);
                                 var logoKey = id.toString() + '/' + files['logo'].name;
 
                                 s3.postFile(S3_BUCKET, logoKey, files['logo'], function (err, data) {
