@@ -2244,37 +2244,69 @@ footer {
 
 .analitics {
   .campaigns {
-    span {
+    position: relative;
+    >span {
       float: left;
-      padding: 10px 62px;
-      background-color: #eee;
+      padding: 0 20px;
+      border: 1px solid #eee;
     }
     .campaign-container {
-      background-color: #f0f0f0;
-      width: 200px;
+      background-color: #fff;
       display: block;
-      border: 2px solid #000;
+      border-radius: 3px;
       position: absolute;
       z-index: 110;
-      top: 394px;
-      left: 450px;
+      top: 40px;
+      left: 2%;
+      width: 450px;
+      box-shadow: 0 1px 8px 1px rgba(219,219,219, .4);
+      overflow: hidden;
+      display: none;
       span {
-        background-color: #003eff;
+        background-color: #44CBFF;
         width: 100%;
-        padding: 0;
+        text-align: center;
+        display: block;
+        padding: 12px 15px;
         margin: 0 auto;
+        float: none;
+        color: #fff;
+        box-sizing: border-box;
       }
       ul {
-        float: left;
-        padding: 10px;
-        li {
-          padding: 0;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+        &.lg li{
           width: 100%;
+          &:nth-child(3n+3){
+            border-right: none;
+          }
+        }
+        &.md li{
+          width: 50%;
+          float: left;
+          &:nth-child(2n+2){
+            border-right: none;
+          }
+        }
+        &.sm li{
+          width: 33.333%;
+          float: left;
+        }
+        li {
+          padding: 12px 15px;
           list-style: none;
-          margin: 10px 0;
-          border: 1px solid #eee;
+          margin: 0;
+          border-collapse: collapse;
+          text-align: left;
+          border-bottom: 1px solid #eee;
+          border-right: 1px solid #eee;
+          cursor: pointer;
+          box-sizing: border-box;
           &.current {
-            background: #a0a2a3;
+            background: #eee;
+            border-right: none;
           }
         }
       }

@@ -49,7 +49,7 @@ define([
 			$(document).on("click", function (e) {
 				if (!$(e.target).closest(".customSelect").length){
 					$(".customSelect ul").hide();
-                    $(".customSelect").closest('.campaigns').find('.campaign-container').slideUp();
+                    $(".customSelect").closest('.campaigns').find('.campaign-container').fadeOut(300);
 				}
             });
 			$(document).on( 'scroll', function(){
