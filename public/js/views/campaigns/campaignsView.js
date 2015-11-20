@@ -59,7 +59,7 @@ define([
                     selection.removeAllRanges();
                     selection.addRange(range);
                 }
-                $(e.target).closest('td').find('.copyTooltip').text("Press Ctrl+C to copy")
+                $(e.target).closest('td').find('.copyTooltip').text("Press Ctrl+C to copy");
             });
         },
 
