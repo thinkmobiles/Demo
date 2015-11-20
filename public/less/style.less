@@ -2930,17 +2930,38 @@ svg {
         padding-right: 50px;
       }
       .clipCopy {
-
-      display: none;
+        background: url("../i/copy.png") no-repeat;
+        width: 4px;
+        height: 24px;
+        background-size: 100% 100%;
+        position: absolute;
+        top: 6px;
+        right: 0px;
+        transition: .1s;
+        opacity: 0;
     }
+      .clipCopy:active{
+        transition: 2s;
+      }
+      .clipCopy:active:after{
+        content: "Ivan";
+        display: block;
+        position: absolute;
+        top: -20px;
+        width: 50px;
+        height: 30px;
+        text-align: center;
+        background-color: #bbb;
+        border-radius: 5px;
+        color: #fff9e5;
+        transition: 1s;
+      }
     }
     &:hover {
       td .clipCopy {
-        position: absolute;
-        top: 5px;
-        right: 5px;
-        display: block;
-        border: 1px solid #909090;
+        transition: .4s;
+        opacity: 1;
+        right: 12px;
       }
 
     }
