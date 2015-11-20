@@ -46,7 +46,7 @@ define([
                 $(e.target).closest('td').find('.copyTooltip').fadeOut();
             }, 2000);
 
-            this.clipboard.on('success', function(e) {
+            this.clipboard.on('error', function(e) {
                 var doc = document,
                     range, selection;
                 if (doc.body.createTextRange) {

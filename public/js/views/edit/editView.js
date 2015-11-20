@@ -63,8 +63,9 @@ define([
                 if(this.clipboard){
                     this.clipboard.destroy();
                 }
-                var  el =  $(e.target).closest('.linkContainer').find('span').get(1);
-                var text = $(e.target).closest('.linkContainer').find('span').eq(1).text();
+                var  el =  $(e.target).closest('.linkContainer').find('span').get(2);
+                var  tt =  $(e.target).closest('.linkContainer').find('.copyTooltip');
+                var text = $(e.target).closest('.linkContainer').find('span').eq(2).text();
                 this.clipboard = new Clipboard('.clipCopy', {
                     text: function() {
                         return text;
@@ -72,9 +73,9 @@ define([
                 });
 
 
-                $(e.target).closest('td').find('.copyTooltip').slideDown();
+                tt.fadeIn();
                 setTimeout(function () {
-                    $(e.target).closest('td').find('.copyTooltip').slideUp();
+                    tt.fadeOut();
                 }, 2000);
 
                 this.clipboard.on('error', function(e) {
@@ -91,7 +92,7 @@ define([
                         selection.removeAllRanges();
                         selection.addRange(range);
                     }
-                    $(e.target).closest('.linkContainer').find('.copyTooltip').text("Press Ctrl+C to copy")
+                   tt.text("Press Ctrl+C to copy")
                 });
             },
 
