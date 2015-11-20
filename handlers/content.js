@@ -462,8 +462,8 @@ var routeHandler = function (db) {
                 function (waterfallCb) {
                     insObj = {
                         nameOfCampaign: data.nameOfCampaign,
-                        ownerId: ownerId,
-                        creatorId: currentUserId,
+                        owner: ownerId,
+                        creator: currentUserId,
                         name: data.name,
                         email: data.email,
                         phone: data.phone,

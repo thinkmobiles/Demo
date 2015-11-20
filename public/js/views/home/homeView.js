@@ -284,8 +284,9 @@ define([
             var self = this;
             this.$el.html(_.template(HomeTemplate));
             if (this.options && this.options.videoId && this.options.userId) {
-                if(this.options.userId==='{{ctid}}'){
+                if(this.options.userId ==='{{ctid}}'){
                     Backbone.history.navigate("#/registerViewer/"+this.videoId+"/new", {trigger: false});
+                    return;
                 }
                 if (!this.options.showedModal) {
                     Backbone.history.navigate("#/chooseViewer/" + this.videoId + "/" + this.userId, {trigger: true});

@@ -618,9 +618,10 @@ var routeHandler = function (db) {
         var prospectId = req.params.prospectId;
         if (!contentId || !prospectId) {
             return res.redirect(process.env.HOME_PAGE);
-        } else if (contentId && !prospectId || prospectId === '{{ctid}}') {
-            return res.redirect(process.env.HOME_PAGE);
         }
+        //} else if (contentId && !prospectId || prospectId === '{{ctid}}') {
+        //    return res.redirect(process.env.HOME_PAGE);
+        //}
         return res.redirect(process.env.HOME_PAGE + contentId + '/' + prospectId);
     };
 
@@ -648,7 +649,7 @@ var routeHandler = function (db) {
                     error.status = 404;
                     return next(error);
                 }
-                ContentModel.findOne({ownerId: user._id}, function (err, doc) {
+                ContentModel.findOne({owner: user._id}, function (err, doc) {
                     if (err) {
                         return next(err);
                     }
@@ -687,7 +688,7 @@ var routeHandler = function (db) {
                 },
 
                 function (content, waterfallCb) {
-                    UserModel.findById(content.ownerId, function (err, user) {
+                    UserModel.findById(content.owner, function (err, user) {
                         if (err) {
                             return waterfallCb(err);
                         } else if (!user) {
@@ -707,6 +708,9 @@ var routeHandler = function (db) {
                 },
 
                 function (user, waterfallCb) {
+                    if(prospectId=='{{ctid}}'){
+                        return  waterfallCb(null, null);
+                    }
                     ProspectModel.findOne({jumpleadId: prospectId}, function (err, doc) {
                         if (err) {
                             return waterfallCb(err);
@@ -805,19 +809,19 @@ var routeHandler = function (db) {
             async.each(docs, function (doc, eachCb) {
                 async.parallel({
                     visits: function (parallelCb) {
-                        analytic.totalVisits(doc.ownerId.toString(), from, to, parallelCb);
+                        analytic.totalVisits(doc.owner.toString(), from, to, parallelCb);
                     },
                     videos: function (parallelCb) {
-                        analytic.video(doc.ownerId.toString(), from, to, parallelCb);
+                        analytic.video(doc.owner.toString(), from, to, parallelCb);
                     },
                     questions: function (parallelCb) {
-                        analytic.question(doc.ownerId.toString(), from, to, parallelCb);
+                        analytic.question(doc.owner.toString(), from, to, parallelCb);
                     },
                     documents: function (parallelCb) {
-                        analytic.document(doc.ownerId.toString(), from, to, parallelCb);
+                        analytic.document(doc.owner.toString(), from, to, parallelCb);
                     },
                     uninterested: function (parallelCb) {
-                        analytic.uninterested(doc.ownerId.toString(), from, to, parallelCb);
+                        analytic.uninterested(doc.owner.toString(), from, to, parallelCb);
                     }
                 }, function (err, options) {
                     if (err) {

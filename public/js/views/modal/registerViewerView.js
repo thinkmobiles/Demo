@@ -104,8 +104,10 @@ define([
 
         closeDialog: function (e) {
             e.preventDefault();
+            e.stopPropagation();
             if(this.content.userId ==='new'){
-                Backbone.history.navigate("#/home/"+this.content.videoId+"/"+this.content.userId, {trigger: false});
+                Backbone.history.navigate("#/home", {trigger: true});
+                return;
             }
             Backbone.history.navigate("#/chooseViewer/"+this.content.videoId+"/"+this.content.userId, {trigger: false});
         },

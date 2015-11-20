@@ -2922,6 +2922,30 @@ svg {
   text-align: center;
 }
 
+.campaignsTable{
+  tr {
+    td {
+      &:last-child{
+        position: relative;
+        padding-right: 50px;
+      }
+      .clipCopy {
+
+      display: none;
+    }
+    }
+    &:hover {
+      td .clipCopy {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        display: block;
+        border: 1px solid #909090;
+      }
+
+    }
+  }
+}
 #pendingAccount {
   margin-bottom: 50px;
 }

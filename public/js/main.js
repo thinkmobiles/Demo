@@ -22,7 +22,7 @@ require.config({
         templates: '../templates', // templates dir not error
         text: './libs/text/text',
         common: 'common',
-        "dmuploader": "./libs/dmuploader.min"
+        clipboard: "./libs/clipboard/dist/clipboard.min"
     },
     shim: {
         'ajaxForm': ['jQuery'],

@@ -5,14 +5,16 @@ define([
     "models/campaignModel",
     "collections/campaignsCollection",
     "moment",
-    "validation"
-], function (CampaignsTemplate, DialogTemplate, CampaignsListTemplate, CampaignsModel, CampaignsCollection, moment, validation) {
+    "validation",
+    'clipboard'
+], function (CampaignsTemplate, DialogTemplate, CampaignsListTemplate, CampaignsModel, CampaignsCollection, moment, validation, Clipboard) {
     var View = Backbone.View.extend({
 
         el: "#wrapper",
         events: {
             'click .customTable tr:not(.current)': 'chooseRow',
             'click .delete': 'delete',
+            'click .clipCopy': 'copyURL',
             'click .editBtn': 'edit'
         },
         initialize: function () {
@@ -22,6 +24,18 @@ define([
             this.campaignChoosed = 0;
             this.dataFormat = "DD MMM YYYY";
             this.render();
+        },
+
+        copyURL: function (e) {
+            if(this.clipboard){
+                this.clipboard.destroy();
+            }
+            var text = $(e.target).closest('td').find('span').eq(0).text();
+            this.clipboard = new Clipboard('.clipCopy', {
+                text: function() {
+                    return text;
+                }
+            });
         },
 
         chooseRow: function (e) {
