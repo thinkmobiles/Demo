@@ -39,6 +39,12 @@ define([
                     return text;
                 }
             });
+
+            $(e.target).closest('td').find('.copyTooltip').slideDown();
+            setTimeout(function () {
+                $(e.target).closest('td').find('.copyTooltip').slideUp();
+            }, 2000);
+
             this.clipboard.on('error', function(e) {
                 var doc = document,
                     range, selection;
@@ -53,7 +59,7 @@ define([
                     selection.removeAllRanges();
                     selection.addRange(range);
                 }
-                $(e.target).attr("data-tp", "Press Ctrl+C to copy")
+                $(e.target).closest('td').find('.copyTooltip').text("Press Ctrl+C to copy")
             });
         },
 
