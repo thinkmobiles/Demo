@@ -4,9 +4,10 @@ define([
     'text!templates/upload/surveyElement.html',
     '../upload/progressBarView',
     'models/campaignModel',
-    "validation"
+    "validation",
+    "clipboard"
 
-], function (EditTemplate, SurveyElement, NewSurveyElement, progressBarView, CampaignModel, validation) {
+], function (EditTemplate, SurveyElement, NewSurveyElement, progressBarView, CampaignModel, validation, Clipboard) {
     var View = Backbone.View.extend({
 
             el: "#wrapper",
@@ -27,7 +28,8 @@ define([
                 "dragenter .uploadContainer.file input": "dragenter",
                 "dragleave .uploadContainer.file input": "dragleave",
                 "dragover .uploadContainer.file input": "dragover",
-                "drop .uploadContainer.file input": "drop"
+                "drop .uploadContainer.file input": "drop",
+                'click .clipCopy': 'copyURL'
             },
 
             initialize: function (campaignId) {
@@ -57,6 +59,35 @@ define([
                 });
             },
 
+            copyURL: function (e) {
+                if(this.clipboard){
+                    this.clipboard.destroy();
+                }
+                var  el =  $(e.target).closest('.linkContainer').find('span').get(1);
+                var text = $(e.target).closest('.linkContainer').find('span').eq(1).text();
+                this.clipboard = new Clipboard('.clipCopy', {
+                    text: function() {
+                        return text;
+                    }
+                });
+                this.clipboard.on('error', function(e) {
+                    var doc = document,
+                        range, selection;
+                    if (doc.body.createTextRange) {
+                        range = document.body.createTextRange();
+                        range.moveToElementText(el);
+                        range.select();
+                    } else if (window.getSelection) {
+                        selection = window.getSelection();
+                        range = document.createRange();
+                        range.selectNodeContents(el);
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                    }
+                    $(e.target).attr("data-tp", "Press Ctrl+C to copy")
+                });
+            },
+
             drop: function (e) {
                 e.stopPropagation();
                 e.preventDefault();
@@ -69,23 +100,20 @@ define([
                 }
                 $(e.target).closest(".uploadContainer").css('border', '1px solid #DBDBDB');
 
-            }
-            ,
+            },
 
             dragenter: function (e) {
                 e.stopPropagation();
                 e.preventDefault();
                 $(e.target).closest(".uploadContainer").css('border', '2px solid #0B85A1');
-            }
-            ,
+            },
 
             dragleave: function (e) {
                 console.log("leave");
                 e.stopPropagation();
                 e.preventDefault();
                 $(e.target).closest(".uploadContainer").css('border', '1px solid #DBDBDB');
-            }
-            ,
+            },
 
             update: function (e) {
                 var self = this;
