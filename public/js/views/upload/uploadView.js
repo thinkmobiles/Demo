@@ -193,7 +193,7 @@ define([
             oReq.onload = function (oEvent) {
                 if (oReq.status === 201) {
                     try {
-                        self.modalProgres.hide()
+                        self.modalProgres.hide();
                         var res = JSON.parse(oReq.response);
                         $("<div><input type='text' value='" + res.url + "' readonly/></div>").dialog({
                             modal: true,

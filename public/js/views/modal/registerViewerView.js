@@ -86,7 +86,7 @@ define([
 
                         //var url = window.location.hash;
                         var id = response.id;
-                        Backbone.history.navigate("//chooseViewer/"+self.content.videoId+"/"+id.toString(), {trigger: false});
+                        Backbone.history.navigate("#/chooseViewer/"+self.content.videoId+"/"+id.toString(), {trigger: false});
                         //var navUrl = url.substring(0, url.length - 24) + id.toString();
                         //var navUrl = url.substring(0, url.length - 24) + id.toString();
                         //Backbone.history.navigate(navUrl, {trigger: true, replace: true});
@@ -104,10 +104,10 @@ define([
 
         closeDialog: function (e) {
             e.preventDefault();
-            //$(".register-dialog").remove();
-            //$(".watch-dialog").show();
-            //$(".watchDemo").show();
-            Backbone.history.navigate("//chooseViewer/"+this.content.videoId+"/"+this.content.userId, {trigger: false});
+            if(this.content.userId ==='new'){
+                Backbone.history.navigate("#/home/"+this.content.videoId+"/"+this.content.userId, {trigger: false});
+            }
+            Backbone.history.navigate("#/chooseViewer/"+this.content.videoId+"/"+this.content.userId, {trigger: false});
         },
 
 

@@ -28,29 +28,14 @@ define([
 
 		sign: function(){
 			Backbone.history.navigate("#/watchVideo/"+this.videoId+"/"+this.userId, {trigger: true});
-			/*this.dialog.hide();
-			if(this.videoModal){
-				this.videoModal.undelegateEvents();
-			}
-			this.videoModal = new VideoModalView({
-				content:this.content
-			});*/
-			
 		},
 
         newViewer:function(){
-			Backbone.history.navigate("//registerViewer/"+this.videoId+"/"+this.userId, {trigger: false});
-			//this.dialog.hide();
-			//if(this.modal){
-			//	this.modal.undelegateEvents();
-			//}
-			//this.modal =new ModalView({
-			//	content:this.content
-			//});
+			Backbone.history.navigate("#/registerViewer/"+this.videoId+"/"+this.userId, {trigger: false});
         },
 
 		clickOnClose: function(){
-			Backbone.history.navigate("/home/"+this.videoId+"/"+this.userId, {trigger: false});
+			Backbone.history.navigate("#/home/"+this.videoId+"/"+this.userId, {trigger: false});
 		},
 
 		

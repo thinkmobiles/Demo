@@ -44,7 +44,7 @@ define([
                 this.surveyOrder = [];
                 var self = this;
                 self.isEdit = false;
-
+                this.camaignId = campaignId;
                 this.campaignModel = new CampaignModel({_id: campaignId});
                 //this.campaignModel.bind('change', this.render);
                 this.campaignModel.fetch({
@@ -159,7 +159,8 @@ define([
 
                         if (self.percentComplete === 100) {
                             //remove dialog
-                            self.modalProgres.hide();
+                            $(document).find('#bar_container').hide();
+                            $(document).find('#rendering').fadeIn();
                         }
                     }
                 }, false);
@@ -183,10 +184,11 @@ define([
                 //============================================================
 
 
-                oReq.open("POST", "content/update", true);
+                oReq.open("POST", "content/update/" + self.camaignId , true);
                 oReq.onload = function (oEvent) {
                     if (oReq.status === 200) {
                         try {
+                            self.modalProgres.hide();
                             var res = JSON.parse(oReq.response);
                             $("<div><input type='text' value='" + res.url + "' readonly/></div>").dialog({
                                 modal: true,
@@ -203,8 +205,11 @@ define([
                     } else {
                         try {
                             App.notification(JSON.parse(oReq.responseText).error);
+                            self.modalProgres.hide()
                         } catch (e) {
-                            App.notification();
+                            Backbone.history.navigate("#/home", {trigger: true});
+                            $('html, body').animate({scrollTop: 0}, 'medium');
+                            App.notification('Some error occurs');
                         }
                     }
                 };
@@ -234,8 +239,8 @@ define([
                     url: "/content",
                     contentType: "application/json",
                     success: function (data) {
-                        Backbone.history.navigate("#/upload", {trigger: true});
-
+                        Backbone.history.navigate("#/campaigns", {trigger: true});
+                        $('html, body').animate({scrollTop: 0}, 'medium');
                     },
                     error: function (model, xhr) {
                         console.log(xhr);
@@ -248,6 +253,8 @@ define([
             decline: function (e) {
                 e.preventDefault();
                 Backbone.history.navigate("#/campaigns", {trigger: true});
+                $('html, body').animate({scrollTop: 0}, 'medium');
+
             }
             ,
 

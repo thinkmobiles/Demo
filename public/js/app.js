@@ -19,7 +19,10 @@ define([
 
         // append router to global scope
         App.router = appRouter;
-
+        App.router.on("route", function(route, params) {
+            //console.log("Different Page: " + route);
+            $('html, body').animate({scrollTop: 0}, 'medium');
+        });
         // start tracking the history
         Backbone.history.start({silent: true});
 

@@ -398,7 +398,6 @@ var routeHandler = function (db) {
     };
 
 
-
     this.upload = function (req, res, next) {
         var data = req.body;
         var files = req.files;
@@ -635,7 +634,7 @@ var routeHandler = function (db) {
 
 
     this.update = function (req, res, next) {
-        var userId = req.session.uId;
+        var contentId = req.params.id;
         var content;
         var data = req.body;
         var files = req.files;
@@ -661,15 +660,13 @@ var routeHandler = function (db) {
                         mainVideoDescription: data.desc,
                         nameOfCampaign: data.nameOfCampaign
                     };
-                    ContentModel.findOneAndUpdate({ownerId: userId}, obj, function (err, doc) {
+                    ContentModel.findByIdAndUpdate(contentId, obj, function (err, doc) {
                         if (err) {
                             return seriesCb(err);
                         }
                         content = doc;
                         id = doc._id;
                         url = id.toString() + '/';
-                        var sendDataUrl = process.env.HOME_PAGE + url + '{{ctid}}';
-                        res.status(200).send({url: sendDataUrl});
                         seriesCb(null)
                     });
                 },
@@ -765,6 +762,16 @@ var routeHandler = function (db) {
                                         mainParallelCb(null)
                                     });
                                 }
+                            },
+                            //update name of campaign in user profile
+                            function (mainParallelCb) {
+                                UserModel.findOneAndUpdate({'campaigns._id': contentId}, {'campaigns.$.name': data.nameOfCampaign}, function (err, doc) {
+                                    if (err) {
+                                        return mainParallelCb(err);
+                                    }
+                                    console.log(doc);
+                                    mainParallelCb(null)
+                                });
                             },
 
                             //update logo
@@ -1004,9 +1011,10 @@ var routeHandler = function (db) {
             ],
             function (err) {
                 if (err) {
-                    return console.error(err)
+                    return next(err)
                 }
-                console.log('Content updated')
+                var sendDataUrl = process.env.WEB_HOST + '/campaign/' + contentId + '/{{ctid}}';
+                res.status(200).send({url: sendDataUrl});
             });
     };
 };

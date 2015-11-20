@@ -66,7 +66,7 @@ define([
         //
         //},
         toggleCampaigns: function (e) {
-            $(e.target).closest('.campaigns').find('.campaign-container').toggle();
+            $(e.target).closest('.campaigns').find('.campaign-container').slideToggle();
         },
         print: function (e) {
             var el = $(e.target).closest("div.printPart");
@@ -251,6 +251,7 @@ define([
 
         renderAnalytic: function (e) {
             self.campaignId = $(e.target).attr("data-id");
+            this.$el.find('.nameOfCampaign').text($(e.target).text());
             $(e.target).closest('ul').find('.current').removeClass('current');
             $(e.target).addClass('current');
 

@@ -48,7 +48,8 @@ define([
             });
 			$(document).on("click", function (e) {
 				if (!$(e.target).closest(".customSelect").length){
-					$(".customSelect ul").hide()
+					$(".customSelect ul").hide();
+                    $(".customSelect").closest('.campaigns').find('.campaign-container').slideUp();
 				}
             });
 			$(document).on( 'scroll', function(){

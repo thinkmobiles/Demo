@@ -639,7 +639,7 @@ var routeHandler = function (db) {
         var userId, content, data;
 
         if (!contentId && !prospectId) {
-            UserModel.findOne({userName: 'admin', role: USER_ROLES.SUPER_ADMIN}, function (err, user) {
+            UserModel.findOne({role: USER_ROLES.ADMIN}, function (err, user) {
                 if (err) {
                     return next(err);
                 }
@@ -691,7 +691,7 @@ var routeHandler = function (db) {
                         if (err) {
                             return waterfallCb(err);
                         } else if (!user) {
-                            error.message = 'User Not Found';
+                            error.message = 'Cant found owner of video';
                             error.status = 404;
 
                             return waterfallCb(error);
