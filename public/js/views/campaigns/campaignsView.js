@@ -17,6 +17,8 @@ define([
             'click .clipCopy': 'copyURL',
             'click .editBtn': 'edit'
         },
+
+
         initialize: function () {
             var self = this;
             this.campaignsCollection = new CampaignsCollection();
@@ -30,16 +32,36 @@ define([
             if(this.clipboard){
                 this.clipboard.destroy();
             }
+            var  el =  $(e.target).closest('td').find('span').get(0);
             var text = $(e.target).closest('td').find('span').eq(0).text();
             this.clipboard = new Clipboard('.clipCopy', {
                 text: function() {
                     return text;
                 }
             });
+            this.clipboard.on('error', function(e) {
+                var doc = document,
+                    range, selection;
+                if (doc.body.createTextRange) {
+                    range = document.body.createTextRange();
+                    range.moveToElementText(el);
+                    range.select();
+                } else if (window.getSelection) {
+                    selection = window.getSelection();
+                    range = document.createRange();
+                    range.selectNodeContents(el);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                }
+                $(e.target).attr("data-tp", "Press Ctrl+C to copy")
+            });
         },
 
         chooseRow: function (e) {
             var self = this;
+            if($(e.target).closest(".clipCopy").length){
+                return;
+            }
             var index = $(e.target).closest(".customTable").find("tr").index($(e.target).closest("tr"));
 
             if (index) {
