@@ -19,7 +19,7 @@
     <tr data-id="<%=campaign._id%>" class="<%=index==current?'current':''%>">
         <td><span><%=campaign.name %></span></td>
         <td><span><%=moment(campaign.createdAt).format('DD MMM YYYY') %></span></td>
-        <td><span><%='http://demo.com:8838/campaign/'+campaign._id+'/{{ctid}}'%></span><span class="clipCopy">copy <span class="copyTooltip">"Copied!"</span></span></td>
+        <td><span><%='http://demo.com:8838/campaign/'+campaign._id+'/{{ctid}}'%></span><span class="clipCopy"><span class="copyTooltip">Copied!</span></span></td>
     </tr>
     <%})%>
 </table>

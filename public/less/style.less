@@ -2922,44 +2922,35 @@ svg {
   text-align: center;
 }
 
-.campaignsTable{
-  tr {
-    td {
-      &:last-child{
+.campaignsTable,
+.linkContainer{
+  position: relative;
+    td:last-child{
         position: relative;
         padding-right: 50px;
-      }
-      .clipCopy {
-        background: url("../i/copy.png") no-repeat;
-        width: 4px;
-        height: 24px;
-        background-size: 100% 100%;
-        position: absolute;
-        top: 6px;
-        right: 0px;
-        transition: .1s;
-        opacity: 0;
-      .clipCopy, .copyTooltip {
-      display: none;
     }
-      .clipCopy:active{
-        transition: 2s;
-      }
-      .clipCopy:active:after{
-        content: "Ivan";
-        display: block;
-        position: absolute;
-        top: -20px;
-        width: 50px;
-        height: 30px;
-        text-align: center;
-        background-color: #bbb;
-        border-radius: 5px;
-        color: #fff9e5;
-        transition: 1s;
-      }
-    }
-    &:hover {
+  .clipCopy {
+    background: url("../i/copy.png") no-repeat;
+    width: 20px;
+    height: 24px;
+    background-size: 100% 100%;
+    position: absolute;
+    top: 6px;
+    right: 0px;
+    transition: .1s;
+    opacity: 0;
+  }
+  .copyTooltip{
+    display: none;
+    position: absolute;
+    top: -30px;
+    padding: 5px 15px 0 15px;
+    text-align: center;
+    background-color: #bbb;
+    border-radius: 3px;
+    color: #fff9e5;
+  }
+   tr:hover {
       td .clipCopy {
         transition: .4s;
         opacity: 1;
@@ -2967,7 +2958,11 @@ svg {
       }
 
     }
-  }
+  &:hover .clipCopy {
+      transition: .4s;
+      opacity: 1;
+      right: 12px;
+    }
 }
 #pendingAccount {
   margin-bottom: 50px;

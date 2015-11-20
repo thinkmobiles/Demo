@@ -33,6 +33,7 @@ define([
                 this.clipboard.destroy();
             }
             var  el =  $(e.target).closest('td').find('span').get(0);
+            var  tt =  $(e.target).closest('td').find('.copyTooltip');
             var text = $(e.target).closest('td').find('span').eq(0).text();
             this.clipboard = new Clipboard('.clipCopy', {
                 text: function() {
@@ -40,12 +41,12 @@ define([
                 }
             });
 
-            $(e.target).closest('td').find('.copyTooltip').slideDown();
+            $(e.target).closest('td').find('.copyTooltip').fadeIn();
             setTimeout(function () {
-                $(e.target).closest('td').find('.copyTooltip').slideUp();
+                $(e.target).closest('td').find('.copyTooltip').fadeOut();
             }, 2000);
 
-            this.clipboard.on('error', function(e) {
+            this.clipboard.on('success', function(e) {
                 var doc = document,
                     range, selection;
                 if (doc.body.createTextRange) {
@@ -59,7 +60,7 @@ define([
                     selection.removeAllRanges();
                     selection.addRange(range);
                 }
-                $(e.target).closest('td').find('.copyTooltip').text("Press Ctrl+C to copy")
+                tt.text("Press Ctrl+C to copy")
             });
         },
 
