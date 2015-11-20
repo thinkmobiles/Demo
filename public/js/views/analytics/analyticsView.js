@@ -39,25 +39,6 @@ define([
 
         initialize: function () {
             var self = this;
-            //$.ajax({
-            //    type: "GET",
-            //    url: "/content",
-            //    contentType: "application/json",
-            //    success: function (data) {
-            //        if (!data) {
-            //            self.$el.find(".analitics>.noVideo").show();
-            //            self.$el.find(".analitics .haveVideo").hide();
-            //        } else {
-            //            self.$el.find(".analitics>.noVideo").hide();
-            //            self.$el.find(".analitics .haveVideo").show();
-            //
-            //        }
-            //    },
-            //    error: function (model, xhr) {
-            //        self.$el.find(".analitics>.noVideo").show();
-            //        self.$el.find(".analitics .haveVideo").hide();
-            //    }
-            //});
             this.campaignsCollection = new CampaignsCollection();
             this.campaignsCollection.bind('reset', self.render, self);
         },

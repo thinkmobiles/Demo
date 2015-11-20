@@ -2250,9 +2250,9 @@ footer {
       background-color: #eee;
     }
     .campaign-container {
+      display: none;
       background-color: #f0f0f0;
       width: 200px;
-      display: block;
       border: 2px solid #000;
       position: absolute;
       z-index: 110;
@@ -2890,6 +2890,30 @@ svg {
   text-align: center;
 }
 
+.campaignsTable{
+  tr {
+    td {
+      &:last-child{
+        position: relative;
+        padding-right: 50px;
+      }
+      .clipCopy {
+
+      display: none;
+    }
+    }
+    &:hover {
+      td .clipCopy {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        display: block;
+        border: 1px solid #909090;
+      }
+
+    }
+  }
+}
 #pendingAccount {
   margin-bottom: 50px;
 }
