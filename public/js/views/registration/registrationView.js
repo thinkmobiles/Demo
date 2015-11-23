@@ -52,15 +52,15 @@ define([
 
             if (!self.$el.find(".registration .email").val() || !self.$el.find(".registration .firstName").val() || !self.$el.find(".registration .lastName").val() || !self.$el.find(".registration .userName").val()
                 || !self.$el.find(".registration .organization").val() || !self.$el.find(".registration .phone").val() || !self.$el.find(".registration .pass").val()) {
-                isError = true;
                 message = (message == '') ? ENTER_REQUIRED_FIELDS : message;
+                isError = true;
             }
 
             //firstName
             if (!validation.validName(self.$el.find(".registration .firstName").val())) {
-                isError = true;
                 self.$el.find(".registration .firstName").addClass("error");
                 message = (message == '') ? "First name is not valid. Field should contain only the following symbols: a-z, A-Z" : message;
+                isError = true;
                 //message = (message == '') ? "Character\`s number should be from 2 to 20" : message;
             }
 
