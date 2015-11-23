@@ -82,7 +82,7 @@ var JumpleadModule = function (db) {
 
 
     this.setContact = function (contentId, contact, callback) {
-        UserModel.findOne({contentId: contentId}, function (err, user) {
+        UserModel.findOne({'campaigns._id': contentId}, function (err, user) {
             if (err) {
                 return callback(err);
             } else if (!user) {
@@ -222,7 +222,7 @@ var JumpleadModule = function (db) {
                 if (body.status == '404') {
                     var error = new Error();
                     error.status = 404;
-                    error.message = 'Contacts not found'
+                    error.message = 'Contacts not found';
                     return callback(error)
                 }
                 if (body.status == '401') {

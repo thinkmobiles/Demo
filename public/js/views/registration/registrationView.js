@@ -88,7 +88,7 @@ define([
             if (!validation.validLogin(self.$el.find(".registration .userName").val())) {
                 isError = true;
                 self.$el.find(".registration .userName").addClass("error");
-                message = (message == '') ? "That is not a valid user name. It should contain only the following symbols: A-Z, a-z, 0-9, _ @" : message;
+                message = (message == '') ? "That is not a valid user name. It must consist of only following symbols: A-Z, a-z, 0-9, _ @" : message;
             }
 
             //email
@@ -104,7 +104,7 @@ define([
             if (rate < 30) {
                 isError = true;
                 self.$el.find(".registration .pass").addClass("error");
-                message = (message == '') ? "Your password is weak. Please choose a stronger password" : message;
+                message = (message == '') ? "Your password is weak. Please choose stronger password" : message;
             }
 
             if (!self.$el.find(".registration .conf").val() || self.$el.find(".registration .conf").val() !== self.$el.find(".registration .pass").val()) {
@@ -112,10 +112,12 @@ define([
                 self.$el.find(".registration .conf").addClass("error");
                 message = (message == '') ? 'Passwords do not match.' : message;
             }
+
             if (isError) {
                 App.notification(message);
                 return;
             }
+
             $.ajax({
                 url: "/signUp",
                 type: "POST",

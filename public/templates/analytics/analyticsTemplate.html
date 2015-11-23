@@ -1,7 +1,8 @@
 <div class="container analitics">
   <iframe name="print_frame" width="0" height="0" frameborder="0" src="about:blank"></iframe>
-  <div class="noVideo">Please create demo first</div>
-
+  <%if(!data.length){%>
+  <div class="noVideo">Please create demo to view analytic</div>
+<%}else{%>
   <div class="haveVideo">
 
     <h2 class="nameOfCampaign"><%=data[0].name%></h2>
@@ -134,5 +135,6 @@
 	</div>
   </div>
 </div>
+<%}%>
 <div class="tooltip"></div>
 </div>

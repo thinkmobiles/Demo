@@ -33,39 +33,79 @@ define([
             var self = this;
             var prospectModel = new ProspectModel();
             var isError = false;
+            var message = '';
+            var ENTER_REQUIRED_FIELDS = 'Please enter all required fields!';
             this.$el.find(".error").removeClass("error");
-            if (!validation.validEmail(this.$el.find("#email").val())) {
-                this.$el.find("#email").addClass("error");
+
+            if (!this.$el.find("#fname").val()|| !this.$el.find("#organization").val() || !this.$el.find("#lname").val()|| !this.$el.find("#title").val()||!this.$el.find("#email").val()
+            || !this.$el.find("#phone").val() ||!this.$el.find("#confirmEmail").val()) {
                 isError = true;
-            }
-            if (!this.$el.find("#confirmEmail").val() || this.$el.find("#email").val() !== this.$el.find("#confirmEmail").val()) {
-                this.$el.find("#confirmEmail").addClass("error");
-                isError = true;
+                message = (message == '') ? ENTER_REQUIRED_FIELDS : message;
             }
 
+            //fName
             if (!validation.validName(this.$el.find("#fname").val())) {
                 this.$el.find("#fname").addClass("error");
+                message = (message == '') ? "That is not a valid first name. Field can not contain '~ < > ^ * ₴' signs only a-z A-Z" : message;
                 isError = true;
             }
-            if (!validation.validName(this.$el.find("#lname").val())) {
-                this.$el.find("#lname").addClass("error");
-                isError = true;
-            }
-            if (!validation.validPhone(this.$el.find("#phone").val())) {
-                this.$el.find("#phone").addClass("error");
-                isError = true;
-            }
+
+            //organization
             if (!this.$el.find("#organization").val()) {
                 this.$el.find("#organization").addClass("error");
+                message = (message == '') ? "That is not a valid organization name." : message;
                 isError = true;
             }
-            if (!validation.validName(this.$el.find("#title").val())) {
+
+            //lName
+            if (!validation.validName(this.$el.find("#lname").val())) {
+                this.$el.find("#lname").addClass("error");
+                message = (message == '') ? "That is not a valid last name." : message;
+                isError = true;
+            }
+
+            //title
+            if (!validation.validTitle(this.$el.find("#title").val())) {
                 this.$el.find("#title").addClass("error");
+                message = (message == '') ? "That is not a valid title." : message;
+                isError = true;
+            }
+
+            //email
+            if (!validation.validEmail(this.$el.find("#email").val())) {
+                this.$el.find("#email").addClass("error");
+                message = (message == '') ? (self.$el.find("#email").val() + " is not a valid email.") : message;
+                isError = true;
+            }
+
+            //confPass
+            if (!this.$el.find("#confirmEmail").val() || this.$el.find("#email").val() !== this.$el.find("#confirmEmail").val()) {
+                this.$el.find("#confirmEmail").addClass("error");
+                message = (message == '') ? 'Password and confirm password field do not match.' : message;
+                isError = true;
+            }
+
+            //phone
+            if (!validation.validPhone(this.$el.find("#phone").val())) {
+                this.$el.find("#phone").addClass("error");
+                message = (message == '') ? "That is not a valid phone number. It should contain only numbers and '+ - ( )' signs" : message;
+                isError = true;
+            }
+
+              //phone
+            if (!validation.validComment(this.$el.find("#comments").val())) {
+                this.$el.find("#comments").addClass("error");
+                message = (message == '') ? "That is not a valid comment." : message;
                 isError = true;
             }
 
 
-            if (isError)return;
+
+            if (isError) {
+                App.notification(message);
+                return;
+            }
+
             prospectModel.save({
                     email: this.$el.find("#email").val(),
                     firstName: this.$el.find("#fname").val(),
