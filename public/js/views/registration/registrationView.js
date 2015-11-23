@@ -47,7 +47,7 @@ define([
 
             var isError = false;
             var message = '';
-            var ENTER_REQUIRED_FIELDS = 'Please enter all required fields!';
+            var ENTER_REQUIRED_FIELDS = 'Please, enter all required fields.';
             self.$el.find(".registration .error").removeClass("error");
 
             if (!self.$el.find(".registration .email").val() || !self.$el.find(".registration .firstName").val() || !self.$el.find(".registration .lastName").val() || !self.$el.find(".registration .userName").val()
@@ -60,14 +60,15 @@ define([
             if (!validation.validName(self.$el.find(".registration .firstName").val())) {
                 isError = true;
                 self.$el.find(".registration .firstName").addClass("error");
-                message = (message == '') ? "That is not a valid first name. Field can not contain '~ < > ^ * ₴' signs only a-z A-Z" : message;
+                message = (message == '') ? "First name is not valid. Field should contain only the following symbols: a-z, A-Z" : message;
+                //message = (message == '') ? "Character\`s number should be from 2 to 20" : message;
             }
 
             //lastName
             if (!validation.validName(self.$el.find(".registration .lastName").val())) {
                 isError = true;
                 self.$el.find(".registration .lastName").addClass("error");
-                message = (message == '') ? "That is not a valid last name. Field can not contain '~ < > ^ * ₴' signs only a-z A-Z" : message;
+                message = (message == '') ? "Last name is not valid. Field should contain only the following symbols: a-z, A-Z" : message;
             }
 
             //organization
