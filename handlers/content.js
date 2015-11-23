@@ -4,13 +4,12 @@
 var async = require('async');
 var mongoose = require('mongoose');
 var _ = require('../public/js/libs/underscore/underscore-min');
-
 var AwsStorage = require('../helpers/aws')();
+var pdfutils = require('pdfutils').pdfutils;
 var s3 = new AwsStorage();
 
-var path = require('path');
 var REG_EXP = require('../constants/regExp');
-var pdfutils = require('pdfutils').pdfutils;
+var USER_ROLES = require('../constants/userRoles');
 var AWS = require('../constants/AWS');
 
 var routeHandler = function (db) {
@@ -358,107 +357,74 @@ var routeHandler = function (db) {
         });
     }
 
+    this.campaignsList = function (req, res, next) {
+        var ownerId;
+        var userRole = req.session.role;
+        if (userRole == USER_ROLES.ADMIN || userRole == USER_ROLES.USER) {
+            ownerId = req.session.uId;
+        } else {
+            ownerId = req.session.creator;
+        }
+
+        UserModel.findById(ownerId, function (err, user) {
+            if (err) {
+                return next(err);
+            }
+            res.status(200).send(user.campaigns);
+        });
+    };
+
+
     this.content = function (req, res, next) {
-        ContentModel.findOne({ownerId: req.session.uId}, function (err, found) {
+        var contentId = req.params.id;
+        var url;
+        var content;
+        var error = new Error();
+
+        ContentModel.findById(contentId, function (err, content) {
             if (err) {
                 return next(err);
+            } else if (!content) {
+                error.status = 400;
+                error.message = 'Content Not Found';
+                return next(error);
             }
-            console.log(found);
-            if (!found) {
-                return res.status(404).send({err: 'Content Not Found'});
-            }
-            found.survey = sortByKey(found.survey, 'order');
-            var url = process.env.WEB_HOST + '/campaign/' + found._id + '/{{ctid}}';
-            res.status(201).send({url: url, content: found});
+
+            content.survey = sortByKey(content.survey, 'order');
+            url = process.env.WEB_HOST + '/campaign/' + content._id + '/{{ctid}}';
+
+            res.status(200).send({url: url, content: content});
         });
     };
 
-    this.testS3Delete = function (req, res, next) {
-        s3.removeFile(S3_BUCKET, '562df14d680008701f000001/Overview.mp4', null, function (err, data) {
-            if (err) {
-                return next(err);
-            }
-            res.status(200).send(data);
-        });
-    };
-
-    this.testS3DeleteDir = function (req, res, next) {
-        s3.removeDir(S3_BUCKET, '562df14d680008701f000001', function (err, data) {
-            if (err) {
-                return next(err);
-            }
-            res.status(200).send(data);
-        });
-    };
-
-    this.testS3Move = function (req, res, next) {
-        s3.moveDir(S3_BUCKET, '564065e92226c4c43a000002/survey4', '564065e92226c4c43a000002/old/survey4', function (err, data) {
-            if (err) {
-                return next(err);
-            }
-            res.status(200).send(data);
-        });
-    };
-
-    this.testS3Save = function (req, res, next) {
-        var files = req.files;
-        s3.postFile(S3_BUCKET, 'somefile2.pdf', files['pdf'], function (err, data) {
-            if (err) {
-                return next(err);
-            }
-            pdfutils(files['pdf'].path, function (err, doc) {
-                var stream = doc[0].asPNG({maxWidth: 500, maxHeight: 1000});
-                var buf = new Buffer(0, "base64");
-                stream.on('data', function (data) {
-                    buf = Buffer.concat([buf, data]);
-                });
-                stream.on('end', function () {
-                    var key = files['pdf'].name.slice(0, -4) + '.png';
-                    s3.postBuffer(S3_BUCKET, key, buf, function (err) {
-                        if (err) {
-                            return console.error(err);
-                        }
-                    });
-                });
-                stream.on('error', function (err) {
-                    return console.error(err);
-                });
-            });
-            res.status(200).send(data);
-        });
-    };
-
-    this.testS3Get = function (req, res, next) {
-        var data = req.query;
-        s3.getFileUrl({bucket: S3_BUCKET, key: 'some%20file2.pdf'}, function (err, data) {
-            if (err) {
-                return next(err);
-            } // an error occurred
-            res.status(200).send(data);           // successful response
-        });
-    };
-
-    this.testS3List = function (req, res, next) {
-        var data = req.query;
-        s3.listFiles(S3_BUCKET, '', function (err, data) {
-            if (err) {
-                return next(err);
-            } // an error occurred
-            res.status(200).send(data);           // successful response
-        });
-    };
 
     this.upload = function (req, res, next) {
         var data = req.body;
         var files = req.files;
-        var userId = req.session.uId;
-        var content;
+        var ownerId;
+        var currentUserId = req.session.uId;
         var insObj;
         var id;
+        var url;
 
         async.waterfall([
 
                 //validation
+                function (waterfallCb) {
+                    UserModel.findById(currentUserId, function (err, user) {
+                        if (err) {
+                            return waterfallCb(err);
+                        }
+                        if (user.role == USER_ROLES.ADMIN || user.role == USER_ROLES.USER) {
+                            ownerId = currentUserId;
+                        } else {
+                            ownerId = user.creator;
+                        }
+                        waterfallCb(null);
+
+                    });
+                },
+
                 function (waterfallCb) {
                     validation(req, function (err) {
                         if (err) {
@@ -469,42 +435,62 @@ var routeHandler = function (db) {
                     });
                 },
 
-                function (waterfallCb) {
-                    ContentModel.findOne({ownerId: userId}, function (err, doc) {
-                        if (err) {
-                            return waterfallCb(err);
-                        }
-                        if (doc) {
-                            var error = new Error();
-                            error.status = 401;
-                            error.message = 'You already have content';
-                            return waterfallCb(error);
-                        }
-                        insObj = {
-                            ownerId: userId,
-                            name: data.name,
-                            email: data.email,
-                            phone: data.phone,
-                            mainVideoDescription: data.desc
-                        };
-                        waterfallCb(null, insObj);
-                    });
-                },
+                /*     function (waterfallCb) {
+                 ContentModel.findOne({ownerId: userId}, function (err, doc) {
+                 if (err) {
+                 return waterfallCb(err);
+                 }
+                 if (doc) {
+                 var error = new Error();
+                 error.status = 401;
+                 error.message = 'You already have content';
+                 return waterfallCb(error);
+                 }
+                 insObj = {
+                 nameOfCampaign: data.nameOfCampaign,
+                 ownerId: userId,
+                 name: data.name,
+                 email: data.email,
+                 phone: data.phone,
+                 mainVideoDescription: data.desc
+                 };
+                 waterfallCb(null, insObj);
+                 });
+                 },*/
 
                 // create content model
-                function (insObj, waterfallCb) {
+                function (waterfallCb) {
+                    insObj = {
+                        nameOfCampaign: data.nameOfCampaign,
+                        owner: ownerId,
+                        creator: currentUserId,
+                        name: data.name,
+                        email: data.email,
+                        phone: data.phone,
+                        mainVideoDescription: data.desc
+                    };
+
                     ContentModel.create(insObj, function (err, result) {
                         if (err) {
                             return waterfallCb(err);
                         }
                         id = result._id;
+                        url = id.toString() + '/';
                         waterfallCb(null, result);
                     });
                 },
 
                 // update user => set contentId
                 function (result, waterfallCb) {
-                    UserModel.findByIdAndUpdate(userId, {$set: {contentId: id}}, function (err, user) {
+                    UserModel.findByIdAndUpdate(ownerId, {
+                        $addToSet: {
+                            campaigns: {
+                                _id: id,
+                                name: data.nameOfCampaign,
+                                createdAt: new Date()
+                            }
+                        }
+                    }, function (err) {
                         if (err) {
                             return waterfallCb(err);
                         }
@@ -516,13 +502,13 @@ var routeHandler = function (db) {
                 function (waterfallCb) {
                     async.series([
                         function (seriesCb) {
-                            if (files['video'].name) {
+                            if (files['video'].name && files['video'].size) {
                                 saveMainVideo(id, files, seriesCb);
                             } else {
                                 var logoUrl = S3_ENDPOINT + S3_BUCKET + '/' + url + encodeURIComponent(files['logo'].name);
                                 var logoKey = id.toString() + '/' + files['logo'].name;
 
-                                s3.postFile(S3_BUCKET, logoKey, files['logo'], function (err, data) {
+                                s3.postFile(S3_BUCKET, logoKey, files['logo'], function (err) {
                                     if (err) {
                                         return seriesCb(err);
                                     }
@@ -566,8 +552,8 @@ var routeHandler = function (db) {
                         if (err) {
                             return waterfallCb(err);
                         }
-                        //var url = process.env.WEB_HOST + '/campaign/' + id + '/{{ctid}}';
-                        waterfallCb(null)
+                        var url = process.env.WEB_HOST + '/campaign/' + id + '/{{ctid}}';
+                        waterfallCb(null, url)
                     });
                 }],
 
@@ -576,44 +562,69 @@ var routeHandler = function (db) {
                     return next(err);
                 }
                 var url = process.env.WEB_HOST + '/campaign/' + id + '/{{ctid}}';
-                res.status(201).send({url: url, id: id});
+                res.status(201).send({url: url});
             });
     };
 
     this.remove = function (req, res, next) {
-        var contentId;
-        var userId = req.session.uId;
-        var sep = path.sep;
+        var contentId = req.params.id;
+        var ownerId;
+        var error = new Error();
+        var userRole = req.session.role;
 
-        ContentModel.findOneAndRemove({ownerId: req.session.uId}, function (err, doc) {
+        if (userRole == USER_ROLES.ADMIN || userRole == USER_ROLES.USER) {
+            ownerId = req.session.uId;
+        } else {
+            ownerId = req.session.creator;
+        }
+        async.parallel([
+            function (parallelCb) {
+                ContentModel.findByIdAndRemove(contentId, function (err, doc) {
+                    if (err) {
+                        return parallelCb(err);
+                    } else if (!doc) {
+                        error.status = 404;
+                        error.message = 'Content Not Found';
+                        return parallelCb(error)
+                    }
+                    parallelCb(null);
+                });
+            },
+
+            function (parallelCb) {
+                UserModel.findByIdAndUpdate(ownerId, {$pull: {'campaigns': {'_id': contentId}}}, function (err, found) {
+                    if (err) {
+                        return parallelCb(err);
+                    } else if (!found) {
+                        error.status = 404;
+                        error.message = 'User Not Found';
+                        return parallelCb(error)
+                    }
+                    parallelCb(null);
+                });
+            },
+
+            function (parallelCb) {
+                ContactMeModel.remove({contentId: contentId}, function (err) {
+                    if (err) {
+                        return parallelCb(err);
+                    }
+                    parallelCb(null);
+                });
+            },
+
+            function (parallelCb) {
+                TrackModel.remove({contentId: contentId}, function (err) {
+                    if (err) {
+                        parallelCb(err);
+                    }
+                    parallelCb(null);
+                });
+            }], function (err) {
             if (err) {
                 return next(err);
             }
-            if (!doc) {
-                return res.status(404).send({err: 'Content Not Found'});
-            }
-            contentId = doc._id;
-            UserModel.findByIdAndUpdate(userId, {contentId: null}, function (err, found) {
-                if (err) {
-                    return next(err);
-                }
-                if (!found) {
-                    return res.status(404).send({err: 'Content Not Found'});
-                }
-            });
-            ContactMeModel.remove({contentId: contentId}, function (err) {
-                if (err) {
-                    console.error(err);
-                }
-                console.log('ContactMeModel updated')
-            });
-            TrackModel.remove({contentId: contentId}, function (err) {
-                if (err) {
-                    console.error(err);
-                }
-                console.log('TrackModel updated')
-            });
-            var dirPath = contentId.toString();
+            var dirPath = contentId
             s3.removeDir(S3_BUCKET, dirPath);
 
             var message = 'Content removed';
@@ -623,7 +634,7 @@ var routeHandler = function (db) {
 
 
     this.update = function (req, res, next) {
-        var userId = req.session.uId;
+        var contentId = req.params.id;
         var content;
         var data = req.body;
         var files = req.files;
@@ -646,9 +657,10 @@ var routeHandler = function (db) {
                         name: data.name,
                         email: data.email,
                         phone: data.phone,
-                        mainVideoDescription: data.desc
+                        mainVideoDescription: data.desc,
+                        nameOfCampaign: data.nameOfCampaign
                     };
-                    ContentModel.findOneAndUpdate({ownerId: userId}, obj, function (err, doc) {
+                    ContentModel.findByIdAndUpdate(contentId, obj, function (err, doc) {
                         if (err) {
                             return seriesCb(err);
                         }
@@ -670,14 +682,14 @@ var routeHandler = function (db) {
                         },
                         function (callback) {
                             i++;
-                            var oldPrefix = url+ 'survey' + i;
-                            var newPrefix = url+ 'temp/survey' + i;
+                            var oldPrefix = url + 'survey' + i;
+                            var newPrefix = url + 'temp/survey' + i;
 
 
                             s3.moveDir(S3_BUCKET, oldPrefix, newPrefix, function (err) {
-                               if(err){
-                                   return callback(err);
-                               }
+                                if (err) {
+                                    return callback(err);
+                                }
                                 callback(null);
                             });
                         },
@@ -750,6 +762,16 @@ var routeHandler = function (db) {
                                         mainParallelCb(null)
                                     });
                                 }
+                            },
+                            //update name of campaign in user profile
+                            function (mainParallelCb) {
+                                UserModel.findOneAndUpdate({'campaigns._id': contentId}, {'campaigns.$.name': data.nameOfCampaign}, function (err, doc) {
+                                    if (err) {
+                                        return mainParallelCb(err);
+                                    }
+                                    console.log(doc);
+                                    mainParallelCb(null)
+                                });
                             },
 
                             //update logo
@@ -829,7 +851,7 @@ var routeHandler = function (db) {
                                     //===============================================whilst START====================================================
                                     function (whilstCb) {
                                         i++;
-                                        var surveyId = surveyOrder[i-1];
+                                        var surveyId = surveyOrder[i - 1];
                                         if (surveyId == 'new') {
                                             async.applyEachSeries([saveSurveyVideo, saveSurveyFiles], i, id, files, data, function (err) {
                                                 if (err) {
@@ -948,8 +970,8 @@ var routeHandler = function (db) {
                                                     return whilstCb(err);
                                                 }
 
-                                                var newPrefix =url+ 'survey' + i;
-                                                var oldPrefix = url+'temp/survey' + oldOrder;
+                                                var newPrefix = url + 'survey' + i;
+                                                var oldPrefix = url + 'temp/survey' + oldOrder;
                                                 s3.moveDir(S3_BUCKET, oldPrefix, newPrefix, function (err) {
                                                     if (err) {
                                                         return whilstCb(err);
@@ -991,9 +1013,8 @@ var routeHandler = function (db) {
                 if (err) {
                     return next(err)
                 }
-                var sendDataUrl = process.env.HOME_PAGE + url+ '{{ctid}}';
-                res.status(200).send({url: sendDataUrl, id: id});
-                console.log('Content updated')
+                var sendDataUrl = process.env.WEB_HOST + '/campaign/' + contentId + '/{{ctid}}';
+                res.status(200).send({url: sendDataUrl});
             });
     };
 };

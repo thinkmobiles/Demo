@@ -22,7 +22,7 @@ require.config({
         templates: '../templates', // templates dir not error
         text: './libs/text/text',
         common: 'common',
-        "dmuploader": "./libs/dmuploader.min"
+        clipboard: "./libs/clipboard/dist/clipboard.min"
     },
     shim: {
         'ajaxForm': ['jQuery'],
@@ -102,12 +102,11 @@ require(['app'], function (app) {
             type: "GET",
             success: function (data) {
                 App.sessionData.set({
-                    authorized: true,
-                    admin: data.isAdmin,
-                    user: data,
-                    contentId: data && data.contentId ? data.contentId : null
+					authorized: true,
+					role:data.role,
+                    user: data
                 });
-                if (callback)callback();
+				if (callback)callback();
             },
             error: function (data) {
                 App.error(data);

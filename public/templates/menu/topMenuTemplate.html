@@ -1,41 +1,43 @@
 <nav class="navBar topMenu">
-    <div class="inner">
-        <div id="toggle-wrapper" class="toggle-wrapper">
-            <a href="#/home" id="logo"><img width="230" src="i/logo.png"/></a>
+  <div class="inner">
+	  <div id="toggle-wrapper" class="toggle-wrapper">
+		  <a href="#/home" id="logo"><img width="230" src="i/logo.png"/></a>
 
-            <div id="menu-toggle" class="menu-toggle">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
-        <ul id="main-menu">
-            <% if (!authorized){%>
-                    <li><a href="#/watchVideo" class="active showModal">WATCH DEMO</a></li>
+		  <div id="menu-toggle" class="menu-toggle">
+			  <span></span>
+			  <span></span>
+			  <span></span>
+		  </div>
+	  </div>
+    <ul id="main-menu">
+	  <% if (!authorized){%>
+      <li><a href="#/watchVideo" class="active showModal">WATCH DEMO</a></li>
 
-                    <li><a href="#/pricing">PRICING</a></li>
-                    <li><a href="#/aboutUs">ABOUT US</a></li>
-                    <li><a href="#/contact">CONTACT</a></li>
-                    <li><a href="#/home" class="login">LOGIN</a></li>
-            <%}else{%>
-                    <li class="userInfo"><span><img src="<%=user.avatar%>" width="50" height="50"/>Welcome, <strong><%=user.firstName%>
-                        <%=user.lastName%></strong></span></li>
+	  <li><a href="#/pricing">PRICING</a></li>
+	  <li><a href="#/aboutUs">ABOUT US</a></li>
+	  <li><a href="#/contact">CONTACT</a></li>
+	  <li><a href="#/home" class="login">LOGIN</a></li>
+	  <%}else{%>
+	  <li class="userInfo"><span><img src="<%=user.avatar%>" width="50" height="50"/>Welcome, <strong><%=user.firstName%> <%=user.lastName%></strong></span></li>
 
-                <% if (admin){%>
-                                <li><a href="#/edit">CREATE</a></li>
-                                <!--<li><a href="#/edit">EDIT</a></li>-->
-                                <li><a href="#/users">USERS</a></li>
-                <%}else if (contentId){%>
-                        <li><a href="#/edit">EDIT</a></li>
-                        <li><a href="#/analytics">ANALYTICS</a></li>
-                        <%}else {%>
-                        <li><a href="#/upload">CREATE</a></li>
-                        <li><a href="#/analytics">ANALYTICS</a></li>
-                        <%}%>
-
-                    <li><a href="/logout">LOGOUT</a></li>
-            <%}%>
-        </ul>
-    </div>
+	  <% if (role==0){%>
+	  <li><a href="#/upload">CREATE</a></li>
+	  <li><a href="#/users">USERS</a></li>
+	  <%}else if(role==1){%>
+	  <!--<li><a href="#/upload">CREATE</a></li>-->
+		<!--<li><a href="#/edit">EDIT</a></li>-->
+		<li><a href="#/campaigns">CAMPAIGNS</a></li>
+		<li><a href="#/subordinates">USERS</a></li>
+	  <li><a href="#/analytics">ANALYTICS</a></li>
+	  <%}else if(role==2){%>
+		<li><a href="#/campaigns">CAMPAIGNS</a></li>
+		<li><a href="#/analytics">ANALYTICS</a></li>
+		<%}else if(role==3){%>
+		<li><a href="#/analytics">ANALYTICS</a></li>
+	  <%}%>
+	  <li><a href="/logout">LOGOUT</a></li>
+	  <%}%>
+    </ul>
+  </div>
 
 </nav>

@@ -5,7 +5,7 @@ module.exports = (function () {
     var NAME_MIN_LENGTH = CONSTANTS.USERNAME_MIN_LENGTH;
     var NAME_MAX_LENGTH = CONSTANTS.USERNAME_MAX_LENGTH;
     var ORGANIZATION_MIN_LENGTH = CONSTANTS.ORGANIZATION_MIN_LENGTH;
-    var ORGANIZATION_MAX_LENGTH = CONSTANTS. ORGANIZATION_MAX_LENGTH;
+    var ORGANIZATION_MAX_LENGTH = CONSTANTS.ORGANIZATION_MAX_LENGTH;
 
     var mongoose = require('mongoose');
     var ObjectId = mongoose.Schema.Types.ObjectId;
@@ -14,18 +14,34 @@ module.exports = (function () {
         avatar: {type: String},
         email: {type: String, required: true},
         jumpleadEmail: {type: String},
+
         firstName: {type: String, required: true, minlength: NAME_MIN_LENGTH, maxlength: NAME_MAX_LENGTH},
         lastName: {type: String, required: true, minlength: NAME_MIN_LENGTH, maxlength: NAME_MAX_LENGTH},
-        userName: {type: String, required: true,  minlength: NAME_MIN_LENGTH, maxlength: NAME_MAX_LENGTH},
-        organization: {type: String, required: true, minlength: ORGANIZATION_MIN_LENGTH, maxlength: ORGANIZATION_MAX_LENGTH},
-        pass: {type: String, required: true},
+        userName: {type: String, required: true, minlength: NAME_MIN_LENGTH, maxlength: NAME_MAX_LENGTH},
+        organization: {type: String, minlength: ORGANIZATION_MIN_LENGTH, maxlength: ORGANIZATION_MAX_LENGTH},
+        pass: {type: String},
+        phone: {type: String, default: ""},
+
         isConfirmed: {type: Boolean, default: false},
-        isAdmin: {type: Boolean, default: false},
         isDisabled: {type: Boolean, default: false},
+
         confirmToken: {type: String},
         forgotToken: {type: String},
-        phone: {type: String, default: ""},
-        contentId: {type: ObjectId, ref: 'Content'},
+
+        role: {type: Number, default: 1},
+        campaigns: [
+            {
+                _id: {type: ObjectId, ref: 'Content'},
+                name: {type: String},
+                createdAt: {type: Date}
+            }
+        ],
+
+        creator: {type: ObjectId, ref: 'User'},
+        subordinates: [
+            {type: ObjectId, ref: 'User'}
+        ],
+
         accessToken: {type: String},
         refreshToken: {type: String},
         subscriptionStart: {type: Date},
@@ -47,4 +63,5 @@ module.exports = (function () {
         userSchema.set('autoIndex', false);
     }
 
-})();
+})
+();

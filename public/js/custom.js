@@ -2,6 +2,8 @@ define(["moment"],function (moment) {
 
 	var routes = {
 		needAuthorize: [
+			'subordinates',
+			'campaigns',
 			'users',
             'upload',
             'edit',
@@ -27,8 +29,10 @@ define(["moment"],function (moment) {
 		if (routes.allRoutes.indexOf(url)!==-1)return;
 		url = "#/"+url;
 		return  Backbone.history.navigate(url, {trigger: true});
-	};
-
+	}
+	
+	
+	
     var runApplication = function (err, data) {
         var url; // the url on boot up
         url =  Backbone.history.fragment || Backbone.history.getFragment();
@@ -45,15 +49,14 @@ define(["moment"],function (moment) {
             App.sessionData.set({
                 authorized: true,
                 user: data,
-				contentId: data && data.contentId ? data.contentId:null,
-				admin:data.isAdmin
+				role:data.role
             });
 			
         } else {
             App.sessionData.set({
                 authorized: false,
                 user: null,
-				contentId: null
+                role: null
             });
         }
 		

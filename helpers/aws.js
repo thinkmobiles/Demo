@@ -109,9 +109,15 @@ module.exports = function (protoObject) {
         this.removeDir = function (bucket, prefix, callback) {
             s3.listObjects({Bucket: bucket, Prefix: prefix}, function (err, data) {
                 if (err) {
-                    return callback(err, null);
+                    if (callback && (typeof callback === 'function')) {
+                        return callback(err, null);
+                    }
+                    return console.error(err);
                 } else if (!data.Contents.length) {
-                    return callback(null);
+                    if (callback && (typeof callback === 'function')) {
+                        return callback(null);
+                    }
+                    return;
                 }
                 async.each(data.Contents, function (elem, eachCb) {
                     s3.deleteObject({Bucket: bucket, Key: elem.Key}, function (err, data) {

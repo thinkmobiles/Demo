@@ -15,7 +15,7 @@ define([
 
         routes: {
             "upload"                    :  "upload",
-            "edit"                      :  "edit",
+            "edit/:campaignId"          :  "edit",
             "home(/:videoId/:userId)"   :  "home",
 			"chooseViewer(/:videoId/:userId)" :  "chooseViewer",
 			"registerViewer(/:videoId/:userId)" :  "registerViewer",
@@ -26,11 +26,14 @@ define([
             "registration"              :  "registration",
 			"analytics"              :  "analytics",
 			"users"                  :  "users",
+			"subordinates"           :  "subordinates",
+			"campaigns"           :  "campaigns",
 			"pricing"              :  "pricing",
 			"aboutUs"              :  "aboutUs",
 			"contact"              : "contact",
 			"forgot"              : "forgot",
 			"resetPassword(/:token)"              : "resetPassword",
+            "confirm(/:token)"              : "confirmUser",
 			"message?text=:text":       "showNotification",
             "*any"                      :  "any"
         },
@@ -45,7 +48,8 @@ define([
             });
 			$(document).on("click", function (e) {
 				if (!$(e.target).closest(".customSelect").length){
-					$(".customSelect ul").hide()
+					$(".customSelect ul").hide();
+                    $(".customSelect").closest('.campaigns').find('.campaign-container').fadeOut(300);
 				}
             });
 			$(document).on( 'scroll', function(){
@@ -158,14 +162,20 @@ define([
             this.loadWrapperView('upload');
         },
 
-        edit: function () {
-            this.loadWrapperView('edit');
+        edit: function (campaignId) {
+            this.loadWrapperView('edit', campaignId);
         },
 		analytics: function () {
-            this.loadWrapperView('analitics');
+            this.loadWrapperView('analytics');
         },
 		users: function () {
             this.loadWrapperView('users');
+        },
+        subordinates: function () {
+            this.loadWrapperView('subordinates');
+        },
+        campaigns: function () {
+            this.loadWrapperView('campaigns');
         },
         registration: function () {
             this.loadWrapperView('registration');
@@ -184,6 +194,10 @@ define([
 		},
 		resetPassword: function (token) {
 			this.loadWrapperView('resetPassword', {token:token});
+		},
+
+        confirmUser: function (token) {
+			this.loadWrapperView('confirmUser', {token:token});
 		},
         home: function (videoId, userId) {
             this.loadWrapperView('home',{

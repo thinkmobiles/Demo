@@ -9,15 +9,19 @@ module.exports = (function () {
         order: {type:Number},
         videoUri: {type: String},
         pdfUri: [{type: String}]
-    },{versionKey: false/*, _id: false*/});
+    },{versionKey: false});
 
     var contentSchema = mongoose.Schema({
-        ownerId: {type: ObjectId, ref: 'User'},
+        nameOfCampaign: {type: String},
+
+        owner: {type: ObjectId, ref: 'User'},
+        creator: {type: ObjectId, ref: 'User'},
+
         name: {type: String/*, required: true, unique: true*/},
-        logoUri: {type: String},
         phone: {type: String},
         email: {type: String},
 
+        logoUri: {type: String},
         mainVideoName: {type: String},
         mainVideoDescription: {type: String},
         mainVideoUri: { type: String},

@@ -14,6 +14,7 @@ module.exports = function (app, db) {
     var trackRouter = require('./track')(db);
     var adminRouter = require('./admin')(db);
     var contentRouter = require('./content')(db);
+    var subordinateRouter = require('./subordinate')(db);
 
 
     app.use(function (req, res, next) {
@@ -54,6 +55,7 @@ module.exports = function (app, db) {
     app.use('/track', trackRouter);
     app.use('/analytic', analyticRouter);
     app.use('/admin', adminRouter);
+    app.use('/subordinates', subordinateRouter);
 
 
     // ----------------------------------------------------------

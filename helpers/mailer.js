@@ -170,6 +170,37 @@ var MailerModule = function () {
         });
     };
 
+    this.sendInviteToSubordinate = function (options) {
+        fs.readFile('public/templates/mailer/inviteSubordinate.html', 'utf8', function (err, template) {
+            var templateOptions;
+            var mailOptions;
+
+            if (err) {
+                if (process.env.NODE_ENV !== 'production') {
+                    console.error(err);
+                }
+            } else {
+
+                templateOptions = {
+                    firstName: options.firstName,
+                    lastName: options.lastName,
+                    userName: options.userName,
+                    url: process.env.WEB_HOST + '/#/confirm/' + options.confirmToken
+                };
+
+                mailOptions = {
+                    from: FROM,
+                    to: options.email,
+                    subject: 'Account confirmed',
+                    generateTextFromHTML: true,
+                    html: _.template(template)(templateOptions)
+                };
+
+                deliver(mailOptions);
+            }
+        });
+    };
+
     this.sendWeeklyAnalytic = function (options, callback) {
         fs.readFile('public/templates/mailer/weeklyAnalytic.html', 'utf8', function (err, template) {
             var templateOptions;

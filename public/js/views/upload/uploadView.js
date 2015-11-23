@@ -74,7 +74,12 @@ define([
             this.$el.find(".error").removeClass("error");
             var hasError = false;
             var message = '';
-            var ENTER_REQUIRED_FIELDS = 'Please enter all required fields!';
+
+            if (!this.$el.find(".uploadContainer input[name='nameOfCampaign']").val()) {
+                this.$el.find(".uploadContainer input[name='nameOfCampaign']").addClass("error");
+                message = (message == '') ? "Please input name of campaign" : message;
+                hasError = true;
+            }
 
             if (!this.$el.find("textarea[name='desc']").val()) {
                 this.$el.find("textarea[name='desc']").addClass("error");
@@ -101,11 +106,6 @@ define([
                 hasError = true;
             }
 
-            if (!this.$el.find("input[name='phone']").val()) {
-                this.$el.find("input[name='phone']").closest(".uploadContainer").addClass("error");
-                message = (message == '') ? "Please input phone number": message;
-                hasError = true;
-            }
 
             if (!this.$el.find("input[name='email']").val()) {
                 this.$el.find(".uploadContainer input[name='email']").closest(".uploadContainer").addClass("error");
@@ -118,6 +118,13 @@ define([
                 message = (message == '') ? (self.$el.find(".uploadContainer input[name='email']").val() + " is not a valid email.") : message;
                 hasError = true;
             }
+
+            if (!this.$el.find("input[name='phone']").val()) {
+                this.$el.find("input[name='phone']").closest(".uploadContainer").addClass("error");
+                message = (message == '') ? "Please input phone number": message;
+                hasError = true;
+            }
+
             if (!validation.validPhone(this.$el.find("input[name='phone']").val())) {
                 this.$el.find("input[name='phone']").closest(".uploadContainer").addClass("error");
                 message = (message == '') ? "That is not a valid phone number. It should contain only numbers and '+ - ( )' signs" : message;
@@ -137,6 +144,7 @@ define([
             }
 
 
+
             var form = document.forms.namedItem("videoForm");
 
             var oData = new FormData(form);
@@ -150,7 +158,7 @@ define([
 
             oReq.upload.addEventListener("progress", function (evt) {
                 if (evt.lengthComputable) {
-                    self.percentComplete = (evt.loaded / evt.total)||0;
+                    self.percentComplete = evt.loaded / evt.total;
                     self.percentComplete = parseInt(self.percentComplete * 100);
 
                     if (self.percentComplete === 100) {
@@ -185,7 +193,7 @@ define([
             oReq.onload = function (oEvent) {
                 if (oReq.status === 201) {
                     try {
-                        self.modalProgres.hide()
+                        self.modalProgres.hide();
                         var res = JSON.parse(oReq.response);
                         $("<div><input type='text' value='" + res.url + "' readonly/></div>").dialog({
                             modal: true,
@@ -195,8 +203,6 @@ define([
                             width: 725
                         });
                         //window.location="/#home";
-
-                        App.sessionData.set({contentId:res.id});
                         self.$el.find()
                     }
                     catch (e) {
@@ -205,9 +211,10 @@ define([
                 } else {
                     try {
                         App.notification(JSON.parse(oReq.responseText).error);
-                        Backbone.history.navigate("#/home", {trigger: true});
+                        self.modalProgres.hide()
                     } catch (e) {
-                        App.notification();
+                        Backbone.history.navigate("#/home", {trigger: true});
+                        App.notification('Some error occurs');
                     }
                 }
             };
@@ -216,7 +223,7 @@ define([
 
         decline: function (e) {
             e.preventDefault();
-            Backbone.history.navigate("#/home", {trigger: true});
+            Backbone.history.navigate("#/campaigns", {trigger: true});
         },
 
         changeInput: function (e) {

@@ -20,31 +20,19 @@ var routeHandler = function (db) {
     var analytic = new Analytic(db);
 
     this.contactsByDomain = function (req, res, next) {
-        var domain = req.query.domain;
-        var userId = req.session.uId;
         var error = new Error();
+        var domain, contentId;
 
-        if (!domain) {
+        if (!req.query.domain || !req.query.id) {
             error.status = 400;
             error.message = 'Bad Request';
             return next(error);
         }
+        domain = req.query.domain;
+        contentId = req.query.id;
 
         async.waterfall([
             function (waterfallCb) {
-                ContentModel.findOne({ownerId: userId}, function (err, doc) {
-                    if (err) {
-                        return waterfallCb(err);
-                    } else if (!doc) {
-                        error.status = 404;
-                        error.message = 'No Data';
-                        return waterfallCb(error);
-                    }
-                    waterfallCb(null, doc._id)
-                });
-            },
-
-            function (contentId, waterfallCb) {
                 TrackModel.aggregate([{
                     $match: {
                         contentId: contentId,
@@ -75,21 +63,22 @@ var routeHandler = function (db) {
     };
 
     this.uninterested = function (req, res, next) {
-        var userId = req.session.uId;
         var error = new Error();
-        var reqFrom, reqTo, from, to;
+        var reqFrom, reqTo, from, to, contentId;
 
-        if (!req.query.from || !req.query.to) {
+        if (!req.query.from || !req.query.to || !req.query.id) {
             error.status = 400;
             error.message = 'Bad Request';
             return next(error);
         }
+
+        contentId = req.query.id;
         reqFrom = new Date(req.query.from);
         reqTo = new Date(req.query.to);
         from = new Date(reqFrom.setHours(0));
         to = new Date(reqTo.setHours(24));
 
-        analytic.uninterested(userId, from, to, function (err, data) {
+        analytic.uninterested(contentId, from, to, function (err, data) {
             if (err) {
                 return next(err);
             }
@@ -98,23 +87,19 @@ var routeHandler = function (db) {
     };
 
     this.allDomain = function (req, res, next) {
+        var error = new Error();
+        var contentId;
+
+        if (!req.query.id) {
+            error.status = 400;
+            error.message = 'Bad Request';
+            return next(error);
+        }
+
+        contentId = mongoose.Types.ObjectId(req.query.id);
+
         async.waterfall([
             function (waterfallCb) {
-                var userId = mongoose.Types.ObjectId(req.session.uId);
-                ContentModel.findOne({ownerId: userId}, function (err, doc) {
-                    if (err) {
-                        return waterfallCb(err);
-                    } else if (!doc) {
-                        var error = new Error();
-                        error.status = 404;
-                        error.message = 'No Data';
-                        return waterfallCb(error);
-                    }
-                    waterfallCb(null, doc._id)
-                });
-            },
-
-            function (contentId, waterfallCb) {
                 TrackModel.aggregate([{
                     $match: {
                         contentId: contentId
@@ -154,9 +139,8 @@ var routeHandler = function (db) {
     };
 
     this.contact = function (req, res, next) {
-        var email = req.query.email;
         var error = new Error();
-        var contentId;
+        var email, contentId;
 
         if (!email) {
             error.status = 400;
@@ -164,23 +148,11 @@ var routeHandler = function (db) {
             return next(error);
         }
 
+        email = req.query.email;
+        contentId = mongoose.Types.ObjectId(req.query.id);
+
         async.waterfall([
             function (waterfallCb) {
-                var userId = mongoose.Types.ObjectId(req.session.uId);
-                ContentModel.findOne({ownerId: userId}, function (err, doc) {
-                    if (err) {
-                        return waterfallCb(err);
-                    } else if (!doc) {
-                        error.status = 404;
-                        error.message = 'No Data';
-                        return waterfallCb(error);
-                    }
-                    contentId =  doc._id;
-                    waterfallCb(null)
-                });
-            },
-
-            function ( waterfallCb) {
                 TrackModel.aggregate([{
                     $match: {
                         contentId: contentId,
@@ -240,7 +212,7 @@ var routeHandler = function (db) {
             },
 
             function (data, waterfallCb) {
-                if(!data){
+                if (!data) {
                     TrackModel.aggregate([{
                         $match: {
                             contentId: contentId,
@@ -311,32 +283,19 @@ var routeHandler = function (db) {
 
 
     this.contacts = function (req, res, next) {
-        var domain = req.query.domain;
         var error = new Error();
-        var userId = req.session.uId;
+        var domain, contentId;
 
-        if (!domain) {
+        if (!req.query.domain || !req.query.id) {
             error.status = 400;
             error.message = 'Bad Request';
             return next(error);
         }
+        domain = req.query.domain;
+        contentId = req.query.id;
 
         async.waterfall([
             function (waterfallCb) {
-
-                ContentModel.findOne({ownerId: userId}, function (err, doc) {
-                    if (err) {
-                        return waterfallCb(err);
-                    } else if (!doc) {
-                        error.status = 404;
-                        error.message = 'No Data';
-                        return waterfallCb(error);
-                    }
-                    waterfallCb(null, doc._id)
-                });
-            },
-
-            function (contentId, waterfallCb) {
                 TrackModel.aggregate([{
                     $match: {
                         contentId: contentId,
@@ -402,47 +361,24 @@ var routeHandler = function (db) {
     };
 
     this.contactMe = function (req, res, next) {
-        var userId = req.session.uId;
         var error = new Error();
-        var reqFrom, reqTo, from, to;
+        var reqFrom, reqTo, from, to, contentId;
 
-        if (!req.query.from || !req.query.to) {
+        if (!req.query.from || !req.query.to || !req.query.id) {
             error.status = 400;
             error.message = 'Bad Request';
             return next(error);
         }
+        contentId = req.query.id;
         reqFrom = new Date(req.query.from);
         reqTo = new Date(req.query.to);
         from = new Date(reqFrom.setHours(0));
         to = new Date(reqTo.setHours(24));
 
-        async.waterfall([
-            function (waterfallCb) {
-                UserModel.findById(userId, function (err, user) {
-                    if (err) {
-                        return next(err);
-                    } else if (!user || !user.contentId) {
-                        var error = new Error();
-                        error.status = 404;
-                        error.message = 'No Data';
-                        return waterfallCb(error);
-                    }
-                    waterfallCb(null, user.contentId)
-                });
-            },
-
-            function (contentId, waterfallCb) {
-                ContactMeModel.find({
-                    contentId: contentId,
-                    sentAt: {$gte: from, $lte: to}
-                }, '-_id -__v -contentId', function (err, doc) {
-                    if (err) {
-                        return waterfallCb(err);
-                    }
-                    waterfallCb(null, doc);
-
-                });
-            }], function (err, doc) {
+        ContactMeModel.find({
+            contentId: contentId,
+            sentAt: {$gte: from, $lte: to}
+        }, '-_id -__v -contentId', function (err, doc) {
             if (err) {
                 return next(err);
             }
@@ -451,21 +387,21 @@ var routeHandler = function (db) {
     };
 
     this.visits = function (req, res, next) {
-        var userId = req.session.uId;
         var error = new Error();
-        var reqFrom, reqTo, from, to;
+        var reqFrom, reqTo, from, to, contentId;
 
-        if (!req.query.from || !req.query.to) {
+        if (!req.query.from || !req.query.to || !req.query.id) {
             error.status = 400;
             error.message = 'Bad Request';
             return next(error);
         }
+        contentId = req.query.id;
         reqFrom = new Date(req.query.from);
         reqTo = new Date(req.query.to);
         from = new Date(reqFrom.setHours(0));
         to = new Date(reqTo.setHours(24));
 
-        analytic.visits(userId, from, to, function (err, data) {
+        analytic.visits(contentId, from, to, function (err, data) {
             if (err) {
                 return next(err);
             }
@@ -475,21 +411,21 @@ var routeHandler = function (db) {
 
 
     this.totalVisits = function (req, res, next) {
-        var userId = req.session.uId;
         var error = new Error();
-        var reqFrom, reqTo, from, to;
+        var reqFrom, reqTo, from, to, contentId;
 
-        if (!req.query.from || !req.query.to) {
+        if (!req.query.from || !req.query.to || !req.query.id) {
             error.status = 400;
             error.message = 'Bad Request';
             return next(error);
         }
+        contentId = req.query.id;
         reqFrom = new Date(req.query.from);
         reqTo = new Date(req.query.to);
         from = new Date(reqFrom.setHours(0));
         to = new Date(reqTo.setHours(24));
 
-        analytic.totalVisits(userId, from, to, function (err, data) {
+        analytic.totalVisits(contentId, from, to, function (err, data) {
             if (err) {
                 return next(err);
             }
@@ -498,21 +434,21 @@ var routeHandler = function (db) {
     };
 
     this.video = function (req, res, next) {
-        var userId = req.session.uId;
         var error = new Error();
-        var reqFrom, reqTo, from, to;
+        var reqFrom, reqTo, from, to, contentId;
 
-        if (!req.query.from || !req.query.to) {
+        if (!req.query.from || !req.query.to || !req.query.id) {
             error.status = 400;
             error.message = 'Bad Request';
             return next(error);
         }
+        contentId = req.query.id;
         reqFrom = new Date(req.query.from);
         reqTo = new Date(req.query.to);
         from = new Date(reqFrom.setHours(0));
         to = new Date(reqTo.setHours(24));
 
-        analytic.video(userId, from, to, function (err, data) {
+        analytic.video(contentId, from, to, function (err, data) {
             if (err) {
                 return next(err);
             }
@@ -521,21 +457,21 @@ var routeHandler = function (db) {
     };
 
     this.question = function (req, res, next) {
-        var userId = req.session.uId;
         var error = new Error();
-        var reqFrom, reqTo, from, to;
+        var reqFrom, reqTo, from, to, contentId;
 
-        if (!req.query.from || !req.query.to) {
+        if (!req.query.from || !req.query.to || !req.query.id) {
             error.status = 400;
             error.message = 'Bad Request';
             return next(error);
         }
+        contentId = req.query.id;
         reqFrom = new Date(req.query.from);
         reqTo = new Date(req.query.to);
         from = new Date(reqFrom.setHours(0));
         to = new Date(reqTo.setHours(24));
 
-        analytic.question(userId, from, to, function (err, data) {
+        analytic.question(contentId, from, to, function (err, data) {
             if (err) {
                 return next(err);
             }
@@ -544,21 +480,21 @@ var routeHandler = function (db) {
     };
 
     this.document = function (req, res, next) {
-        var userId = req.session.uId;
         var error = new Error();
-        var reqFrom, reqTo, from, to;
+        var reqFrom, reqTo, from, to, contentId;
 
-        if (!req.query.from || !req.query.to) {
+        if (!req.query.from || !req.query.to || !req.query.id) {
             error.status = 400;
             error.message = 'Bad Request';
             return next(error);
         }
+        contentId = req.query.id;
         reqFrom = new Date(req.query.from);
         reqTo = new Date(req.query.to);
         from = new Date(reqFrom.setHours(0));
         to = new Date(reqTo.setHours(24));
 
-        analytic.document(userId, from, to, function (err, data) {
+        analytic.document(contentId, from, to, function (err, data) {
             if (err) {
                 return next(err);
             }

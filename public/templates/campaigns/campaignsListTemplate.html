@@ -1,0 +1,25 @@
+<div class="campaignsLabel"><span>OR</span></div><hr class="campaignsLine">
+<div class="campaignsLabel2"><span>Edit Existing Demo</span></div>
+<div class="tableBt">
+    <a href="javascript:;" class="editBtn">
+        <span>Edit</span>
+    </a>
+    <a href="javascript:;" class="delete">
+        <span>Delete</span>
+    </a>
+</div>
+
+<table class="customTable campaignsTable" cellspacing="0" cellpadding="0">
+    <tr>
+        <th><span>Name</span></th>
+        <th><span>Created</span></th>
+        <th><span>Link to Demo</span></th>
+    </tr>
+    <%_.each(campaigns,function(campaign, index){%>
+    <tr data-id="<%=campaign._id%>" class="<%=index==current?'current':''%>">
+        <td><span><%=campaign.name %></span></td>
+        <td><span><%=moment(campaign.createdAt).format('DD MMM YYYY') %></span></td>
+        <td><span><%='http://demo.com:8838/campaign/'+campaign._id+'/{{ctid}}'%></span><span class="clipCopy"><span class="copyTooltip">Copied!</span></span></td>
+    </tr>
+    <%})%>
+</table>

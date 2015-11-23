@@ -2,27 +2,36 @@ define(
     function () {
         //Removed cyrillic chars
         var phoneRegExp = /^[0-9\+]?([0-9-\s()])+[0-9()]$/,
-            intNumberRegExp = /[0-9]+/,
-            nameRegExp = /^[a-zA-Z]+[a-zA-Z-_\s]+$/,
-            nameRegExp = /^[a-zA-Z-_\s]+$/,
-            groupsNameRegExp = /[a-zA-Z0-9]+[a-zA-Z0-9-,#@&*-_\s()\.\/\s]+$/,
-            loginRegExp = /[\w\.@]{5,100}$/,
-            passRegExp = /^[\w\.@]{3,100}$/,
-            skypeRegExp = /^[\w\._@]{6,100}$/,
-            workflowRegExp = /^[a-zA-Z0-9\s]{2,100}$/,
+            nameRegExp = /^[a-zA-Z-_\s]{2,50}$/,
+            titleRegExp = /^[a-zA-Z-_\s]{2,50}$/,
+            orgRegExp = /^[a-zA-Z-_\s]{2,50}$/,
+            commentRegExp = /^[^~<>\^\*₴]{1,300}$/,
+            loginRegExp = /[\w\.@]{4,30}$/,
+            passRegExp = /^[\w\.@!@#+-]{3,50}$/,
             invalidCharsRegExp = /[~<>\^\*₴]/,
-            countryRegExp = /[a-zA-Z\s-]+/,
-            zipRegExp = /[a-zA-Z0-9\s-]+$/,
-            streetRegExp = /^[a-zA-Z0-9\s][a-zA-Z0-9-,\s\.\/\s]+$/,
-            moneyAmountRegExp = /^([0-9]{1,9})\.?([0-9]{1,2})?$/,
             emailRegExp = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
             loggedRegExp = /^([0-9]{1,9})\.?([0-9]{1,2})?$/;
         var MIN_LENGTH = 2,
-            LOGIN_MIN_LENGTH = 5,
-            WORKFLOW_MIN_LENGTH = 3;
+            LOGIN_MIN_LENGTH = 5;
 
         var validateEmail = function (validatedString) {
             return emailRegExp.test(validatedString);
+        };
+
+        var validateUserName = function (validatedString) {
+            return loginRegExp.test(validatedString);
+        };
+
+        var validateComment = function (validatedString) {
+            return commentRegExp.test(validatedString);
+        };
+
+        var validateTitle = function (validatedString) {
+            return titleRegExp.test(validatedString);
+        };
+
+        var validateOrg = function (validatedString) {
+            return orgRegExp.test(validatedString);
         };
 
         var validateLogin = function (validatedString) {
@@ -41,218 +50,29 @@ define(
             return nameRegExp.test(validatedString);
         };
 
-        var validateGroupsName = function (validatedString) {
-            return groupsNameRegExp.test(validatedString);
-        };
-        var validateWorkflowName = function (validatedString) {
-            return workflowRegExp.test(validatedString);
-        };
 
         var validatePass = function (validatedString) {
             return passRegExp.test(validatedString);
-        };
-
-        var validateStreet = function (validatedString) {
-            return streetRegExp.test(validatedString);
         };
 
         var validateLoggedValue = function (validatedString) {
             return loggedRegExp.test(validatedString);
         };
 
-        var validateNumber = function (validatedString) {
-            return intNumberRegExp.test(validatedString);
-        };
+        var validateLength = function (validatedString, minLength, maxLength) {
+                return (validatedString && validatedString.length > minLength && validatedString.length < maxLength)
 
-        var validDate = function (validatedString) {
-            return new Date(validatedString).getMonth() ? true : false;
-        };
-
-        var hasInvalidChars = function (validatedString) {
-            return invalidCharsRegExp.test(validatedString);
-        };
+            };
 
         var errorMessages = {
             invalidNameMsg: "field value is incorrect. field can not contain '~ < > ^ * ₴' signs only a-z A-Z",
             invalidLoginMsg: "field value is incorrect. It should contain only the following symbols: A-Z, a-z, 0-9, _ @",
-            notNumberMsg: "field should contain a valid integer value",
-            invalidCountryMsg: "field should contain only letters, whitespaces and '-' sign",
             loggedNotValid: "field should contain a valid decimal value with max 1 digit after dot",
-            minLengthMsg: function (minLength) {
-                return "field should be at least " + minLength + " characters long"
-            },
-            maxLengthMsg: function (maxLength) {
-                return "field should be at least " + maxLength + " characters long"
-            },
             invalidEmailMsg: "field should contain a valid email address",
             requiredMsg: "field can not be empty",
             invalidCharsMsg: "field can not contain '~ < > ^ * ₴' signs",
-            invalidStreetMsg: "field can contain only letters, numbers and '. , - /' signs",
             invalidPhoneMsg: "field should contain only numbers and '+ - ( )' signs",
-            passwordsNotMatchMsg: "Password and confirm password field do not match"
-        };
-
-
-        var checkNameField = function (errorObj, required, fieldValue, fieldName) {
-            if (errorObj[fieldName] === undefined){errorObj[fieldName]=[]}
-            if (required) {
-                if (!fieldValue) {
-                    errorObj[fieldName].push(errorMessages.requiredMsg);
-                    //errorArray.push({fieldName : errorMessages.requiredMsg});
-                    return;
-                }
-
-                if (fieldValue.length > 35) {
-                    errorObj[fieldName].push(errorMessages.maxLengthMsg(35));
-                    return;
-                }
-
-                //if (fieldValue.length < 2) {
-                //    errorArray.push([fieldName, errorMessages.minLengthMsg(2)].join(' '));
-                //    return;
-                //}
-                //if (!validateName(fieldValue)) errorArray.push([fieldName, errorMessages.invalidNameMsg].join(' '));
-            } else {
-                if (fieldValue) {
-                    //if (hasInvalidChars(fieldValue)) {
-                    //    errorArray.push([fieldName, errorMessages.invalidCharsMsg].join(' '));
-                    //    return;
-                    //}
-
-                    /*if (fieldValue.length > 35) {
-                        errorArray.push({fieldName : [fieldName, errorMessages.maxLengthMsg(35)].join(' ')});
-                        return;
-                    }*/
-
-                    if (fieldValue.length > 35) {
-                        errorObj[fieldName].push(errorMessages.maxLengthMsg(35));
-                        return;
-                    }
-
-                    /*if (fieldValue.length < 1) {
-                        errorArray.push([fieldName, errorMessages.minLengthMsg(1)].join(' '));
-                        return;
-                    }*/
-                    //if (!validateName(fieldValue)) errorArray.push([fieldName, errorMessages.invalidNameMsg].join(' '));
-                }
-            }
-        };
-
-        var checkLogedField = function (errorArray, required, fieldValue, fieldName) {
-            if (required) {
-                if (!fieldValue) {
-                    errorArray.push([fieldName, errorMessages.requiredMsg].join(' '));
-                    return;
-                }
-                if (hasInvalidChars(fieldValue)) {
-                    errorArray.push([fieldName, errorMessages.invalidCharsMsg].join(' '));
-                    return;
-                }
-                if (fieldValue.length < MIN_LENGTH) {
-                    errorArray.push([fieldName, errorMessages.minLengthMsg(MIN_LENGTH)].join(' '));
-                    return;
-                }
-                if (!validateLoggedValue(fieldValue)) errorArray.push([fieldName, errorMessages.invalidNameMsg].join(' '));
-            } else {
-                if (fieldValue) {
-                    if (hasInvalidChars(fieldValue)) {
-                        errorArray.push([fieldName, errorMessages.invalidCharsMsg].join(' '));
-                        return;
-                    }
-                    if (!validateLoggedValue(fieldValue)) errorArray.push([fieldName, errorMessages.invalidNameMsg].join(' '));
-                }
-            }
-        };
-
-        var checkLoginField = function (errorArray, required, fieldValue, fieldName) {
-            if (required) {
-                if (!fieldValue) {
-                    errorArray.push([fieldName, errorMessages.requiredMsg].join(' '));
-                    return;
-                }
-                if (hasInvalidChars(fieldValue)) {
-                    errorArray.push([fieldName, errorMessages.invalidCharsMsg].join(' '));
-                    return;
-                }
-                if (fieldValue.length < LOGIN_MIN_LENGTH) {
-                    errorArray.push([fieldName, errorMessages.minLengthMsg(LOGIN_MIN_LENGTH)].join(' '));
-                    return;
-                }
-                if (!validateLogin(fieldValue)) errorArray.push([fieldName, errorMessages.invalidLoginMsg].join(' '));
-            } else {
-                if (fieldValue) {
-                    if (hasInvalidChars(fieldValue)) {
-                        errorArray.push([fieldName, errorMessages.invalidCharsMsg].join(' '));
-                        return;
-                    }
-                    if (fieldValue.length < MIN_LENGTH) {
-                        errorArray.push([fieldName, errorMessages.minLengthMsg(6)].join(' '));
-                        return;
-                    }
-                    if (!validateName(fieldValue)) errorArray.push([fieldName, errorMessages.invalidLoginMsg].join(' '));
-                }
-            }
-        };
-
-        var checkEmailField = function (errorArray, required, fieldValue, fieldName) {
-            if (required) {
-                if (!fieldValue) {
-                    errorArray.push([fieldName, errorMessages.requiredMsg].join(' '));
-                    return;
-                }
-                if (hasInvalidChars(fieldValue)) {
-                    errorArray.push([fieldName, errorMessages.invalidCharsMsg].join(' '));
-                    return;
-                }
-                if (!validateEmail(fieldValue)) errorArray.push([fieldName, errorMessages.invalidEmailMsg].join(' '));
-            } else {
-                if (fieldValue) {
-                    if (hasInvalidChars(fieldValue)) {
-                        errorArray.push([fieldName, errorMessages.invalidCharsMsg].join(' '));
-                        return;
-                    }
-                    if (!validateEmail(fieldValue)) errorArray.push([fieldName, errorMessages.invalidEmailMsg].join(' '));
-                }
-            }
-        };
-
-        var checkPasswordField = function (errorObj, required, fieldValue, fieldName) {
-            if (required) {
-                if (errorObj[fieldName] === undefined){errorObj[fieldName]=[]}
-                if (!fieldValue) {
-                    errorObj[fieldName].push(errorMessages.requiredMsg);
-                    return;
-                }
-                if (hasInvalidChars(fieldValue)) {
-                    errorObj[fieldName].push(errorMessages.invalidCharsMsg);
-                    return;
-                }
-                if (fieldValue.length < 6) {
-                    errorObj[fieldName].push(errorMessages.minLengthMsg(6));
-                    return;
-                }
-                if (fieldValue.length > 35) {
-                    errorObj[fieldName].push(errorMessages.maxLengthMsg(35));
-                    return;
-                }
-                if (!validatePass(fieldValue)) errorObj[fieldName].push(errorMessages.invalidLoginMsg);
-            } else {
-                if (fieldValue) {
-                    if (hasInvalidChars(fieldValue)) {
-                        errorObj[fieldName].push(errorMessages.invalidCharsMsg);
-                        return;
-                    }
-                    if (fieldValue.length < 6) {
-                        errorObj[fieldName].push(errorMessages.minLengthMsg(6));
-                        return;
-                    }
-                    if (fieldValue.length > 35) {
-                        errorObj[fieldName].push(errorMessages.maxLengthMsg(35));
-                        return;
-                    }
-                    if (!validatePass(fieldValue)) errorObj[fieldName].push(errorMessages.invalidLoginMsg);
-                }
-            }
+            passwordsNotMatchMsg: "Password and confirm password field do not match."
         };
 
         var comparePasswords = function (errorArray, password, confirmPass) {
@@ -263,20 +83,18 @@ define(
 
         return {
             comparePasswords: comparePasswords,
-            checkPasswordField: checkPasswordField,
-            checkLoginField: checkLoginField,
-            checkEmailField: checkEmailField,
-            checkNameField: checkNameField,
             validEmail: validateEmail,
             withMinLength: requiredFieldLength,
             validLoggedValue: validateLoggedValue,
-            validStreet: validateStreet,
-            validDate: validDate,
-			validLogin: validateLogin,
-			validPass: validatePass,
+            validLogin: validateLogin,
+            validPass: validatePass,
             validPhone: validatePhone,
+            validComment: validateComment,
+            validTitle: validateTitle,
+            validOrg: validateOrg,
             validName: validateName,
-            validGroupsName: validateGroupsName,
-            checkLogedField: checkLogedField
+            validLength: validateLength
         }
-    });
+    }
+)
+;

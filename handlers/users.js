@@ -1,6 +1,7 @@
 'use strict';
 
 var CONSTANTS = require('../constants/index');
+var USER_ROLES = require('../constants/userRoles');
 
 var async = require('async');
 var crypto = require("crypto");
@@ -12,8 +13,6 @@ var REG_EXP = require('../constants/regExp');
 var badRequests = require('../helpers/badRequests');
 var Analytic = require('../helpers/analytic');
 var _ = require('../public/js/libs/underscore/underscore-min');
-var path = require('path');
-var fs = require('fs');
 var Jumplead = require('../helpers/jumplead');
 var Sessions = require('../handlers/sessions');
 var mailer = require('../helpers/mailer');
@@ -124,6 +123,7 @@ var routeHandler = function (db) {
 
     function createUser(userData, callback) {
         userData.isConfirmed = false;
+        userData.role = USER_ROLES.USER;
         userData.isDisabled = false;
         userData.confirmToken = randToken.generate(24);
         var newUser = new UserModel(userData);
@@ -344,7 +344,7 @@ var routeHandler = function (db) {
         var error = new Error();
         var data;
 
-        if (!body.lastName||!body.firstName || !body.email || !body.phone ||!body.title) {
+        if (!body.lastName || !body.firstName || !body.email || !body.phone || !body.title) {
             error.message = 'Some field is empty';
             error.status = 403;
             return next(error)
@@ -356,19 +356,19 @@ var routeHandler = function (db) {
             title: body.title,
             company: body.company,
             phone: body.phone,
-            notes: body.notes||''
+            notes: body.notes || ''
         };
         getAdminEmail(function (err, email) {
             data.toEmail = email;
             mailer.contactAdmin(data);
         });
 
-            res.status(200).send({message:'Successful Send'});
+        res.status(200).send({message: 'Successful Send'});
     };
 
 
     this.currentUser = function (req, res, next) {
-        UserModel.findById(req.session.uId, function (err, doc) {
+        UserModel.findById(req.session.uId, {pass:0, __v:0}, function (err, doc) {
             if (err) {
                 return next(err);
             } else if (!doc) {
@@ -528,7 +528,7 @@ var routeHandler = function (db) {
             res.end(img);
         });
     };
-    function getAdminEmail(callback){
+    function getAdminEmail(callback) {
         UserModel.findOne({userName: 'admin', isAdmin: true}, function (err, doc) {
             if (err) {
                 return callback(err);
@@ -538,12 +538,12 @@ var routeHandler = function (db) {
             callback(null, doc.email)
         });
     };
+
     this.signUp = function (req, res, next) {
         var options = req.body;
         var pass = options.pass;
         options.pass = getEncryptedPass(pass);
         async.series([
-
             //validation:
             function (cb) {
                 validateUserSignUp(options, function (err) {
@@ -553,6 +553,7 @@ var routeHandler = function (db) {
                     cb();
                 });
             },
+
             //create user:
             function (cb) {
                 createUser(options, function (err, user) {
@@ -560,6 +561,7 @@ var routeHandler = function (db) {
                         return cb(err);
                     }
                     session.login(req, user);
+
                     getAdminEmail(function (err, email) {
                         user.toEmail = email;
                         mailer.newUserConfirm(user);
@@ -570,7 +572,7 @@ var routeHandler = function (db) {
             if (err) {
                 return next(err);
             }
-            res.status(201).send({message: 'Well done! We\'ll send you an email as soon as this is complete, this shouldn\'t take more than 2 working days.'});
+            res.status(201).send({message: 'Thank you for your interest in DemoRocket!  We’ve received your information and will be contacting you shortly.'});
 
         });
     };
@@ -614,15 +616,19 @@ var routeHandler = function (db) {
     this.redirectToMain = function (req, res, next) {
         var contentId = req.params.contentId;
         var prospectId = req.params.prospectId;
-        if(!contentId&&!prospectId) {
+        if (!contentId || !prospectId) {
             return res.redirect(process.env.HOME_PAGE);
         }
-        return res.redirect(process.env.HOME_PAGE+contentId+'/'+prospectId);
+        //} else if (contentId && !prospectId || prospectId === '{{ctid}}') {
+        //    return res.redirect(process.env.HOME_PAGE);
+        //}
+        return res.redirect(process.env.HOME_PAGE + contentId + '/' + prospectId);
     };
 
     function sortByKey(array, key) {
-        return array.sort(function(a, b) {
-            var x = a[key]; var y = b[key];
+        return array.sort(function (a, b) {
+            var x = a[key];
+            var y = b[key];
             return ((x < y) ? -1 : ((x > y) ? 1 : 0));
         });
     }
@@ -631,11 +637,10 @@ var routeHandler = function (db) {
         var contentId = req.params.contentId;
         var prospectId = req.params.prospectId;
         var error = new Error();
-        var userId;
-        var content;
-        var data;
-        if(!contentId&&!prospectId){
-            UserModel.findOne({userName:'admin'}, function (err, user) {
+        var userId, content, data;
+
+        if (!contentId && !prospectId) {
+            UserModel.findOne({role: USER_ROLES.ADMIN}, function (err, user) {
                 if (err) {
                     return next(err);
                 }
@@ -643,75 +648,73 @@ var routeHandler = function (db) {
                     error.message = 'User Not Found';
                     error.status = 404;
                     return next(error);
-                } else if (user.isDisabled) {
-                    error.message = 'Sorry, but this content disabled now';
-                    error.status = 403;
-                    return next(error);
                 }
-                ContentModel.findOne({ownerId: user._id}, function (err, foundContent) {
+                ContentModel.findOne({owner: user._id}, function (err, doc) {
                     if (err) {
                         return next(err);
                     }
-                    if (!foundContent) {
+                    if (!doc) {
                         error.message = 'Content Not Found';
                         error.status = 404;
                         return next(error);
                     }
-                    foundContent.survey = sortByKey(foundContent.survey,'order');
-                    return res.status(200).send({content:foundContent});
+                    doc.survey = sortByKey(doc.survey, 'order');
+                    return res.status(200).send({content: doc});
                 });
             });
-        }else {
-            if (prospectId == '{{ctid}}') {
-                error.message = 'You have to paste this link to Jumplead email template, where that link for each prospect will be generated';
-                error.status = 400;
-                return next(error);
-            }
+        } else {
+            //if (prospectId == '{{ctid}}') {
+            //    error.message = 'You have to paste this link to Jumplead email template, where that link for each prospect will be generated';
+            //    error.status = 400;
+            //    return next(error);
+            //}
 
             async.waterfall([
 
                 function (waterfallCb) {
-                    ContentModel.findById(contentId, function (err, foundContent) {
+                    ContentModel.findById(contentId, function (err, doc) {
                         if (err) {
                             return waterfallCb(err);
                         }
-                        if (!foundContent) {
+                        if (!doc) {
                             error.message = 'Content Not Found';
                             error.status = 404;
                             return waterfallCb(error);
                         }
-                        content = foundContent;
-                        foundContent.survey = sortByKey(foundContent.survey, 'order');
-                        waterfallCb(null, foundContent);
+                        doc.survey = sortByKey(doc.survey, 'order');
+                        content = doc;
+                        waterfallCb(null, doc);
                     });
                 },
 
                 function (content, waterfallCb) {
-                    UserModel.findById(content.ownerId, function (err, user) {
+                    UserModel.findById(content.owner, function (err, user) {
                         if (err) {
                             return waterfallCb(err);
-                        }
-                        if (!user) {
-                            error.message = 'User Not Found';
+                        } else if (!user) {
+                            error.message = 'Cant found owner of video';
                             error.status = 404;
+
                             return waterfallCb(error);
                         } else if (user.isDisabled) {
                             error.message = 'Sorry, but this content disabled now';
                             error.status = 403;
+
                             return waterfallCb(error);
                         }
-
                         userId = user._id;
                         waterfallCb(null, user);
                     });
                 },
 
                 function (user, waterfallCb) {
+                    if(prospectId=='{{ctid}}'){
+                        return  waterfallCb(null, null);
+                    }
                     ProspectModel.findOne({jumpleadId: prospectId}, function (err, doc) {
                         if (err) {
                             return waterfallCb(err);
-                        }
-                        if (!doc) {
+                        } else if (!doc) {
                             jumplead.getContact(user._id, prospectId, function (err, prospect) {
                                 if (err) {
                                     return waterfallCb(err);
@@ -735,6 +738,7 @@ var routeHandler = function (db) {
                     return next(err);
                 }
                 data = {
+                    personalized: true,
                     content: content,
                     contact: prospect
                 };
@@ -805,19 +809,19 @@ var routeHandler = function (db) {
             async.each(docs, function (doc, eachCb) {
                 async.parallel({
                     visits: function (parallelCb) {
-                        analytic.totalVisits(doc.ownerId.toString(), from, to, parallelCb);
+                        analytic.totalVisits(doc.owner.toString(), from, to, parallelCb);
                     },
                     videos: function (parallelCb) {
-                        analytic.video(doc.ownerId.toString(), from, to, parallelCb);
+                        analytic.video(doc.owner.toString(), from, to, parallelCb);
                     },
                     questions: function (parallelCb) {
-                        analytic.question(doc.ownerId.toString(), from, to, parallelCb);
+                        analytic.question(doc.owner.toString(), from, to, parallelCb);
                     },
                     documents: function (parallelCb) {
-                        analytic.document(doc.ownerId.toString(), from, to, parallelCb);
+                        analytic.document(doc.owner.toString(), from, to, parallelCb);
                     },
                     uninterested: function (parallelCb) {
-                        analytic.uninterested(doc.ownerId.toString(), from, to, parallelCb);
+                        analytic.uninterested(doc.owner.toString(), from, to, parallelCb);
                     }
                 }, function (err, options) {
                     if (err) {

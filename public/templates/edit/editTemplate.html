@@ -1,7 +1,7 @@
 <div class="login">
     <div class="inner">
         <center><h2>Link to content:</h2></center>
-        <center><span class="contentUrl"><%=url%></span></center>
+        <div class="linkContainer"><span class="clipCopy"><span class="copyTooltip">Copied!</span></span><span class="contentUrl"><%=url%></span></div>
         <div class="contentButtons">
             <button class="removeContent">Delete Content</button>
             <button class="editContent">Edit Content</button>
@@ -13,6 +13,13 @@
             <input name="countQuestion" value="1" type="hidden" class="countQuestion"/>
             <input name="removedQuestions" value="" type="hidden" class="removedQuestions"/>
             <input name="surveyOrder" value="" type="hidden" class="surveyOrder"/>
+
+            <span>Please enter name of campaign:</span><br/>
+            <div class="uploadContainer text">
+                <div class="left">
+                    <input type="text" name="nameOfCampaign" value="<%=content.nameOfCampaign%>" disabled/>
+                </div>
+            </div>
 
             <h2>STEP 1: CHOOSE YOUR MAIN VIDEO</h2>
 

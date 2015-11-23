@@ -1,3 +1,4 @@
+var USER_ROLES = require('../constants/userRoles');
 var Session = function (db) {
 
     this.login = function (req, options) {
@@ -6,7 +7,8 @@ var Session = function (db) {
         req.session.uId = options._id;
         req.session.isConfirmed = options.isConfirmed;
         req.session.isDisabled = options.isDisabled;
-        req.session.isAdmin = options.isAdmin;
+        req.session.role = options.role;
+        req.session.creator = (options.role===USER_ROLES.USER_ADMINISTRATOR||options.role===USER_ROLES.USER_VIEWER)?options.creator:null;
         return true;
     };
 
@@ -30,8 +32,35 @@ var Session = function (db) {
             next(err);
         }
     };
+
+    this.isAuthenticatedSuperAdmin = function (req, res, next) {
+        if (req.session && req.session.uId && req.session.loggedIn && req.session.isConfirmed && req.session.role == USER_ROLES.ADMIN) {
+            next();
+        } else {
+            if (req.session && req.session.uId) {
+                req.session.destroy();
+            }
+            var err = new Error('You are not super admin');
+            err.status = 403;
+            next(err);
+        }
+    };
+
     this.isAuthenticatedAdmin = function (req, res, next) {
-        if (req.session && req.session.uId && req.session.loggedIn && req.session.isAdmin) {
+        if (req.session && req.session.uId && req.session.loggedIn && req.session.isConfirmed && (req.session.role == USER_ROLES.ADMIN || req.session.role == USER_ROLES.USER)) {
+            next();
+        } else {
+            if (req.session && req.session.uId) {
+                req.session.destroy();
+            }
+            var err = new Error('You are not admin');
+            err.status = 403;
+            next(err);
+        }
+    };
+
+    this.isAuthenticatedAdminRights = function (req, res, next) {
+        if (req.session && req.session.uId && req.session.loggedIn && req.session.isConfirmed && (req.session.role == USER_ROLES.USER_ADMINISTRATOR || req.session.role == USER_ROLES.ADMIN)|| req.session.role == USER_ROLES.USER) {
             next();
         } else {
             if (req.session && req.session.uId) {

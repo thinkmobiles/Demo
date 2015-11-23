@@ -6,26 +6,17 @@ var mongoose = require('mongoose');
 var crypto = require('crypto');
 var _ = require('../public/js/libs/underscore/underscore-min');
 var mailer = require('../helpers/mailer');
-var AwsStorage = require('../helpers/aws')();
-var s3 = new AwsStorage();
+var randToken = require('rand-token');
 
-var AWS = require('../constants/AWS');
 var USER_ROLES = require('../constants/userRoles');
+var CONSTANTS = require('../constants/index');
+var AWS = require('../constants/AWS');
 
 var routeHandler = function (db) {
     var S3_BUCKET = AWS.S3_BUCKET;
 
-    var trackSchema = mongoose.Schemas['Track'];
-    var TrackModel = db.model('Track', trackSchema);
-
     var userSchema = mongoose.Schemas['User'];
     var UserModel = db.model('User', userSchema);
-
-    var contentSchema = mongoose.Schemas['Content'];
-    var ContentModel = db.model('Content', contentSchema);
-
-    var contactMeSchema = mongoose.Schemas['ContactMe'];
-    var ContactMeModel = db.model('ContactMe', contactMeSchema);
 
     function getEncryptedPass(pass) {
         var shaSum = crypto.createHash('sha256');
@@ -39,7 +30,8 @@ var routeHandler = function (db) {
         UserModel.findOneAndUpdate({confirmToken: confirmToken}, {isConfirmed: true}, function (err, doc) {
             if (err) {
                 return next(err);
-            }if(!doc){
+            }
+            if (!doc) {
                 return res.redirect(process.env.WEB_HOST + '/#/message?text=User Not Found!');
             }
             options = {
@@ -47,17 +39,25 @@ var routeHandler = function (db) {
                 firstName: doc.firstName,
                 lastName: doc.lastName
             };
-            mailer.sendInvite(options);
+            //mailer.sendInviteToSubordinate(options);
             return res.redirect(process.env.WEB_HOST + '/#/message?text=Success! You confirmed ' + doc.firstName + ' ' + doc.lastName + ' as new user');
         });
     };
 
 
-    this.confirmedUsers = function (req, res, next) {
-        UserModel.find({isConfirmed: true, role: USER_ROLES.USER}, {avatar: 0, pass: 0}, function (err, docs) {
+    this.subordinates = function (req, res, next) {
+        var uId = req.session.uId;
+        UserModel.find({creator: uId, role: {$in: [USER_ROLES.USER_ADMINISTRATOR, USER_ROLES.USER_VIEWER]}}, {
+            firstName: 1,
+            lastName: 1,
+            userName: 1,
+            isDisabled: 1,
+            role: 1,
+            email: 1
+        }, function (err, docs) {
             if (err) {
                 return next(err);
-            } else if (!docs) {
+            } else if (!docs || !docs.length) {
                 return res.status(200).send([]);
             }
             res.status(200).send(docs);
@@ -94,6 +94,75 @@ var routeHandler = function (db) {
         });
     };
 
+    this.confirmSubordinate = function (req, res, next) {
+        var error = new Error();
+        if (!req.body.password || !req.body.token) {
+            error.message = "Bad request";
+            error.status = 400;
+            return next(error);
+        }
+        var token = req.body.token;
+        var pass = getEncryptedPass(req.body.password);
+
+        UserModel.findOneAndUpdate({confirmToken: token}, {isConfirmed: true, confirmToken: null, pass:pass}, {new:true},function (err, doc) {
+            if (err) {
+                return next(err);
+            }
+            if (!doc) {
+                error.status = 400;
+                error.message = 'User Not Found!';
+                return next(error);
+            }
+            res.status(200).send({message: 'Success! You account confirmed'});
+        });
+    };
+
+    this.createSubordinate = function (req, res, next) {
+        var uId = req.session.uId;
+        var options = req.body;
+        async.waterfall([
+            ////validation:
+            //function (seriesCb) {
+            //    validateUserSignUp(options, function (err) {
+            //        if (err) {
+            //            return seriesCb(err);
+            //        }
+            //        seriesCb();
+            //    });
+            //},
+
+            //create user:
+            function (waterfallCb) {
+                options.isConfirmed = false;
+                options.isDisabled = false;
+                options.creator = uId;
+                options.confirmToken = randToken.generate(24);
+                options.avatar = CONSTANTS.AVATAR;
+                mailer.sendInviteToSubordinate(options);
+                UserModel.create(options, function (err, user) {
+                    if (err) {
+                        return waterfallCb(err);
+                    }
+                    waterfallCb(null, user);
+                });
+            },
+
+            function (user, waterfallCb) {
+                UserModel.findByIdAndUpdate(uId, {$addToSet: {subordinates: user._id}}, function (err) {
+                    if (err) {
+                        return waterfallCb(err);
+                    }
+                    waterfallCb(null);
+                });
+            }], function (err) {
+            if (err) {
+                return next(err);
+            }
+            res.status(201).send({message: 'Created'});
+
+        });
+    };
+
     this.update = function (req, res, next) {
         if (!req.params.id) {
             var e = new Error();
@@ -103,31 +172,18 @@ var routeHandler = function (db) {
         }
         var id = req.params.id;
         var body = req.body;
+
         var saveObj = {};
         if (body.isDisabled !== undefined) {
             saveObj.isDisabled = body.isDisabled;
         }
-        if (body.isConfirmed !== undefined) {
-            saveObj.isConfirmed = body.isConfirmed;
-        }
-        if (body.subscriptionStart !== undefined) {
-            saveObj.subscriptionStart = body.subscriptionStart;
-        }
-        if(body.subscriptionEnd !== undefined) {
-            saveObj.subscriptionEnd = body.subscriptionEnd;
+        if (body.role !== undefined) {
+            saveObj.role = body.role;
         }
 
         UserModel.findByIdAndUpdate(id, saveObj, function (err, doc) {
             if (err) {
                 return next(err);
-            }
-            if (saveObj.isConfirmed === true) {
-                var options = {
-                    email: doc.email,
-                    firstName: doc.firstName,
-                    lastName: doc.lastName
-                };
-                mailer.sendInvite(options);
             }
             var message = 'User modified';
             res.status(200).send({message: message});
@@ -135,54 +191,30 @@ var routeHandler = function (db) {
     };
 
     this.remove = function (req, res, next) {
+        var creator = req.session.uId;
         if (!req.params.id) {
             var e = new Error();
             e.message = 'Not enough params';
             e.status = 400;
             return next(e);
         }
-        var contentId;
         var userId = req.params.id;
 
-        UserModel.findById(userId, function (err, user) {
+        UserModel.findByIdAndUpdate(creator, {$pull: {subordinates: userId}}, function (err, found) {
             if (err) {
-                return next(err);
+                console.error(err);
             }
-            if (!user) {
-                return res.status(404).send({err: 'User Not Found'});
-            }
-            contentId = user.contentId;
-
-            ContentModel.findByIdAndRemove(contentId, function (err, doc) {
+            UserModel.findByIdAndRemove(userId, function (err, found) {
                 if (err) {
                     console.error(err);
                 }
-                UserModel.findByIdAndRemove(userId, function (err, found) {
-                    if (err) {
-                        console.error(err);
-                    }
-                });
-                ContactMeModel.remove({contentId: contentId}, function (err) {
-                    if (err) {
-                        console.error(err);
-                    }
-                    console.log('ContactMeModel updated')
-                });
-                TrackModel.remove({contentId: contentId}, function (err) {
-                    if (err) {
-                        console.error(err);
-                    }
-                    console.log('TrackModel updated')
-                });
-                var dirPath = contentId.toString();
-                s3.removeDir(S3_BUCKET, dirPath);
-
-                var message = 'User removed';
-                res.status(200).send({message: message});
             });
         });
-    };
 
+        var message = 'User removed';
+        res.status(200).send({message: message});
+    };
 };
+
 
 module.exports = routeHandler;
