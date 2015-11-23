@@ -44,30 +44,46 @@ define([
             }
 
             //fName
-            if (!validation.validName(this.$el.find("#fname").val())) {
+            if (!validation.validLength(this.$el.find("#fname").val(),2,20)) {
+                message = (message == '') ? "First name is not valid. Character\`s number should be from 2 to 20" : message;
                 this.$el.find("#fname").addClass("error");
-                message = (message == '') ? "That is not a valid first name. Field can not contain '~ < > ^ * ₴' signs only a-z A-Z" : message;
+                isError = true;
+            } if (!validation.validName(this.$el.find("#fname").val())) {
+                message = (message == '') ? "First name is not valid. Field should contain only the following symbols: a-z, A-Z" : message;
+                this.$el.find("#fname").addClass("error");
                 isError = true;
             }
 
             //organization
-            if (!this.$el.find("#organization").val()) {
+            if (!validation.validLength(this.$el.find("#organization").val(), 2,30)) {
+                message = (message == '') ? "Organization name is not a valid. Character\`s number should be from 2 to 30" : message;
                 this.$el.find("#organization").addClass("error");
-                message = (message == '') ? "That is not a valid organization name." : message;
+                isError = true;
+            } if (!validation.validOrg(this.$el.find("#organization").val())) {
+                message = (message == '') ? "Organization name is not a valid . Field should contain only the following symbols: a-z, A-Z" : message;
+                this.$el.find("#organization").addClass("error");
                 isError = true;
             }
 
             //lName
-            if (!validation.validName(this.$el.find("#lname").val())) {
+            if (!validation.validLength(this.$el.find("#lname").val(),2,20)) {
+                message = (message == '') ? "Last name is not valid. Character\`s number should be from 2 to 20" : message;
                 this.$el.find("#lname").addClass("error");
-                message = (message == '') ? "That is not a valid last name." : message;
+                isError = true;
+            } if (!validation.validName(this.$el.find("#lname").val())) {
+                message = (message == '') ? "Last name is not valid. Field should contain only the following symbols: a-z, A-Z" : message;
+                this.$el.find("#lname").addClass("error");
                 isError = true;
             }
 
             //title
-            if (!validation.validTitle(this.$el.find("#title").val())) {
+            if (!validation.validLength(this.$el.find("#title").val(),2,20)) {
+                message = (message == '') ? "Title is not valid. Character\`s number should be from 2 to 20" : message;
                 this.$el.find("#title").addClass("error");
-                message = (message == '') ? "That is not a valid title." : message;
+                isError = true;
+            }if (!validation.validTitle(this.$el.find("#title").val())) {
+                message = (message == '') ? "Title is not valid. Field should contain only the following symbols: a-z, A-Z" : message;
+                this.$el.find("#title").addClass("error");
                 isError = true;
             }
 
@@ -78,24 +94,28 @@ define([
                 isError = true;
             }
 
-            //confPass
+            //confEmail
             if (!this.$el.find("#confirmEmail").val() || this.$el.find("#email").val() !== this.$el.find("#confirmEmail").val()) {
                 this.$el.find("#confirmEmail").addClass("error");
-                message = (message == '') ? 'Password and confirm password field do not match.' : message;
+                message = (message == '') ? 'Email and confirm email field do not match.' : message;
                 isError = true;
             }
 
             //phone
             if (!validation.validPhone(this.$el.find("#phone").val())) {
                 this.$el.find("#phone").addClass("error");
-                message = (message == '') ? "That is not a valid phone number. It should contain only numbers and '+ - ( )' signs" : message;
+                message = (message == '') ? "Phone number is not a valid. It should contain only numbers and '+ - ( )' signs" : message;
                 isError = true;
             }
 
-              //phone
-            if (!validation.validComment(this.$el.find("#comments").val())) {
+              //comments
+            if (this.$el.find("#comments").val() && !validation.validLength(this.$el.find("#comments").val(),2,200)) {
                 this.$el.find("#comments").addClass("error");
-                message = (message == '') ? "That is not a valid comment." : message;
+                message = (message == '') ? "Comments is not valid. Character\`s number should be from 2 to 200" : message;
+                isError = true;
+            }if (this.$el.find("#comments").val() && !validation.validComment(this.$el.find("#comments").val())) {
+                this.$el.find("#comments").addClass("error");
+                message = (message == '') ? "Comments is not valid. Field should contain only the following symbols: a-z, A-Z" : message;
                 isError = true;
             }
 

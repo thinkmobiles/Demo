@@ -59,6 +59,11 @@ define(
             return loggedRegExp.test(validatedString);
         };
 
+        var validateLength = function (validatedString, minLength, maxLength) {
+                return (validatedString && validatedString.length > minLength && validatedString.length < maxLength)
+
+            };
+
         var errorMessages = {
             invalidNameMsg: "field value is incorrect. field can not contain '~ < > ^ * ₴' signs only a-z A-Z",
             invalidLoginMsg: "field value is incorrect. It should contain only the following symbols: A-Z, a-z, 0-9, _ @",
@@ -87,6 +92,9 @@ define(
             validComment: validateComment,
             validTitle: validateTitle,
             validOrg: validateOrg,
-            validName: validateName
+            validName: validateName,
+            validLength: validateLength
         }
-    });
+    }
+)
+;
