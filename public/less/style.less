@@ -62,15 +62,10 @@
 }
 
 .rotate(@deg: 90) {
-  /* Safari */
   -webkit-transform: rotate(@deg * 1deg);
-  /* Firefox */
   -moz-transform: rotate(@deg * 1deg);
-  /* IE10+ */
   transform: rotate(@deg * 1deg);
-  /* Opera */
   -o-transform: rotate(@deg * 1deg);
-  /* Internet Explorer */
   @IEdeg: round(@deg / 90, 0);
   filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=@IEdeg);
 }
@@ -112,15 +107,10 @@
   clear: both;
 }
 
-html {
-  //overflow: hidden;
-}
-
 html, body {
   font-size: 100%;
   height: 100%;
   .mp;
-  //width:100%;
   position: relative;
   font-family: "LatoRegular";
 }
@@ -280,7 +270,6 @@ html, body {
   }
 
 }
-
 .opacity {
   .lh(50px);
   width: 245px;
@@ -640,7 +629,6 @@ html, body {
       margin-right: 20px;
     }
   }
-
   .forgot {
     display: block;
     text-align: left;
@@ -680,7 +668,6 @@ html, body {
       &.valid {
         .i("user-icon-active.png");
       }
-
     }
   }
   .pass {
@@ -768,7 +755,6 @@ body.withLogin {
         opacity: 0;
       }
       .signIn {
-        //display:block;
         visibility: visible;
         opacity: 1;
       }
@@ -1764,11 +1750,8 @@ footer {
       font-weight: bold;
     }
   }
-  &.forgot {
-
-    .buttons {
+  &.forgot .buttons {
       margin: 30px auto 100px auto;
-    }
   }
 }
 
@@ -2079,7 +2062,11 @@ footer {
   text-align: right;
   width: 820px;
   margin: 0 auto;
-  font-family: arial;
+  .nameOfCampaign{
+    text-align: center;
+    font-size: 34px;
+    color: #4186A9;
+  }
   .haveActivity {
     display: none;
   }
@@ -2252,13 +2239,12 @@ footer {
     }
     .campaign-container {
       background-color: #fff;
-      display: block;
       border-radius: 3px;
       position: absolute;
       z-index: 110;
       top: 40px;
       left: 2%;
-      width: 450px;
+      width: 500px;
       box-shadow: 0 1px 8px 1px rgba(219,219,219, .4);
       overflow: hidden;
       display: none;
@@ -2269,7 +2255,6 @@ footer {
         display: block;
         padding: 12px 15px;
         margin: 0 auto;
-        float: none;
         color: #fff;
         box-sizing: border-box;
       }
@@ -2471,7 +2456,10 @@ footer {
     margin: 0 auto;
   }
 }
-
+.campaigns> span.customSelect:hover{
+  box-shadow: 0 0 1px 1px #44CBFF;
+  transition: .3s;
+}
 .campaignsLabel,
 .campaignsLabel2 {
   text-align: center;
@@ -2614,7 +2602,21 @@ footer {
   }
 
 }
+tr:first-of-type th:first-child {
+  border-top-left-radius: 5px;
+}
 
+tr:first-of-type th:last-child {
+  border-top-right-radius: 5px;
+}
+
+tr:last-of-type td:first-child {
+  border-bottom-left-radius: 5px;
+}
+
+tr:last-of-type td:last-child {
+  border-bottom-right-radius: 5px;
+}
 .campaignsTable {
   text-align: center;
   width: 80%;
@@ -2674,9 +2676,7 @@ footer {
         .dis {
           display: none;
         }
-
       }
-
     }
     &.editBtn {
       span {
@@ -2774,7 +2774,6 @@ svg {
         border-radius: 31px;
         background-color: #3db6e5;
         cursor: pointer;
-
       }
     }
 
@@ -2811,9 +2810,7 @@ svg {
 
 #videoForm {
   .videoElement {
-    //display: none;
     padding-bottom: 20px;
-    //padding: 14px 10px;
   }
   .hidden {
     display: none;
@@ -2925,49 +2922,48 @@ svg {
 .campaignsTable {
   td:last-child {
     position: relative;
-    padding-right: 50px;
+    padding-right: 35px;
   }
   td:hover .clipCopy {
     transition: .4s;
     opacity: 1;
-    right: 12px;
   }
   td:last-child:hover .clipCopy {
     transition: .4s;
     opacity: 1;
-    right: 12px;
   }
 }
 .clipCopy {
   background: url("../i/copy.png") no-repeat;
-  width: 12px;
+  width: 6px;
   height: 24px;
   padding: 0 10px;
   background-size: 100% 100%;
   position: absolute;
   top: 6px;
-  right: 0px;
+  right: 8px;
   transition: .1s;
   opacity: 0;
+  cursor: pointer;
 }
-.copyTooltip{
+.login span.copyTooltip, .copyTooltip{
   display: none;
   position: absolute;
   top: -30px;
-  line-height: inherit;
-  padding: 5px 15px 0 15px;
+  line-height: 2;
+  padding: 0 15px 0 15px;
   text-align: center;
   background-color: #bbb;
   border-radius: 3px;
-  color: #fff9e5;
+  color: #fff;
 }
 .linkContainer{
   position: relative;
+  text-align: center;
   &:hover{
     .clipCopy{
       opacity: 1;
       transition: .5;
-      right: 12px;
     }
   }
 }
@@ -3055,25 +3051,6 @@ svg {
   display: none;
 }
 
-/*.callUs {
-  background-color: rgba(93, 95, 124, 0.502);
-  width: 100%;
-  height: 90px;
-  text-align: center;
-  display: none;
-  position: fixed;
-  bottom: 0;
-  z-index: 990;
-  p{
-    color: #fff;
-    font-size: 24px;
-    padding-top: 10px;
-    a{
-      color: inherit;
-      text-decoration: none;
-    }
-  }
-}*/
 .mediaFooter {
   display: none;
   text-align: center;
@@ -3136,7 +3113,6 @@ svg {
     .i('mail.png');
     background-size: 100% 30px;
   }
-
 }
 
 .loader {
