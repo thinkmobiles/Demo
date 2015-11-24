@@ -39,7 +39,8 @@ var routeHandler = function (db) {
         UserModel.findOneAndUpdate({confirmToken: confirmToken}, {isConfirmed: true}, function (err, doc) {
             if (err) {
                 return next(err);
-            }if(!doc){
+            }
+            if (!doc) {
                 return res.redirect(process.env.WEB_HOST + '/#/message?text=User Not Found!');
             }
             options = {
@@ -113,7 +114,7 @@ var routeHandler = function (db) {
         if (body.subscriptionStart !== undefined) {
             saveObj.subscriptionStart = body.subscriptionStart;
         }
-        if(body.subscriptionEnd !== undefined) {
+        if (body.subscriptionEnd !== undefined) {
             saveObj.subscriptionEnd = body.subscriptionEnd;
         }
 
@@ -141,7 +142,6 @@ var routeHandler = function (db) {
             e.status = 400;
             return next(e);
         }
-        var contentId;
         var userId = req.params.id;
 
         UserModel.findById(userId, function (err, user) {
@@ -151,38 +151,68 @@ var routeHandler = function (db) {
             if (!user) {
                 return res.status(404).send({err: 'User Not Found'});
             }
-            contentId = user.contentId;
 
-            ContentModel.findByIdAndRemove(contentId, function (err, doc) {
+            async.each(user.campaigns, function (campaign, eachCb) {
+                var contentId = campaign._id;
+
+                async.parallel([
+                    function (parallelCb) {
+                        ContentModel.findByIdAndRemove(contentId, function (err) {
+                            if (err) {
+                                return parallelCb(err);
+                            }
+                            parallelCb(null);
+                        });
+                    },
+
+                    function (parallelCb) {
+                        ContactMeModel.remove({contentId: contentId}, function (err) {
+                            if (err) {
+                                return parallelCb(err);
+                            }
+                            parallelCb(null);
+                        });
+                    },
+
+                    function (parallelCb) {
+                        TrackModel.remove({contentId: contentId}, function (err) {
+                            if (err) {
+                                return parallelCb(err);
+                            }
+                            parallelCb(null);
+                        });
+                    },
+
+                    function (parallelCb) {
+                        var dirPath = contentId.toString();
+                        s3.removeDir(S3_BUCKET, dirPath, function (err) {
+                            if (err) {
+                                return parallelCb(err);
+                            }
+                            parallelCb(null);
+                        });
+                    }
+
+                ], function (err) {
+                    if (err) {
+                        return eachCb(err);
+                    }
+                     eachCb(null);
+                });
+            }, function (err) {
                 if (err) {
-                    console.error(err);
+                    return next(err);
                 }
-                UserModel.findByIdAndRemove(userId, function (err, found) {
+                UserModel.findByIdAndRemove(userId, function (err) {
                     if (err) {
-                        console.error(err);
+                        return next(err);
                     }
+                    res.status(200).send({message: 'User Removed'});
                 });
-                ContactMeModel.remove({contentId: contentId}, function (err) {
-                    if (err) {
-                        console.error(err);
-                    }
-                    console.log('ContactMeModel updated')
-                });
-                TrackModel.remove({contentId: contentId}, function (err) {
-                    if (err) {
-                        console.error(err);
-                    }
-                    console.log('TrackModel updated')
-                });
-                var dirPath = contentId.toString();
-                s3.removeDir(S3_BUCKET, dirPath);
 
-                var message = 'User removed';
-                res.status(200).send({message: message});
             });
         });
     };
-
 };
 
 module.exports = routeHandler;

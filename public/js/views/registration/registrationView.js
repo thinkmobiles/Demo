@@ -33,13 +33,15 @@ define([
 
         showPreview: function (e) {
             var input = e.target;
-            if (input.files && input.files[0]) {
-                var FR = new FileReader();
-                FR.onload = function (e) {
-                    $('.preview').attr("src", e.target.result);
-                };
-                FR.readAsDataURL(input.files[0]);
+            if (!input.files || !input.files[0] || !input.files[0].size || input.files[0].type.indexOf('image') === -1) {
+                App.notification("Invalid file type. An uploaded avatar must be in GIF, JPEG, or PNG format.");
+                return;
             }
+            var FR = new FileReader();
+            FR.onload = function (e) {
+                $('.preview').attr("src", e.target.result);
+            };
+            FR.readAsDataURL(input.files[0]);
         },
 
         register: function (e) {
@@ -47,70 +49,90 @@ define([
 
             var isError = false;
             var message = '';
-            var ENTER_REQUIRED_FIELDS = 'Please enter all required fields!';
+            var ENTER_REQUIRED_FIELDS = 'Please, enter all required fields.';
             self.$el.find(".registration .error").removeClass("error");
 
             if (!self.$el.find(".registration .email").val() || !self.$el.find(".registration .firstName").val() || !self.$el.find(".registration .lastName").val() || !self.$el.find(".registration .userName").val()
                 || !self.$el.find(".registration .organization").val() || !self.$el.find(".registration .phone").val() || !self.$el.find(".registration .pass").val()) {
-                isError = true;
                 message = (message == '') ? ENTER_REQUIRED_FIELDS : message;
+                isError = true;
             }
 
             //firstName
-            if (!validation.validName(self.$el.find(".registration .firstName").val())) {
-                isError = true;
+            if (!validation.validLength(self.$el.find(".registration .firstName").val(), 2, 20)) {
+                message = (message == '') ? "First name is not valid. Character\`s number should be from 2 to 20" : message;
                 self.$el.find(".registration .firstName").addClass("error");
-                message = (message == '') ? "That is not a valid first name. Field can not contain '~ < > ^ * ₴' signs only a-z A-Z" : message;
+                isError = true;
+            }
+            if (!validation.validName(self.$el.find(".registration .firstName").val())) {
+                message = (message == '') ? "First name is not valid. Field should contain only the following symbols: a-z, A-Z" : message;
+                self.$el.find(".registration .firstName").addClass("error");
+                isError = true;
             }
 
             //lastName
-            if (!validation.validName(self.$el.find(".registration .lastName").val())) {
-                isError = true;
+            if (!validation.validLength(self.$el.find(".registration .lastName").val(), 2, 20)) {
+                message = (message == '') ? "Last name is not valid. Character\`s number should be from 2 to 20" : message;
                 self.$el.find(".registration .lastName").addClass("error");
-                message = (message == '') ? "That is not a valid last name. Field can not contain '~ < > ^ * ₴' signs only a-z A-Z" : message;
+                isError = true;
+            }
+            if (!validation.validName(self.$el.find(".registration .lastName").val())) {
+                message = (message == '') ? "Last name is not valid. Field should contain only the following symbols: a-z, A-Z" : message;
+                self.$el.find(".registration .lastName").addClass("error");
+                isError = true;
             }
 
             //organization
-            if (!self.$el.find(".registration .organization").val() || self.$el.find(".registration .organization").val() < 2 || self.$el.find(".registration .organization").val() > 30) {
-                isError = true;
+            if (!validation.validLength(self.$el.find(".registration .organization").val(), 2, 30)) {
+                message = (message == '') ? "Organization name is not a valid. Character\`s number should be from 2 to 20" : message;
                 self.$el.find(".registration .organization").addClass("error");
-                message = (message == '') ? "That is not a valid organization name. Field can not contain '~ < > ^ * ₴' signs only a-z A-Z" : message;
+                isError = true;
+            }
+            if (!validation.validOrg(self.$el.find(".registration .organization").val())) {
+                message = (message == '') ? "Organization name is not a valid . Field should contain only the following symbols: a-z, A-Z" : message;
+                self.$el.find(".registration .organization").addClass("error");
+                isError = true;
             }
 
             //phone
             if (!validation.validPhone(self.$el.find(".registration .phone").val())) {
-                isError = true;
+                message = (message == '') ? "Phone number is not a valid. It should contain only numbers and '+ - ( )' signs" : message;
                 self.$el.find(".registration .phone").addClass("error");
-                message = (message == '') ? "That is not a valid phone number. It should contain only numbers and '+ - ( )' signs" : message;
+                isError = true;
             }
 
             //userName
             if (!validation.validLogin(self.$el.find(".registration .userName").val())) {
-                isError = true;
+                message = (message == '') ? "UserName is not a valid. Character\`s number should be from 4 to 20" : message;
                 self.$el.find(".registration .userName").addClass("error");
-                message = (message == '') ? "That is not a valid user name. It must consist of only following symbols: A-Z, a-z, 0-9, _ @" : message;
+                isError = true;
+            }
+            if (!validation.validLogin(self.$el.find(".registration .userName").val())) {
+                message = (message == '') ? "UserName is not a valid. Field should contain only the following symbols: A-Z, a-z, 0-9, _ @" : message;
+                self.$el.find(".registration .userName").addClass("error");
+                isError = true;
             }
 
             //email
             if (!validation.validEmail(self.$el.find(".registration .email").val())) {
-                isError = true;
-                self.$el.find(".registration .email").addClass("error");
                 message = (message == '') ? (self.$el.find(".registration .email").val() + " is not a valid email.") : message;
+                self.$el.find(".registration .email").addClass("error");
+                isError = true;
             }
 
             var pass = self.$el.find(".registration .pass").val();
             var rate = checkPass.scorePassword(pass);
 
             if (rate < 30) {
-                isError = true;
-                self.$el.find(".registration .pass").addClass("error");
                 message = (message == '') ? "Your password is weak. Please choose stronger password" : message;
+                self.$el.find(".registration .pass").addClass("error");
+                isError = true;
             }
 
             if (!self.$el.find(".registration .conf").val() || self.$el.find(".registration .conf").val() !== self.$el.find(".registration .pass").val()) {
-                isError = true;
-                self.$el.find(".registration .conf").addClass("error");
                 message = (message == '') ? 'Passwords do not match.' : message;
+                self.$el.find(".registration .conf").addClass("error");
+                isError = true;
             }
 
             if (isError) {
@@ -137,10 +159,10 @@ define([
                 success: function (model) {
                     console.log(model);
                     //ToDo: Develop
-                    window.location = 'https://account.mooloop.com/oauth/authorize?response_type=code&client_id=FcDOCBsnZ2TtKbHTGULY&redirect_uri=http://demo.com:8838/redirect&scope=jumplead.contacts,jumplead.personal';
-
+                    //window.location = 'https://account.mooloop.com/oauth/authorize?response_type=code&client_id=FcDOCBsnZ2TtKbHTGULY&redirect_uri=http://demo.com:8838/redirect&scope=jumplead.contacts,jumplead.personal';
+                    //
                     //ToDo: Production
-                    //window.location = 'https://account.mooloop.com/oauth/authorize?response_type=code&client_id=uemnB2ZAA92gv5CoTCHc&redirect_uri=http://projects.thinkmobiles.com:8838/redirect&scope=jumplead.contacts,jumplead.personal';
+                    window.location = 'https://account.mooloop.com/oauth/authorize?response_type=code&client_id=uemnB2ZAA92gv5CoTCHc&redirect_uri=http://127.0.0.1:8838/redirect&scope=jumplead.contacts,jumplead.personal';
                 },
                 error: function (err) {
                     console.log(err);
