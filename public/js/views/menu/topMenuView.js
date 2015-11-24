@@ -81,7 +81,7 @@ define([
             this.$el.html(_.template(topMenuTemplate)({
                 authorized: App.sessionData.get("authorized"),
                 role: App.sessionData.get("role"),
-                campaigns: App.sessionData.get("campaigns"),
+                campaigns: App.sessionData.get("campaigns")||[],
                 user: App.sessionData.get("user")
             }));
             return this;
