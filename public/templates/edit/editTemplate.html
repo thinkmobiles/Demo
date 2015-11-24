@@ -1,7 +1,10 @@
 <div class="login">
     <div class="inner">
+        <%if(role!==0){%>
         <center><h2>Link to content:</h2></center>
-        <div class="linkContainer"><span class="clipCopy"><span class="copyTooltip">Copied!</span></span><span class="contentUrl"><%=url%></span></div>
+        <div class="linkContainer"><span class="clipCopy"><span class="copyTooltip">Copied!</span></span><span
+                class="contentUrl"><%=url%></span></div>
+        <%}%>
         <div class="contentButtons">
             <button class="removeContent">Delete Content</button>
             <button class="editContent">Edit Content</button>
@@ -14,13 +17,18 @@
             <input name="removedQuestions" value="" type="hidden" class="removedQuestions"/>
             <input name="surveyOrder" value="" type="hidden" class="surveyOrder"/>
 
+            <%if(role==0){%>
+            <h2>DEMO ROCKET DEFAULT CAMPAIGN</h2><br/>
+            <input type="hidden" name="nameOfCampaign" value="Default Campaign"/>
+            <%}else{%>
             <span>Please enter name of campaign:</span><br/>
+
             <div class="uploadContainer text">
                 <div class="left">
                     <input type="text" name="nameOfCampaign" value="<%=content.nameOfCampaign%>" disabled/>
                 </div>
             </div>
-
+            <%}%>
             <h2>STEP 1: CHOOSE YOUR MAIN VIDEO</h2>
 
             <div class="left">

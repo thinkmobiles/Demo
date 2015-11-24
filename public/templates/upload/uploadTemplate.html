@@ -4,13 +4,18 @@
             <input name="countQuestion" value="1" type="hidden" class="countQuestion"/>
             <input name="removedQuestions" value="" type="hidden" class="countQuestion"/>
 
+            <%if(role==0){%>
+            <h2>DEMO ROCKET DEFAULT CAMPAIGN</h2><br/>
+            <input type="hidden" name="nameOfCampaign" value="Default Campaign"/>
+            <%}else{%>
             <span>Please enter name of campaign:</span><br/>
+
             <div class="uploadContainer text">
                 <div class="left">
                     <input type="text" name="nameOfCampaign" value=""/>
                 </div>
             </div>
-
+            <%}%>
             <h2>STEP 1: CHOOSE YOUR MAIN VIDEO</h2>
 
             <div class="left">

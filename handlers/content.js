@@ -562,7 +562,7 @@ var routeHandler = function (db) {
                     return next(err);
                 }
                 var url = process.env.WEB_HOST + '/campaign/' + id + '/{{ctid}}';
-                res.status(201).send({url: url});
+                res.status(201).send({url: url, id:id});
             });
     };
 
@@ -1014,7 +1014,7 @@ var routeHandler = function (db) {
                     return next(err)
                 }
                 var sendDataUrl = process.env.WEB_HOST + '/campaign/' + contentId + '/{{ctid}}';
-                res.status(200).send({url: sendDataUrl});
+                res.status(200).send({url: sendDataUrl, id: contentId });
             });
     };
 };
