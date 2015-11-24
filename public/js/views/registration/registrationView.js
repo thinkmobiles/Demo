@@ -33,13 +33,15 @@ define([
 
         showPreview: function (e) {
             var input = e.target;
-            if (input.files && input.files[0]) {
-                var FR = new FileReader();
-                FR.onload = function (e) {
-                    $('.preview').attr("src", e.target.result);
-                };
-                FR.readAsDataURL(input.files[0]);
+            if (!input.files || !input.files[0] || !input.files[0].size || input.files[0].type.indexOf('image') === -1) {
+                App.notification("Invalid file type. An uploaded avatar must be in GIF, JPEG, or PNG format.");
+                return;
             }
+            var FR = new FileReader();
+            FR.onload = function (e) {
+                $('.preview').attr("src", e.target.result);
+            };
+            FR.readAsDataURL(input.files[0]);
         },
 
         register: function (e) {
