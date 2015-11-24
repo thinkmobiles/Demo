@@ -105,7 +105,8 @@ require(['app'], function (app) {
                 App.sessionData.set({
 					authorized: true,
 					role:data.role,
-                    user: data
+                    user: data,
+                    campaigns:data.campaigns
                 });
 				if (callback)callback();
             },
