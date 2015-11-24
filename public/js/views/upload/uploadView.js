@@ -75,8 +75,8 @@ define([
             var hasError = false;
             var message = '';
 
-            if (!this.$el.find(".uploadContainer input[name='nameOfCampaign']").val()) {
-                this.$el.find(".uploadContainer input[name='nameOfCampaign']").addClass("error");
+            if (!this.$el.find("input[name='nameOfCampaign']").val()) {
+                this.$el.find("input[name='nameOfCampaign']").addClass("error");
                 message = (message == '') ? "Please input name of campaign" : message;
                 hasError = true;
             }
@@ -202,8 +202,10 @@ define([
                             dialogClass: "link-dialog",
                             width: 725
                         });
-                        //window.location="/#home";
-                        self.$el.find()
+                        if(App.sessionData.get('role')==0) {
+                            App.sessionData.set('campaigns', [{_id: res.id}]);
+                            console.log(App.sessionData.toJSON());
+                        }
                     }
                     catch (e) {
                         App.notification(e);
@@ -223,6 +225,10 @@ define([
 
         decline: function (e) {
             e.preventDefault();
+            if(App.sessionData.get('role')==0){
+                Backbone.history.navigate("#/home", {trigger: true});
+                return;
+            }
             Backbone.history.navigate("#/campaigns", {trigger: true});
         },
 
@@ -329,7 +335,7 @@ define([
         },
 
         render: function () {
-            this.$el.html(_.template(EditTemplate));
+            this.$el.html(_.template(EditTemplate)({role: App.sessionData.get('role')}));
             $("#sortable").sortable({
                 cursor: "move",
                 //cursorAt: { top: 70 },

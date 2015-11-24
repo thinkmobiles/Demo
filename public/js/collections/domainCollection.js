@@ -16,6 +16,17 @@ define([
                 }
             });
         },
+        update: function (options) {
+            this.fetch({
+                reset: true,
+                data: options,
+                success: function () {
+                },
+                error: function (models, xhr) {
+                    if (xhr.status === 401) Backbone.history.navigate('#login', {trigger: true});
+                }
+            });
+        },
         url: function () {
             return "/analytic/allDomain"
         },

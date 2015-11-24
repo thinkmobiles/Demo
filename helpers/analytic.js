@@ -604,11 +604,8 @@ var AnalyticModule = function (db) {
                     if (err) {
                         return waterfallCb(err);
                     }
-                    if (!data.length) {
-                        var error = new Error();
-                        error.status = 404;
-                        error.message = 'No Data';
-                        return waterfallCb(error);
+                    if(!data.length){
+                      return   callback(null, {docs:[], download:0});
                     }
                     waterfallCb(null, data[0]);
                 });

@@ -60,14 +60,14 @@ define([
             },
 
             copyURL: function (e) {
-                if(this.clipboard){
+                if (this.clipboard) {
                     this.clipboard.destroy();
                 }
-                var  el =  $(e.target).closest('.linkContainer').find('span').get(2);
-                var  tt =  $(e.target).closest('.linkContainer').find('.copyTooltip');
+                var el = $(e.target).closest('.linkContainer').find('span').get(2);
+                var tt = $(e.target).closest('.linkContainer').find('.copyTooltip');
                 var text = $(e.target).closest('.linkContainer').find('span').eq(2).text();
                 this.clipboard = new Clipboard('.clipCopy', {
-                    text: function() {
+                    text: function () {
                         return text;
                     }
                 });
@@ -78,7 +78,7 @@ define([
                     tt.fadeOut();
                 }, 2000);
 
-                this.clipboard.on('error', function(e) {
+                this.clipboard.on('error', function (e) {
                     var doc = document,
                         range, selection;
                     if (doc.body.createTextRange) {
@@ -92,7 +92,7 @@ define([
                         selection.removeAllRanges();
                         selection.addRange(range);
                     }
-                   tt.text("Press Ctrl+C to copy")
+                    tt.text("Press Ctrl+C to copy")
                 });
             },
 
@@ -129,6 +129,13 @@ define([
                 this.$el.find(".error").removeClass("error");
                 var hasError = false;
                 var message = '';
+
+                if (!this.$el.find("input[name='nameOfCampaign']").val()) {
+                    this.$el.find("input[name='nameOfCampaign']").addClass("error");
+                    message = (message == '') ? "Please input name of campaign" : message;
+                    hasError = true;
+                }
+
                 if (!this.$el.find("textarea[name='desc']").val()) {
                     this.$el.find("textarea[name='desc']").addClass("error");
                     message = (message == '') ? "Please input some brief description" : message;
@@ -220,7 +227,7 @@ define([
                 //============================================================
 
 
-                oReq.open("POST", "content/update/" + self.camaignId , true);
+                oReq.open("POST", "content/update/" + self.camaignId, true);
                 oReq.onload = function (oEvent) {
                     if (oReq.status === 200) {
                         try {
@@ -233,7 +240,11 @@ define([
                                 dialogClass: "link-dialog",
                                 width: 725
                             });
-                            //window.location="/#home";
+                            if(App.sessionData.get('role')==0) {
+                                App.sessionData.set('campaigns', [{_id: res.id}]);
+                                console.log(App.sessionData.toJSON());
+                            }
+
                         }
                         catch (e) {
                             App.notification(e);
@@ -272,11 +283,16 @@ define([
                 }
                 $.ajax({
                     type: "delete",
-                    url: "/content/"+ self.camaignId,
+                    url: "/content/" + self.camaignId,
                     contentType: "application/json",
                     success: function (data) {
+                        if (App.sessionData.get('role') == 0) {
+                            App.sessionData.set('campaigns',[]);
+                            console.log(App.sessionData.toJSON());
+                            Backbone.history.navigate("#/home", {trigger: true});
+                            return;
+                        }
                         Backbone.history.navigate("#/campaigns", {trigger: true});
-                        $('html, body').animate({scrollTop: 0}, 'medium');
                     },
                     error: function (model, xhr) {
                         console.log(xhr);
@@ -288,8 +304,11 @@ define([
 
             decline: function (e) {
                 e.preventDefault();
+                if (App.sessionData.get('role') == 0) {
+                    Backbone.history.navigate("#/home", {trigger: true});
+                    return;
+                }
                 Backbone.history.navigate("#/campaigns", {trigger: true});
-                $('html, body').animate({scrollTop: 0}, 'medium');
 
             }
             ,
@@ -324,8 +343,7 @@ define([
                 $(this.$el).find(".removedQuestions").val(this.removedQuestions.join(" "));
                 current.remove();
                 self.defineOrder();
-            }
-            ,
+            },
 
             openQuestion: function (e) {
                 this.$el.find(".collapseQuestions").css('min-height', this.$el.find(".collapseQuestions").height());
@@ -338,13 +356,11 @@ define([
                 $(e.target).closest(".survey").find('.collapseQuestion').hide()//.addClass('hidden');
                 $(e.target).closest(".survey").find('.videoElement').slideDown();
 
-            }
-            ,
+            },
 
             clickOnFile: function (e) {
                 e.stopPropagation();
-            }
-            ,
+            },
 
 
             addQuestion: function (e) {
@@ -421,6 +437,7 @@ define([
                 var self = this;
                 var data = this.campaignModel.toJSON();
                 this.$el.html(_.template(EditTemplate)({
+                    role: App.sessionData.get('role'),
                     content: data.content,
                     url: data.url,
                     count: data.content.survey.length + 1,

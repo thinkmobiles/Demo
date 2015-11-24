@@ -49,6 +49,7 @@ define(["moment"],function (moment) {
             App.sessionData.set({
                 authorized: true,
                 user: data,
+				campaigns:data.campaigns,
 				role:data.role
             });
 			
@@ -56,7 +57,8 @@ define(["moment"],function (moment) {
             App.sessionData.set({
                 authorized: false,
                 user: null,
-                role: null
+                role: null,
+				campaigns:null
             });
         }
 		

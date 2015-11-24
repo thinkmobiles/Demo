@@ -45,7 +45,8 @@ require(['app'], function (app) {
                     }
                     App.sessionData.set({
                         authorized: false,
-                        user: null
+                        user: null,
+                        campaigns: null
                     });
                 } else {
                     alert("You do not have permission to perform this action");
