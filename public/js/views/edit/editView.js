@@ -272,7 +272,7 @@ define([
                 }
                 $.ajax({
                     type: "delete",
-                    url: "/content",
+                    url: "/content/"+ self.camaignId,
                     contentType: "application/json",
                     success: function (data) {
                         Backbone.history.navigate("#/campaigns", {trigger: true});
