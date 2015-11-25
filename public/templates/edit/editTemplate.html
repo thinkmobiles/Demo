@@ -1,31 +1,29 @@
 <div class="login">
     <div class="inner">
-        <center><h2>Link to content:</h2></center>
-        <div class="linkContainer"><span class="clipCopy"><span class="copyTooltip">Copied!</span></span><span class="contentUrl"><%=url%></span></div>
-        <div class="contentButtons">
-            <button class="removeContent">Delete Content</button>
-            <button class="editContent">Edit Content</button>
-        </div>
-        <div class="clear">
-        </div>
+
         <form action="/updateContent" enctype="multipart/form-data" method="post" id="videoForm" name="videoForm"
-              class="disableEdit">
+              class="">
             <input name="countQuestion" value="1" type="hidden" class="countQuestion"/>
             <input name="removedQuestions" value="" type="hidden" class="removedQuestions"/>
             <input name="surveyOrder" value="" type="hidden" class="surveyOrder"/>
 
+            <%if(role==0){%>
+            <h2>DEMO ROCKET DEFAULT CAMPAIGN</h2><br/>
+            <input type="hidden" name="nameOfCampaign" value="Default Campaign"/>
+            <%}else{%>
             <span>Please enter name of campaign:</span><br/>
+
             <div class="uploadContainer text">
                 <div class="left">
-                    <input type="text" name="nameOfCampaign" value="<%=content.nameOfCampaign%>" disabled/>
+                    <input type="text" name="nameOfCampaign" value="<%=content.nameOfCampaign%>" />
                 </div>
             </div>
-
+            <%}%>
             <h2>STEP 1: CHOOSE YOUR MAIN VIDEO</h2>
 
             <div class="left">
                 <span>Please enter brief description:</span><br/>
-                <textarea disabled name="desc"><%=content.mainVideoDescription%></textarea>
+                <textarea  name="desc"><%=content.mainVideoDescription%></textarea>
             </div>
             <div class="right">
                 <span>Upload video from computer:</span>
@@ -33,7 +31,7 @@
                 <div class="uploadContainer file">
                     <div class="left">
                         <input type="text" placeholder="Drop file here" readonly="readonly"
-                               value="<%=decodeURIComponent(content.mainVideoUri.split('/').pop())%>" disabled/>
+                               value="<%=decodeURIComponent(content.mainVideoUri.split('/').pop())%>" />
                     </div>
                     <div class="right">
                     </div>
@@ -44,7 +42,7 @@
 
                 <div class="uploadContainer link">
                     <div class="left">
-                        <input type="text" name="video" disabled/>
+                        <input type="text" name="video" />
                     </div>
                     <div class="right">
                     </div>
@@ -133,7 +131,7 @@
                 <div class="uploadContainer file long">
                     <div class="left">
                         <input type="text" placeholder="Or drop file here" readonly="readonly"
-                               value="<%=decodeURIComponent(content.logoUri.split('/').pop())%>" disabled/>
+                               value="<%=decodeURIComponent(content.logoUri.split('/').pop())%>" />
                     </div>
                     <div class="right">
                     </div>
@@ -150,7 +148,7 @@
                 <div class="left">
                     <div class="uploadContainer text">
                         <div class="left">
-                            <input type="text" name="name" value="<%=content.name%>" disabled/>
+                            <input type="text" name="name" value="<%=content.name%>" />
                         </div>
                     </div>
                 </div>
@@ -171,7 +169,7 @@
 
                 <div class="uploadContainer text long">
                     <div class="left">
-                        <input type="text" name="email" value="<%=content.email%>" disabled/>
+                        <input type="text" name="email" value="<%=content.email%>" />
                     </div>
                 </div>
                 <br/>
@@ -182,7 +180,7 @@
                 <div class="left">
                     <div class="uploadContainer text">
                         <div class="left">
-                            <input type="text" name="phone" value="<%=content.phone%>" disabled/>
+                            <input type="text" name="phone" value="<%=content.phone%>" />
                         </div>
                     </div>
                 </div>

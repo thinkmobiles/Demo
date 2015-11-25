@@ -50,7 +50,7 @@ define([
             var index = $(e.target).closest(".customTable").find("tr").index($(e.target).closest("tr"));
 
             if (index) {
-                this.subordinateChoosed = index -1;
+                this.subordinateChoosed = index - 1;
 
                 $(e.target).closest(".customTable").find("tr.current").removeClass("current");
                 $(e.target).closest("tr").addClass("current");
@@ -182,7 +182,7 @@ define([
             var id = row.data("id");
             console.log(row.find(".edit .customSelect span.current").text())
             this.updateUser(id, {
-                role: row.find(".edit .customSelect .showList span.current").text()==='Viewer'?3:2
+                role: row.find(".edit .customSelect .showList span.current").text() === 'Viewer' ? 3 : 2
             });
             this.$el.find(".isEdited").removeClass("isEdited")
 
@@ -278,11 +278,14 @@ define([
         renderSubordinatesList: function () {
             var self = this;
             var users = this.subordinatesCollection.toJSON();
+            if (!users.length) {
+                return;
+            }
             this.$el.find("#subordinates").html(_.template(SubordinatesListTemplate)({
                 users: users,
                 current: this.subordinateChoosed
             }));
-            this.updateDisableBtn()
+            this.updateDisableBtn();
             return this;
         },
 

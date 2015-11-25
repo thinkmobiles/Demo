@@ -167,6 +167,11 @@ define([
 
         renderDocumentChart: function () {
             var result = this.documentAnalyticCollection.toJSON()[0];
+            if(!result || !result.docs||!result.docs.length){
+                this.$el.find(".info .countDownload").text('0');
+                this.$el.find('#docDownload').html("<h2>You don't have document</h2>");
+                return
+            }
             this.$el.find(".info .countDownload").text(result.download);
             Custom.drawBarChart(result.docs, '#docDownload');
         },
@@ -261,15 +266,15 @@ define([
                 from: moment().subtract(7, 'days').format("MM/DD/YYYY"),
                 to: moment().format("MM/DD/YYYY")
             });
-            this.domainModel.update({ id: self.campaignId});
+            this.domainModel.update({id: self.campaignId});
         },
 
         render: function () {
             var self = this;
-            var model =  this.campaignsCollection.first();
-            this.campaignId = model.id;
+            var model = this.campaignsCollection.first();
 
-            this.$el.html(_.template(AnaliticsTemplate)({data:self.campaignsCollection.toJSON()}));
+
+            this.$el.html(_.template(AnaliticsTemplate)({data: self.campaignsCollection.toJSON()}));
 
             $("#startDate input").datepicker({
                 onSelect: function (selected) {
@@ -288,39 +293,42 @@ define([
             });
             $("#endDate input").datepicker('setDate', new Date());
 
+            if (model) {
+                this.campaignId = model.id;
+                this.documentAnalyticCollection = new DocumentAnalyticCollection({
+                    id: self.campaignId,
+                    from: moment().subtract(7, 'days').format("MM/DD/YYYY"),
+                    to: moment().format("MM/DD/YYYY")
+                });
+                this.questionAnalyticCollection = new QuestionAnalyticCollection({
+                    id: self.campaignId,
+                    from: moment().subtract(7, 'days').format("MM/DD/YYYY"),
+                    to: moment().format("MM/DD/YYYY")
+                });
+                this.videoAnalyticCollection = new VideoAnalyticCollection({
+                    id: self.campaignId,
+                    from: moment().subtract(7, 'days').format("MM/DD/YYYY"),
+                    to: moment().format("MM/DD/YYYY")
+                });
+                this.visitAnalyticCollection = new VisitAnalyticCollection({
+                    id: self.campaignId,
+                    from: moment().subtract(7, 'days').format("MM/DD/YYYY"),
+                    to: moment().format("MM/DD/YYYY")
+                });
+                this.contactMeCollection = new ContactMeCollection({
+                    id: self.campaignId,
+                    from: moment().subtract(7, 'days').format("MM/DD/YYYY"),
+                    to: moment().format("MM/DD/YYYY")
+                });
+                this.domainModel = new DomainModel({id: self.campaignId});
 
-            this.documentAnalyticCollection = new DocumentAnalyticCollection({
-                id: self.campaignId,
-                from: moment().subtract(7, 'days').format("MM/DD/YYYY"),
-                to: moment().format("MM/DD/YYYY")
-            });
-            this.questionAnalyticCollection = new QuestionAnalyticCollection({
-                id: self.campaignId,
-                from: moment().subtract(7, 'days').format("MM/DD/YYYY"),
-                to: moment().format("MM/DD/YYYY")
-            });
-            this.videoAnalyticCollection = new VideoAnalyticCollection({
-                id: self.campaignId,
-                from: moment().subtract(7, 'days').format("MM/DD/YYYY"),
-                to: moment().format("MM/DD/YYYY")
-            });
-            this.visitAnalyticCollection = new VisitAnalyticCollection({
-                id: self.campaignId,
-                from: moment().subtract(7, 'days').format("MM/DD/YYYY"),
-                to: moment().format("MM/DD/YYYY")
-            });
-            this.contactMeCollection = new ContactMeCollection({
-                id: self.campaignId,
-                from: moment().subtract(7, 'days').format("MM/DD/YYYY"),
-                to: moment().format("MM/DD/YYYY")
-            });
-            this.domainModel = new DomainModel({ id: self.campaignId});
-            this.documentAnalyticCollection.bind('reset', self.renderDocumentChart, self);
-            this.questionAnalyticCollection.bind('reset', self.renderQuestionChart, self);
-            this.videoAnalyticCollection.bind('reset', self.renderVideoChart, self);
-            this.visitAnalyticCollection.bind('reset', self.renderVisitChart, self);
-            this.contactMeCollection.bind('reset', self.renderContactMe, self);
-            this.domainModel.bind('change', self.renderDomainList, self);
+                this.documentAnalyticCollection.bind('reset', self.renderDocumentChart, self);
+                this.questionAnalyticCollection.bind('reset', self.renderQuestionChart, self);
+                this.videoAnalyticCollection.bind('reset', self.renderVideoChart, self);
+                this.visitAnalyticCollection.bind('reset', self.renderVisitChart, self);
+                this.contactMeCollection.bind('reset', self.renderContactMe, self);
+                this.domainModel.bind('change', self.renderDomainList, self);
+            }
             return this;
         }
 

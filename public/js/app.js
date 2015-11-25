@@ -11,6 +11,7 @@ define([
             authorized: false,
             role: null,
             user: null,
+            campaigns: null,
             date: null
         });
         App.slider = [];
