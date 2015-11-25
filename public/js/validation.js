@@ -3,16 +3,21 @@ define(
         //Removed cyrillic chars
         var phoneRegExp = /^[0-9\+]?([0-9-\s()])+[0-9()]$/,
             nameRegExp = /^[a-zA-Z-_\s]{2,50}$/,
-            titleRegExp = /^[a-zA-Z-_\s]{2,50}$/,
-            orgRegExp = /^[a-zA-Z-_\s]{2,50}$/,
+            titleRegExp = /^[a-zA-Z-_0-9\s]{2,50}$/,
+            orgRegExp = /^[a-zA-Z-_0-9!?\s]{2,50}$/,
             commentRegExp = /^[^~<>\^\*₴]{1,300}$/,
             loginRegExp = /[\w\.@]{4,30}$/,
             passRegExp = /^[\w\.@!@#+-]{3,50}$/,
             invalidCharsRegExp = /[~<>\^\*₴]/,
             emailRegExp = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-            loggedRegExp = /^([0-9]{1,9})\.?([0-9]{1,2})?$/;
+            loggedRegExp = /^([0-9]{1,9})\.?([0-9]{1,2})?$/,
+            urlRegExp = /^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\xffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/;
         var MIN_LENGTH = 2,
             LOGIN_MIN_LENGTH = 5;
+
+        var validateUrl = function (validatedString) {
+            return urlRegExp.test(validatedString);
+        };
 
         var validateEmail = function (validatedString) {
             return emailRegExp.test(validatedString);
@@ -60,7 +65,7 @@ define(
         };
 
         var validateLength = function (validatedString, minLength, maxLength) {
-                return (validatedString && validatedString.length > minLength && validatedString.length < maxLength)
+                return (validatedString && validatedString.length >= minLength && validatedString.length <= maxLength)
 
             };
 
@@ -93,7 +98,8 @@ define(
             validTitle: validateTitle,
             validOrg: validateOrg,
             validName: validateName,
-            validLength: validateLength
+            validLength: validateLength,
+            validURL: validateUrl
         }
     }
 )

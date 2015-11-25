@@ -121,7 +121,7 @@ define([
 
             if (!this.$el.find("input[name='phone']").val()) {
                 this.$el.find("input[name='phone']").closest(".uploadContainer").addClass("error");
-                message = (message == '') ? "Please input phone number": message;
+                message = (message == '') ? "Please input phone number" : message;
                 hasError = true;
             }
 
@@ -142,7 +142,6 @@ define([
                 App.notification(message);
                 return;
             }
-
 
 
             var form = document.forms.namedItem("videoForm");
@@ -195,17 +194,12 @@ define([
                     try {
                         self.modalProgres.hide();
                         var res = JSON.parse(oReq.response);
-                        $("<div><input type='text' value='" + res.url + "' readonly/></div>").dialog({
-                            modal: true,
-                            closeOnEscape: false,
-                            appendTo: "#wrapper",
-                            dialogClass: "link-dialog",
-                            width: 725
-                        });
-                        if(App.sessionData.get('role')==0) {
+                        if (App.sessionData.get('role') == 0) {
                             App.sessionData.set('campaigns', [{_id: res.id}]);
-                            console.log(App.sessionData.toJSON());
+                            Backbone.history.navigate("#/home", {trigger: true});
+                            return;
                         }
+                        Backbone.history.navigate("#/campaigns", {trigger: true});
                     }
                     catch (e) {
                         App.notification(e);
@@ -225,7 +219,7 @@ define([
 
         decline: function (e) {
             e.preventDefault();
-            if(App.sessionData.get('role')==0){
+            if (App.sessionData.get('role') == 0) {
                 Backbone.history.navigate("#/home", {trigger: true});
                 return;
             }
@@ -234,6 +228,15 @@ define([
 
         changeInput: function (e) {
             if ($(e.target).val()) {
+                if ($(e.target).closest(".uploadContainer").hasClass('link')) {
+                    var input = $(e.target).closest(".right").find(".uploadContainer.file input[type='file']");
+                    $(e.target).closest(".right").find(".uploadContainer.file input[type='text']").val('');
+                    $(e.target).closest(".right").find(".uploadContainer.file .right").removeClass('active');
+                    input.replaceWith(input.clone());
+                } else {
+                    $(e.target).closest(".right").find(".uploadContainer.link input[type='text']").val('');
+                    $(e.target).closest(".right").find(".uploadContainer.link .right").removeClass('active');
+                }
                 $(e.target).parents(".uploadContainer").find(".right").addClass("active");
             } else {
                 $(e.target).parents(".uploadContainer").find(".right").removeClass("active");
@@ -266,37 +269,70 @@ define([
             var hasError = false;
             e.preventDefault();
             $(".error").removeClass("error");
+            var message = '';
+            var format = 'mp4 WebM Ogg';
 
             var videoName = $(e.target).closest(".videoElement").find(".right .uploadContainer input[type='file']").get(0).files.length ? self.getFiles($(e.target).closest(".videoElement").find(".right .uploadContainer input[type='file']").get(0).files) : $(e.target).closest(".videoElement").find(".right .uploadContainer.link input[type='text']").val();
             var pdfName = $(e.target).closest(".videoElement").find(".left input[type='file']").get(0).files.length ? self.getFiles($(e.target).closest(".videoElement").find(".left input[type='file']").get(0).files) : '';
 
+            //description
             if (!$(e.target).closest(".videoElement").find(".questionText").val().trim()) {
+                message = (message == '') ? "Please input some brief description to survey" : message;
+                $(e.target).closest(".videoElement").find(".questionText").addClass("error");
+                hasError = !0;
+            } else if (!validation.validLength($(e.target).closest(".videoElement").find(".questionText").val().trim(), 2, 300)) {
+                message = (message == '') ? "Description is not a valid. Character`s number should be from 2 to 300" : message;
+                $(e.target).closest(".videoElement").find(".questionText").addClass("error");
+                hasError = !0;
+            } else if (!validation.validComment($(e.target).closest(".videoElement").find(".questionText").val().trim())) {
+                message = (message == '') ? "Description is not valid. Field should contain only the following symbols: \"a-z, A-Z, 0-9, !, ?\"" : message;
                 $(e.target).closest(".videoElement").find(".questionText").addClass("error");
                 hasError = !0;
             }
-            if (!videoName) {
-                $(e.target).closest(".videoElement").find(".right .uploadContainer").addClass("error");
-                hasError = !0;
-            }
-            if (!videoName) {
-                $(e.target).closest(".videoElement").find(".right .uploadContainer").addClass("error");
-                hasError = !0;
-            }
-            if (!hasError) {
-                var countQuestion = this.$el.find(".survey").length;
-                $(e.target).closest(".question").addClass('editQuestion').text("SAVE");
-                $(e.target).closest(".survey").addClass('canSort').removeClass("new");
-                $(e.target).closest(".survey").find('.collapseQuestion h2').text($(e.target).closest(".videoElement").find(".questionText").val());
-                $(e.target).closest(".survey").find('.collapseQuestion .relatedVideo').html("Related video: <b>" + videoName + "</b>");
-                if (pdfName) {
-                    $(e.target).closest(".survey").find('.collapseQuestion .relatedPdf').html("Related PDF: <b>" + pdfName + "</b>");
-                }
-                $(e.target).closest(".survey").find(".collapseQuestion").removeClass("hidden");
-                $(e.target).closest(".videoElement").hide();
 
-                this.$el.find(".collapseQuestions").append(_.template(surveyElement)({index: countQuestion+1}));
-                this.$el.find(".countQuestion").val(countQuestion);
+            //video
+            if (!videoName) {
+                message = (message == '') ? "Please upload some video or past direct link to it" : message;
+                $(e.target).closest(".videoElement").find(".right .uploadContainer").addClass("error");
+                hasError = !0;
+            } else if ($(e.target).closest(".videoElement").find(".right .uploadContainer input[type='file']").get(0).files.length && format.indexOf(videoName.split('.').pop()) == -1) {
+                message = (message == '') ? "Video format is not valid" : message;
+                $(e.target).closest(".videoElement").find(".right .uploadContainer").addClass("error");
+                hasError = !0;
+            } else if (!$(e.target).closest(".videoElement").find(".right .uploadContainer input[type='file']").get(0).files.length) {
+                var link = $(e.target).closest(".videoElement").find(".right .uploadContainer.link input[type='text']").val();
+
+                if (!validation.validURL(link) || format.indexOf(link.split('.').pop()) == -1) {
+                    message = (message == '') ? "Link is not valid" : message;
+                    $(e.target).closest(".videoElement").find(".right .uploadContainer .link").addClass("error");
+                    hasError = !0;
+                }
             }
+            if (pdfName && !self.validPdfs($(e.target).closest(".videoElement").find(".left input[type='file']").get(0).files)) {
+                message = (message == '') ? "Pdf files is not valid" : message;
+                $(e.target).closest(".videoElement").find(".uploadContainer.file.long").addClass('error');
+                hasError = !0;
+            }
+
+            if (hasError) {
+                App.notification(message);
+                return;
+            }
+
+            var countQuestion = this.$el.find(".survey").length;
+            $(e.target).closest(".question").addClass('editQuestion').text("SAVE");
+            $(e.target).closest(".survey").addClass('canSort').removeClass("new");
+            $(e.target).closest(".survey").find('.collapseQuestion h2').text($(e.target).closest(".videoElement").find(".questionText").val());
+            $(e.target).closest(".survey").find('.collapseQuestion .relatedVideo').html("Related video: <b>" + videoName + "</b>");
+            if (pdfName) {
+                $(e.target).closest(".survey").find('.collapseQuestion .relatedPdf').html("Related PDF: <b>" + pdfName + "</b>");
+            }
+            $(e.target).closest(".survey").find(".collapseQuestion").removeClass("hidden");
+            $(e.target).closest(".videoElement").hide();
+
+            this.$el.find(".collapseQuestions").append(_.template(surveyElement)({index: countQuestion + 1}));
+            this.$el.find(".countQuestion").val(countQuestion);
+
         },
 
 

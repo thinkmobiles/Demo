@@ -60,11 +60,10 @@ define([
 
             //firstName
             if (!validation.validLength(self.$el.find(".registration .firstName").val(), 2, 20)) {
-                message = (message == '') ? "First name is not valid. Character\`s number should be from 2 to 20" : message;
+                message = (message == '') ? "First name is not valid. Character`s number should be from 2 to 20" : message;
                 self.$el.find(".registration .firstName").addClass("error");
                 isError = true;
-            }
-            if (!validation.validName(self.$el.find(".registration .firstName").val())) {
+            }else if (!validation.validName(self.$el.find(".registration .firstName").val())) {
                 message = (message == '') ? "First name is not valid. Field should contain only the following symbols: a-z, A-Z" : message;
                 self.$el.find(".registration .firstName").addClass("error");
                 isError = true;
@@ -72,11 +71,10 @@ define([
 
             //lastName
             if (!validation.validLength(self.$el.find(".registration .lastName").val(), 2, 20)) {
-                message = (message == '') ? "Last name is not valid. Character\`s number should be from 2 to 20" : message;
+                message = (message == '') ? "Last name is not valid. Character`s number should be from 2 to 20" : message;
                 self.$el.find(".registration .lastName").addClass("error");
                 isError = true;
-            }
-            if (!validation.validName(self.$el.find(".registration .lastName").val())) {
+            }else if (!validation.validName(self.$el.find(".registration .lastName").val())) {
                 message = (message == '') ? "Last name is not valid. Field should contain only the following symbols: a-z, A-Z" : message;
                 self.$el.find(".registration .lastName").addClass("error");
                 isError = true;
@@ -84,12 +82,11 @@ define([
 
             //organization
             if (!validation.validLength(self.$el.find(".registration .organization").val(), 2, 30)) {
-                message = (message == '') ? "Organization name is not a valid. Character\`s number should be from 2 to 20" : message;
+                message = (message == '') ? "Organization name is not a valid. Character`s number should be from 2 to 20" : message;
                 self.$el.find(".registration .organization").addClass("error");
                 isError = true;
-            }
-            if (!validation.validOrg(self.$el.find(".registration .organization").val())) {
-                message = (message == '') ? "Organization name is not a valid . Field should contain only the following symbols: a-z, A-Z" : message;
+            }else if (!validation.validOrg(self.$el.find(".registration .organization").val())) {
+                message = (message == '') ? "Organization name is not a valid. Field should contain only the following symbols: a-z, A-Z" : message;
                 self.$el.find(".registration .organization").addClass("error");
                 isError = true;
             }
@@ -103,11 +100,10 @@ define([
 
             //userName
             if (!validation.validLogin(self.$el.find(".registration .userName").val())) {
-                message = (message == '') ? "UserName is not a valid. Character\`s number should be from 4 to 20" : message;
+                message = (message == '') ? "UserName is not a valid. Character`s number should be from 4 to 20" : message;
                 self.$el.find(".registration .userName").addClass("error");
                 isError = true;
-            }
-            if (!validation.validLogin(self.$el.find(".registration .userName").val())) {
+            }else if (!validation.validLogin(self.$el.find(".registration .userName").val())) {
                 message = (message == '') ? "UserName is not a valid. Field should contain only the following symbols: A-Z, a-z, 0-9, _ @" : message;
                 self.$el.find(".registration .userName").addClass("error");
                 isError = true;

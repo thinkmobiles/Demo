@@ -4,6 +4,7 @@ define(["moment"],function (moment) {
 		needAuthorize: [
 			'subordinates',
 			'campaigns',
+			'analytics',
 			'users',
             'upload',
             'edit',
