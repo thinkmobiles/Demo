@@ -15,7 +15,7 @@
 
             <div class="uploadContainer text">
                 <div class="left">
-                    <input type="text" name="nameOfCampaign" value="<%=content.nameOfCampaign%>" />
+                    <input type="text" name="nameOfCampaign" value="<%=content.nameOfCampaign%>"/>
                 </div>
             </div>
             <%}%>
@@ -23,36 +23,45 @@
 
             <div class="left">
                 <span>Please enter brief description:</span><br/>
-                <textarea  name="desc"><%=content.mainVideoDescription%></textarea>
+                <textarea name="desc"><%=content.mainVideoDescription%></textarea>
             </div>
             <div class="right mainVideoContainer">
                 <span>Upload video from computer:</span>
 
                 <div class="uploadContainer file">
+
+                    <%if(content.mainVideoUri.indexOf(contentId)!==-1){%>
                     <div class="left">
-                        <%if(content.mainVideoUri.indexOf(contentId)!==-1){%>
-                        <input type="text"  readonly="readonly" placeholder="<%=decodeURIComponent(content.mainVideoUri.split('/').pop())%>" value="<%=decodeURIComponent(content.mainVideoUri.split('/').pop())%>" />
-                        <%}else{%>
-                        <input type="text"  readonly="readonly"  placeholder="Drop file here" value="" />
-                        <%}%>
+                        <input type="text" readonly="readonly"
+                               placeholder="<%=decodeURIComponent(content.mainVideoUri.split('/').pop())%>"
+                               value="<%=decodeURIComponent(content.mainVideoUri.split('/').pop())%>"/>
                     </div>
-                    <div class="right active">
+                    <div class="right active"></div>
+                    <%}else{%>
+                    <div class="left">
+                        <input type="text" readonly="readonly" placeholder="Drop file here" value=""/>
                     </div>
+                    <div class="right"></div>
+                    <%}%>
                     <input type="file" name="video" accept="video/mp4,video/x-m4v,video/*"/>
                 </div>
                 <br/>
                 <span>Or paste a link:</span>
 
                 <div class="uploadContainer link">
+
+                    <%if(content.mainVideoUri.indexOf(contentId)===-1){%>
                     <div class="left">
-                        <%if(content.mainVideoUri.indexOf(contentId)===-1){%>
-                        <input type="text" name="video"  placeholder="Drop file here" value="<%=content.mainVideoUri%>" />
-                        <%}else{%>
-                        <input type="text" name="video"  value="" />
-                        <%}%>
+                        <input type="text" name="video" placeholder="Drop file here" value="<%=content.mainVideoUri%>"/>
                     </div>
-                    <div class="right">
+                    <div class="right active"></div>
+                    <%}else{%>
+                    <div class="left">
+                        <input type="text" name="video" value=""/>
                     </div>
+                    <div class="right"></div>
+                    <%}%>
+
                 </div>
             </div>
             <div class="clear">
@@ -137,8 +146,9 @@
 
                 <div class="uploadContainer file long">
                     <div class="left">
-                        <input type="text"  readonly="readonly"
-                               placeholder="<%=decodeURIComponent(content.logoUri.split('/').pop())%>" value="<%=decodeURIComponent(content.logoUri.split('/').pop())%>" />
+                        <input type="text" readonly="readonly"
+                               placeholder="<%=decodeURIComponent(content.logoUri.split('/').pop())%>"
+                               value="<%=decodeURIComponent(content.logoUri.split('/').pop())%>"/>
                     </div>
                     <div class="right active">
                     </div>
@@ -155,7 +165,7 @@
                 <div class="left">
                     <div class="uploadContainer text">
                         <div class="left">
-                            <input type="text" name="name" value="<%=content.name%>" />
+                            <input type="text" name="name" value="<%=content.name%>"/>
                         </div>
                     </div>
                 </div>
@@ -176,7 +186,7 @@
 
                 <div class="uploadContainer text long">
                     <div class="left">
-                        <input type="text" name="email" value="<%=content.email%>" />
+                        <input type="text" name="email" value="<%=content.email%>"/>
                     </div>
                 </div>
                 <br/>
@@ -187,7 +197,7 @@
                 <div class="left">
                     <div class="uploadContainer text">
                         <div class="left">
-                            <input type="text" name="phone" value="<%=content.phone%>" />
+                            <input type="text" name="phone" value="<%=content.phone%>"/>
                         </div>
                     </div>
                 </div>
