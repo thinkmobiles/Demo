@@ -205,7 +205,7 @@ define([
 
             var self = this;
             $.ajax({
-                url: "/avatar/" + self.$el.find(".signIn .userName").val(),
+                url: "/avatar/" + self.$el.find(".signIn .userName").val().toLowerCase(),
                 type: "GET",
                 dataType: 'json',
                 success: function (response) {
@@ -261,7 +261,7 @@ define([
                 dataType: 'json',
                 data: {
                     keepAlive: keepAlive,
-                    userName: self.$el.find(".signIn .userName").val(),
+                    userName: self.$el.find(".signIn .userName").val().toLowerCase(),
                     pass: self.$el.find(".signIn .password").val()
                 },
                 success: function (response) {

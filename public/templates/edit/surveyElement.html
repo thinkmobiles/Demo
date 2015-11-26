@@ -5,7 +5,7 @@
         <div class="close">
         </div>
         <h2><%=question %></h2>
-        <span class="relatedVideo">Related video: <b><%=video%></b></span>&nbsp;&nbsp;&nbsp;
+        <span class="relatedVideo">Related video: <b><%=decodeURIComponent(video.split('/').pop())%></b></span>&nbsp;&nbsp;&nbsp;
         <%if(pdf){%>
         <span class="relatedPdf">Related PDF: <b><%=pdf %></b></span>
         <%}else{%>
@@ -23,9 +23,13 @@
 
             <div class="uploadContainer file">
                 <div class="left">
-                    <input type="text" placeholder="Drop file here" value="<%=video%>" readonly="readonly"/>
+                    <%if(video.indexOf(contentId)!==-1){%>
+                    <input type="text" placeholder="<%=decodeURIComponent(video.split('/').pop())%>" value="<%=decodeURIComponent(video.split('/').pop())%>" readonly="readonly"/>
+                    <%}else{%>
+                    <input type="text"  readonly="readonly"  placeholder="Drop file here" value="" />
+                    <%}%>
                 </div>
-                <div class="right">
+                <div class="right active">
                 </div>
                 <input type="file" name="video<%=index%>" accept="video/mp4,video/x-m4v,video/*"/><br/>
             </div>
@@ -34,7 +38,11 @@
 
             <div class="uploadContainer link">
                 <div class="left">
-                    <input type="text" name="video<%=index%>"/>
+                    <%if(video.indexOf(contentId)===-1){%>
+                    <input type="text" name="video<%=index%>"  placeholder="" value="<%=video%>" readonly="readonly"/>
+                    <%}else{%>
+                    <input type="text"  name="video<%=index%>" placeholder="" value="" />
+                    <%}%>
                 </div>
                 <div class="right">
                 </div>
@@ -47,9 +55,9 @@
 
             <div class="uploadContainer file long">
                 <div class="left">
-                    <input type="text" placeholder="Or drop file here" value="<%=pdf%>" readonly="readonly"/>
+                    <input type="text" placeholder="<%=pdf&&pdf.length?pdf:'Or drop file here'%>" value="<%=pdf%>" readonly="readonly"/>
                 </div>
-                <div class="right">
+                <div class="right<%=pdf&&pdf.length?' active':''%>">
                 </div>
                 <input type="file" name="file<%=index%>" multiple accept="application/pdf"/><br/>
             </div>

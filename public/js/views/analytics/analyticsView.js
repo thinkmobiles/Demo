@@ -169,9 +169,10 @@ define([
             var result = this.documentAnalyticCollection.toJSON()[0];
             if(!result || !result.docs||!result.docs.length){
                 this.$el.find(".info .countDownload").text('0');
-                this.$el.find('#docDownload').html("<h2>You don't have document</h2>");
-                return
+                this.$el.find('#docDownload').hide();
+                return;
             }
+            this.$el.find('#docDownload').show();
             this.$el.find(".info .countDownload").text(result.download);
             Custom.drawBarChart(result.docs, '#docDownload');
         },

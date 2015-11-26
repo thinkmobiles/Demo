@@ -32,47 +32,73 @@ define([
 				message = (message == '') ? ENTER_REQUIRED_FIELDS : message;
 			}
 
-			if (!validation.validName(self.$el.find(".contactPage .firstName").val())) {
-				isError = true;
+			//firstName
+			if (!validation.validLength(self.$el.find(".contactPage .firstName").val(),2,20)) {
+				message = (message == '') ? "First name is not valid. Character`s number should be from 2 to 20" : message;
 				self.$el.find(".contactPage .firstName").addClass("error");
-				message = (message == '') ? "That is not a valid first name. Field can not contain '~ < > ^ * ₴' signs only a-z A-Z" : message;
+				isError = true;
+			}if (!validation.validName(self.$el.find(".contactPage .firstName").val())) {
+				message = (message == '') ? "First name is not valid. Field should contain only the following symbols: a-z, A-Z" : message;
+				self.$el.find(".contactPage .firstName").addClass("error");
+				isError = true;
 			}
 
-			if (!validation.validName(self.$el.find(".contactPage .lastName").val())) {
-				isError = true;
+			//lastName
+			if (!validation.validLength(self.$el.find(".contactPage .lastName").val(),2,20)) {
+				message = (message == '') ? "Last name is not valid. Character`s number should be from 2 to 20" : message;
 				self.$el.find(".contactPage .lastName").addClass("error");
-				message = (message == '') ? "That is not a valid last name. Field can not contain '~ < > ^ * ₴' signs only a-z A-Z" : message;
+				isError = true;
+			}if (!validation.validName(self.$el.find(".contactPage .lastName").val())) {
+				message = (message == '') ? "Last name is not valid. Field should contain only the following symbols: a-z, A-Z" : message;
+				self.$el.find(".contactPage .lastName").addClass("error");
+				isError = true;
 			}
 
-			if (!validation.validName(self.$el.find(".contactPage .company").val())) {
-				isError = true;
+			//company
+			if (!validation.validLength(self.$el.find(".contactPage .company").val(),2,20)) {
+				message = (message == '') ? "Company name is not valid. Character`s number should be from 2 to 20" : message;
 				self.$el.find(".contactPage .company").addClass("error");
-				message = (message == '') ? "That is not a valid company name. Field can not contain '~ < > ^ * ₴' signs only a-z A-Z" : message;
+				isError = true;
+			}if (!validation.validOrg(self.$el.find(".contactPage .company").val())) {
+				message = (message == '') ? "Company name is not valid. Field should contain only the following symbols: a-z, A-Z" : message;
+				self.$el.find(".contactPage .company").addClass("error");
+				isError = true;
 			}
 
-			if (!self.$el.find(".contactPage .title").val()) {
-				isError = true;
+			//title
+			if (!validation.validLength(self.$el.find(".contactPage .title").val(),2,20)) {
+				message = (message == '') ? "Title is not valid. Character`s number should be from 2 to 20" : message;
 				self.$el.find(".contactPage .title").addClass("error");
-				message = (message == '') ? "That is not a valid title. Field can not contain '~ < > ^ * ₴' signs only a-z A-Z" : message;
-
-			}
-
-			if (!validation.validPhone(self.$el.find(".contactPage .phone").val())) {
 				isError = true;
-				self.$el.find(".contactPage .phone").addClass("error");
-				message = (message == '') ? "That is not a valid phone number. It should contain only numbers and '+ - ( )' signs" : message;
+			}if (!validation.validTitle(self.$el.find(".contactPage .title").val())) {
+				message = (message == '') ? "Title is not valid. Field should contain only the following symbols: a-z, A-Z" : message;
+				self.$el.find(".contactPage .title").addClass("error");
+				isError = true;
 			}
 
+			//email
 			if (!validation.validEmail(self.$el.find(".contactPage .email").val())) {
-				isError = true;
-				self.$el.find(".contactPage .email").addClass("error");
 				message = (message == '') ? (self.$el.find(".contactPage .email").val() + " is not a valid email.") : message;
+				self.$el.find(".contactPage .email").addClass("error");
+				isError = true;
 			}
 
-			if (!self.$el.find(".contactPage .notes").val() || self.$el.find(".contactPage .notes").val() < 2 || self.$el.find(".contactPage .notes").val() > 100) {
+			//phone
+			if (!validation.validPhone(self.$el.find(".contactPage .phone").val())) {
+				message = (message == '') ? "That is not a valid phone number. It should contain only numbers and '+ - ( )' signs" : message;
+				self.$el.find(".contactPage .phone").addClass("error");
 				isError = true;
+			}
+
+			//notes
+			if (!self.$el.find(".contactPage .notes").val() || self.$el.find(".contactPage .notes").val() < 2 || self.$el.find(".contactPage .notes").val() > 100) {
+				message = (message == '') ? "Notes is not valid. Character`s number should be from 2 to 300" : message;
 				self.$el.find(".contactPage .notes").addClass("error");
-				message = (message == '') ? "That is not a valid user notes. It should contain only the following symbols: A-Z, a-z, 0-9, _ @" : message;
+				isError = true;
+			}if (!validation.validLength(self.$el.find(".contactPage .notes").val(),2,300)) {
+				message = (message == '') ? "Notes is not valid. Field should contain only the following symbols: a-z, A-Z" : message;
+				self.$el.find(".contactPage .notes").addClass("error");
+				isError = true;
 			}
 
 			if (isError) {

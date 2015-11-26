@@ -360,6 +360,7 @@ var routeHandler = function (db) {
     this.campaignsList = function (req, res, next) {
         var ownerId;
         var userRole = req.session.role;
+        var error = new Error();
         if (userRole == USER_ROLES.ADMIN || userRole == USER_ROLES.USER) {
             ownerId = req.session.uId;
         } else {
@@ -369,6 +370,10 @@ var routeHandler = function (db) {
         UserModel.findById(ownerId, function (err, user) {
             if (err) {
                 return next(err);
+            }else if(!user){
+                error.status = 400;
+                error.message = 'User Not Found';
+                return next(error);
             }
             res.status(200).send(user.campaigns);
         });
