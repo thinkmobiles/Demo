@@ -118,25 +118,37 @@ define([
             }
 
             //firstName
-            if (!validation.validName(self.$el.find(".registration .firstName").val())) {
-                isError = true;
+            if (!validation.validLength(self.$el.find(".registration .firstName").val(), 2, 20)) {
+                message = (message == '') ? "First name is not valid. Character`s number should be from 2 to 20" : message;
                 self.$el.find(".registration .firstName").addClass("error");
-                message = (message == '') ? "That is not a valid first name. Field can not contain '~ < > ^ * ₴' signs only a-z A-Z" : message;
+                isError = true;
+            }else if (!validation.validName(self.$el.find(".registration .firstName").val())) {
+                message = (message == '') ? "First name is not valid. Field should contain only the following symbols: a-z, A-Z" : message;
+                self.$el.find(".registration .firstName").addClass("error");
+                isError = true;
             }
 
             //lastName
-            if (!validation.validName(self.$el.find(".registration .lastName").val())) {
-                isError = true;
+            if (!validation.validLength(self.$el.find(".registration .lastName").val(), 2, 20)) {
+                message = (message == '') ? "Last name is not valid. Character`s number should be from 2 to 20" : message;
                 self.$el.find(".registration .lastName").addClass("error");
-                message = (message == '') ? "That is not a valid last name. Field can not contain '~ < > ^ * ₴' signs only a-z A-Z" : message;
+                isError = true;
+            }else if (!validation.validName(self.$el.find(".registration .lastName").val())) {
+                message = (message == '') ? "Last name is not valid. Field should contain only the following symbols: a-z, A-Z" : message;
+                self.$el.find(".registration .lastName").addClass("error");
+                isError = true;
             }
 
 
             //userName
             if (!validation.validLogin(self.$el.find(".registration .userName").val())) {
-                isError = true;
+                message = (message == '') ? "UserName is not a valid. Character`s number should be from 4 to 20" : message;
                 self.$el.find(".registration .userName").addClass("error");
-                message = (message == '') ? "That is not a valid user name. It should contain only the following symbols: A-Z, a-z, 0-9, _ @" : message;
+                isError = true;
+            }else if (!validation.validLogin(self.$el.find(".registration .userName").val())) {
+                message = (message == '') ? "UserName is not a valid. Field should contain only the following symbols: A-Z, a-z, 0-9, _ @" : message;
+                self.$el.find(".registration .userName").addClass("error");
+                isError = true;
             }
 
             //email

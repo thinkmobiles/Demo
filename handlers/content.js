@@ -5,7 +5,7 @@ var async = require('async');
 var mongoose = require('mongoose');
 var _ = require('../public/js/libs/underscore/underscore-min');
 var AwsStorage = require('../helpers/aws')();
-var pdfutils = '';//require('pdfutils').pdfutils;
+var pdfutils = require('pdfutils').pdfutils;
 var s3 = new AwsStorage();
 
 var REG_EXP = require('../constants/regExp');
