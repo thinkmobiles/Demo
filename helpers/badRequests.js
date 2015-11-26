@@ -290,7 +290,7 @@ var BadRequestModule = function () {
         SignInError: SignInError,
         AccessError: AccessError,
         CaptchaError:CaptchaError,
-        BlockedAccount: BlockedAccount,
+        BlockedAccount: BlockedAccount
 
     }
 };
