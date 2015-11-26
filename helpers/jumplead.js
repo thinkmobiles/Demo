@@ -2,14 +2,13 @@
 
 var mongoose = require('mongoose');
 var request = require('request');
-var async = require('async');
 
 var JumpleadModule = function (db) {
 
-    var userSchema = mongoose.Schemas['User'];
+    var userSchema = mongoose.Schemas.User;
     var UserModel = db.model('User', userSchema);
 
-    var prospectSchema = mongoose.Schemas['Prospect'];
+    var prospectSchema = mongoose.Schemas.Prospect;
     var ProspectModel = db.model('Prospect', prospectSchema);
 
     var CONSTANTS = require('../constants/jumplead');
@@ -26,20 +25,20 @@ var JumpleadModule = function (db) {
 
     //status = 401 -> refresh_token
     this.refToken = function (userId, callback) {
-        var accessToken;
         var refreshToken;
+        var jumpleadEmail;
+
         UserModel.findById(userId, function (err, foundUser) {
             if (err) {
                 return callback(err);
-            }
-            if (!foundUser) {
+            } else if (!foundUser) {
                 var error = new Error();
-                error.message = "User not found";
+                error.message = 'User not found';
                 error.status = 404;
                 return callback(error);
             }
-            accessToken = foundUser.accessToken;
             refreshToken = foundUser.refreshToken;
+            jumpleadEmail = foundUser.jumpleadEmail;
 
             request.post({
                 url: REFRESH_TOKEN_URL,
@@ -50,7 +49,7 @@ var JumpleadModule = function (db) {
                     client_id: process.env.CLIENT_ID,
                     client_secret: process.env.CLIENT_SECRET,
                     refresh_token: refreshToken,
-                    grant_type: "refresh_token"
+                    grant_type: 'refresh_token'
                 }
             }, function (error, response, body) {
                 try {
@@ -60,21 +59,19 @@ var JumpleadModule = function (db) {
                 }
                 if (!body.access_token) {
                     var err = new Error();
-                    err.message = "Cant connect to external resources";
+                    err.message = 'Cant connect to external resources';
                     err.status = 404;
                     return callback(err);
                 }
-                UserModel.findById(userId, function (err, user) {
-                    UserModel.update({jumpleadEmail: user.jumpleadEmail}, {
-                        $set: {
-                            accessToken: body.access_token
-                        }
-                    }, {multi: true}, function (err) {
-                        if (err) {
-                            return callback(err);
-                        }
-                        return callback(null);
-                    });//findByIdAndUpdate
+                UserModel.update({jumpleadEmail: jumpleadEmail}, {
+                    $set: {
+                        accessToken: body.access_token
+                    }
+                }, {multi: true}, function (err) {
+                    if (err) {
+                        return callback(err);
+                    }
+                    return callback(null);
                 });
             });//request
         });//findById
@@ -82,26 +79,27 @@ var JumpleadModule = function (db) {
 
 
     this.setContact = function (contentId, contact, callback) {
+        var error = new Error();
+
         UserModel.findOne({'campaigns._id': contentId}, function (err, user) {
             if (err) {
                 return callback(err);
             } else if (!user) {
-                var error = new Error();
                 error.message = 'User not found';
                 error.status = 404;
                 return callback(error);
             }
             var body = {
                 data: {
-                    "first_name": contact.firstName,
-                    "last_name": contact.lastName,
-                    "email": contact.email
+                    'first_name': contact.firstName,
+                    'last_name': contact.lastName,
+                    'email': contact.email
                 }
             };
 
             request({
                 url: CONTACTS_URL,
-                method: "POST",
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': 'Bearer ' + user.accessToken
@@ -110,7 +108,7 @@ var JumpleadModule = function (db) {
                 body: body
 
             }, function (error, response, body) {
-                if (body.status == '401') {
+                if (body.status === '401') {
                     return (function () {
                         self.refToken(user._id, function (err) {
                             if (err) {
@@ -123,6 +121,11 @@ var JumpleadModule = function (db) {
                     return callback(body.error);
                 }
                 var data = body.data;
+                if(!data || !data.id || !data.email|| !data.first_name|| !data.last_name){
+                    error.message = 'Bad response from jumplead not found';
+                    error.status = 400;
+                    return callback(error);
+                }
                 ProspectModel.create({
                     jumpleadId: data.id,
                     email: data.email,
@@ -131,7 +134,7 @@ var JumpleadModule = function (db) {
                     isNewViewer: true
                 }, {upsert: true}, function (err) {
                     if (err) {
-                        return console.error(err);
+                       return callback(err);
                     }
                 });
                 return callback(null, data)
@@ -140,13 +143,13 @@ var JumpleadModule = function (db) {
     };
 
     this.getContact = function (userId, contactId, callback) {
+        var e = new Error();
         UserModel.findById(userId, function (err, user) {
             if (err) {
                 return callback(err);
             } else if (!user) {
-                var error = new Error();
-                error.message = 'User not found';
-                error.status = 404;
+                e.message = 'User not found';
+                e.status = 404;
                 return callback(error);
             }
 
@@ -159,22 +162,20 @@ var JumpleadModule = function (db) {
             }, function (error, response, body) {
                 try {
                     body = JSON.parse(body);
-                } catch (e) {
+                } catch (err) {
                     console.log(e);
                 }
-                if (body.status == '404') {
-                    var e = new Error();
+                if (body.status === '404') {
                     e.status = 404;
                     e.message = 'Contact not found';
                     return callback(e)
                 }
-                if (body == 'ID is not valid') {
-                    var e = new Error();
+                if (body === 'ID is not valid') {
                     e.status = 404;
                     e.message = 'Contact not found';
                     return callback(e)
                 }
-                if (body.status == '401') {
+                if (body.status === '401') {
                     return (function () {
                         self.refToken(userId, function (err) {
                             if (err) {
@@ -193,7 +194,7 @@ var JumpleadModule = function (db) {
                     lastName: body.data.last_name
                 }, {upsert: true}, function (err) {
                     if (err) {
-                        return console.error(err);
+                        return callback(err);
                     }
                 });
                 return callback(null, body.data)
@@ -202,6 +203,7 @@ var JumpleadModule = function (db) {
     };
 
     this.getAllContacts = function (userId, callback) {
+        var e = new Error();
 
         UserModel.findById(userId, function (err, user) {
             if (err) {
@@ -219,13 +221,12 @@ var JumpleadModule = function (db) {
                 } catch (e) {
                     console.log(e);
                 }
-                if (body.status == '404') {
-                    var error = new Error();
-                    error.status = 404;
-                    error.message = 'Contacts not found';
+                if (body.status = '404') {
+                    e.status = 404;
+                    e.message = 'Contacts not found';
                     return callback(error)
                 }
-                if (body.status == '401') {
+                if (body.status === '401') {
                     return (function () {
                         self.refToken(userId, function (err) {
                             if (err) {
@@ -259,7 +260,7 @@ var JumpleadModule = function (db) {
                 } catch (e) {
                     console.log(e);
                 }
-                if (body.status == '401' || body.status == '404' || body.status == '403' || body.error || !body.data) {
+                if (body.status === '401' || body.status === '404' || body.status === '403' || body.error || !body.data) {
                     return res.redirect(process.env.WEB_HOST + '/#/message?text=Some trouble with jumplead');
                 }
                 return callback(null, body.data.email);
@@ -278,7 +279,7 @@ var JumpleadModule = function (db) {
                 client_id: process.env.CLIENT_ID,
                 client_secret: process.env.CLIENT_SECRET,
                 redirect_uri: REDIRECT_URI,
-                grant_type: "authorization_code"
+                grant_type: 'authorization_code'
             }
         }, function (error, response, body) {
             try {
@@ -288,7 +289,7 @@ var JumpleadModule = function (db) {
             }
             if (!body.access_token || !body.refresh_token) {
                 var err = new Error();
-                err.message = "Some trouble with jumplead";
+                err.message = 'Some trouble with jumplead';
                 err.status = 500;
                 return callback(err);
             }
@@ -304,22 +305,6 @@ var JumpleadModule = function (db) {
                 return callback(null, user);
             });//findByIdAndUpdate
         });//request.post
-    };
-
-    this.authorize = function () {
-        request.post({
-            url: AUTHORIZE_URL,
-            headers: {
-                'content-type': 'application/json'
-            },
-            form: {
-                code: code,
-                client_id: process.env.CLIENT_ID,
-                redirect_uri: REDIRECT_URI,
-                response_type: "code",
-                scope: CONTACTS_SCOPE
-            }
-        });
     };
 };
 module.exports = JumpleadModule;
