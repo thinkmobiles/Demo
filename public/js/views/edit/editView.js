@@ -553,9 +553,10 @@ define([
                 var arr = item.videoUri.split("/");
                 i = arr[arr.length - 1].split('').pop();
                 $(self.$el).find(".collapseQuestions").prepend(_.template(SurveyElement)({
+                    contentId: self.camaignId,
                     surveyId: item._id,
                     question: item.question,
-                    video: decodeURIComponent(item.videoUri.split("/").pop()),
+                    video: item.videoUri,
                     pdf: decodeURIComponent(pdf),
                     index: item.order
                 }));
