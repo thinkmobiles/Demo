@@ -167,7 +167,7 @@ define([
                 message = (message == '') ? "Please upload main video or past direct link to it" : message;
                 this.$el.find(".mainVideoContainer.right .uploadContainer").addClass("error");
                 hasError = !0;
-            }else if (!this.$el.find(".mainVideoContainer.right .uploadContainer input[type='file']").get(0).files.length) {
+            }else if (!videoName && !this.$el.find(".mainVideoContainer.right .uploadContainer input[type='file']").get(0).files.length) {
                 var link = this.$el.find(".mainVideoContainer.right .uploadContainer.link input[type='text']").val();
 
                 if (!validation.validURL(link) || format.indexOf(link.split('.').pop()) == -1) {
@@ -532,10 +532,12 @@ define([
 
         render: function () {
             var self = this;
+
             var data = this.campaignModel.toJSON();
             this.$el.html(_.template(EditTemplate)({
                 role: App.sessionData.get('role'),
                 content: data.content,
+                contentId:  self.camaignId,
                 url: data.url,
                 count: data.content.survey.length + 1,
                 nameOfCampaign: data.content.nameOfCampaign
