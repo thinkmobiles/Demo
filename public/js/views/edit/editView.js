@@ -128,9 +128,8 @@ define([
             this.$el.find(".error").removeClass("error");
             var hasError = false;
             var message = '';
+            var format = 'mp4 WebM Ogg';
 
-
-            var videoName = this.$el.find(".mainVideoContainer .right .uploadContainer input[type='file']").get(0).files.length ? self.getFiles(this.$el.find(".mainVideoContainer .right .uploadContainer input[type='file']").get(0).files) : (this.$el.find(".mainVideoContainer .right .uploadContainer.file input[type='text']").val()?this.$el.find(".mainVideoContainer .right .uploadContainer.file input[type='text']").val():this.$el.find(".mainVideoContainer .right .uploadContainer.link input[type='text']").val());
 
             //nameOfCampaign
             if (!this.$el.find("input[name='nameOfCampaign']").val()) {
@@ -147,6 +146,7 @@ define([
                 hasError = true;
             }
 
+            //description
             if (!this.$el.find("textarea[name='desc']").val()) {
                 this.$el.find("textarea[name='desc']").addClass("error");
                 message = (message == '') ? "Please input some brief description" : message;
@@ -161,6 +161,23 @@ define([
                 hasError = true;
             }
 
+            //main video
+            var videoName = this.$el.find(".mainVideoContainer.right .uploadContainer input[type='file']").get(0).files.length ? self.getFiles(this.$el.find(".mainVideoContainer.right .uploadContainer input[type='file']").get(0).files) : (this.$el.find(".mainVideoContainer.right .uploadContainer.file input[type='text']").val() ? this.$el.find(".mainVideoContainer.right .uploadContainer.file input[type='text']").val() : this.$el.find(".mainVideoContainer.right .uploadContainer.link input[type='text']").val());
+            if (!videoName) {
+                message = (message == '') ? "Please upload main video or past direct link to it" : message;
+                this.$el.find(".mainVideoContainer.right .uploadContainer").addClass("error");
+                hasError = !0;
+            }else if (!this.$el.find(".mainVideoContainer.right .uploadContainer input[type='file']").get(0).files.length) {
+                var link = this.$el.find(".mainVideoContainer.right .uploadContainer.link input[type='text']").val();
+
+                if (!validation.validURL(link) || format.indexOf(link.split('.').pop()) == -1) {
+                    message = (message == '') ? "Main video link is not valid" : message;
+                    this.$el.find(".mainVideoContainer.right .uploadContainer .link").addClass("error");
+                    hasError = !0;
+                }
+            }
+
+            //company name
             if (!this.$el.find(".uploadContainer input[name='name']").val()) {
                 message = (message == '') ? "Please input company name" : message;
                 this.$el.find(".uploadContainer input[name='name']").closest(".uploadContainer").addClass("error");
@@ -175,6 +192,7 @@ define([
                 hasError = true;
             }
 
+            //email
             if (!this.$el.find("input[name='email']").val()) {
                 this.$el.find(".uploadContainer input[name='email']").closest(".uploadContainer").addClass("error");
                 message = (message == '') ? "Please input email" : message;
@@ -185,6 +203,7 @@ define([
                 hasError = true;
             }
 
+            //phone
             if (!this.$el.find("input[name='phone']").val()) {
                 this.$el.find("input[name='phone']").closest(".uploadContainer").addClass("error");
                 message = (message == '') ? "Please input phone number" : message;
@@ -317,6 +336,7 @@ define([
         },
 
         changeInput: function (e) {
+            $(e.target).closest(".right").find(".uploadContainer").removeClass("error");
             if ($(e.target).val()) {
                 if ($(e.target).closest(".uploadContainer").hasClass('link')) {
                     var input = $(e.target).closest(".right").find(".uploadContainer.file input[type='file']");
@@ -382,7 +402,7 @@ define([
             var message = '';
             var format = 'mp4 WebM Ogg';
 
-            var videoName = $(e.target).closest(".videoElement").find(".right .uploadContainer input[type='file']").get(0).files.length ? self.getFiles($(e.target).closest(".videoElement").find(".right .uploadContainer input[type='file']").get(0).files) : ($(e.target).closest(".videoElement").find(".right .uploadContainer.file input[type='text']").val()?$(e.target).closest(".videoElement").find(".right .uploadContainer.file input[type='text']").val():$(e.target).closest(".videoElement").find(".right .uploadContainer.link input[type='text']").val());
+            var videoName = $(e.target).closest(".videoElement").find(".right .uploadContainer input[type='file']").get(0).files.length ? self.getFiles($(e.target).closest(".videoElement").find(".right .uploadContainer input[type='file']").get(0).files) : ($(e.target).closest(".videoElement").find(".right .uploadContainer.file input[type='text']").val() ? $(e.target).closest(".videoElement").find(".right .uploadContainer.file input[type='text']").val() : $(e.target).closest(".videoElement").find(".right .uploadContainer.link input[type='text']").val());
             var pdfName = $(e.target).closest(".videoElement").find(".left input[type='file']").get(0).files.length ? self.getFiles($(e.target).closest(".videoElement").find(".left input[type='file']").get(0).files) : '';
 
             //description
@@ -405,23 +425,14 @@ define([
                 message = (message == '') ? "Please upload some video or past direct link to it" : message;
                 $(e.target).closest(".videoElement").find(".right .uploadContainer").addClass("error");
                 hasError = !0;
-            } else if ($(e.target).closest(".videoElement").find(".right .uploadContainer input[type='file']").get(0).files.length && format.indexOf(videoName.split('.').pop()) == -1) {
-                message = (message == '') ? "Video format is not valid" : message;
-                $(e.target).closest(".videoElement").find(".right .uploadContainer").addClass("error");
-                hasError = !0;
             } else if (!$(e.target).closest(".videoElement").find(".right .uploadContainer input[type='file']").get(0).files.length && !$(e.target).closest(".videoElement").find(".right .uploadContainer.file input[type='text']").val()) {
                 var link = $(e.target).closest(".videoElement").find(".right .uploadContainer.link input[type='text']").val();
 
                 if (!validation.validURL(link) || format.indexOf(link.split('.').pop()) == -1) {
                     message = (message == '') ? "Link is not valid" : message;
-                    $(e.target).closest(".videoElement").find(".right .uploadContainer .link").addClass("error");
+                    $(e.target).closest(".videoElement").find(".right .uploadContainer.link").addClass("error");
                     hasError = !0;
                 }
-            }
-            if (pdfName && !self.validPdfs($(e.target).closest(".videoElement").find(".left input[type='file']").get(0).files)) {
-                message = (message == '') ? "Pdf files is not valid" : message;
-                $(e.target).closest(".videoElement").find(".uploadContainer.file.long").addClass('error');
-                hasError = !0;
             }
 
             if (hasError) {
@@ -465,23 +476,57 @@ define([
 
         validPdfs: function (files) {
             for (var i = 0; i < files.length; i++) {
-               if(files[i].name.split('.').pop() !=="pdf"){
-                   return false;
-               }
+                if (files[i].name.split('.').pop() !== "pdf") {
+                    return false;
+                }
             }
             return true;
         },
 
         changeFile: function (e) {
             var self = this;
+            var hasError = false;
+            var message = '';
+            var videoFormat = 'mp4 WebM Ogg';
+
             $(e.target).closest(".uploadContainer").find("input[type='text']").val(self.getFiles($(e.target).get(0).files)).change();
 
+            var inpName = $(e.target).attr("name");
+            if (inpName.indexOf('video') != -1) {
+                var videoName = $(e.target).get(0).files.length ? self.getFiles($(e.target).get(0).files) : "";
+                if ($(e.target).get(0).files.length && videoFormat.indexOf(videoName.split('.').pop()) == -1) {
+                    message = (message == '') ? "Video format is not valid" : message;
+                    hasError = !0;
+                }
+            } else if (inpName.indexOf('file') != -1) {
+                var pdfName = $(e.target).get(0).files.length ? self.getFiles($(e.target).get(0).files) : "";
+                if (pdfName && !self.validPdfs($(e.target).get(0).files)) {
+                    message = (message == '') ? "Pdf files is not valid" : message;
+                    hasError = !0;
+                }
+            }
             if ($(e.target).attr("name") === "logo") {
-                var reader = new FileReader();
-                reader.onload = function (event) {
-                    self.drawImage(event.target.result);
-                };
-                reader.readAsDataURL(e.target.files[0]);
+                var input = e.target;
+                if (!input.files || !input.files[0] || !input.files[0].size || input.files[0].type.indexOf('image') === -1) {
+                    message = (message == '') ? "Invalid file type. An uploaded avatar must be in GIF, JPEG, or PNG format." : message;
+                    hasError = !0;
+                } else {
+
+                    var reader = new FileReader();
+                    reader.onload = function (event) {
+                        self.drawImage(event.target.result);
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            }
+            if (hasError) {
+                $(e.target).closest(".uploadContainer.file").addClass('error');
+                $(e.target).closest(".uploadContainer.file").find(".left input[type='text']").val('');
+                $(e.target).closest(".uploadContainer.file").find(".right").removeClass('active');
+                var fileInput = $(e.target);
+                fileInput.replaceWith(fileInput.clone());
+                App.notification(message);
+                return;
             }
         },
 

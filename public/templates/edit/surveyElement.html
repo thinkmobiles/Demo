@@ -23,9 +23,9 @@
 
             <div class="uploadContainer file">
                 <div class="left">
-                    <input type="text" placeholder="Drop file here" value="<%=video%>" readonly="readonly"/>
+                    <input type="text" placeholder="<%=video%>" value="<%=video%>" readonly="readonly"/>
                 </div>
-                <div class="right">
+                <div class="right active">
                 </div>
                 <input type="file" name="video<%=index%>" accept="video/mp4,video/x-m4v,video/*"/><br/>
             </div>
@@ -47,9 +47,9 @@
 
             <div class="uploadContainer file long">
                 <div class="left">
-                    <input type="text" placeholder="Or drop file here" value="<%=pdf%>" readonly="readonly"/>
+                    <input type="text" placeholder="<%=pdf&&pdf.length?pdf:'Or drop file here'%>" value="<%=pdf%>" readonly="readonly"/>
                 </div>
-                <div class="right">
+                <div class="right<%=pdf&&pdf.length?' active':''%>">
                 </div>
                 <input type="file" name="file<%=index%>" multiple accept="application/pdf"/><br/>
             </div>
