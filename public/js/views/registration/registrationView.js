@@ -162,7 +162,6 @@ define([
                 },
                 error: function (err) {
                     console.log(err);
-
                     App.notification(err.responseJSON.error);
                 }
             });
