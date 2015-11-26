@@ -466,6 +466,7 @@ define([
             });
             return this;
         },
+
         drawImage: function (src) {
             this.$el.find("#preview").show();
             this.$el.find("#arrowPreview").show();

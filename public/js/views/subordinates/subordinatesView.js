@@ -177,8 +177,8 @@ define([
                         self.$el.find('.registration input[type="text"]').val('');
                         self.subordinatesCollection.update();
                     },
-                    error: function (err) {
-                        console.log(JSON.stringify(err));
+                    error: function (model, response) {
+                        App.notification(response.responseJSON.error);
                     }
                 });
         },
@@ -192,7 +192,7 @@ define([
             var row = $(e.target).closest('.subordinates').find(".customTable tr.current");
             row.find(".view.role").text(row.find(".edit .customSelect span.current").text());
             var id = row.data("id");
-            console.log(row.find(".edit .customSelect span.current").text())
+            console.log(row.find(".edit .customSelect span.current").text());
             this.updateUser(id, {
                 role: row.find(".edit .customSelect .showList span.current").text() === 'Viewer' ? 3 : 2
             });

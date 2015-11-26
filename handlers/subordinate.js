@@ -7,8 +7,10 @@ var crypto = require('crypto');
 var _ = require('../public/js/libs/underscore/underscore-min');
 var mailer = require('../helpers/mailer');
 var randToken = require('rand-token');
+var badRequests = require('../helpers/badRequests');
 
 var USER_ROLES = require('../constants/userRoles');
+var REG_EXP = require('../constants/regExp');
 var CONSTANTS = require('../constants/index');
 var AWS = require('../constants/AWS');
 
@@ -22,6 +24,56 @@ var routeHandler = function (db) {
         var shaSum = crypto.createHash('sha256');
         shaSum.update(pass);
         return shaSum.digest('hex');
+    };
+
+    function normalizeEmail(email) {
+        return email.trim().toLowerCase();
+    };
+
+    function validateSignUp(userData, callback) { //used for signUpMobile, signUpWeb;
+        var errMessage;
+
+        if (!userData || !userData.email || !userData.firstName || !userData.lastName || !userData.userName) {
+            return callback(badRequests.NotEnParams({reqParams: ['email', 'firstName', 'lastName', 'userName']}));
+        }
+
+        if (userData.firstName.length > CONSTANTS.USERNAME_MAX_LENGTH) {
+            errMessage = 'First name cannot contain more than ' + CONSTANTS.USERNAME_MAX_LENGTH + ' symbols';
+            return callback(badRequests.InvalidValue({message: errMessage}));
+        }
+
+        if (userData.lastName.length > CONSTANTS.USERNAME_MAX_LENGTH) {
+            errMessage = 'Last name cannot contain more than ' + CONSTANTS.USERNAME_MAX_LENGTH + ' symbols';
+            return callback(badRequests.InvalidValue({message: errMessage}));
+        }
+        if (userData.userName.length > CONSTANTS.USERNAME_MAX_LENGTH) {
+            errMessage = 'User name cannot contain more than ' + CONSTANTS.USERNAME_MAX_LENGTH + ' symbols';
+            return callback(badRequests.InvalidValue({message: errMessage}));
+        }
+
+        if (!REG_EXP.EMAIL_REGEXP.test(userData.email)) {
+            return callback(badRequests.InvalidEmail());
+        }
+
+        userData.email = normalizeEmail(userData.email);
+
+        UserModel.findOne({email: userData.email}, function (err, user) {
+            if (err) {
+                return callback(err);
+            } else if (user) {
+                return callback(badRequests.EmailInUse());
+            } else {
+                UserModel.findOne({userName: userData.userName}, function (err, user) {
+                    if (err) {
+                        return callback(err);
+                    } else if (user) {
+                        return callback(badRequests.UsernameInUse());
+                    } else {
+                        callback();
+                    }
+                });
+            }
+        });
     };
 
     this.confirmUser = function (req, res, next) {
@@ -121,15 +173,16 @@ var routeHandler = function (db) {
         var uId = req.session.uId;
         var options = req.body;
         async.waterfall([
-            ////validation:
-            //function (seriesCb) {
-            //    validateUserSignUp(options, function (err) {
-            //        if (err) {
-            //            return seriesCb(err);
-            //        }
-            //        seriesCb();
-            //    });
-            //},
+
+            //validation:
+            function (waterfallCb) {
+                validateSignUp(options, function (err) {
+                    if (err) {
+                        return waterfallCb(err);
+                    }
+                    waterfallCb(null);
+                });
+            },
 
             //create user:
             function (waterfallCb) {
