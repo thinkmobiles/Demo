@@ -977,9 +977,8 @@ footer {
     background-color: #fafafa;
     position: relative;
     cursor: pointer;
-
     h2 {
-      margin: 10px 0;
+      margin: 10px 30px 10px 0;
     }
     .close {
       .i("close.png");
@@ -1109,13 +1108,15 @@ footer {
         height: 50px;
         th {
           color: #a0a2a3;
-          font-size: 14px;
+          font-size: 13px;
+          padding: 0 3px;
           font-weight: normal;
           border-bottom: 1px solid #f0f0f0;
           border-top: 1px solid #f0f0f0;
         }
         td {
-          font-size: 18px;
+          font-size: 16px;
+          padding: 4px 0;
           color: #333333;
           .checkbox {
             cursor: pointer;
@@ -1829,7 +1830,7 @@ footer {
       padding: 10px 0px;
       cursor: pointer;
       &.current {
-        background-color: rgba(255, 255, 255, 0.5);
+        background-color: #eee;
       }
       .text {
         color: white;
@@ -1887,11 +1888,11 @@ footer {
   padding: 0 3%;
 }
 
-.marquee span:hover {
+.listVideo li:hover .marquee span {
   display: inline-block;
-  -webkit-animation: scroll 5s infinite linear;
-  -moz-animation: scroll 5s infinite linear;
-  animation: scroll 5s infinite linear;
+  -webkit-animation: scroll 8s infinite linear;
+  -moz-animation: scroll 8s infinite linear;
+  animation: scroll 8s infinite linear;
 }
 
 ///=============================================
@@ -3058,6 +3059,7 @@ svg {
   box-sizing: border-box;
   height: 825px;
   position: relative;
+  background: url("../i/contact-bg.png")no-repeat;
   .contactInner {
     position: absolute;
     top: 0;
@@ -3677,6 +3679,8 @@ svg {
       position: relative;
       z-index: 105;
       top: -95px;
+      height: 87vh;
+      overflow-y: auto;
       li a {
         display: block;
         width: 100%;
@@ -3761,17 +3765,48 @@ svg {
         width: 100%;
         height: auto;
         overflow: hidden;
+        li {
+          float: none;
+          width: 100%;
+          padding: 12px 0;
+          &:not(:last-child){
+            border-bottom: 1px solid #eee;
+          }
+          .marquee{
+            width: auto;
+            white-space: inherit;
+            text-align: left;
+            padding: 0;
+            &:hover span{
+              animation: 0;
+            }
+          }
+          video {
+            width: 30%;
+            float: left;
+            height: 80px;
+            margin-right: 10px;
+            background-color: #000;
+          }
+        }
+      }
+      .listVideo{
+        background-color: #fff;
       }
       .left button {
-        float: left;
-        margin-left: 3%;
+        float: none;
+        margin: 20px auto 0 auto;
       }
       h2 {
         text-align: center;
         padding: 0 2%;
       }
+      table th {
+        font-size: 12px;
+      }
       table td {
-        padding: 0 3%;
+        padding: 8px 5px;
+        font-size: 13px;
       }
     }
   }
@@ -3845,10 +3880,8 @@ svg {
     li {
       float: left;
       width: 25%;
-      padding: 0 3%;
-      height: 82px;
       video {
-        height: 60px !important;
+        height: 60px;
       }
       span {
         color: #000;
@@ -3858,10 +3891,15 @@ svg {
 
   .topMenu .inner ul li.userInfo {
     color: #000;
+    line-height: 70px;
     img {
-      position: relative;
-      left: 20%;
       display: inline-block;
+      float: none;
+      margin-top: 10px;
+    }
+    span{
+      display: inline-block;
+      vertical-align: top;
     }
 
   }
@@ -3897,6 +3935,9 @@ svg {
   .pricing .purchasingSlider .purchasing .purchasing-butt {
     height: 50px;
     width: 60%;
+  }
+  #footer .contactUs{
+    width: auto;
   }
 
   #wrapper .whatIs .inner .line {
