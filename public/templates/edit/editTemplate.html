@@ -25,15 +25,15 @@
                 <span>Please enter brief description:</span><br/>
                 <textarea  name="desc"><%=content.mainVideoDescription%></textarea>
             </div>
-            <div class="right">
+            <div class="right mainVideoContainer">
                 <span>Upload video from computer:</span>
 
                 <div class="uploadContainer file">
                     <div class="left">
-                        <input type="text" placeholder="Drop file here" readonly="readonly"
-                               value="<%=decodeURIComponent(content.mainVideoUri.split('/').pop())%>" />
+                        <input type="text"  readonly="readonly"
+                               placeholder="<%=decodeURIComponent(content.mainVideoUri.split('/').pop())%>" value="<%=decodeURIComponent(content.mainVideoUri.split('/').pop())%>" />
                     </div>
-                    <div class="right">
+                    <div class="right active">
                     </div>
                     <input type="file" name="video" accept="video/mp4,video/x-m4v,video/*"/>
                 </div>
@@ -130,10 +130,10 @@
 
                 <div class="uploadContainer file long">
                     <div class="left">
-                        <input type="text" placeholder="Or drop file here" readonly="readonly"
-                               value="<%=decodeURIComponent(content.logoUri.split('/').pop())%>" />
+                        <input type="text"  readonly="readonly"
+                               placeholder="<%=decodeURIComponent(content.logoUri.split('/').pop())%>" value="<%=decodeURIComponent(content.logoUri.split('/').pop())%>" />
                     </div>
-                    <div class="right">
+                    <div class="right active">
                     </div>
                     <input type="file" name="logo" accept="image/*"/>
                 </div>

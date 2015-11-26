@@ -74,66 +74,102 @@ define([
             this.$el.find(".error").removeClass("error");
             var hasError = false;
             var message = '';
+            var format = 'mp4 WebM Ogg';
 
+
+            //nameOfCampaign
             if (!this.$el.find("input[name='nameOfCampaign']").val()) {
                 this.$el.find("input[name='nameOfCampaign']").addClass("error");
                 message = (message == '') ? "Please input name of campaign" : message;
                 hasError = true;
+            } else if (!validation.validLength(this.$el.find("input[name='nameOfCampaign']").val(), 2, 50)) {
+                this.$el.find("input[name='nameOfCampaign']").addClass("error");
+                message = (message == '') ? "Campaign name is not a valid. Character`s number should be from 2 to 20" : message;
+                hasError = true;
+            } else if (!validation.validName(this.$el.find("input[name='nameOfCampaign']").val(), 2, 50)) {
+                this.$el.find("input[name='nameOfCampaign']").addClass("error");
+                message = (message == '') ? "Campaign name is not valid. Field should contain only the following symbols: a-z, A-Z" : message;
+                hasError = true;
             }
 
+            //description
             if (!this.$el.find("textarea[name='desc']").val()) {
                 this.$el.find("textarea[name='desc']").addClass("error");
                 message = (message == '') ? "Please input some brief description" : message;
                 hasError = true;
-            }
-
-            if (!this.$el.find(".uploadContainer.file input[name='video']").val() && !this.$el.find(".uploadContainer.link input[name='video']").val()) {
-                this.$el.find(".uploadContainer.file input[name='video']").closest(".uploadContainer").addClass("error");
-                this.$el.find(".uploadContainer.link input[name='video']").closest(".uploadContainer").addClass("error");
-                message = (message == '') ? "Please choose video" : message;
+            } else if (!validation.validLength(this.$el.find("textarea[name='desc']").val(), 2, 300)) {
+                this.$el.find("textarea[name='desc']").addClass("error");
+                message = (message == '') ? "Description is not a valid. Character`s number should be from 2 to 300" : message;
+                hasError = true;
+            } else if (!validation.validComment(this.$el.find("textarea[name='desc']").val())) {
+                this.$el.find("textarea[name='desc']").addClass("error");
+                message = (message == '') ? "Description is not valid. Field should contain only the following symbols: \"a-z, A-Z, 0-9,!,?\"" : message;
                 hasError = true;
             }
 
-            if (!this.$el.find(".uploadContainer.file input[name='logo']").val()) {
-                this.$el.find(".uploadContainer.file input[name='logo']").closest(".uploadContainer").addClass("error");
+            //main video
+            var videoName = this.$el.find(".mainVideoContainer.right .uploadContainer input[type='file']").get(0).files.length ? self.getFiles(this.$el.find(".mainVideoContainer.right .uploadContainer input[type='file']").get(0).files) : (this.$el.find(".mainVideoContainer.right .uploadContainer.file input[type='text']").val() ? this.$el.find(".mainVideoContainer.right .uploadContainer.file input[type='text']").val() : this.$el.find(".mainVideoContainer.right .uploadContainer.link input[type='text']").val());
+            if (!videoName) {
+                message = (message == '') ? "Please upload main video or past direct link to it" : message;
+                this.$el.find(".mainVideoContainer.right .uploadContainer").addClass("error");
+                hasError = !0;
+            }else if (!this.$el.find(".mainVideoContainer.right .uploadContainer input[type='file']").get(0).files.length) {
+                var link = this.$el.find(".mainVideoContainer.right .uploadContainer.link input[type='text']").val();
+
+                if (!validation.validURL(link) || format.indexOf(link.split('.').pop()) == -1) {
+                    message = (message == '') ? "Main video link is not valid" : message;
+                    this.$el.find(".mainVideoContainer.right .uploadContainer .link").addClass("error");
+                    hasError = !0;
+                }
+            }
+
+            //logo
+            var logoName = this.$el.find(".logoContainer .uploadContainer input[type='file']").get(0).files.length ? self.getFiles(this.$el.find(".logoContainer .uploadContainer input[type='file']").get(0).files) : "";
+            if (!logoName) {
                 message = (message == '') ? "Please upload logo" : message;
-                hasError = true;
+                this.$el.find(".logoContainer .uploadContainer").addClass("error");
+                hasError = !0;
             }
 
+            //company name
             if (!this.$el.find(".uploadContainer input[name='name']").val()) {
-                this.$el.find(".uploadContainer input[name='name']").closest(".uploadContainer").addClass("error");
                 message = (message == '') ? "Please input company name" : message;
+                this.$el.find(".uploadContainer input[name='name']").closest(".uploadContainer").addClass("error");
+                hasError = true;
+            } else if (!validation.validLength(this.$el.find(".uploadContainer input[name='name']").val(), 2, 50)) {
+                message = (message == '') ? "Company name is not a valid. Character`s number should be from 2 to 20" : message;
+                this.$el.find(".uploadContainer input[name='name']").closest(".uploadContainer").addClass("error");
+                hasError = true;
+            } else if (!validation.validOrg(this.$el.find(".uploadContainer input[name='name']").val())) {
+                message = (message == '') ? "Company name is not a valid. Field should contain only the following symbols: a-z, A-Z" : message;
+                this.$el.find(".uploadContainer input[name='name']").closest(".uploadContainer").addClass("error");
                 hasError = true;
             }
 
-
+            //email
             if (!this.$el.find("input[name='email']").val()) {
                 this.$el.find(".uploadContainer input[name='email']").closest(".uploadContainer").addClass("error");
                 message = (message == '') ? "Please input email" : message;
                 hasError = true;
-            }
-
-            if (!validation.validEmail(this.$el.find("input[name='email']").val())) {
-                this.$el.find(".uploadContainer input[name='email']").closest(".uploadContainer").addClass("error");
+            } else if (!validation.validEmail(this.$el.find("input[name='email']").val())) {
                 message = (message == '') ? (self.$el.find(".uploadContainer input[name='email']").val() + " is not a valid email.") : message;
+                this.$el.find(".uploadContainer input[name='email']").closest(".uploadContainer").addClass("error");
                 hasError = true;
             }
 
+            //phone
             if (!this.$el.find("input[name='phone']").val()) {
                 this.$el.find("input[name='phone']").closest(".uploadContainer").addClass("error");
-                message = (message == '') ? "Please input phone number": message;
+                message = (message == '') ? "Please input phone number" : message;
                 hasError = true;
-            }
-
-            if (!validation.validPhone(this.$el.find("input[name='phone']").val())) {
+            } else if (!validation.validPhone(this.$el.find("input[name='phone']").val())) {
                 this.$el.find("input[name='phone']").closest(".uploadContainer").addClass("error");
                 message = (message == '') ? "That is not a valid phone number. It should contain only numbers and '+ - ( )' signs" : message;
                 hasError = true;
             }
 
-            if (!$(e.target).closest(".videoContainer").find(".canSort").length) {
-                $(e.target).closest(".videoContainer").find(".questionText").addClass("error");
-                $(e.target).closest(".videoContainer").find(".right .uploadContainer").addClass("error");
+
+            if (!this.$el.find(".canSort").length) {
                 message = (message == '') ? "Please create survey question" : message;
                 hasError = !0;
             }
@@ -142,7 +178,6 @@ define([
                 App.notification(message);
                 return;
             }
-
 
 
             var form = document.forms.namedItem("videoForm");
@@ -195,17 +230,12 @@ define([
                     try {
                         self.modalProgres.hide();
                         var res = JSON.parse(oReq.response);
-                        $("<div><input type='text' value='" + res.url + "' readonly/></div>").dialog({
-                            modal: true,
-                            closeOnEscape: false,
-                            appendTo: "#wrapper",
-                            dialogClass: "link-dialog",
-                            width: 725
-                        });
-                        if(App.sessionData.get('role')==0) {
+                        if (App.sessionData.get('role') == 0) {
                             App.sessionData.set('campaigns', [{_id: res.id}]);
-                            console.log(App.sessionData.toJSON());
+                            Backbone.history.navigate("#/home", {trigger: true});
+                            return;
                         }
+                        Backbone.history.navigate("#/campaigns", {trigger: true});
                     }
                     catch (e) {
                         App.notification(e);
@@ -225,7 +255,7 @@ define([
 
         decline: function (e) {
             e.preventDefault();
-            if(App.sessionData.get('role')==0){
+            if (App.sessionData.get('role') == 0) {
                 Backbone.history.navigate("#/home", {trigger: true});
                 return;
             }
@@ -234,6 +264,15 @@ define([
 
         changeInput: function (e) {
             if ($(e.target).val()) {
+                if ($(e.target).closest(".uploadContainer").hasClass('link')) {
+                    var input = $(e.target).closest(".right").find(".uploadContainer.file input[type='file']");
+                    $(e.target).closest(".right").find(".uploadContainer.file input[type='text']").val('');
+                    $(e.target).closest(".right").find(".uploadContainer.file .right").removeClass('active');
+                    input.replaceWith(input.clone());
+                } else {
+                    $(e.target).closest(".right").find(".uploadContainer.link input[type='text']").val('');
+                    $(e.target).closest(".right").find(".uploadContainer.link .right").removeClass('active');
+                }
                 $(e.target).parents(".uploadContainer").find(".right").addClass("active");
             } else {
                 $(e.target).parents(".uploadContainer").find(".right").removeClass("active");
@@ -266,37 +305,61 @@ define([
             var hasError = false;
             e.preventDefault();
             $(".error").removeClass("error");
+            var message = '';
+            var format = 'mp4 WebM Ogg';
 
             var videoName = $(e.target).closest(".videoElement").find(".right .uploadContainer input[type='file']").get(0).files.length ? self.getFiles($(e.target).closest(".videoElement").find(".right .uploadContainer input[type='file']").get(0).files) : $(e.target).closest(".videoElement").find(".right .uploadContainer.link input[type='text']").val();
             var pdfName = $(e.target).closest(".videoElement").find(".left input[type='file']").get(0).files.length ? self.getFiles($(e.target).closest(".videoElement").find(".left input[type='file']").get(0).files) : '';
 
+            //description
             if (!$(e.target).closest(".videoElement").find(".questionText").val().trim()) {
+                message = (message == '') ? "Please input some brief description to survey" : message;
+                $(e.target).closest(".videoElement").find(".questionText").addClass("error");
+                hasError = !0;
+            } else if (!validation.validLength($(e.target).closest(".videoElement").find(".questionText").val().trim(), 2, 300)) {
+                message = (message == '') ? "Description is not a valid. Character`s number should be from 2 to 300" : message;
+                $(e.target).closest(".videoElement").find(".questionText").addClass("error");
+                hasError = !0;
+            } else if (!validation.validComment($(e.target).closest(".videoElement").find(".questionText").val().trim())) {
+                message = (message == '') ? "Description is not valid. Field should contain only the following symbols: \"a-z, A-Z, 0-9, !, ?\"" : message;
                 $(e.target).closest(".videoElement").find(".questionText").addClass("error");
                 hasError = !0;
             }
-            if (!videoName) {
-                $(e.target).closest(".videoElement").find(".right .uploadContainer").addClass("error");
-                hasError = !0;
-            }
-            if (!videoName) {
-                $(e.target).closest(".videoElement").find(".right .uploadContainer").addClass("error");
-                hasError = !0;
-            }
-            if (!hasError) {
-                var countQuestion = this.$el.find(".survey").length;
-                $(e.target).closest(".question").addClass('editQuestion').text("SAVE");
-                $(e.target).closest(".survey").addClass('canSort').removeClass("new");
-                $(e.target).closest(".survey").find('.collapseQuestion h2').text($(e.target).closest(".videoElement").find(".questionText").val());
-                $(e.target).closest(".survey").find('.collapseQuestion .relatedVideo').html("Related video: <b>" + videoName + "</b>");
-                if (pdfName) {
-                    $(e.target).closest(".survey").find('.collapseQuestion .relatedPdf').html("Related PDF: <b>" + pdfName + "</b>");
-                }
-                $(e.target).closest(".survey").find(".collapseQuestion").removeClass("hidden");
-                $(e.target).closest(".videoElement").hide();
 
-                this.$el.find(".collapseQuestions").append(_.template(surveyElement)({index: countQuestion+1}));
-                this.$el.find(".countQuestion").val(countQuestion);
+            //video
+            if (!videoName) {
+                message = (message == '') ? "Please upload some video or past direct link to it" : message;
+                $(e.target).closest(".videoElement").find(".right .uploadContainer").addClass("error");
+                hasError = !0;
+            } else if (!$(e.target).closest(".videoElement").find(".right .uploadContainer input[type='file']").get(0).files.length) {
+                var link = $(e.target).closest(".videoElement").find(".right .uploadContainer.link input[type='text']").val();
+
+                if (!validation.validURL(link) || format.indexOf(link.split('.').pop()) == -1) {
+                    message = (message == '') ? "Link is not valid" : message;
+                    $(e.target).closest(".videoElement").find(".right .uploadContainer .link").addClass("error");
+                    hasError = !0;
+                }
             }
+
+            if (hasError) {
+                App.notification(message);
+                return;
+            }
+
+            var countQuestion = this.$el.find(".survey").length;
+            $(e.target).closest(".question").addClass('editQuestion').text("SAVE");
+            $(e.target).closest(".survey").addClass('canSort').removeClass("new");
+            $(e.target).closest(".survey").find('.collapseQuestion h2').text($(e.target).closest(".videoElement").find(".questionText").val());
+            $(e.target).closest(".survey").find('.collapseQuestion .relatedVideo').html("Related video: <b>" + videoName + "</b>");
+            if (pdfName) {
+                $(e.target).closest(".survey").find('.collapseQuestion .relatedPdf').html("Related PDF: <b>" + pdfName + "</b>");
+            }
+            $(e.target).closest(".survey").find(".collapseQuestion").removeClass("hidden");
+            $(e.target).closest(".videoElement").hide();
+
+            this.$el.find(".collapseQuestions").append(_.template(surveyElement)({index: countQuestion + 1}));
+            this.$el.find(".countQuestion").val(countQuestion);
+
         },
 
 
@@ -321,16 +384,59 @@ define([
             return s;
         },
 
+        validPdfs: function (files) {
+            for (var i = 0; i < files.length; i++) {
+                if (files[i].name.split('.').pop() !== "pdf") {
+                    return false;
+                }
+            }
+            return true;
+        },
+
         changeFile: function (e) {
             var self = this;
+            var hasError = false;
+            var message = '';
+            var videoFormat = 'mp4 WebM Ogg';
+
             $(e.target).closest(".uploadContainer").find("input[type='text']").val(self.getFiles($(e.target).get(0).files)).change();
 
+            var inpName = $(e.target).attr("name");
+            if (inpName.indexOf('video') != -1) {
+                var videoName = $(e.target).get(0).files.length ? self.getFiles($(e.target).get(0).files) : "";
+                if ($(e.target).get(0).files.length && videoFormat.indexOf(videoName.split('.').pop()) == -1) {
+                    message = (message == '') ? "Video format is not valid" : message;
+                    hasError = !0;
+                }
+            } else if (inpName.indexOf('file') != -1) {
+                var pdfName = $(e.target).get(0).files.length ? self.getFiles($(e.target).get(0).files) : "";
+                if (pdfName && !self.validPdfs($(e.target).get(0).files)) {
+                    message = (message == '') ? "Pdf files is not valid" : message;
+                    hasError = !0;
+                }
+            }
             if ($(e.target).attr("name") === "logo") {
-                var reader = new FileReader();
-                reader.onload = function (event) {
-                    self.drawImage(event.target.result);
-                };
-                reader.readAsDataURL(e.target.files[0]);
+                var input = e.target;
+                if (!input.files || !input.files[0] || !input.files[0].size || input.files[0].type.indexOf('image') === -1) {
+                    message = (message == '') ? "Invalid file type. An uploaded avatar must be in GIF, JPEG, or PNG format." : message;
+                    hasError = !0;
+                } else {
+
+                    var reader = new FileReader();
+                    reader.onload = function (event) {
+                        self.drawImage(event.target.result);
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            }
+            if (hasError) {
+                $(e.target).closest(".uploadContainer.file").addClass('error');
+                $(e.target).closest(".uploadContainer.file").find(".left input[type='text']").val('');
+                $(e.target).closest(".uploadContainer.file").find(".right").removeClass('active');
+                var fileInput = $(e.target);
+                fileInput.replaceWith(fileInput.clone());
+                App.notification(message);
+                return;
             }
         },
 
