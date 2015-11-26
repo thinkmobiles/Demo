@@ -419,6 +419,8 @@ define([
                 var input = e.target;
                 if (!input.files || !input.files[0] || !input.files[0].size || input.files[0].type.indexOf('image') === -1) {
                     message = (message == '') ? "Invalid file type. An uploaded image must be in GIF, JPEG, or PNG format." : message;
+                    this.$el.find("#preview").hide();
+                    this.$el.find("#arrowPreview").hide();
                     hasError = !0;
                 } else {
 
