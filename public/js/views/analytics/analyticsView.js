@@ -238,7 +238,7 @@ define([
 
         renderAnalytic: function (e) {
             self.campaignId = $(e.target).attr("data-id");
-            this.$el.find('.nameOfCampaign').text($(e.target).text());
+            this.$el.find('.nameOfCampaign').text($(e.target).text().toUpperCase()+" STATISTIC");
             $(e.target).closest('ul').find('.current').removeClass('current');
             $(e.target).addClass('current');
 

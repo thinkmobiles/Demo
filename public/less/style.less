@@ -62,15 +62,10 @@
 }
 
 .rotate(@deg: 90) {
-  /* Safari */
   -webkit-transform: rotate(@deg * 1deg);
-  /* Firefox */
   -moz-transform: rotate(@deg * 1deg);
-  /* IE10+ */
   transform: rotate(@deg * 1deg);
-  /* Opera */
   -o-transform: rotate(@deg * 1deg);
-  /* Internet Explorer */
   @IEdeg: round(@deg / 90, 0);
   filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=@IEdeg);
 }
@@ -112,15 +107,10 @@
   clear: both;
 }
 
-html {
-  //overflow: hidden;
-}
-
 html, body {
   font-size: 100%;
   height: 100%;
   .mp;
-  //width:100%;
   position: relative;
   font-family: "LatoRegular";
 }
@@ -280,7 +270,6 @@ html, body {
   }
 
 }
-
 .opacity {
   .lh(50px);
   width: 245px;
@@ -640,7 +629,6 @@ html, body {
       margin-right: 20px;
     }
   }
-
   .forgot {
     display: block;
     text-align: left;
@@ -680,7 +668,6 @@ html, body {
       &.valid {
         .i("user-icon-active.png");
       }
-
     }
   }
   .pass {
@@ -768,7 +755,6 @@ body.withLogin {
         opacity: 0;
       }
       .signIn {
-        //display:block;
         visibility: visible;
         opacity: 1;
       }
@@ -991,9 +977,8 @@ footer {
     background-color: #fafafa;
     position: relative;
     cursor: pointer;
-
     h2 {
-      margin: 10px 0;
+      margin: 10px 30px 10px 0;
     }
     .close {
       .i("close.png");
@@ -1123,13 +1108,15 @@ footer {
         height: 50px;
         th {
           color: #a0a2a3;
-          font-size: 14px;
+          font-size: 13px;
+          padding: 0 3px;
           font-weight: normal;
           border-bottom: 1px solid #f0f0f0;
           border-top: 1px solid #f0f0f0;
         }
         td {
-          font-size: 18px;
+          font-size: 16px;
+          padding: 4px 0;
           color: #333333;
           .checkbox {
             cursor: pointer;
@@ -1764,11 +1751,8 @@ footer {
       font-weight: bold;
     }
   }
-  &.forgot {
-
-    .buttons {
+  &.forgot .buttons {
       margin: 30px auto 100px auto;
-    }
   }
 }
 
@@ -1846,7 +1830,7 @@ footer {
       padding: 10px 0px;
       cursor: pointer;
       &.current {
-        background-color: rgba(255, 255, 255, 0.5);
+        background-color: #eee;
       }
       .text {
         color: white;
@@ -1904,11 +1888,11 @@ footer {
   padding: 0 3%;
 }
 
-.marquee span:hover {
+.listVideo li:hover .marquee span {
   display: inline-block;
-  -webkit-animation: scroll 5s infinite linear;
-  -moz-animation: scroll 5s infinite linear;
-  animation: scroll 5s infinite linear;
+  -webkit-animation: scroll 8s infinite linear;
+  -moz-animation: scroll 8s infinite linear;
+  animation: scroll 8s infinite linear;
 }
 
 ///=============================================
@@ -2079,7 +2063,11 @@ footer {
   text-align: right;
   width: 820px;
   margin: 0 auto;
-  font-family: arial;
+  .nameOfCampaign{
+    text-align: center;
+    font-size: 34px;
+    color: #4186A9;
+  }
   .haveActivity {
     display: none;
   }
@@ -2252,13 +2240,12 @@ footer {
     }
     .campaign-container {
       background-color: #fff;
-      display: block;
       border-radius: 3px;
       position: absolute;
       z-index: 110;
       top: 40px;
       left: 2%;
-      width: 450px;
+      width: 500px;
       box-shadow: 0 1px 8px 1px rgba(219,219,219, .4);
       overflow: hidden;
       display: none;
@@ -2269,7 +2256,6 @@ footer {
         display: block;
         padding: 12px 15px;
         margin: 0 auto;
-        float: none;
         color: #fff;
         box-sizing: border-box;
       }
@@ -2471,7 +2457,10 @@ footer {
     margin: 0 auto;
   }
 }
-
+.campaigns> span.customSelect:hover{
+  box-shadow: 0 0 1px 1px #44CBFF;
+  transition: .3s;
+}
 .campaignsLabel,
 .campaignsLabel2 {
   text-align: center;
@@ -2614,7 +2603,21 @@ footer {
   }
 
 }
+tr:first-of-type th:first-child {
+  border-top-left-radius: 5px;
+}
 
+tr:first-of-type th:last-child {
+  border-top-right-radius: 5px;
+}
+
+tr:last-of-type td:first-child {
+  border-bottom-left-radius: 5px;
+}
+
+tr:last-of-type td:last-child {
+  border-bottom-right-radius: 5px;
+}
 .campaignsTable {
   text-align: center;
   width: 80%;
@@ -2674,9 +2677,7 @@ footer {
         .dis {
           display: none;
         }
-
       }
-
     }
     &.editBtn {
       span {
@@ -2774,7 +2775,6 @@ svg {
         border-radius: 31px;
         background-color: #3db6e5;
         cursor: pointer;
-
       }
     }
 
@@ -2811,9 +2811,7 @@ svg {
 
 #videoForm {
   .videoElement {
-    //display: none;
     padding-bottom: 20px;
-    //padding: 14px 10px;
   }
   .hidden {
     display: none;
@@ -2925,49 +2923,48 @@ svg {
 .campaignsTable {
   td:last-child {
     position: relative;
-    padding-right: 50px;
+    padding-right: 35px;
   }
   td:hover .clipCopy {
     transition: .4s;
     opacity: 1;
-    right: 12px;
   }
   td:last-child:hover .clipCopy {
     transition: .4s;
     opacity: 1;
-    right: 12px;
   }
 }
 .clipCopy {
   background: url("../i/copy.png") no-repeat;
-  width: 12px;
+  width: 6px;
   height: 24px;
   padding: 0 10px;
   background-size: 100% 100%;
   position: absolute;
   top: 6px;
-  right: 0px;
+  right: 8px;
   transition: .1s;
   opacity: 0;
+  cursor: pointer;
 }
-.copyTooltip{
+.login span.copyTooltip, .copyTooltip{
   display: none;
   position: absolute;
   top: -30px;
-  line-height: inherit;
-  padding: 5px 15px 0 15px;
+  line-height: 2;
+  padding: 0 15px 0 15px;
   text-align: center;
   background-color: #bbb;
   border-radius: 3px;
-  color: #fff9e5;
+  color: #fff;
 }
 .linkContainer{
   position: relative;
+  text-align: center;
   &:hover{
     .clipCopy{
       opacity: 1;
       transition: .5;
-      right: 12px;
     }
   }
 }
@@ -3055,25 +3052,6 @@ svg {
   display: none;
 }
 
-/*.callUs {
-  background-color: rgba(93, 95, 124, 0.502);
-  width: 100%;
-  height: 90px;
-  text-align: center;
-  display: none;
-  position: fixed;
-  bottom: 0;
-  z-index: 990;
-  p{
-    color: #fff;
-    font-size: 24px;
-    padding-top: 10px;
-    a{
-      color: inherit;
-      text-decoration: none;
-    }
-  }
-}*/
 .mediaFooter {
   display: none;
   text-align: center;
@@ -3081,6 +3059,7 @@ svg {
   box-sizing: border-box;
   height: 825px;
   position: relative;
+  background: url("../i/contact-bg.png")no-repeat;
   .contactInner {
     position: absolute;
     top: 0;
@@ -3136,7 +3115,6 @@ svg {
     .i('mail.png');
     background-size: 100% 30px;
   }
-
 }
 
 .loader {
@@ -3701,6 +3679,8 @@ svg {
       position: relative;
       z-index: 105;
       top: -95px;
+      height: 87vh;
+      overflow-y: auto;
       li a {
         display: block;
         width: 100%;
@@ -3785,17 +3765,48 @@ svg {
         width: 100%;
         height: auto;
         overflow: hidden;
+        li {
+          float: none;
+          width: 100%;
+          padding: 12px 0;
+          &:not(:last-child){
+            border-bottom: 1px solid #eee;
+          }
+          .marquee{
+            width: auto;
+            white-space: inherit;
+            text-align: left;
+            padding: 0;
+            &:hover span{
+              animation: 0;
+            }
+          }
+          video {
+            width: 30%;
+            float: left;
+            height: 80px;
+            margin-right: 10px;
+            background-color: #000;
+          }
+        }
+      }
+      .listVideo{
+        background-color: #fff;
       }
       .left button {
-        float: left;
-        margin-left: 3%;
+        float: none;
+        margin: 20px auto 0 auto;
       }
       h2 {
         text-align: center;
         padding: 0 2%;
       }
+      table th {
+        font-size: 12px;
+      }
       table td {
-        padding: 0 3%;
+        padding: 8px 5px;
+        font-size: 13px;
       }
     }
   }
@@ -3869,10 +3880,8 @@ svg {
     li {
       float: left;
       width: 25%;
-      padding: 0 3%;
-      height: 82px;
       video {
-        height: 60px !important;
+        height: 60px;
       }
       span {
         color: #000;
@@ -3882,10 +3891,15 @@ svg {
 
   .topMenu .inner ul li.userInfo {
     color: #000;
+    line-height: 70px;
     img {
-      position: relative;
-      left: 20%;
       display: inline-block;
+      float: none;
+      margin-top: 10px;
+    }
+    span{
+      display: inline-block;
+      vertical-align: top;
     }
 
   }
@@ -3921,6 +3935,9 @@ svg {
   .pricing .purchasingSlider .purchasing .purchasing-butt {
     height: 50px;
     width: 60%;
+  }
+  #footer .contactUs{
+    width: auto;
   }
 
   #wrapper .whatIs .inner .line {

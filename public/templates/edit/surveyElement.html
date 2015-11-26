@@ -22,30 +22,37 @@
             <span>Upload video from computer:</span>
 
             <div class="uploadContainer file">
+
+                <%if(video.indexOf(contentId)!==-1){%>
                 <div class="left">
-                    <%if(video.indexOf(contentId)!==-1){%>
-                    <input type="text" placeholder="<%=decodeURIComponent(video.split('/').pop())%>" value="<%=decodeURIComponent(video.split('/').pop())%>" readonly="readonly"/>
-                    <%}else{%>
-                    <input type="text"  readonly="readonly"  placeholder="Drop file here" value="" />
-                    <%}%>
+                    <input type="text" placeholder="<%=decodeURIComponent(video.split('/').pop())%>"
+                           value="<%=decodeURIComponent(video.split('/').pop())%>" readonly="readonly"/>
                 </div>
-                <div class="right active">
+                <div class="right active"></div>
+                <%}else{%>
+                <div class="left">
+                    <input type="text" readonly="readonly" placeholder="Drop file here" value=""/>
                 </div>
+                <div class="right"></div>
+                <%}%>
+
                 <input type="file" name="video<%=index%>" accept="video/mp4,video/x-m4v,video/*"/><br/>
             </div>
             <br/>
             <span>Or paste a link:</span>
 
             <div class="uploadContainer link">
+                <%if(video.indexOf(contentId)===-1){%>
                 <div class="left">
-                    <%if(video.indexOf(contentId)===-1){%>
-                    <input type="text" name="video<%=index%>"  placeholder="" value="<%=video%>" readonly="readonly"/>
-                    <%}else{%>
-                    <input type="text"  name="video<%=index%>" placeholder="" value="" />
-                    <%}%>
+                    <input type="text" name="video<%=index%>" placeholder="" value="<%=video%>" readonly="readonly"/>
                 </div>
-                <div class="right">
+                <div class="right active"></div>
+                <%}else{%>
+                <div class="left">
+                    <input type="text" name="video<%=index%>" placeholder="" value=""/>
                 </div>
+                <div class="right"></div>
+                <%}%>
             </div>
         </div>
         <div class="clear">
@@ -55,7 +62,8 @@
 
             <div class="uploadContainer file long">
                 <div class="left">
-                    <input type="text" placeholder="<%=pdf&&pdf.length?pdf:'Or drop file here'%>" value="<%=pdf%>" readonly="readonly"/>
+                    <input type="text" placeholder="<%=pdf&&pdf.length?pdf:'Or drop file here'%>" value="<%=pdf%>"
+                           readonly="readonly"/>
                 </div>
                 <div class="right<%=pdf&&pdf.length?' active':''%>">
                 </div>
