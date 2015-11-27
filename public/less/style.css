@@ -1660,7 +1660,7 @@ footer .bottom {
   margin: 0;
   padding: 0;
   position: absolute;
-  height: 100%;
+  height: 90%;
   top: 0px;
   right: 0px;
   width: 150px;
@@ -1671,7 +1671,7 @@ footer .bottom {
   background-repeat: no-repeat;
   cursor: pointer;
   position: absolute;
-  top: calc(50% - 40px);
+  top: calc(55% - 40px);
   right: 0;
   width: 50px;
   height: 80px;
@@ -1720,16 +1720,6 @@ footer .bottom {
   }
   100% {
     -webkit-transform: translate(-100%, 0);
-    transform: translate(-100%, 0);
-  }
-}
-@-moz-keyframes scroll {
-  0% {
-    -moz-transform: translate(0, 0);
-    transform: translate(0, 0);
-  }
-  100% {
-    -moz-transform: translate(-100%, 0);
     transform: translate(-100%, 0);
   }
 }
@@ -3530,10 +3520,15 @@ svg {
     width: 100%;
     padding: 12px 0;
     clear: both;
+    min-height: 78px;
   }
   div .watch-dialog .videoWatch .videoConatiner li:not(:last-child),
   .register-dialog .videoWatch .videoConatiner li:not(:last-child) {
     border-bottom: 1px solid #eee;
+  }
+  div .watch-dialog .videoWatch .videoConatiner li:not(:last-child):hover .marquee span,
+  .register-dialog .videoWatch .videoConatiner li:not(:last-child):hover .marquee span {
+    animation-name: none;
   }
   div .watch-dialog .videoWatch .videoConatiner li .marquee,
   .register-dialog .videoWatch .videoConatiner li .marquee {
@@ -3541,10 +3536,6 @@ svg {
     white-space: inherit;
     text-align: left;
     padding: 0;
-  }
-  div .watch-dialog .videoWatch .videoConatiner li .marquee:hover span,
-  .register-dialog .videoWatch .videoConatiner li .marquee:hover span {
-    animation: 0;
   }
   div .watch-dialog .videoWatch .videoConatiner li video,
   .register-dialog .videoWatch .videoConatiner li video {
