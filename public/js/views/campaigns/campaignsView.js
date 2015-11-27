@@ -21,6 +21,7 @@ define([
 
         initialize: function () {
             var self = this;
+
             this.campaignsCollection = new CampaignsCollection();
             this.campaignsCollection.bind('reset', self.renderCampaignsList, self);
             this.campaignChoosed = 0;
@@ -29,24 +30,29 @@ define([
         },
 
         copyURL: function (e) {
-            if(this.clipboard){
+            var text;
+            var el;
+            var tt;
+
+            if (this.clipboard) {
                 this.clipboard.destroy();
             }
-            var  el =  $(e.target).closest('td').find('span').get(0);
-            var  tt =  $(e.target).closest('td').find('.copyTooltip');
-            var text = $(e.target).closest('td').find('span').eq(0).text();
+            el = $(e.target).closest('td').find('span').get(0);
+            tt = $(e.target).closest('td').find('.copyTooltip');
+            text = $(e.target).closest('td').find('span').eq(0).text();
             this.clipboard = new Clipboard('.clipCopy', {
-                text: function() {
+                text: function () {
                     return text;
                 }
             });
 
             $(e.target).closest('td').find('.copyTooltip').fadeIn();
+
             setTimeout(function () {
                 $(e.target).closest('td').find('.copyTooltip').fadeOut();
             }, 2000);
 
-            this.clipboard.on('error', function(e) {
+            this.clipboard.on('error', function (e) {
                 var doc = document,
                     range, selection;
                 if (doc.body.createTextRange) {
@@ -66,13 +72,13 @@ define([
 
         chooseRow: function (e) {
             var self = this;
-            if($(e.target).closest(".clipCopy").length){
+            if ($(e.target).closest(".clipCopy").length) {
                 return;
             }
             var index = $(e.target).closest(".customTable").find("tr").index($(e.target).closest("tr"));
 
             if (index) {
-                this.campaignChoosed = index -1;
+                this.campaignChoosed = index - 1;
 
                 $(e.target).closest(".customTable").find("tr.current").removeClass("current");
                 $(e.target).closest("tr").addClass("current");
@@ -82,8 +88,10 @@ define([
         },
 
         edit: function (e) {
-            var campaignId = $(e.target).closest(".campaigns").find("tr.current").attr("data-id");
-            Backbone.history.navigate("#/edit/"+campaignId, {trigger: true});
+            var campaignId;
+
+            campaignId = $(e.target).closest(".campaigns").find("tr.current").attr("data-id");
+            Backbone.history.navigate("#/edit/" + campaignId, {trigger: true});
         },
 
         showDialog: function (title, name, cancel, ok, callback) {
@@ -118,8 +126,9 @@ define([
                             if (callback)callback();
                         }
                     }
-                ],
+                ]
             });
+
             setTimeout(function () {
                 self.$el.find(".confirm-dialog").addClass("show");
             }, 25);
@@ -137,8 +146,8 @@ define([
                     success: function (model, response) {
                         self.campaignsCollection.update();
                     },
-                    error: function (err) {
-                        console.log(JSON.stringify(err));
+                    error: function (model, response) {
+                        App.notification(response.responseJSON.message);
                     }
                 });
 
@@ -148,7 +157,7 @@ define([
         renderCampaignsList: function () {
             var self = this;
             var campaigns = this.campaignsCollection.toJSON();
-            if(!campaigns.length){
+            if (!campaigns.length) {
                 return this;
             }
             this.$el.find("#campaigns").html(_.template(CampaignsListTemplate)({

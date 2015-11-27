@@ -18,10 +18,8 @@ define([
             $('html, body').animate({ scrollTop: 0 }, 'medium');
         },
         initialize: function () {
-            // keep menu actual
             this.render();
         },
-
 
         render: function () {
             this.$el.html(_.template(footerTemplate)());
