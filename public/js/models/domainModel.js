@@ -27,7 +27,7 @@ define(['validation'], function (validation) {
         },
         update: function (options) {
             this.fetch({
-                    data: options,
+                data: options,
                 reset: true,
                 success: function () {
                     console.log('prospectActivityModel updated')

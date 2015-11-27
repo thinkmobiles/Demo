@@ -447,7 +447,7 @@ var routeHandler = function (db) {
             if (options.keepAlive === 'true') {
                 req.session.cookie.maxAge = 365 * 24 * 60 * 60 * 1000;
             } else {
-                req.session.cookie.maxAge = 60 * 1000;
+                req.session.cookie.maxAge = 5 * 60 * 1000;
             }
             res.status(200).send({success: 'Login successful', user: user});
         });
