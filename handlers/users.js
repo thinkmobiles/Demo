@@ -2,25 +2,23 @@
 
 var CONSTANTS = require('../constants/index');
 var USER_ROLES = require('../constants/userRoles');
-
-var async = require('async');
-var crypto = require("crypto");
-var mongoose = require('mongoose');
-var http = require('http');
-var request = require('request');
 var REG_EXP = require('../constants/regExp');
+
+var _ = require('../public/js/libs/underscore/underscore-min');
+var async = require('async');
+var crypto = require('crypto');
+var mongoose = require('mongoose');
+var randToken = require('rand-token');
+var moment = require('moment');
+var request = require('request');
 
 var badRequests = require('../helpers/badRequests');
 var Analytic = require('../helpers/analytic');
-var _ = require('../public/js/libs/underscore/underscore-min');
 var Jumplead = require('../helpers/jumplead');
 var Sessions = require('../handlers/sessions');
 var mailer = require('../helpers/mailer');
-var moment = require('moment');
-var randToken = require('rand-token');
 
 var routeHandler = function (db) {
-
 
     var prospectSchema = mongoose.Schemas['Prospect'];
     var ProspectModel = db.model('Prospect', prospectSchema);
@@ -43,7 +41,7 @@ var routeHandler = function (db) {
 
     function normalizeEmail(email) {
         return email.trim().toLowerCase();
-    };
+    }
 
     function validateProspectSignUp(userData, callback) { //used for signUpMobile, signUpWeb;
         var errMessage;
@@ -64,11 +62,10 @@ var routeHandler = function (db) {
         if (!REG_EXP.EMAIL_REGEXP.test(userData.email)) {
             return callback(badRequests.InvalidEmail());
         }
-        callback();
+        callback(null);
+    }
 
-    };
-
-    function validateUserSignUp(userData, callback) { //used for signUpMobile, signUpWeb;
+    function validateUserSignUp(userData, callback) {
         var errMessage;
 
         if (!userData || !userData.email || !userData.firstName || !userData.lastName || !userData.userName || !userData.phone) {
@@ -117,15 +114,13 @@ var routeHandler = function (db) {
                 });
             }
         });
-
-
-    };
+    }
 
     function createUser(userData, callback) {
         userData.isConfirmed = false;
         userData.role = USER_ROLES.USER;
         userData.isDisabled = false;
-        userData.confirmToken = randToken.generate(24);
+        userData.confirmToken = randToken.generate(50);
         var newUser = new UserModel(userData);
 
         newUser.save(function (err, result) {
@@ -139,13 +134,13 @@ var routeHandler = function (db) {
                 }
             }
         });
-    };
+    }
 
     function getEncryptedPass(pass) {
         var shaSum = crypto.createHash('sha256');
         shaSum.update(pass);
         return shaSum.digest('hex');
-    };
+    }
 
     this.share = function (req, res, next) {
         fs.readFile('public/templates/share.html', 'utf8', function (err, template) {
@@ -182,7 +177,6 @@ var routeHandler = function (db) {
             });
         });
     };
-
 
     this.redirect = function (req, res, next) {
         if (req.query.error) {
@@ -271,7 +265,7 @@ var routeHandler = function (db) {
                 });
             });
         });
-    };
+    }
 
     this.sendContactMe = function (req, res, next) {
         var contentId = req.body.contentId;
@@ -292,14 +286,14 @@ var routeHandler = function (db) {
                 error.status = 404;
                 return next(error);
             }
-            var saveObj = new ContactMeModel({
+            
+            ContactMeModel.create({
                 contentId: contentId,
                 name: body.name || 'NoName',
                 email: body.email || '-',
                 message: body.message || 'NoMessage',
                 sentAt: Date.now()
-            });
-            saveObj.save(function (err, doc) {
+            }, function (err, doc) {
                 if (err) {
                     return console.error(err);
                 }
@@ -385,7 +379,7 @@ var routeHandler = function (db) {
         var options = req.body;
         var error = new Error();
         if (!options.userName || !options.pass) {
-            error.message = "Username and password is required";
+            error.message = 'Username and password is required';
             error.status = 401;
             return next(error);
         }
@@ -398,18 +392,18 @@ var routeHandler = function (db) {
             }
 
             if (!user) {
-                error.message = "Can\'t find User";
+                error.message = 'Can\'t find User';
                 error.status = 404;
                 return next(error);
             }
 
             if (user.pass === pass) {
                 if (!user.isConfirmed) {
-                    error.message = "Your account not verified yet";
+                    error.message = 'Your account not verified yet';
                     error.status = 401;
                     return next(error);
                 } else if (user.isDisabled) {
-                    error.message = "Your account disabled by administrator";
+                    error.message = 'Your account disabled by administrator';
                     error.status = 401;
                     return next(error);
                 }
@@ -421,11 +415,11 @@ var routeHandler = function (db) {
                     req.session.cookie.maxAge = 60 * 1000;
                 }
                 return res.status(200).send({
-                    success: "Login successful",
+                    success: 'Login successful',
                     user: user
                 });
             } else {
-                error.message = "Wrong password";
+                error.message = 'Wrong password';
                 error.status = 401;
                 return next(error);
             }
@@ -435,7 +429,7 @@ var routeHandler = function (db) {
     this.forgotPassword = function (req, res, next) {
         if (!req.body.email) {
             var error = new Error();
-            error.message = "Bad request";
+            error.message = 'Bad request';
             error.status = 400;
             return next(error);
         }
@@ -463,7 +457,7 @@ var routeHandler = function (db) {
     this.changePassword = function (req, res, next) {
         if (!req.body.password || !req.body.token) {
             var error = new Error();
-            error.message = "Bad request";
+            error.message = 'Bad request';
             error.status = 400;
             return next(error);
         }
@@ -489,7 +483,7 @@ var routeHandler = function (db) {
         var userName = req.params.userName;
         if (!userName) {
             var error = new Error();
-            error.message = "UserName is required";
+            error.message = 'UserName is required';
             error.status = 401;
             return next(error);
         }
@@ -498,7 +492,7 @@ var routeHandler = function (db) {
                 return next(err);
             }
             if (!user) {
-                return res.status(200).send({avatar: ""});
+                return res.status(200).send({avatar: ''});
             }
             return res.status(200).send({avatar: user.avatar});
         });
@@ -508,7 +502,7 @@ var routeHandler = function (db) {
         var id = req.params.id;
         if (!id) {
             var error = new Error();
-            error.message = "id is required";
+            error.message = 'id is required';
             error.status = 401;
             return next(error);
         }
@@ -517,9 +511,9 @@ var routeHandler = function (db) {
                 return next(err);
             }
             if (!user) {
-                return res.status(200).send({avatar: ""});
+                return res.status(200).send({avatar: ''});
             }
-            var base64data = user.avatar.replace('data:image/jpeg;base64,', "").replace('data:image/png;base64,', "").replace('data:image/jpg;base64,', "").replace('data:image/bmp;base64,', "");
+            var base64data = user.avatar.replace('data:image/jpeg;base64,', '').replace('data:image/png;base64,', '').replace('data:image/jpg;base64,', '').replace('data:image/bmp;base64,', '');
             var img = new Buffer(base64data, 'base64');
             res.writeHead(200, {
                 'Content-Type': 'image/jpeg',
@@ -529,7 +523,7 @@ var routeHandler = function (db) {
         });
     };
     function getAdminEmail(callback) {
-        UserModel.findOne({userName: 'admin', isAdmin: true}, function (err, doc) {
+        UserModel.findOne({role: USER_ROLES.ADMIN}, function (err, doc) {
             if (err) {
                 return callback(err);
             } else if (!doc) {
@@ -537,7 +531,7 @@ var routeHandler = function (db) {
             }
             callback(null, doc.email)
         });
-    };
+    }
 
     this.signUp = function (req, res, next) {
         var options = req.body;
@@ -573,42 +567,40 @@ var routeHandler = function (db) {
                 return next(err);
             }
             res.status(201).send({message: 'Thank you for your interest in DemoRocket!  We’ve received your information and will be contacting you shortly.'});
-
         });
     };
 
     this.prospectSignUp = function (req, res, next) {
         var options = req.body;
+        var prospectId;
 
         async.series([
-
             //validation:
             function (cb) {
                 validateProspectSignUp(options, function (err) {
                     if (err) {
                         return cb(err);
                     }
-                    cb(null, true);
+                    cb(null);
                 });
             },
 
             //create prospect:
             function (cb) {
-                jumplead.setContact(options.contentId, options, function (err, contact) {
+                jumplead.setContact(options.contentId, options, function (err, prospect) {
                     if (err) {
                         return cb(err);
                     }
-                    cb(null, contact);
+                    prospectId = prospect.id;
+                    cb(null);
 
                 });
-            }
-        ], function (err, result) {
+            }], function (err) {
             if (err) {
                 return next(err);
             }
-            var contact = result[1];
             res.status(201).send({
-                id: contact.id
+                id: prospectId
             });
         });
     };
@@ -619,9 +611,6 @@ var routeHandler = function (db) {
         if (!contentId || !prospectId) {
             return res.redirect(process.env.HOME_PAGE);
         }
-        //} else if (contentId && !prospectId || prospectId === '{{ctid}}') {
-        //    return res.redirect(process.env.HOME_PAGE);
-        //}
         return res.redirect(process.env.HOME_PAGE + contentId + '/' + prospectId);
     };
 
@@ -663,12 +652,6 @@ var routeHandler = function (db) {
                 });
             });
         } else {
-            //if (prospectId == '{{ctid}}') {
-            //    error.message = 'You have to paste this link to Jumplead email template, where that link for each prospect will be generated';
-            //    error.status = 400;
-            //    return next(error);
-            //}
-
             async.waterfall([
 
                 function (waterfallCb) {
@@ -768,20 +751,20 @@ var routeHandler = function (db) {
 
     function createTrackDoc(contentId, prospect) {
         TrackModel.findOneAndUpdate({
-            "contentId": contentId,
-            "jumpleadId": prospect.jumpleadId,
-            "isSent": false
+            'contentId': contentId,
+            'jumpleadId': prospect.jumpleadId,
+            'isSent': false
         }, {
             $set: {
-                "contentId": contentId,
-                "jumpleadId": prospect.jumpleadId,
-                "firstName": prospect.firstName,
-                "lastName": prospect.lastName,
-                "email": prospect.email,
-                "domain": prospect.email.split('@').pop(),
-                "isNewViewer": prospect.isNewViewer,
-                "isSent": false,
-                "updatedAt": Date.now()
+                'contentId': contentId,
+                'jumpleadId': prospect.jumpleadId,
+                'firstName': prospect.firstName,
+                'lastName': prospect.lastName,
+                'email': prospect.email,
+                'domain': prospect.email.split('@').pop(),
+                'isNewViewer': prospect.isNewViewer,
+                'isSent': false,
+                'updatedAt': Date.now()
             }
         }, {upsert: true}, function (err, doc) {
             if (err) {

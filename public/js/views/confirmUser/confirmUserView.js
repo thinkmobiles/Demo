@@ -30,11 +30,15 @@ define([
 		},
 
 		progressBar: function () {
-			var pass = $(".pass").val();
-			var rate = checkPass.scorePassword(pass);
-			var add = checkPass.checkPassStrength(pass);
-			var remove = add==="weak"?"good strong":(add==="good"?"weak strong":"good weak");
-			//console.log( $("#progressBar"));
+			var pass;
+			var rate;
+			var add;
+			var remove;
+
+			pass = $(".pass").val();
+			rate = checkPass.scorePassword(pass);
+			add = checkPass.checkPassStrength(pass);
+			remove = add==="weak"?"good strong":(add==="good"?"weak strong":"good weak");
 			$(".progressBar").progressbar({value: rate});
 			$(".ui-progressbar-value").addClass(add).removeClass(remove);
 		},
@@ -43,6 +47,7 @@ define([
 			var self = this;
 			var isError = false;
 			var message = '';
+
 			self.$el.find(".registration .error").removeClass("error");
 			
 			var pass = self.$el.find(".registration .pass").val();
@@ -52,8 +57,7 @@ define([
 				isError = true;
 				message = "Please input password";
 				self.$el.find(".registration .pass").addClass("error");
-			}
-			if (rate<30){
+			}if (rate<30){
 				isError = true;
 				message = message==''?"Your password is weak. Please choose a stronger password":message;
 				self.$el.find(".registration .pass").addClass("error");
@@ -83,11 +87,11 @@ define([
 					token:self.token,
                     password: self.$el.find(".registration .pass").val()
                 },
-                success: function (response) {
+                success: function () {
 					Backbone.history.navigate("#/home",{ trigger:true });
 					App.notification("Your account successful confirmed");
                 },
-                error: function (err) {
+                error: function () {
 					App.notification('User Not Found');
 				}
             });
