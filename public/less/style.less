@@ -75,28 +75,6 @@
   min-height: 600px;
 }
 
-.filter(@blur) {
-  -webkit-filter: blur(@blur);
-  -moz-filter: blur(@blur);
-  -o-filter: blur(@blur);
-  -ms-filter: blur(@blur);
-  filter: blur(@blur);
-}
-
-.transition(@property,@time) {
-  -webkit-transition: @property @time;
-  -moz-transition: @property @time;
-  -ms-transition: @property @time;
-  -o-transition: @property @time;
-  transition: @property @time;
-}
-
-@img-path: "../i";
-
-.i(@name) {
-  background-image: url("@{img-path}/@{name}");
-  background-repeat: no-repeat;
-}
 
 .inner {
   width: 1070px;
