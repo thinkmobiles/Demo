@@ -1,3 +1,3 @@
-Minder-Server
+DEMO ROCKET
 ==============
 
