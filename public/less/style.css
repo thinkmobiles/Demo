@@ -1181,6 +1181,10 @@ footer .bottom {
 .videoWatch .videoSection video {
   margin-left: -17px;
 }
+.relatedVideo b {
+  word-wrap: break-word;
+  overflow: hidden;
+}
 .aboutUs {
   text-align: center;
   padding-top: 1px;
