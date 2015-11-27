@@ -3529,6 +3529,7 @@ svg {
     float: none;
     width: 100%;
     padding: 12px 0;
+    clear: both;
   }
   div .watch-dialog .videoWatch .videoConatiner li:not(:last-child),
   .register-dialog .videoWatch .videoConatiner li:not(:last-child) {
