@@ -12,7 +12,6 @@ define([
 
         el: "#wrapper",
         events: {
-            "click .removeContent": "remove",
             "click .decline": "decline",
             "click .save.edit": "update",
             "click .question": "addQuestion",
@@ -24,12 +23,10 @@ define([
             "keyup .uploadContainer input[type='text']": "changeInput",
             "click .uploadContainer.file input[type='file']": "clickOnFile",
             "click .link-dialog .ui-dialog-titlebar-close": "decline",
-            "click .editContent": "showEdit",
             "dragenter .uploadContainer.file input": "dragenter",
             "dragleave .uploadContainer.file input": "dragleave",
             "dragover .uploadContainer.file input": "dragover",
-            "drop .uploadContainer.file input": "drop",
-            'click .clipCopy': 'copyURL'
+            "drop .uploadContainer.file input": "drop"
         },
 
         initialize: function (campaignId) {
@@ -48,7 +45,6 @@ define([
             self.isEdit = false;
             this.camaignId = campaignId;
             this.campaignModel = new CampaignModel({_id: campaignId});
-            //this.campaignModel.bind('change', this.render);
             this.campaignModel.fetch({
                 success: function () {
                     self.render()
@@ -59,48 +55,13 @@ define([
             });
         },
 
-        copyURL: function (e) {
-            if (this.clipboard) {
-                this.clipboard.destroy();
-            }
-            var el = $(e.target).closest('.linkContainer').find('span').get(2);
-            var tt = $(e.target).closest('.linkContainer').find('.copyTooltip');
-            var text = $(e.target).closest('.linkContainer').find('span').eq(2).text();
-            this.clipboard = new Clipboard('.clipCopy', {
-                text: function () {
-                    return text;
-                }
-            });
-
-
-            tt.fadeIn();
-            setTimeout(function () {
-                tt.fadeOut();
-            }, 2000);
-
-            this.clipboard.on('error', function (e) {
-                var doc = document,
-                    range, selection;
-                if (doc.body.createTextRange) {
-                    range = document.body.createTextRange();
-                    range.moveToElementText(el);
-                    range.select();
-                } else if (window.getSelection) {
-                    selection = window.getSelection();
-                    range = document.createRange();
-                    range.selectNodeContents(el);
-                    selection.removeAllRanges();
-                    selection.addRange(range);
-                }
-                tt.text("Press Ctrl+C to copy")
-            });
-        },
-
         drop: function (e) {
+            var files
+
             e.stopPropagation();
             e.preventDefault();
-            var files = e.originalEvent.dataTransfer.files;
 
+            files = e.originalEvent.dataTransfer.files;
             if (($(e.target).closest(".uploadContainer").find("input[type='file']").attr("name").indexOf("video") !== -1 && e.originalEvent.dataTransfer.files.length === 1 && e.originalEvent.dataTransfer.files[0].type.indexOf("video") !== -1) || ($(e.target).closest(".uploadContainer").find("input[type='file']").attr("name").indexOf("file") !== -1 && e.originalEvent.dataTransfer.files[0].type.indexOf("application/pdf") !== -1) || ($(e.target).closest(".uploadContainer").find("input[type='file']").attr("name").indexOf("logo") !== -1 && e.originalEvent.dataTransfer.files.length === 1 && e.originalEvent.dataTransfer.files[0].type.indexOf("image") !== -1)) {
                 $(e.target).closest(".uploadContainer").find("input[type='file']").prop("files", e.originalEvent.dataTransfer.files);
             } else {
@@ -124,12 +85,17 @@ define([
 
         update: function (e) {
             var self = this;
-            e.preventDefault();
-            this.$el.find(".error").removeClass("error");
             var hasError = false;
             var message = '';
+            var link;
+            var form;
+            var oData;
+            var oReq;
             var format = 'mp4 WebM Ogg';
 
+            e.preventDefault();
+
+            this.$el.find(".error").removeClass("error");
 
             //nameOfCampaign
             if (!this.$el.find("input[name='nameOfCampaign']").val()) {
@@ -167,8 +133,8 @@ define([
                 message = (message == '') ? "Please upload main video or past direct link to it" : message;
                 this.$el.find(".mainVideoContainer.right .uploadContainer").addClass("error");
                 hasError = !0;
-            }else if (!videoName && !this.$el.find(".mainVideoContainer.right .uploadContainer input[type='file']").get(0).files.length) {
-                var link = this.$el.find(".mainVideoContainer.right .uploadContainer.link input[type='text']").val();
+            } else if (!videoName && !this.$el.find(".mainVideoContainer.right .uploadContainer input[type='file']").get(0).files.length) {
+                link = this.$el.find(".mainVideoContainer.right .uploadContainer.link input[type='text']").val();
 
                 if (!validation.validURL(link) || format.indexOf(link.split('.').pop()) == -1) {
                     message = (message == '') ? "Main video link is not valid" : message;
@@ -226,10 +192,10 @@ define([
             }
 
 
-            var form = document.forms.namedItem("videoForm");
+            form = document.forms.namedItem("videoForm");
 
-            var oData = new FormData(form);
-            var oReq = new XMLHttpRequest();
+            oData = new FormData(form);
+            oReq = new XMLHttpRequest();
             this.xhr = oReq;
             if (this.modalProgres) {
                 this.modalProgres.undelegateEvents();
@@ -243,7 +209,7 @@ define([
                     self.percentComplete = parseInt(self.percentComplete * 100);
 
                     if (self.percentComplete === 100) {
-                        //remove dialog
+                        //remove progress bar & show preloader
                         $(document).find('#bar_container').hide();
                         $(document).find('#rendering').fadeIn();
                     }
@@ -300,31 +266,6 @@ define([
             oReq.send(oData);
         },
 
-        remove: function () {
-            var self = this;
-            var sure = confirm("Are you sure?");
-            if (!sure) {
-                return;
-            }
-            $.ajax({
-                type: "delete",
-                url: "/content/" + self.camaignId,
-                contentType: "application/json",
-                success: function (data) {
-                    if (App.sessionData.get('role') == 0) {
-                        App.sessionData.set('campaigns', []);
-                        Backbone.history.navigate("#/home", {trigger: true});
-                        return;
-                    }
-                    Backbone.history.navigate("#/campaigns", {trigger: true});
-                },
-                error: function (model, xhr) {
-                    console.log(xhr);
-                    console.log(model);
-                }
-            });
-        },
-
         decline: function (e) {
             e.preventDefault();
             if (App.sessionData.get('role') == 0) {
@@ -332,7 +273,6 @@ define([
                 return;
             }
             Backbone.history.navigate("#/campaigns", {trigger: true});
-
         },
 
         changeInput: function (e) {
@@ -358,6 +298,7 @@ define([
             var countQuestion = this.$el.find('.survey').length - 2;
             var current = $(e.target).closest(".survey");
             var n = this.$el.find(".collapseQuestions .survey").index(current);
+
             this.$el.find(".videoContainer .survey").each(function (index) {
                 if (index > n) {
                     $(this).find(".videoElement .questionText").attr("name", "question" + index);
@@ -456,7 +397,6 @@ define([
             this.$el.find(".collapseQuestions").append(_.template(NewSurveyElement)({index: countQuestion + 1}));
             this.$el.find(".countQuestion").val(countQuestion);
             self.defineOrder();
-            $('#sortable').sortable('enable');
         },
 
 
@@ -530,6 +470,37 @@ define([
             }
         },
 
+        defineOrder: function () {
+            var self = this;
+            self.surveyOrder = [];
+
+            this.$el.find('.collapseQuestions .survey').each(function (i) {
+                var index = i + 1;
+                if ($(this).hasClass('canSort')) {
+                    self.surveyOrder.push($(this).attr("data-id"));
+                }
+
+                $(this).find(".videoElement .questionText").attr("name", "question" + index);
+                $(this).find(".videoElement .right .uploadContainer.file input[type='file']").attr("name", "video" + index);
+                $(this).find(".videoElement .right .uploadContainer.link input").attr("name", "video" + index);
+                $(this).find(".videoElement .left .uploadContainer.file input[type='file']").attr("name", "file" + index);
+            });
+            this.$el.find('.surveyOrder').val(self.surveyOrder.join(' '));
+        },
+
+        drawImage: function (src) {
+            this.$el.find("#preview").show();
+            this.$el.find("#arrowPreview").show();
+            var myImage = new Image(100, 100);
+            myImage.src = src;
+            myImage.onload = function () {
+                var c = document.getElementById("preview");
+                var ctx = c.getContext("2d");
+                ctx.clearRect(0, 0, c.width, c.height);
+                ctx.drawImage(myImage, 0, 0, 100, 100);
+            };
+        },
+
         render: function () {
             var self = this;
 
@@ -537,7 +508,7 @@ define([
             this.$el.html(_.template(EditTemplate)({
                 role: App.sessionData.get('role'),
                 content: data.content,
-                contentId:  self.camaignId,
+                contentId: self.camaignId,
                 url: data.url,
                 count: data.content.survey.length + 1,
                 nameOfCampaign: data.content.nameOfCampaign
@@ -579,38 +550,7 @@ define([
             //this.showEdit();
             this.defineOrder();
             return this;
-        },
-
-        defineOrder: function () {
-            var self = this;
-            self.surveyOrder = [];
-            this.$el.find('.collapseQuestions .survey').each(function (i) {
-                var index = i + 1;
-                if ($(this).hasClass('canSort')) {
-                    self.surveyOrder.push($(this).attr("data-id"));
-                }
-
-                $(this).find(".videoElement .questionText").attr("name", "question" + index);
-                $(this).find(".videoElement .right .uploadContainer.file input[type='file']").attr("name", "video" + index);
-                $(this).find(".videoElement .right .uploadContainer.link input").attr("name", "video" + index);
-                $(this).find(".videoElement .left .uploadContainer.file input[type='file']").attr("name", "file" + index);
-            });
-            this.$el.find('.surveyOrder').val(self.surveyOrder.join(' '));
-        },
-
-        drawImage: function (src) {
-            this.$el.find("#preview").show();
-            this.$el.find("#arrowPreview").show();
-            var myImage = new Image(100, 100);
-            myImage.src = src;
-            myImage.onload = function () {
-                var c = document.getElementById("preview");
-                var ctx = c.getContext("2d");
-                ctx.clearRect(0, 0, c.width, c.height);
-                ctx.drawImage(myImage, 0, 0, 100, 100);
-            };
         }
-
     });
 
     return View;

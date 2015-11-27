@@ -12,7 +12,6 @@ define([
         el: "#wrapper",
         events: {
             'click .customTable tr:not(.current)': 'chooseRow',
-            //'click .confirm': 'confirm',
             'click .delete': 'delete',
             'click .disable': 'disable',
             'click .editBtn': 'edit',
@@ -22,7 +21,7 @@ define([
             'click .role span': 'changeRole',
             'click .createBtn': 'createUser',
             "click .customSelect ul li": "updateRole",
-            "click .customSelect .showList": "showList",
+            "click .customSelect .showList": "showList"
         },
         initialize: function () {
             var self = this;
@@ -166,7 +165,7 @@ define([
                 email: self.$el.find(".registration .email").val(),
                 firstName: self.$el.find(".registration .firstName").val(),
                 lastName: self.$el.find(".registration .lastName").val(),
-                userName: self.$el.find(".registration .userName").val(),
+                userName: self.$el.find(".registration .userName").val().toLowerCase(),
                 role: parseInt(self.$el.find(".role .active").attr("data-role"))
             };
 
@@ -199,19 +198,6 @@ define([
             this.$el.find(".isEdited").removeClass("isEdited")
 
         },
-
-
-        //confirm: function (e) {
-        //    var self = this;
-        //    var id = $(e.target).parents(".accountContainer").find(".customTable .current").data("id");
-        //    var model = this.usersCollection.get(id);
-        //    var name = model.get("firstName") + " " + model.get("lastName");
-        //    var start = model.get("subscriptionStart") || moment()._d;
-        //    var end = model.get("subscriptionEnd") || moment().add(3, 'month')._d;
-        //    this.showDialog("Confirm User", name, "CANCEL", "CONFIRM", function () {
-        //        self.updateUser(id, {isConfirmed: true, subscriptionStart: start, subscriptionEnd: end});
-        //    });
-        //},
 
         disable: function (e) {
             var self = this;
@@ -260,7 +246,7 @@ define([
                             if (callback)callback();
                         }
                     }
-                ],
+                ]
             });
             setTimeout(function () {
                 self.$el.find(".confirm-dialog").addClass("show");
@@ -279,8 +265,8 @@ define([
                     success: function (model, response) {
                         self.subordinatesCollection.update();
                     },
-                    error: function (err) {
-                        console.log(JSON.stringify(err));
+                    error: function (model, response) {
+                        App.notification(response.responseJSON.message);
                     }
                 });
 
@@ -288,11 +274,12 @@ define([
         },
 
         renderSubordinatesList: function () {
-            var self = this;
             var users = this.subordinatesCollection.toJSON();
             if (!users.length) {
+                this.$el.find("#subordinates").html('<h3>You don\'t have users</h3>');
                 return;
             }
+
             this.$el.find("#subordinates").html(_.template(SubordinatesListTemplate)({
                 users: users,
                 current: this.subordinateChoosed
@@ -300,7 +287,6 @@ define([
             this.updateDisableBtn();
             return this;
         },
-
 
         render: function () {
             this.$el.html(_.template(SubordinatesTemplate));

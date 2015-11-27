@@ -28,7 +28,10 @@ define([
 				isError = true;
 				self.$el.find(".registration .email").addClass("error");
 			}
-			if (isError)return;
+			if (isError){
+                App.notification('Email is not valid');
+                return;
+            }
 			
 			$.ajax({
                 url: "/forgot",

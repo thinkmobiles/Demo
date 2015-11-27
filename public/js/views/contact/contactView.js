@@ -118,12 +118,12 @@ define([
 					notes: self.$el.find(".contactPage .notes").val(),
 					title: self.$el.find(".contactPage .title").val()
 				},
-				success: function (response) {
+				success: function () {
 					Backbone.history.navigate("#/home", {trigger: true});
 					App.notification("We have received your message and will get back to you as soon as possible!");
 					$('html, body').animate({scrollTop: 0}, 'medium');
 				},
-				error: function (err) {
+				error: function () {
 					App.notification("Some error, please try again");
 				}
 			});

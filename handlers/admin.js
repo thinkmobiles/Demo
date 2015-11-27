@@ -1,10 +1,9 @@
 'use strict';
 
-
+var _ = require('../public/js/libs/underscore/underscore-min');
 var async = require('async');
 var mongoose = require('mongoose');
 var crypto = require('crypto');
-var _ = require('../public/js/libs/underscore/underscore-min');
 var mailer = require('../helpers/mailer');
 var AwsStorage = require('../helpers/aws')();
 var s3 = new AwsStorage();
@@ -31,7 +30,7 @@ var routeHandler = function (db) {
         var shaSum = crypto.createHash('sha256');
         shaSum.update(pass);
         return shaSum.digest('hex');
-    };
+    }
 
     this.confirmUser = function (req, res, next) {
         var confirmToken = req.query.token;

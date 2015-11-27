@@ -38,8 +38,6 @@ define([
 			Backbone.history.navigate("#/home/"+this.videoId+"/"+this.userId, {trigger: false});
 		},
 
-		
-        // render template (once! because google maps)
         render: function () {
 			 var formString = _.template(modalTemplate)({
 				 name:this.content.toJSON().content.name,

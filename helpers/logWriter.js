@@ -1,17 +1,18 @@
+
 var logWriter = function () {
     var fs = require('fs');
 
     function erfunc(destination, errorString) {
         var _dest = 'log.txt';
         var _error = errorString;
-        fs.open(_dest, "a", 0644, function (err, file_handle) {
+        fs.open(_dest, 'a', 0644, function (err, file_handle) {
             if (!err) {
                 var date = new Date();
-                var res = "------------------------------" + destination + "-------------------------------------------------------\r\n"
-                    + date + "\r\n" + _error + "\r\n"
-                    + "---------------------------------------------------------------------------------------------------------\r\n";
+                var res = '------------------------------' + destination + '-------------------------------------------------------\r\n' +
+                    date + '\r\n' + _error + '\r\n' +
+                    '---------------------------------------------------------------------------------------------------------\r\n';
 
-                fs.write(file_handle, res, null, 'utf8', function (err, written) {
+                fs.write(file_handle, res, null, 'utf8', function (err) {
                     if (!err) {
                         fs.close(file_handle);
                     } else {
@@ -25,6 +26,6 @@ var logWriter = function () {
     }
     return {
         log: erfunc
-    }
-}
+    };
+};
 module.exports = logWriter;

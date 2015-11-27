@@ -39,29 +39,34 @@ define([
 
         initialize: function () {
             var self = this;
+
             this.campaignsCollection = new CampaignsCollection();
             this.campaignsCollection.bind('reset', self.render, self);
         },
 
-        //mainRender: function () {
-        //
-        //},
         toggleCampaigns: function (e) {
             $(e.target).closest('.campaigns').find('.campaign-container').slideToggle();
         },
+
         print: function (e) {
-            var el = $(e.target).closest("div.printPart");
+            var el;
+
+            el = $(e.target).closest("div.printPart");
             window.frames["print_frame"].document.body.innerHTML = '<style>' + document.getElementById('less:less-style').innerHTML + '</style>' + '<div class="container analitics">' + el.html() + '</div>';
             window.frames["print_frame"].document.getElementsByClassName("print")[0].style.display = "none";
             window.frames["print_frame"].window.focus();
             window.frames["print_frame"].window.print();
         },
 
-        printContacts: function (e) {
-            var domain = this.$el.find(".customSelect .current").text();
+        printContacts: function () {
+            var domain;
+
+            domain = this.$el.find(".customSelect .current").text();
             if (!domain) {
-                return alert('You must choose some domain');
+                App.notification('You must choose some domain');
+                return;
             }
+
             $.ajax({
                 type: "GET",
                 url: "analytic/contacts",
@@ -77,6 +82,7 @@ define([
                     _.each(data, function (elem) {
                         html += _.template(ProspectActivityTemplate)(elem);
                     });
+
                     window.frames["print_frame"].document.body.innerHTML = '<style>' + document.getElementById('less:less-style').innerHTML + '</style>' + '<div class="container analitics"><div id="prospectActivity">' + html + '</div></div>';
                     window.frames["print_frame"].window.focus();
                     window.frames["print_frame"].window.print();
@@ -84,7 +90,7 @@ define([
                 error: function (model, xhr) {
                     console.log(model);
                     console.log(xhr);
-                    alert('some err');
+                    App.notification('Some trouble happens');
                 }
             });
 
@@ -95,11 +101,8 @@ define([
             $(e.target).closest("div").find("input").datepicker('show');
         },
 
-        showDatepicker: function (e) {
-            $(e.target).closest("div").find("input").datepicker('show');
-        },
 
-        updateDate: function (e) {
+        updateDate: function () {
             this.documentAnalyticCollection.update({
                 from: $("#startDate input").val(),
                 to: $("#endDate input").val()
@@ -120,17 +123,22 @@ define([
 
 
         showContactInfo: function (e) {
-            var self = this;
-            var email = $(e.target).closest("tr").data("email");
+            var name;
+            var email;
+
             $(e.target).closest("table").find("tr.current").removeClass("current");
             $(e.target).closest("tr").addClass("current");
+            email = $(e.target).closest("tr").data("email");
             this.prospectActivityModel.update({email: email});
-            var name = this.$el.find(".current .prospectName").text();
+            name = this.$el.find(".current .prospectName").text();
             this.$el.find(".survayName").text(name);
         },
 
         showProspectActivity: function (e) {
-            var activity = this.prospectActivityModel.toJSON();
+            var activity;
+            var name;
+
+            activity = this.prospectActivityModel.toJSON();
             activity.videos = _.map(activity.videos, function (video) {
                 var sec = video.time % 60;
                 if (sec < 10) {
@@ -140,12 +148,14 @@ define([
                 return video
             });
             this.$el.find("#prospectActivity").html(_.template(ProspectActivityTemplate)(this.prospectActivityModel.toJSON()));
-            var name = this.$el.find(".current .prospectName").text();
+            name = this.$el.find(".current .prospectName").text();
             this.$el.find(".survayName").text(activity.name || name);
-
         },
+
         updateProspect: function (e) {
-            var current = $(e.target).text();
+            var current;
+
+            current = $(e.target).text();
             this.$el.find(".customSelect .current").text(current);
             this.$el.find(".customSelect ul").hide();
             this.contactTrackCollection.update({domain: current});
@@ -157,7 +167,9 @@ define([
         },
 
         showMessage: function (e) {
-            var index = $(e.target).closest("table").find("tr").index($(e.target).closest("tr"));
+            var index;
+
+            index = $(e.target).closest("table").find("tr").index($(e.target).closest("tr"));
             if (index) {
                 $(e.target).closest("table").find(".current").removeClass("current");
                 $(e.target).closest("tr").addClass("current");
@@ -166,8 +178,10 @@ define([
         },
 
         renderDocumentChart: function () {
-            var result = this.documentAnalyticCollection.toJSON()[0];
-            if(!result || !result.docs||!result.docs.length){
+            var result;
+
+            result = this.documentAnalyticCollection.toJSON()[0];
+            if (!result || !result.docs || !result.docs.length) {
                 this.$el.find(".info .countDownload").text('0');
                 this.$el.find('#docDownload').hide();
                 return;
@@ -182,8 +196,11 @@ define([
         },
 
         renderVideoChart: function () {
-            var data = this.videoAnalyticCollection.toJSON()[0];
-            var mas = data.survey;
+            var data;
+            var mas;
+
+            data = this.videoAnalyticCollection.toJSON()[0];
+            mas = data.survey;
             data.mainVideo.name = "Main Video";
             mas.unshift(data.mainVideo);
             Custom.drawBarChart(mas, '#videoView', true);
@@ -194,7 +211,9 @@ define([
         },
 
         renderContactMe: function () {
-            var contactMe = this.contactMeCollection.toJSON();
+            var contactMe
+
+            contactMe = this.contactMeCollection.toJSON();
             contactMe = _.map(contactMe, function (item) {
                 item.sentAt = moment(item.sentAt).format("DD MMMM YYYY");
                 item.fullMessage = item.message;
@@ -206,13 +225,19 @@ define([
 
         renderDomainList: function () {
             var self = this;
-            if (!this.domainModel)return;
-            var domains = this.domainModel.toJSON();
+            var domains;
+            var s = "";
+
+            if (!this.domainModel){
+                return;
+            }
+
+            domains = this.domainModel.toJSON();
             if (!domains || Object.keys(domains).length) {
                 this.$el.find(".haveActivity").show();
                 this.$el.find(".noActivity").hide();
             }
-            var s = "";
+
             for (var i in domains) {
                 s += "<li>" + domains[i] + "</li>";
             }
@@ -238,7 +263,7 @@ define([
 
         renderAnalytic: function (e) {
             self.campaignId = $(e.target).attr("data-id");
-            this.$el.find('.nameOfCampaign').text($(e.target).text().toUpperCase()+" STATISTIC");
+            this.$el.find('.nameOfCampaign').text($(e.target).text().toUpperCase() + " STATISTIC");
             $(e.target).closest('ul').find('.current').removeClass('current');
             $(e.target).addClass('current');
 
@@ -284,7 +309,9 @@ define([
                 },
                 maxDate: new Date()
             });
+
             $("#startDate input").datepicker('setDate', moment().subtract(7, 'days')._d);
+
             $("#endDate input").datepicker({
                 onSelect: function (selected) {
                     $("#startDate input").datepicker("option", "maxDate", selected);
@@ -292,6 +319,7 @@ define([
                 },
                 minDate: moment().subtract(7, 'days')._d
             });
+
             $("#endDate input").datepicker('setDate', new Date());
 
             if (model) {
@@ -330,10 +358,9 @@ define([
                 this.contactMeCollection.bind('reset', self.renderContactMe, self);
                 this.domainModel.bind('change', self.renderDomainList, self);
             }
+
             return this;
         }
-
-
     });
     return View;
 });

@@ -45,7 +45,7 @@ var BadRequestModule = function () {
         }
 
         if (!errOptions.name) {
-            errOptions.name = "NotEnoughIncomingParameters";
+            errOptions.name = 'NotEnoughIncomingParameters';
         }
 
         if (!errOptions.message) {
@@ -68,7 +68,7 @@ var BadRequestModule = function () {
         }
 
         if (!errOptions.name) {
-            errOptions.name = "InvalidEmal";
+            errOptions.name = 'InvalidEmal';
         }
         if (!errOptions.message) {
             errOptions.message = INVALID_EMAIL;
@@ -132,10 +132,10 @@ var BadRequestModule = function () {
         if (!errOptions.message) {
             errMessage = 'Invalid value';
             if (errOptions.value) {
-                errMessage += " " + options.value;
+                errMessage += ' ' + options.value;
             }
             if (errOptions.param) {
-                errMessage += " for '" + options.param + "'";
+                errMessage += ' for "' + options.param + '"';
             }
             errOptions.message = errMessage;
         }
@@ -159,12 +159,12 @@ var BadRequestModule = function () {
             errOptions.name = 'NotFound';
         }
         if (!errOptions.message) {
-            errMessage = "Not Found";
+            errMessage = 'Not Found';
             if (errOptions.target) {
-                errMessage += " " + errOptions.target;
+                errMessage += ' ' + errOptions.target;
             }
             if (errOptions.searchParams) {
-                errMessage += " (" + errOptions.searchParams + ")";
+                errMessage += ' (' + errOptions.searchParams + ')';
             }
             errOptions.message = errMessage;
         }
@@ -229,7 +229,7 @@ var BadRequestModule = function () {
             errOptions.name = 'BlockedAccount';
         }
         if (!errOptions.message) {
-            errOptions.message = "Your account was blocked!";
+            errOptions.message = 'Your account was blocked!';
         }
 
         return new Errors(errOptions);
@@ -274,6 +274,28 @@ var BadRequestModule = function () {
         }
 
         return new Errors(errOptions);
+    };
+
+    function BadRequest(options) {
+        var errOptions;
+
+        if (options) {
+            errOptions = options;
+        } else {
+            errOptions = {};
+        }
+
+        if (!errOptions.name) {
+            errOptions.name = 'BadRequest';
+        }
+        if (!errOptions.status) {
+            errOptions.status = 400;
+        }
+        if (!errOptions.message) {
+            errOptions.message = 'Bad Request';
+        }
+
+        return new Errors(errOptions);
     }
 
 
@@ -290,8 +312,8 @@ var BadRequestModule = function () {
         SignInError: SignInError,
         AccessError: AccessError,
         CaptchaError:CaptchaError,
-        BlockedAccount: BlockedAccount
-
+        BlockedAccount: BlockedAccount,
+        BadRequest: BadRequest
     }
 };
 

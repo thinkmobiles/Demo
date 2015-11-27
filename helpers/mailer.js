@@ -2,9 +2,9 @@
 
 var MailerModule = function () {
     var _ = require('./../public/js/libs/underscore/underscore.js');
-    var nodemailer = require("nodemailer");
+    var nodemailer = require('nodemailer');
     var fs = require('fs');
-    var FROM = "DemoRocket <" + 'info@demorocket.com' + ">";
+    var FROM = 'DemoRocket <' + 'info@demorocket.com' + '>';
 
     this.trackInfo = function (options, callback) {
         fs.readFile('public/templates/mailer/trackInfo.html', 'utf8', function (err, template) {

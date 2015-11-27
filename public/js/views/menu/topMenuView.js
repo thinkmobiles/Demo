@@ -7,11 +7,9 @@ define([
         el: '#topMenu',
 
         events: {
-            //"click .showModal":"showModal",
             'click #logOut': 'logout',
             'click .login': 'login',
             'click .navBar': 'toPage',
-            "click .topMenu": "toTop",
             "click #menu-toggle,#main-menu": "toggleMenu",
             "click #toggle-wrapper a": "hideMenu"
 
@@ -44,10 +42,6 @@ define([
             }
         },
 
-        toTop: function () {
-            $('html, body').animate({scrollTop: 0}, 'medium');
-        },
-
         toPage: function () {
             $("body").removeClass("withLogin");
             if (this.modalView) {
@@ -75,9 +69,6 @@ define([
 
 
         render: function () {
-
-            console.log(App.sessionData.get("authorized"));
-
             this.$el.html(_.template(topMenuTemplate)({
                 authorized: App.sessionData.get("authorized"),
                 role: App.sessionData.get("role"),

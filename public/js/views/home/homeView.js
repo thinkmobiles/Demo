@@ -22,12 +22,12 @@ define([
             "keyup .signIn .password": "changeField",
             'click .login': 'loginBtn',
             "click .circles ul li": "showSlideAdvertising"
-//			"change .signIn .userName":"showAvatar",
         },
 
 
         initialize: function (options) {
             var self = this;
+
             this.options = options;
             this.videoId = options && options.videoId ? options.videoId : "";
             this.userId = options && options.userId ? options.userId : "";
@@ -40,6 +40,7 @@ define([
 
         updateCSS: function () {
             var self = this;
+
             if (App.slider['advertising']) {
                 clearInterval(App.slider['advertising']);
             }
@@ -56,7 +57,6 @@ define([
             setTimeout(function () {
                 $(".signIn .username .userName")[0].focus();
             }, 550);
-
         },
 
         toTop: function () {
@@ -237,15 +237,15 @@ define([
         showModal: function () {
             if (this.options && this.options.videoId && this.options.userId) {
                 Backbone.history.navigate("#/chooseViewer/" + this.videoId + "/" + this.userId, {trigger: true});
+                if(this.options.userId ==='{{ctid}}'){
+                    Backbone.history.navigate("#/registerViewer/"+this.videoId+"/new", {trigger: true});
+                    return;
+                }
             } else  if (this.options && this.options.videoId) {
                 Backbone.history.navigate("#/registerViewer/" + this.videoId, {trigger: true});
             }else{
                 Backbone.history.navigate("#/watchVideo", {trigger: true});
             }
-            /*if(this.modal){
-             this.modal.undelegateEvents();
-             }
-             this.modal =new ModalView(this.options);*/
         },
 
         showMain: function () {
@@ -285,7 +285,7 @@ define([
             this.$el.html(_.template(HomeTemplate));
             if (this.options && this.options.videoId && this.options.userId) {
                 if(this.options.userId ==='{{ctid}}'){
-                    Backbone.history.navigate("#/registerViewer/"+this.videoId+"/new", {trigger: false});
+                    Backbone.history.navigate("#/registerViewer/"+this.videoId+"/new", {trigger: true});
                     return;
                 }
                 if (!this.options.showedModal) {
