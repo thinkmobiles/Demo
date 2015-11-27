@@ -11,10 +11,7 @@ module.exports = function (db) {
     var handler = new ContentHandler(db);
     var session = new SessionHandler(db);
 
-
-
-
-    router.get('/list', session.isAuthenticatedAdminRights, handler.campaignsList);
+    router.get('/list', session.isAuthenticated, handler.campaignsList);
     router.get('/:id', session.isAuthenticatedAdminRights, handler.content);
     router.delete('/:id', session.isAuthenticatedAdminRights, handler.remove);
     router.post('/upload',multipart, session.isAuthenticatedAdminRights, handler.upload);

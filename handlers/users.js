@@ -286,7 +286,7 @@ var routeHandler = function (db) {
                 error.status = 404;
                 return next(error);
             }
-            
+
             ContactMeModel.create({
                 contentId: contentId,
                 name: body.name || 'NoName',
@@ -362,7 +362,7 @@ var routeHandler = function (db) {
 
 
     this.currentUser = function (req, res, next) {
-        UserModel.findById(req.session.uId, {pass:0, __v:0}, function (err, doc) {
+        UserModel.findById(req.session.uId, {pass: 0, __v: 0}, function (err, doc) {
             if (err) {
                 return next(err);
             } else if (!doc) {
@@ -378,51 +378,78 @@ var routeHandler = function (db) {
     this.login = function (req, res, next) {
         var options = req.body;
         var error = new Error();
+        var user;
         if (!options.userName || !options.pass) {
             error.message = 'Username and password is required';
             error.status = 401;
             return next(error);
         }
-
         var userName = options.userName;
         var pass = getEncryptedPass(options.pass);
-        UserModel.findOne({userName: userName}, function (err, user) {
+
+        async.series([
+            function (seriesCb) {
+                UserModel.findOne({userName: userName}, function (err, doc) {
+                    if (err) {
+                        return seriesCb(err);
+                    }
+                    if (!doc) {
+                        error.message = 'Wrong UserName';
+                        error.status = 404;
+                        return seriesCb(error);
+                    }
+                    user = doc;
+                    seriesCb(null);
+                });
+            },
+
+            function (seriesCb) {
+                if (user.pass === pass) {
+                    if (!user.isConfirmed) {
+                        error.message = 'Your account not verified yet';
+                        error.status = 401;
+                        return seriesCb(error);
+                    } else if (user.isDisabled) {
+                        error.message = 'Your account disabled by administrator';
+                        error.status = 401;
+                        return seriesCb(error);
+                    }
+                    seriesCb(null);
+                } else {
+                    error.message = 'Wrong password';
+                    error.status = 401;
+                    return seriesCb(error);
+                }
+            },
+
+            function (seriesCb) {
+                if (user.role === USER_ROLES.USER_ADMINISTRATOR || user.role === USER_ROLES.USER_VIEWER) {
+                    UserModel.findById(user.creator, function (err, doc) {
+                        if (err) {
+                            return seriesCb(err)
+                        }
+                        if (!doc || doc.isDisabled) {
+                            error.message = 'Your account suspended by administrator';
+                            error.status = 401;
+                            return seriesCb(error);
+                        }
+                        seriesCb(null);
+                    })
+                } else {
+                    seriesCb(null);
+                }
+            }
+        ], function (err) {
             if (err) {
                 return next(err);
             }
-
-            if (!user) {
-                error.message = 'Can\'t find User';
-                error.status = 404;
-                return next(error);
-            }
-
-            if (user.pass === pass) {
-                if (!user.isConfirmed) {
-                    error.message = 'Your account not verified yet';
-                    error.status = 401;
-                    return next(error);
-                } else if (user.isDisabled) {
-                    error.message = 'Your account disabled by administrator';
-                    error.status = 401;
-                    return next(error);
-                }
-
-                session.login(req, user);
-                if (options.keepAlive === 'true') {
-                    req.session.cookie.maxAge = 365 * 24 * 60 * 60 * 1000;
-                } else {
-                    req.session.cookie.maxAge = 60 * 1000;
-                }
-                return res.status(200).send({
-                    success: 'Login successful',
-                    user: user
-                });
+            session.login(req, user);
+            if (options.keepAlive === 'true') {
+                req.session.cookie.maxAge = 365 * 24 * 60 * 60 * 1000;
             } else {
-                error.message = 'Wrong password';
-                error.status = 401;
-                return next(error);
+                req.session.cookie.maxAge = 5 * 60 * 1000;
             }
+            res.status(200).send({success: 'Login successful', user: user});
         });
     };
 
@@ -691,8 +718,8 @@ var routeHandler = function (db) {
                 },
 
                 function (user, waterfallCb) {
-                    if(prospectId=='{{ctid}}'){
-                        return  waterfallCb(null, null);
+                    if (prospectId == '{{ctid}}') {
+                        return waterfallCb(null, null);
                     }
                     ProspectModel.findOne({jumpleadId: prospectId}, function (err, doc) {
                         if (err) {
