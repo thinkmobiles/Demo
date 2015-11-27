@@ -35,44 +35,46 @@ require.config({
 
 require(['app'], function (app) {
 
-    // global error handler
-    App.error = function (xhr) {
-        if (xhr) {
-            if (xhr.status === 401 || xhr.status === 403) {
-                if (xhr.status === 401) {
-                    if (App.sessionData.get('authorized')) {
-                        Backbone.history.navigate("login", {trigger: true});
+        // global error handler
+        App.error = function (xhr) {
+            if (xhr) {
+                if (xhr.status === 401 || xhr.status === 403) {
+                    if (xhr.status === 401) {
+                        if (App.sessionData.get('authorized')) {
+                            Backbone.history.navigate("login", {trigger: true});
+                        }
+                        App.sessionData.set({
+                            authorized: false,
+                            user: null,
+                            campaigns: null
+                        });
+                    } else {
+                        App.notification("You do not have permission to perform this action");
                     }
-                    App.sessionData.set({
-                        authorized: false,
-                        user: null,
-                        campaigns: null
-                    });
                 } else {
-                    alert("You do not have permission to perform this action");
-                }
-            } else {
-                if (xhr.responseJSON) {
-                    alert(xhr.responseJSON.error);
-                } else if (xhr.message) {
-                    alert(xhr.message);
-                } else {
-                    console.error(xhr);
+                    if (xhr.responseJSON) {
+                        App.notification(xhr.responseJSON.error);
+                    } else if (xhr.message) {
+                        App.notification(xhr.message);
+                    } else {
+                        console.error(xhr);
+                    }
                 }
             }
+        };
+        var inter = 0;
+        App.notification = function(text){
+            if (inter)clearInterval(inter);
+            $(".notification").show(100).text(text||"Error");
+            inter = setTimeout(function(){
+                $(".notification").hide(100);
+            },5000);
         }
-    };
-	var inter = 0;
-	App.notification = function(text){
-		if (inter)clearTimeout(inter);
-		$(".notification").show(100).text(text||"Error");
-		inter = setTimeout(function(){
-			$(".notification").hide(100);
-		},5000);
-	};
 
 
-	var cacheContent = {};
+
+
+        var cacheContent = {};
 	App.getContent = function(videoId, userId, callback){
 		if (cacheContent[videoId]&&cacheContent[videoId][userId]){
 			if (callback)callback(cacheContent[videoId][userId]);

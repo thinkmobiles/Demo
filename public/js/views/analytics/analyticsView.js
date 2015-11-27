@@ -154,11 +154,12 @@ define([
 
         updateProspect: function (e) {
             var current;
+            var self = this;
 
             current = $(e.target).text();
             this.$el.find(".customSelect .current").text(current);
             this.$el.find(".customSelect ul").hide();
-            this.contactTrackCollection.update({domain: current});
+            this.contactTrackCollection.update({id: self.campaignId, domain: current});
         },
 
         showList: function (e) {
@@ -211,7 +212,7 @@ define([
         },
 
         renderContactMe: function () {
-            var contactMe
+            var contactMe;
 
             contactMe = this.contactMeCollection.toJSON();
             contactMe = _.map(contactMe, function (item) {
@@ -228,7 +229,7 @@ define([
             var domains;
             var s = "";
 
-            if (!this.domainModel){
+            if (!this.domainModel) {
                 return;
             }
 
@@ -239,9 +240,13 @@ define([
             }
 
             for (var i in domains) {
-                s += "<li>" + domains[i] + "</li>";
+                if(i!=='id'){
+
+                    s += "<li>" + domains[i] + "</li>";
+                }
             }
-            this.contactTrackCollection = new ContactTrackCollection({domain: domains[0]});
+
+            this.contactTrackCollection = new ContactTrackCollection({id: self.camaignId, domain: domains[0]});
             this.contactTrackCollection.bind('reset', self.renderContactTable, self);
             this.$el.find(".customSelect ul").html(s);
             this.$el.find(".customSelect .current").text(domains[0]);
@@ -262,7 +267,9 @@ define([
         },
 
         renderAnalytic: function (e) {
+            var self = this;
             self.campaignId = $(e.target).attr("data-id");
+
             this.$el.find('.nameOfCampaign').text($(e.target).text().toUpperCase() + " STATISTIC");
             $(e.target).closest('ul').find('.current').removeClass('current');
             $(e.target).addClass('current');
@@ -349,6 +356,7 @@ define([
                     from: moment().subtract(7, 'days').format("MM/DD/YYYY"),
                     to: moment().format("MM/DD/YYYY")
                 });
+
                 this.domainModel = new DomainModel({id: self.campaignId});
 
                 this.documentAnalyticCollection.bind('reset', self.renderDocumentChart, self);
