@@ -11,9 +11,6 @@ module.exports = function (db) {
     var handler = new ContentHandler(db);
     var session = new SessionHandler(db);
 
-
-
-
     router.get('/list', session.isAuthenticated, handler.campaignsList);
     router.get('/:id', session.isAuthenticatedAdminRights, handler.content);
     router.delete('/:id', session.isAuthenticatedAdminRights, handler.remove);
