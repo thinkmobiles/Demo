@@ -992,6 +992,7 @@ footer .bottom {
 }
 .videoWatch .left table {
   width: 100%;
+  table-layout: fixed;
 }
 .videoWatch .left table tr {
   height: 50px;
@@ -1008,6 +1009,8 @@ footer .bottom {
   font-size: 16px;
   padding: 4px 0;
   color: #333333;
+  word-wrap: break-word;
+  max-width: 390px;
 }
 .videoWatch .left table tr td .checkbox {
   cursor: pointer;
@@ -1023,6 +1026,19 @@ footer .bottom {
   background-position: 50% 50%;
   background-color: #5be371;
   border: 1px solid #5be371;
+}
+.videoWatch .left table tr td:first-child,
+.videoWatch .left table tr th:first-child {
+  width: 65%;
+}
+.videoWatch .left table tr td:nth-child(2) {
+  width: 10%;
+}
+.videoWatch .left table tr td:nth-child(3) {
+  width: 10%;
+}
+.videoWatch .left table tr td:nth-child(4) {
+  width: 10%;
 }
 .videoWatch .left table tr:last-child td {
   border-bottom: 1px solid #f0f0f0;
@@ -1901,6 +1917,15 @@ footer .bottom {
 }
 .container.analitics .haveActivity {
   display: none;
+}
+.container.analitics .haveActivity .customSelect {
+  width: 170px;
+}
+.container.analitics .haveActivity .customSelect .showList span.current {
+  word-wrap: normal;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  padding-right: 30px;
 }
 .container.analitics .noActivity {
   display: block;
@@ -2987,7 +3012,7 @@ svg {
   position: absolute;
   right: 5%;
   top: 16px;
-  z-index: 107;
+  z-index: 117;
 }
 .toggle-wrapper .menu-toggle span {
   display: block;
@@ -3424,7 +3449,7 @@ svg {
     position: relative;
     z-index: 105;
     top: -95px;
-    height: 87vh;
+    height: calc(100vh - 66px);
     overflow-y: auto;
   }
   .topMenu #main-menu li a {
@@ -3445,8 +3470,8 @@ svg {
     filter: blur(2px);
   }
   .topMenu .inner #logo {
-    height: 73px;
-    line-height: 73px;
+    height: 65px;
+    line-height: 65px;
     color: #c7c7c7;
     position: relative;
     z-index: 106;
@@ -3457,6 +3482,10 @@ svg {
     width: 45%;
     min-width: 150px;
     max-width: 270px;
+  }
+  .topMenu.small .inner #logo {
+    height: 65px;
+    line-height: 65px;
   }
   /*-----------font-size--------------*/
   #wrapper .inner h2,
