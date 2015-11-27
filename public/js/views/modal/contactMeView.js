@@ -59,7 +59,7 @@ define([
                 message = (message == '') ? (self.$el.find(".email").val() + " is not a valid email.") : message;
             }
 
-            if (!validation.validLength(this.$el.find(".desc").val())) {
+            if (!validation.validLength(this.$el.find(".desc").val(),2,200)) {
                 message = (message == '') ? "Description is not a valid. Character`s number should be from 2 to 300" : message;
                 this.$el.find(".desc").addClass("error");
                 hasError = true;
