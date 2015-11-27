@@ -165,7 +165,7 @@ define([
                 email: self.$el.find(".registration .email").val(),
                 firstName: self.$el.find(".registration .firstName").val(),
                 lastName: self.$el.find(".registration .lastName").val(),
-                userName: self.$el.find(".registration .userName").val(),
+                userName: self.$el.find(".registration .userName").val().toLowerCase(),
                 role: parseInt(self.$el.find(".role .active").attr("data-role"))
             };
 
