@@ -205,7 +205,7 @@ define([
             $(".questionSection table tr:not(:first)").each(function () {
                 if (!$(this).find(".checked").length) {
                     $(this).find(".checkbox").addClass("error");
-                    message = message === '' ?  'Please make you`r choice for each question' : message;
+                    message = message === '' ?  'Please make your choice for each question' : message;
                     hasError = true;
 
                 }
