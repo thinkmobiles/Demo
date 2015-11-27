@@ -165,7 +165,7 @@ var JumpleadModule = function (db) {
                 } catch (err) {
                     console.log(e);
                 }
-                if (body.status === '404') {
+                if (body.status === 404) {
                     e.status = 404;
                     e.message = 'Contact not found';
                     return callback(e)
@@ -175,7 +175,7 @@ var JumpleadModule = function (db) {
                     e.message = 'Contact not found';
                     return callback(e)
                 }
-                if (body.status === '401') {
+                if (body.status === 401) {
                     return (function () {
                         self.refToken(userId, function (err) {
                             if (err) {
@@ -186,6 +186,10 @@ var JumpleadModule = function (db) {
                     })();
                 } else if (error) {
                     return callback(error);
+                }else if(!body.data || !body.data.id || !body.data.email || !body.data.first_name || !body.data.last_name){
+                    e.status = 400;
+                    e.message = 'Can not get prospect';
+                    return callback(e)
                 }
                 ProspectModel.findOneAndUpdate({jumpleadId: contactId}, {
                     jumpleadId: body.data.id,
@@ -221,7 +225,7 @@ var JumpleadModule = function (db) {
                 } catch (e) {
                     console.log(e);
                 }
-                if (body.status = '404') {
+                if (body.status = 404) {
                     e.status = 404;
                     e.message = 'Contacts not found';
                     return callback(error)
@@ -260,7 +264,7 @@ var JumpleadModule = function (db) {
                 } catch (e) {
                     console.log(e);
                 }
-                if (body.status === '401' || body.status === '404' || body.status === '403' || body.error || !body.data) {
+                if (body.status === 401 || body.status === 404 || body.status === 403 || body.error || !body.data) {
                     return res.redirect(process.env.WEB_HOST + '/#/message?text=Some trouble with jumplead');
                 }
                 return callback(null, body.data.email);
