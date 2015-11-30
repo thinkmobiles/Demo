@@ -108,9 +108,17 @@ body {
   color: white;
   font-size: 16px;
   transition: all 0.5s linear;
+  max-width: 330px;
 }
 .topMenu .inner ul li.userInfo span {
-  padding: 0 20px 0 10px;
+  padding: 0 10px;
+  line-height: 1;
+}
+.topMenu .inner ul li.userInfo span strong {
+  display: inline-block;
+  max-width: 100px;
+  vertical-align: middle;
+  word-wrap: break-word;
 }
 .topMenu .inner ul li.userInfo img {
   transition: all 0.5s linear;

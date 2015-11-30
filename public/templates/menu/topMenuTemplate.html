@@ -18,7 +18,7 @@
 	  <li><a href="#/contact">CONTACT</a></li>
 	  <li><a href="#/home" class="login">LOGIN</a></li>
 	  <%}else{%>
-	  <li class="userInfo"><span><img src="<%=user.avatar%>" width="50" height="50"/><span>Welcome, <strong><%=user.firstName%> <%=user.lastName%></strong></span></span></li>
+	  <li class="userInfo"><span><img src="<%=user.avatar%>" width="50" height="50"/><span><span>Welcome, </span><strong><%=user.firstName%> <%=user.lastName%></strong></span></span></li>
 
 	  <% if (role==0){%>
 	  <% if (campaigns.length){%>
