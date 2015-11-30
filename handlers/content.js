@@ -315,6 +315,9 @@ var routeHandler = function (db) {
             videoExt = (files[videoName].originalFilename.split('.')).pop().toLowerCase();
 
             async.each(files[pdfName], function (file, cb) {
+                if (!file.originalFilename) {
+                    return cb(null);
+                }
                 var pdfExt = (file.originalFilename.split('.')).pop().toLowerCase();
                 if (pdfExt != 'pdf') {
                     err.message = 'Survey pdf files format is not support';
@@ -370,7 +373,7 @@ var routeHandler = function (db) {
         UserModel.findById(ownerId, function (err, user) {
             if (err) {
                 return next(err);
-            }else if(!user){
+            } else if (!user) {
                 error.status = 400;
                 error.message = 'User Not Found';
                 return next(error);
@@ -567,7 +570,7 @@ var routeHandler = function (db) {
                     return next(err);
                 }
                 var url = process.env.WEB_HOST + '/campaign/' + id + '/{{ctid}}';
-                res.status(201).send({url: url, id:id});
+                res.status(201).send({url: url, id: id});
             });
     };
 
@@ -716,20 +719,20 @@ var routeHandler = function (db) {
                                 var videoKey;
                                 var key;
 
+                                key = decodeURIComponent(content.mainVideoUri.replace(prefix, ''));
                                 if (!data.video && !files.video.name && !files.video.size) {
                                     return mainParallelCb(null);
 
                                 } else if (data.video) {
                                     updateMainVideoUri = data.video;
-
                                     ContentModel.findByIdAndUpdate(id, {mainVideoUri: updateMainVideoUri}, function (err) {
                                         if (err) {
                                             return mainParallelCb(err);
                                         }
+                                        s3.removeFile(S3_BUCKET, key);
                                         mainParallelCb(null)
                                     });
                                 } else if (files.video.name) {
-                                    key = decodeURIComponent(content.mainVideoUri.replace(prefix, ''));
                                     videoUrl = S3_ENDPOINT + S3_BUCKET + '/' + url + encodeURIComponent(files['video'].name);
                                     videoKey = url + files['video'].name;
 
@@ -774,7 +777,6 @@ var routeHandler = function (db) {
                                     if (err) {
                                         return mainParallelCb(err);
                                     }
-                                    console.log(doc);
                                     mainParallelCb(null)
                                 });
                             },
@@ -831,7 +833,7 @@ var routeHandler = function (db) {
                                     return mainParallelCb(null);
                                 }
                                 async.each(delSurvey, function (id, eachCb) {
-                                    ContentModel.findByIdAndUpdate(id, {$pull: {survey: {_id: id}}}, function (err, doc) {
+                                    ContentModel.findByIdAndUpdate(id, {$pull: {survey: {_id: id}}}, function (err) {
                                         if (err) {
                                             return eachCb(err);
                                         }
@@ -914,6 +916,7 @@ var routeHandler = function (db) {
                                                         }, {
                                                             $set: {
                                                                 "survey.$.question": data[questionName],
+                                                                "survey.$.videoUri": survey.videoUri.replace('survey' + oldOrder, 'survey' + i),
                                                                 "survey.$.order": i
                                                             }
                                                         }, function (err) {
@@ -928,53 +931,68 @@ var routeHandler = function (db) {
                                                 //update pdf
                                                 function (parallelCb) {
                                                     if (!files[pdfName].length && (!files[pdfName].name || !files[pdfName].size)) {
-                                                        return parallelCb(null);
-                                                    }
-                                                    var prefix = id.toString + '/temp/survey' + oldOrder + '/pdf'
+                                                        var pdfs = [];
 
-                                                    async.parallel([
-                                                            function (callback) {
-                                                                s3.removeDir(S3_BUCKET, prefix, function (err) {
-                                                                    if (err) {
-                                                                        return callback(err);
-                                                                    }
-                                                                    callback(null);
-                                                                });
-                                                            },
-
-                                                            function (callback) {
-                                                                ContentModel.findOneAndUpdate({
-                                                                    "_id": id,
-                                                                    "survey._id": surveyId
-                                                                }, {$unset: {"survey.$.pdfUri": []}}, function (err) {
-                                                                    if (err) {
-                                                                        return callback(err);
-                                                                    }
-                                                                    callback(null);
-                                                                });
-                                                            },
-
-                                                            function (callback) {
-                                                                updateSurveyFiles(i, id, surveyId, files, data, function (err) {
-                                                                    if (err) {
-                                                                        return callback(err);
-                                                                    }
-                                                                    callback(null);
-                                                                });
-                                                            }
-                                                        ],
-                                                        function (err) {
-                                                            if (err) {
-                                                                return parallelCb(err);
-                                                            }
-                                                            parallelCb(null);
+                                                        async.each(survey.pdfUri, function (elem, eachCb) {
+                                                            pdfs.push(elem.replace('survey' + oldOrder, 'survey' + i));
+                                                            eachCb(null);
+                                                        }, function () {
+                                                            ContentModel.findOneAndUpdate({
+                                                                "_id": id,
+                                                                "survey._id": surveyId
+                                                            }, {$unset: {"survey.$.pdfUri": pdfs}}, function (err) {
+                                                                if (err) {
+                                                                    return parallelCb(err);
+                                                                }
+                                                                 parallelCb(null);
+                                                            });
                                                         });
+                                                    } else {
+
+                                                        var prefix = id.toString + '/temp/survey' + oldOrder + '/pdf';
+                                                        async.parallel([
+                                                                function (callback) {
+                                                                    s3.removeDir(S3_BUCKET, prefix, function (err) {
+                                                                        if (err) {
+                                                                            return callback(err);
+                                                                        }
+                                                                        callback(null);
+                                                                    });
+                                                                },
+
+                                                                function (callback) {
+                                                                    ContentModel.findOneAndUpdate({
+                                                                        "_id": id,
+                                                                        "survey._id": surveyId
+                                                                    }, {$unset: {"survey.$.pdfUri": []}}, function (err) {
+                                                                        if (err) {
+                                                                            return callback(err);
+                                                                        }
+                                                                        callback(null);
+                                                                    });
+                                                                },
+
+                                                                function (callback) {
+                                                                    updateSurveyFiles(i, id, surveyId, files, data, function (err) {
+                                                                        if (err) {
+                                                                            return callback(err);
+                                                                        }
+                                                                        callback(null);
+                                                                    });
+                                                                }
+                                                            ],
+                                                            function (err) {
+                                                                if (err) {
+                                                                    return parallelCb(err);
+                                                                }
+                                                                parallelCb(null);
+                                                            });
+                                                    }
                                                 }
                                             ], function (err) {
                                                 if (err) {
                                                     return whilstCb(err);
                                                 }
-
                                                 var newPrefix = url + 'survey' + i;
                                                 var oldPrefix = url + 'temp/survey' + oldOrder;
                                                 s3.moveDir(S3_BUCKET, oldPrefix, newPrefix, function (err) {
@@ -1019,7 +1037,7 @@ var routeHandler = function (db) {
                     return next(err)
                 }
                 var sendDataUrl = process.env.WEB_HOST + '/campaign/' + contentId + '/{{ctid}}';
-                res.status(200).send({url: sendDataUrl, id: contentId });
+                res.status(200).send({url: sendDataUrl, id: contentId});
             });
     };
 };
