@@ -35,7 +35,7 @@ var routeHandler = function (db) {
     this.confirmUser = function (req, res, next) {
         var confirmToken = req.query.token;
         var options;
-        UserModel.findOneAndUpdate({confirmToken: confirmToken}, {isConfirmed: true}, function (err, doc) {
+        UserModel.findOneAndUpdate({confirmToken: confirmToken}, {isConfirmed: true, confirmToken: ''}, function (err, doc) {
             if (err) {
                 return next(err);
             }
@@ -109,6 +109,7 @@ var routeHandler = function (db) {
         }
         if (body.isConfirmed !== undefined) {
             saveObj.isConfirmed = body.isConfirmed;
+            saveObj.confirmToken = '';
         }
         if (body.subscriptionStart !== undefined) {
             saveObj.subscriptionStart = body.subscriptionStart;

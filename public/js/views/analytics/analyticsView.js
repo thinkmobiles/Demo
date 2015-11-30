@@ -123,13 +123,14 @@ define([
 
 
         showContactInfo: function (e) {
+            var self = this;
             var name;
             var email;
 
             $(e.target).closest("table").find("tr.current").removeClass("current");
             $(e.target).closest("tr").addClass("current");
             email = $(e.target).closest("tr").data("email");
-            this.prospectActivityModel.update({email: email});
+            this.prospectActivityModel.update({id: self.campaignId, email: email});
             name = this.$el.find(".current .prospectName").text();
             this.$el.find(".survayName").text(name);
         },
@@ -155,7 +156,6 @@ define([
         updateProspect: function (e) {
             var current;
             var self = this;
-
             current = $(e.target).text();
             this.$el.find(".customSelect .current").text(current);
             this.$el.find(".customSelect ul").hide();
@@ -197,9 +197,9 @@ define([
         },
 
         renderVideoChart: function () {
+            var self = this;
             var data;
             var mas;
-
             data = this.videoAnalyticCollection.toJSON()[0];
             mas = data.survey;
             data.mainVideo.name = "Main Video";
@@ -212,6 +212,7 @@ define([
         },
 
         renderContactMe: function () {
+            var self = this;
             var contactMe;
 
             contactMe = this.contactMeCollection.toJSON();
@@ -239,17 +240,14 @@ define([
                 this.$el.find(".noActivity").hide();
             }
 
-            for (var i in domains) {
-                if(i!=='id'){
+            _.forEach(domains.data, function (elem) {
+                s += "<li>" + elem + "</li>";
+            });
 
-                    s += "<li>" + domains[i] + "</li>";
-                }
-            }
-
-            this.contactTrackCollection = new ContactTrackCollection({id: self.camaignId, domain: domains[0]});
+            this.contactTrackCollection = new ContactTrackCollection({id: self.campaignId, domain: domains.data[0]});
             this.contactTrackCollection.bind('reset', self.renderContactTable, self);
             this.$el.find(".customSelect ul").html(s);
-            this.$el.find(".customSelect .current").text(domains[0]);
+            this.$el.find(".customSelect .current").text(domains.data[0]);
         },
 
         renderContactTable: function () {
@@ -257,7 +255,7 @@ define([
             var prospects = this.contactTrackCollection.toJSON();
             this.$el.find("#prospectTable").html(_.template(ProspectTemplate)({prospects: prospects}));
             this.$el.find("#prospectTable tr").eq(1).addClass("current");
-            this.prospectActivityModel = new ProspectActivityModel({email: prospects[0].email});
+            this.prospectActivityModel = new ProspectActivityModel({id: self.campaignId, email: prospects[0].email});
             this.prospectActivityModel.bind('change', self.showProspectActivity, self);
         },
 
@@ -357,7 +355,9 @@ define([
                     to: moment().format("MM/DD/YYYY")
                 });
 
-                this.domainModel = new DomainModel({id: self.campaignId});
+                this.domainModel = new DomainModel({campaignId: self.campaignId});
+                this.domainModel.fetch();
+
 
                 this.documentAnalyticCollection.bind('reset', self.renderDocumentChart, self);
                 this.questionAnalyticCollection.bind('reset', self.renderQuestionChart, self);
