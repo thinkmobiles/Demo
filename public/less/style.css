@@ -2070,6 +2070,8 @@ footer .bottom {
 .questionsPie li div {
   text-align: center;
   margin-bottom: 30px;
+  height: 95px;
+  overflow: hidden;
 }
 .questionsPie li div span {
   color: #808080;
