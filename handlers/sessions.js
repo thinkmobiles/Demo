@@ -1,4 +1,6 @@
 var USER_ROLES = require('../constants/userRoles');
+var badRequests = require('../helpers/badRequests');
+
 var Session = function (db) {
 
     this.login = function (req, options) {
@@ -13,7 +15,6 @@ var Session = function (db) {
     };
 
     this.kill = function (req, res, next) {
-
         if (req.session && req.session.uId) {
             req.session.destroy();
         }
@@ -24,12 +25,7 @@ var Session = function (db) {
         if (req.session && req.session.uId && req.session.loggedIn && req.session.isConfirmed) {
             next();
         } else {
-            if (req.session && req.session.uId) {
-                req.session.destroy();
-            }
-            var err = new Error('Forbidden');
-            err.status = 403;
-            next(err);
+            next(badRequests.UnauthorizedError());
         }
     };
 
@@ -38,11 +34,9 @@ var Session = function (db) {
             next();
         } else {
             if (req.session && req.session.uId) {
-                req.session.destroy();
+                next(badRequests.AccessError());
             }
-            var err = new Error('You are not super admin');
-            err.status = 403;
-            next(err);
+            next(badRequests.UnauthorizedError());
         }
     };
 
@@ -51,11 +45,9 @@ var Session = function (db) {
             next();
         } else {
             if (req.session && req.session.uId) {
-                req.session.destroy();
+                next(badRequests.AccessError());
             }
-            var err = new Error('You are not admin');
-            err.status = 403;
-            next(err);
+            next(badRequests.UnauthorizedError());
         }
     };
 
@@ -64,11 +56,9 @@ var Session = function (db) {
             next();
         } else {
             if (req.session && req.session.uId) {
-                req.session.destroy();
+                next(badRequests.AccessError());
             }
-            var err = new Error('You are not admin');
-            err.status = 403;
-            next(err);
+            next(badRequests.UnauthorizedError());
         }
     };
 

@@ -391,7 +391,7 @@ define(["moment"],function (moment) {
 				.attr("transform", function(d) {
 					return "translate(0,-4)";
 				})
-				.style("font-size","20px")
+				.style("font-size","20px");
 			arcs.append("text")
 				.attr("text-anchor","middle")
 				.attr("fill","silver")

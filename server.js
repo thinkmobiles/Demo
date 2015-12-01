@@ -82,6 +82,26 @@ db.once('open', function() {
 
     require('./routes/index')(app, db);
 
+    Array.prototype.objectID = function () {
+        var _arrayOfID = [];
+        var objectId = mongoose.Types.ObjectId;
+
+        for (var i = 0; i < this.length; i++) {
+            if (this[i] && typeof this[i] == 'object' && this[i].hasOwnProperty('_id')) {
+                _arrayOfID.push(this[i]._id);
+            } else {
+                if (typeof this[i] == 'string' && this[i].length === 24) {
+                    _arrayOfID.push(objectId(this[i]));
+                }
+                if (this[i] === null || this[i] === 'null') {
+                    _arrayOfID.push(null);
+                }
+
+            }
+        }
+        return _arrayOfID;
+    };
+
     app.listen(port, function () {
         console.log('==============================================================');
         console.log('|| server start success on port=' + port + ' in ' + process.env.NODE_ENV + ' version ||');

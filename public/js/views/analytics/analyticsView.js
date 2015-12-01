@@ -87,10 +87,8 @@ define([
                     window.frames["print_frame"].window.focus();
                     window.frames["print_frame"].window.print();
                 },
-                error: function (model, xhr) {
-                    console.log(model);
-                    console.log(xhr);
-                    App.notification('Some trouble happens');
+                error: function (xhr) {
+                   App.error(xhr)
                 }
             });
 
@@ -297,7 +295,6 @@ define([
                 from: moment().subtract(7, 'days').format("MM/DD/YYYY"),
                 to: moment().format("MM/DD/YYYY")
             });
-            this.domainModel.update({id: self.campaignId});
         },
 
         render: function () {

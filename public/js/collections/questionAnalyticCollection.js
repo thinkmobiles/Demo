@@ -12,7 +12,7 @@ define([
 
                 },
                 error: function (models, xhr) {
-                    if (xhr.status === 401) Backbone.history.navigate('#login', { trigger: true });
+                    App.error(xhr);
                 }
             });
         },
@@ -25,7 +25,7 @@ define([
 
                 },
                 error: function (models, xhr) {
-                    if (xhr.status === 401) Backbone.history.navigate('#login', { trigger: true });
+                    App.error(xhr);
                 }
             });
         },

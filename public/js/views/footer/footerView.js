@@ -12,7 +12,6 @@ define([
         contact: function () {
             Backbone.history.navigate("#/contact", {trigger: true});
             $("body").removeClass("withLogin");
-            $('html, body').animate({ scrollTop: 0 }, 'medium');
         },
         toTop:function(){
             $('html, body').animate({ scrollTop: 0 }, 'medium');

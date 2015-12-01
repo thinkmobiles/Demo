@@ -71,8 +71,8 @@ define([
 					Backbone.history.navigate("#/home",{ trigger:true });
 					App.notification("Password was changed");
                 },
-                error: function (err) {
-					App.notification((err.responseJSON?err.responseJSON.message:"Some error occurs"));
+                error: function (xhr) {
+					App.error(xhr);
 				}
             });
 		},

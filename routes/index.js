@@ -45,7 +45,7 @@ module.exports = function (app, db) {
     app.post('/admin/contact', handler.contactAdmin);
 
     //ToDo: for develop only
-    app.get('/sendDaily', handler.sendDaily);
+    //app.get('/sendDaily', handler.sendDaily);
     //app.get('/sendWeekly', handler.sendWeekly);
 
     // ----------------------------------------------------------
