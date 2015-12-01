@@ -17,6 +17,7 @@ define([
 			"click .ui-dialog-titlebar-close": "clickOnClose",
 			"click .contactMe": "contactMe",
 			"click .social .fb": "shareOnFacebook",
+			"click .social .in": "shareOnLinkedin",
 			"click .hoverList": "showList",
 
 			"mousemove .surveyVideo": "toggleArrow",
@@ -103,26 +104,66 @@ define([
 			self.$el.find(".hoverList span").stop().animate({ opacity: 0 }, 400);
 		},
 
+
+		shareOnLinkedin:function(e){
+			e.preventDefault();
+			var self = this;
+			var selfContent = self.content.toJSON().content;
+			// Build the JSON payload containing the content to be shared
+			var payload = {
+			//	"comment": "Check out developer.linkedin.com! http://linkd.in/1FC2PyG",
+				"content": {
+					"title": selfContent.name,
+							"submittedUrl": window.location.href.replace("chooseImportant", "watchVideo"),
+							"submittedImageUrl": selfContent.logoUri,
+							"description": selfContent.mainVideoDescription
+				},
+
+				"visibility": {
+					"code": "anyone"
+				}
+			};
+
+
+			IN.User.authorize(function() {
+				IN.API.Raw("/people/~/shares?format=json")
+						.method("POST")
+						.body(JSON.stringify(payload))
+						.result(function (res) {
+							console.dir(res)
+						})
+						.error(function (err) {
+							console.dir(err)
+						});
+			});
+		},
 		shareOnFacebook:function(){
 			var self = this;
 			console.log(window.location.origin+"/"+self.content.toJSON().content.logoUri);
+			var selfContent = self.content.toJSON().content;
+
 			FB.ui(
 				{
 					method: 'feed',
-					name: 'DemoRocket Video',
+					name: selfContent.name,
 					link: window.location.href.replace("chooseImportant","watchVideo"),
-					picture: window.location.origin+"/"+self.content.toJSON().content.logoUri,
-					caption: 'Reference Documentation',
-					description: self.content.toJSON().content.mainVideoDescription
+					picture: selfContent.logoUri,
+					caption: 'demorocket.biz',
+					description: selfContent.mainVideoDescription
 				},
 				function(response) {
 					if (response && response.post_id) {
+						console.dir(response);
+						var postId = response.post_id;
 						console.log('Post was published.');
 					} else {
 						console.log('Post was not published.');
 					}
 				}
 			);
+			FB.getLoginStatus(function(response){
+				console.dir(response);
+			});
 		},
 		
 		contactMe: function(){

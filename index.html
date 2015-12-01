@@ -9,9 +9,15 @@
   <link rel="stylesheet" href="less/style.css">
   <script data-main="js/main" src="js/libs/requirejs/require.js"></script>
   <link rel="icon" href="i/favicon.ico">
+  <script type="text/javascript" src="//platform.linkedin.com/in.js">
+    api_key: 777cm3utvedy9e
+  </script>
+
 </head>
 <body>
-  <script>
+
+
+<script>
     window.fbAsyncInit = function() {
       FB.init({
         appId      : '1651405021765017',
@@ -27,16 +33,18 @@
       js.src = "//connect.facebook.net/en_US/sdk.js";
       fjs.parentNode.insertBefore(js, fjs);
     }(document, 'script', 'facebook-jssdk'));
+
+
+
   </script>
-  <!-- Вставьте этот тег в заголовке страницы или непосредственно перед закрывающим тегом основной части. -->
-  <script src="https://apis.google.com/js/platform.js" async defer>
-    {lang: 'ru'}
-  </script>
+
+
 
   <div class="notification">
   </div>
   <div id="topMenu"></div>
   <div id="wrapper"></div>
   <div id="footer"></div>
+
 </body>
 </html>
