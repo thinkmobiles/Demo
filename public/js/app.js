@@ -17,7 +17,6 @@ define([
         App.slider = [];
         // create router
         appRouter = new Router();
-
         // append router to global scope
         App.router = appRouter;
         App.router.on("route", function(route, params) {

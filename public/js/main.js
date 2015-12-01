@@ -23,6 +23,7 @@ require.config({
         text: './libs/text/text',
         common: 'common',
         clipboard: "./libs/clipboard/dist/clipboard.min"
+
     },
     shim: {
         'ajaxForm': ['jQuery'],

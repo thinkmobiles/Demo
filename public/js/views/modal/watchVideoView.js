@@ -111,9 +111,9 @@ define([
                 {
                     method: 'feed',
                     name: 'DemoRocket Video',
-                    link: window.location.href.replace("chooseImportant", "watchVideo"),
-                    picture: window.location.origin + "/" + self.content.toJSON().content.logoUri,
-                    caption: 'Reference Documentation',
+                    link: window.location.href.replace("chooseImportant", "home").replace('watchVideo','home').replace('relatedVideo','home'),
+                    picture:  self.content.toJSON().content.logoUri,
+                    caption: 'demorocket.biz',
                     description: self.content.toJSON().content.mainVideoDescription
                 },
                 function (response) {
@@ -127,14 +127,13 @@ define([
         },
 		shareOnLinkedIn: function(){
 			var self = this;
-			console.log(window.location.origin + "/" + self.content.toJSON().content.logoUri);
 			var options = {
 				//	"comment": "Check out developer.linkedin.com!",
 				"content": {
 					"title": 'DemoRocket Video',
 					"description": self.content.toJSON().content.mainVideoDescription,
-					"submitted-url": window.location.href.replace("chooseImportant", "watchVideo"),
-					"submitted-image-url": window.location.origin + "/" + self.content.toJSON().content.logoUri
+					"submitted-url": window.location.href.replace("chooseImportant", "home").replace('watchVideo','home').replace('relatedVideo','home') + '\/f157640',
+					"submitted-image-url": self.content.toJSON().content.logoUri
 				},
 				"visibility": {
 					"code": "anyone"
@@ -144,6 +143,11 @@ define([
 				IN.API.Raw("/people/~/shares?format=json")
 						.method("POST")
 						.body(JSON.stringify(options))
+						.error(function(err){
+							console.log(err);
+						});
+
+
 
 			});
 

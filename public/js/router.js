@@ -1,7 +1,8 @@
 define([
     'custom',
     'views/menu/topMenuView',
-    'views/footer/footerView'
+    'views/footer/footerView',
+
 ], function (custom, TopMenuView, FooterView) {
 
     var appRouter;
@@ -16,7 +17,7 @@ define([
         routes: {
             "upload"                    :  "upload",
             "edit/:campaignId"          :  "edit",
-            "home(/:videoId/:userId)"   :  "home",
+            "home(/:videoId/:userId)(/:socialId)"   :  "home",
 			"chooseViewer(/:videoId/:userId)" :  "chooseViewer",
 			"registerViewer(/:videoId/:userId)" :  "registerViewer",
 			"contactMe(/:videoId/:userId/:page)(/:indexList)" :  "contactMe",
@@ -199,7 +200,8 @@ define([
         confirmUser: function (token) {
 			this.loadWrapperView('confirmUser', {token:token});
 		},
-        home: function (videoId, userId) {
+        home: function (videoId, userId,socialId) {
+            console.log(custom.getReferrer())
             this.loadWrapperView('home',{
                 videoId:videoId,
                 userId:userId
