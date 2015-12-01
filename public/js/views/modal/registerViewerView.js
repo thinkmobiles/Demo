@@ -153,8 +153,8 @@ define([
 
 
                     },
-                    error: function (err) {
-                        App.notification("Some trouble happened, please try again!");
+                    error: function (model, response) {
+                        App.error(response);
                         Backbone.history.navigate("/home", {trigger: true});
                         console.log(JSON.stringify(err));
                     }

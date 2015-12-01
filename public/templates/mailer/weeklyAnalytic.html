@@ -27,7 +27,7 @@
     </p>
     <table>
         <tr>
-            <td><img src="http://demorocket.biz/i/eye.png" alt="img" style="margin-left:5px;"/></td>
+            <td><img src="<%=host +'/i/eye.png'%>" alt="img" style="margin-left:5px;"/></td>
             <td>
                 <h3 style="  font-weight:normal;
 						 font-size:17px;
@@ -48,8 +48,9 @@
         <tr>
             <td style="border:1px solid #efefef;">
                 <span style="padding:0 15px;line-height:30px"><a
-                        href="<%= process.env.WEB_HOST +'/'+ videos.mainVideo.name%>"> Main video</a></span>
-            </td style="border: 1px solid #efefef;">
+                        href="<%=videos.mainVideo.name%>"> Main video</a></span>
+            </td style="border: 1px solid #efefef
+            ;">
             <td style="border:1px solid #efefef;">
                 <span style="padding:0 15px;line-height:30px"><%=videos.mainVideo.count %></span>
             </td>
@@ -57,7 +58,7 @@
         <% _.each(videos.survey, function(item){%>
         <tr>
             <td style="border:1px solid #efefef;">
-                <span style="padding:0 15px;line-height:30px"><a href="<%= process.env.WEB_HOST +'/'+ item.name%>"><%=item.name.split('/').pop()
+                <span style="padding:0 15px;line-height:30px"><a href="<%=item.name%>"><%=item.name.split('/').pop()
                     %></a></span>
             </td>
             <td style="border:1px solid #efefef;">
@@ -74,7 +75,7 @@
 
     <table>
         <tr>
-            <td><img src="http://demorocket.biz/i/message.png" alt="img" style="margin-left:5px;"/></td>
+            <td><img src="<%=host + '/i/message.png'%>" alt="img" style="margin-left:5px;"/></td>
             <td><h3 style="  font-weight:normal;
 	  font-size:17px;
       background-repeat: no-repeat;
@@ -126,7 +127,7 @@
     <br/>
     <table>
         <tr>
-            <td><img src="http://demorocket.biz/i/download.png" alt="img" style="margin-left:5px;"/></td>
+            <td><img src="<%=host+ '/i/download.png'%>" alt="img" style="margin-left:5px;"/></td>
             <td><h3 style="
 																												   font-weight:normal;
 	  font-size:17px;
@@ -149,7 +150,7 @@
         <% _.each(documents.docs, function(item){%>
         <tr>
             <td style="border:1px solid #efefef;">
-                <span style="padding:0 15px;line-height:30px"><a href="<%= process.env.WEB_HOST +'/'+ item.name%>"><%=item.name.split('/').pop()
+                <span style="padding:0 15px;line-height:30px"><a href="<%= item.name%>"><%=item.name.split('/').pop()
                     %></a></span>
             </td>
             <td style="border:1px solid #efefef;">
@@ -162,9 +163,9 @@
     <%=documents.download %> of <%=visits.total %> prospects downloaded documents
     <br/>
     <% if (uninterested.length){ %>
-    <h2 style="font-weight:normal;font-size:17px;">Uninterested contacts (who hasn't  watched entire main video):</h2>
+    <h2 style="font-weight:normal;font-size:17px;">Uninterested contacts (who hasn't watched entire main video):</h2>
     <ul style="list-style:none;margin:0;padding:0;margin-left:18px;font-size:17px">
-    <% _.each(uninterested, function(item){%>
+        <% _.each(uninterested, function(item){%>
         <li><%=item.name %></li>
         <% });%>
     </ul>

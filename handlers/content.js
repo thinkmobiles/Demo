@@ -832,17 +832,12 @@ var routeHandler = function (db) {
                                 if (!delSurvey.length) {
                                     return mainParallelCb(null);
                                 }
-                                async.each(delSurvey, function (id, eachCb) {
-                                    ContentModel.findByIdAndUpdate(id, {$pull: {survey: {_id: id}}}, function (err) {
-                                        if (err) {
-                                            return eachCb(err);
-                                        }
-                                        eachCb(null);
-                                    });
-                                }, function (err) {
+                                var arrIds = delSurvey.objectID();
+                                ContentModel.findByIdAndUpdate(id, {$pull: {survey: {_id: {$in: arrIds}}}}, function (err, doc) {
                                     if (err) {
                                         return mainParallelCb(err);
                                     }
+
                                     mainParallelCb(null);
                                 });
                             },
@@ -944,7 +939,7 @@ var routeHandler = function (db) {
                                                                 if (err) {
                                                                     return parallelCb(err);
                                                                 }
-                                                                 parallelCb(null);
+                                                                parallelCb(null);
                                                             });
                                                         });
                                                     } else {

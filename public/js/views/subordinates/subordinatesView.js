@@ -96,8 +96,8 @@ define([
                     success: function (model, response) {
                         self.subordinatesCollection.update();
                     },
-                    error: function (err) {
-                        console.log(JSON.stringify(err));
+                    error: function (model, response) {
+                        App.error(response);
                     }
                 });
 
@@ -177,7 +177,7 @@ define([
                         self.subordinatesCollection.update();
                     },
                     error: function (model, response) {
-                        App.notification(response.responseJSON.error);
+                        App.error(response);
                     }
                 });
         },
@@ -266,7 +266,7 @@ define([
                         self.subordinatesCollection.update();
                     },
                     error: function (model, response) {
-                        App.notification(response.responseJSON.message);
+                        App.error(response);
                     }
                 });
 

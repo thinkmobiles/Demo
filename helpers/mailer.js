@@ -214,6 +214,7 @@ var MailerModule = function () {
             } else {
 
                 templateOptions = {
+                    host: process.env.WEB_HOST,
                     companyName: options.companyName,
                     companyLogo: options.companyLogo,
                     name: options.name,
@@ -251,6 +252,7 @@ var MailerModule = function () {
             } else {
 
                 templateOptions = {
+                    host: process.env.WEB_HOST,
                     companyName: options.companyName,
                     name: options.name,
                     email: options.email,
@@ -288,7 +290,7 @@ var MailerModule = function () {
                     name: options.firstName + ' ' + options.lastName,
                     email: options.email,
                     minderId: (options.minderId) ? options.minderId : null,
-                    url: process.env.HOST + '/#confirmEmail/' + options.confirmToken
+                    url: process.env.WEB_HOST + '/#/confirmEmail/' + options.confirmToken
                 };
 
                 mailOptions = {

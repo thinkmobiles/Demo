@@ -1,4 +1,5 @@
-<div class="campaignsLabel"><span>OR</span></div><hr class="campaignsLine">
+<div class="campaignsLabel"><span>OR</span></div>
+<hr class="campaignsLine">
 <div class="campaignsLabel2"><span>Edit Existing Demo</span></div>
 <div class="tableBt">
     <a href="javascript:;" class="editBtn">
@@ -19,7 +20,8 @@
     <tr data-id="<%=campaign._id%>" class="<%=index==current?'current':''%>">
         <td><span><%=campaign.name %></span></td>
         <td><span><%=moment(campaign.createdAt).format('DD MMM YYYY') %></span></td>
-        <td><span><%='http://projects.thinkmobiles.com:8838/campaign/'+campaign._id+'/{{ctid}}'%></span><span class="clipCopy"><span class="copyTooltip">Copied!</span></span></td>
+        <td><span><%=host+'/campaign/'+campaign._id+'/{{ctid}}'%></span><span class="clipCopy"><span
+                class="copyTooltip">Copied!</span></span></td>
     </tr>
     <%})%>
 </table>

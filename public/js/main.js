@@ -22,6 +22,7 @@ require.config({
         templates: '../templates', // templates dir not error
         text: './libs/text/text',
         common: 'common',
+        constants: './constants',
         clipboard: "./libs/clipboard/dist/clipboard.min"
 
     },
@@ -44,6 +45,7 @@ require(['app'], function (app) {
                         if (App.sessionData.get('authorized')) {
                             Backbone.history.navigate("login", {trigger: true});
                         }
+                        App.notification("Your session has expired. Please log in again");
                         App.sessionData.set({
                             authorized: false,
                             user: null,
