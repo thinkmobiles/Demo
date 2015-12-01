@@ -218,6 +218,7 @@ body {
 }
 .whatIs {
   margin-top: -30px;
+  overflow: hidden;
 }
 .whatIs .inner h2 {
   margin-top: 0px;
@@ -2877,6 +2878,7 @@ svg {
   height: 825px;
   position: relative;
   background: url("../i/contact-bg.png") no-repeat;
+  background-size: 100% 100%;
 }
 .mediaFooter .contactInner {
   position: absolute;
