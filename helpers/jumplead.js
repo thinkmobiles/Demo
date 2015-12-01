@@ -230,7 +230,7 @@ var JumpleadModule = function (db) {
                     e.message = 'Contacts not found';
                     return callback(error)
                 }
-                if (body.status === '401') {
+                if (body.status === 401) {
                     return (function () {
                         self.refToken(userId, function (err) {
                             if (err) {

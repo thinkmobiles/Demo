@@ -108,9 +108,17 @@ body {
   color: white;
   font-size: 16px;
   transition: all 0.5s linear;
+  max-width: 330px;
 }
 .topMenu .inner ul li.userInfo span {
-  padding: 0 20px 0 10px;
+  padding: 0 10px;
+  line-height: 1;
+}
+.topMenu .inner ul li.userInfo span strong {
+  display: inline-block;
+  max-width: 100px;
+  vertical-align: middle;
+  word-wrap: break-word;
 }
 .topMenu .inner ul li.userInfo img {
   transition: all 0.5s linear;
@@ -210,6 +218,7 @@ body {
 }
 .whatIs {
   margin-top: -30px;
+  overflow: hidden;
 }
 .whatIs .inner h2 {
   margin-top: 0px;
@@ -992,6 +1001,7 @@ footer .bottom {
 }
 .videoWatch .left table {
   width: 100%;
+  table-layout: fixed;
 }
 .videoWatch .left table tr {
   height: 50px;
@@ -1008,6 +1018,8 @@ footer .bottom {
   font-size: 16px;
   padding: 4px 0;
   color: #333333;
+  word-wrap: break-word;
+  max-width: 390px;
 }
 .videoWatch .left table tr td .checkbox {
   cursor: pointer;
@@ -1023,6 +1035,19 @@ footer .bottom {
   background-position: 50% 50%;
   background-color: #5be371;
   border: 1px solid #5be371;
+}
+.videoWatch .left table tr td:first-child,
+.videoWatch .left table tr th:first-child {
+  width: 55%;
+}
+.videoWatch .left table tr td:nth-child(2) {
+  width: 10%;
+}
+.videoWatch .left table tr td:nth-child(3) {
+  width: 10%;
+}
+.videoWatch .left table tr td:nth-child(4) {
+  width: 10%;
 }
 .videoWatch .left table tr:last-child td {
   border-bottom: 1px solid #f0f0f0;
@@ -1164,6 +1189,10 @@ footer .bottom {
 }
 .videoWatch .videoSection video {
   margin-left: -17px;
+}
+.relatedVideo b {
+  word-wrap: break-word;
+  overflow: hidden;
 }
 .aboutUs {
   text-align: center;
@@ -1902,6 +1931,15 @@ footer .bottom {
 .container.analitics .haveActivity {
   display: none;
 }
+.container.analitics .haveActivity .customSelect {
+  width: 170px;
+}
+.container.analitics .haveActivity .customSelect .showList span.current {
+  word-wrap: normal;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  padding-right: 30px;
+}
 .container.analitics .noActivity {
   display: block;
 }
@@ -2033,6 +2071,8 @@ footer .bottom {
 .questionsPie li div {
   text-align: center;
   margin-bottom: 30px;
+  height: 95px;
+  overflow: hidden;
 }
 .questionsPie li div span {
   color: #808080;
@@ -2838,6 +2878,7 @@ svg {
   height: 825px;
   position: relative;
   background: url("../i/contact-bg.png") no-repeat;
+  background-size: 100% 100%;
 }
 .mediaFooter .contactInner {
   position: absolute;
@@ -2987,7 +3028,7 @@ svg {
   position: absolute;
   right: 5%;
   top: 16px;
-  z-index: 107;
+  z-index: 117;
 }
 .toggle-wrapper .menu-toggle span {
   display: block;
@@ -3300,6 +3341,9 @@ svg {
     border-top: 4px solid #44cbff;
     width: 144px;
   }
+  .topMenu .inner ul li.userInfo span strong {
+    max-width: none;
+  }
   footer,
   .whatSay .inner .line,
   .hoverList {
@@ -3424,7 +3468,7 @@ svg {
     position: relative;
     z-index: 105;
     top: -95px;
-    height: 87vh;
+    height: calc(100vh - 66px);
     overflow-y: auto;
   }
   .topMenu #main-menu li a {
@@ -3445,8 +3489,8 @@ svg {
     filter: blur(2px);
   }
   .topMenu .inner #logo {
-    height: 73px;
-    line-height: 73px;
+    height: 65px;
+    line-height: 65px;
     color: #c7c7c7;
     position: relative;
     z-index: 106;
@@ -3457,6 +3501,10 @@ svg {
     width: 45%;
     min-width: 150px;
     max-width: 270px;
+  }
+  .topMenu.small .inner #logo {
+    height: 65px;
+    line-height: 65px;
   }
   /*-----------font-size--------------*/
   #wrapper .inner h2,
@@ -3643,20 +3691,22 @@ svg {
   .topMenu .inner ul li.userInfo {
     color: #000;
     line-height: 70px;
+    max-width: none;
+    vertical-align: middle;
   }
   .topMenu .inner ul li.userInfo img {
-    display: inline-block;
     float: none;
-    margin-top: 10px;
-  }
-  .topMenu .inner ul li.userInfo span {
+    margin: 0 10px 0 0;
+    vertical-align: middle;
     display: inline-block;
-    vertical-align: top;
   }
 }
 @media (max-width: 480px) {
   html {
     font-size: 10px;
+  }
+  div .watch-dialog .videoWatch table th {
+    font-size: 9px;
   }
   .pricing .purchasingSlider .purchasing ul li,
   .pricing .purchasingSlider .purchasing p.purchasePrice,
@@ -3698,9 +3748,25 @@ svg {
   #wrapper .circles ul {
     margin: 0;
   }
+  .topMenu .inner ul li.userInfo {
+    line-height: 2;
+    padding-bottom: 20px;
+  }
+  .topMenu .inner ul li.userInfo img {
+    margin: 0 auto;
+    display: block;
+    vertical-align: top;
+    padding-bottom: 15px;
+  }
+  .topMenu .inner ul li.userInfo span {
+    display: inline-block;
+  }
 }
 @media (max-width: 360px) {
   html {
+    font-size: 8px;
+  }
+  div .watch-dialog .videoWatch table th {
     font-size: 8px;
   }
   .signIn .lock {

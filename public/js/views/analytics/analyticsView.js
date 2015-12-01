@@ -123,13 +123,14 @@ define([
 
 
         showContactInfo: function (e) {
+            var self = this;
             var name;
             var email;
 
             $(e.target).closest("table").find("tr.current").removeClass("current");
             $(e.target).closest("tr").addClass("current");
             email = $(e.target).closest("tr").data("email");
-            this.prospectActivityModel.update({email: email});
+            this.prospectActivityModel.update({id: self.campaignId, email: email});
             name = this.$el.find(".current .prospectName").text();
             this.$el.find(".survayName").text(name);
         },
@@ -154,11 +155,11 @@ define([
 
         updateProspect: function (e) {
             var current;
-
+            var self = this;
             current = $(e.target).text();
             this.$el.find(".customSelect .current").text(current);
             this.$el.find(".customSelect ul").hide();
-            this.contactTrackCollection.update({domain: current});
+            this.contactTrackCollection.update({id: self.campaignId, domain: current});
         },
 
         showList: function (e) {
@@ -196,9 +197,9 @@ define([
         },
 
         renderVideoChart: function () {
+            var self = this;
             var data;
             var mas;
-
             data = this.videoAnalyticCollection.toJSON()[0];
             mas = data.survey;
             data.mainVideo.name = "Main Video";
@@ -211,7 +212,8 @@ define([
         },
 
         renderContactMe: function () {
-            var contactMe
+            var self = this;
+            var contactMe;
 
             contactMe = this.contactMeCollection.toJSON();
             contactMe = _.map(contactMe, function (item) {
@@ -228,7 +230,7 @@ define([
             var domains;
             var s = "";
 
-            if (!this.domainModel){
+            if (!this.domainModel) {
                 return;
             }
 
@@ -238,13 +240,14 @@ define([
                 this.$el.find(".noActivity").hide();
             }
 
-            for (var i in domains) {
-                s += "<li>" + domains[i] + "</li>";
-            }
-            this.contactTrackCollection = new ContactTrackCollection({domain: domains[0]});
+            _.forEach(domains.data, function (elem) {
+                s += "<li>" + elem + "</li>";
+            });
+
+            this.contactTrackCollection = new ContactTrackCollection({id: self.campaignId, domain: domains.data[0]});
             this.contactTrackCollection.bind('reset', self.renderContactTable, self);
             this.$el.find(".customSelect ul").html(s);
-            this.$el.find(".customSelect .current").text(domains[0]);
+            this.$el.find(".customSelect .current").text(domains.data[0]);
         },
 
         renderContactTable: function () {
@@ -252,7 +255,7 @@ define([
             var prospects = this.contactTrackCollection.toJSON();
             this.$el.find("#prospectTable").html(_.template(ProspectTemplate)({prospects: prospects}));
             this.$el.find("#prospectTable tr").eq(1).addClass("current");
-            this.prospectActivityModel = new ProspectActivityModel({email: prospects[0].email});
+            this.prospectActivityModel = new ProspectActivityModel({id: self.campaignId, email: prospects[0].email});
             this.prospectActivityModel.bind('change', self.showProspectActivity, self);
         },
 
@@ -262,7 +265,9 @@ define([
         },
 
         renderAnalytic: function (e) {
+            var self = this;
             self.campaignId = $(e.target).attr("data-id");
+
             this.$el.find('.nameOfCampaign').text($(e.target).text().toUpperCase() + " STATISTIC");
             $(e.target).closest('ul').find('.current').removeClass('current');
             $(e.target).addClass('current');
@@ -349,7 +354,10 @@ define([
                     from: moment().subtract(7, 'days').format("MM/DD/YYYY"),
                     to: moment().format("MM/DD/YYYY")
                 });
-                this.domainModel = new DomainModel({id: self.campaignId});
+
+                this.domainModel = new DomainModel({campaignId: self.campaignId});
+                this.domainModel.fetch();
+
 
                 this.documentAnalyticCollection.bind('reset', self.renderDocumentChart, self);
                 this.questionAnalyticCollection.bind('reset', self.renderQuestionChart, self);
