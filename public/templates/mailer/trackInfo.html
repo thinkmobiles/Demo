@@ -16,7 +16,7 @@
           <li><span style=" color:#656565;" class="silver">EMAIL:</span> <%=email %></li>
 		</ul>
 
-		<table><tr><td><img src="http://demorocket.biz/i/eye.png" alt="img" style="margin-left:5px;"/></td><td>
+		<table><tr><td><img src="<%=host + '/i/eye.png'%>" alt="img" style="margin-left:5px;"/></td><td>
 			  <h3 style="  font-weight:normal;
 						 font-size:17px;
 						 background-repeat: no-repeat;
@@ -38,7 +38,7 @@
         <% _.each(videos, function(item){%>
         <tr>
           <td style="border:1px solid #efefef;">
-            <span style="padding:0 15px;line-height:30px"><a href="<%= process.env.WEB_HOST +'/'+ item.video%>"><%=item.video.split('/').pop() %></a></span>
+            <span style="padding:0 15px;line-height:30px"><a href="<%=item.video%>"><%=item.video.split('/').pop() %></a></span>
           </td>
           <td style="border:1px solid #efefef;">
             <span style="padding:0 15px;line-height:30px"><%=item.end?'Yes':'No' %></span>
@@ -60,7 +60,7 @@
       <% } %>
       <br/>
 
-      <table><tr><td><img src="http://134.249.164.53:8838/i/message.png" alt="img" style="margin-left:5px;"/></td><td><h3 style="  font-weight:normal;
+      <table><tr><td><img src="<%=host + '/i/message.png'%>" alt="img" style="margin-left:5px;"/></td><td><h3 style="  font-weight:normal;
 	  font-size:17px;
       background-repeat: no-repeat;
       padding-left: 0px;
@@ -93,7 +93,7 @@
       <% } %>
       <br/>
 
-      <table><tr><td><img src="http://134.249.164.53:8838/i/download.png" alt="img" style="margin-left:5px;"/></td><td><h3  style="  
+      <table><tr><td><img src="<%= host + '/i/download.png'%>" alt="img" style="margin-left:5px;"/></td><td><h3  style="
 																												   font-weight:normal;
 	  font-size:17px;
       background-repeat: no-repeat;
@@ -107,7 +107,7 @@
 	  margin-left:18px;
 	  font-size:13px;">
         <% _.each(documents, function(item){%>
-        <li> <a href="<%= process.env.WEB_HOST +'/'+ item.document%>"><%=item.document.split('/').pop() %></a></li>
+        <li> <a href="<%=item.document%>"><%=item.document.split('/').pop() %></a></li>
         <% });%>
       </ul>
       <% } else { %>

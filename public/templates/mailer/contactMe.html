@@ -1,128 +1,150 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<title>Demystifying Email Design</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  </head>
-  <body>
-	<div class="info" style="color:black">
-	  <div class="contactMe">
-		<h3 style="text-transform:uppercase;color:#656565;font-weight:normal;font-size:24px;"> New user wants to contact you !</h3>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Demystifying Email Design</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+<body>
+<div class="info" style="color:black">
+    <div class="contactMe">
+        <h3 style="text-transform:uppercase;color:#656565;font-weight:normal;font-size:24px;"> New user wants to contact
+            you !</h3>
+
         <h2 style="color:#26c2ff;
 				   font-weight:normal;
-				   font-size:24px;">Message for <%=companyName %></h2>
+				   font-size:24px;">Message for <%=companyName%></h2>
         <ul style="list-style:none;margin:0;padding:0; margin-left:18px;font-size:17px;">
-          <li><span style=" color:#656565;" class="silver">Name:</span> <%=name %></li>
-          <li><span style=" color:#656565;" class="silver">Email:</span> <%=email %></li>
-        </ul><br/>
+            <li><span style=" color:#656565;" class="silver">Name:</span> <%=name %></li>
+            <li><span style=" color:#656565;" class="silver">Email:</span> <%=email %></li>
+        </ul>
+        <br/>
 
         <p>Message: <%=message %></p>
-		<h3 style="color:#26c2ff;
+
+        <h3 style="color:#26c2ff;
 				   font-weight:normal;
 				   font-size:24px;">ANALYTIC INFORMATION</h3>
-		<table><tr><td><img src="http://134.249.164.53:8838/i/eye.png" alt="img" style="margin-left:5px;"/></td><td>
-			  <h3 style="  font-weight:normal;
+        <table>
+            <tr>
+                <td><img src="<%=host + '/i/eye.png'%>" alt="img" style="margin-left:5px;"/></td>
+                <td>
+                    <h3 style="  font-weight:normal;
 						 font-size:17px;
 						 background-repeat: no-repeat;
 						 padding-left: 0px;
-						 background-position: 5px 50%;" class="videoAct">Video activity</h3></td></tr></table>
-		<% if (analytics.videos.length){ %>
-		<table cellspacing="0" border="0" cellpadding="0" style="margin-left:30px;font-size:13px;">
-		  <tr>
-			<th style="background-color:#fbfbfb;border:1px solid #efefef;text-align:left;">
-			  <span style="padding:0 15px;line-height:30px"><b>Name of video</b></span>
-			</th>
-			<th style="background-color:#fbfbfb;border:1px solid #efefef;text-align:left;">
-			  <span style="padding:0 15px;line-height:30px"><b>Is watched to the end</b></span>
-			</th>
-			<th style="background-color:#fbfbfb;border:1px solid #efefef;text-align:left;">
-			  <span style="padding:0 15px;line-height:30px"><b>How long watched</b></span>
-			</th>
-		  </tr>
-		  <% _.each(analytics.videos, function(item){%>
-		  <tr>
-			<td style="border:1px solid #efefef;">
-			  <span style="padding:0 15px;line-height:30px"><a href="<%= process.env.WEB_HOST +'/'+ item.video%>"><%=item.video.split('/').pop() %></a></span>
-			</td>
-			<td style="border:1px solid #efefef;">
-			  <span style="padding:0 15px;line-height:30px"><%=item.end?'Yes':'No' %></span>
-			</td>
-			<td style="border:1px solid #efefef;">
+						 background-position: 5px 50%;" class="videoAct">Video activity</h3></td>
+            </tr>
+        </table>
+        <% if (analytics.videos.length){ %>
+        <table cellspacing="0" border="0" cellpadding="0" style="margin-left:30px;font-size:13px;">
+            <tr>
+                <th style="background-color:#fbfbfb;border:1px solid #efefef;text-align:left;">
+                    <span style="padding:0 15px;line-height:30px"><b>Name of video</b></span>
+                </th>
+                <th style="background-color:#fbfbfb;border:1px solid #efefef;text-align:left;">
+                    <span style="padding:0 15px;line-height:30px"><b>Is watched to the end</b></span>
+                </th>
+                <th style="background-color:#fbfbfb;border:1px solid #efefef;text-align:left;">
+                    <span style="padding:0 15px;line-height:30px"><b>How long watched</b></span>
+                </th>
+            </tr>
+            <% _.each(analytics.videos, function(item){%>
+            <tr>
+                <td style="border:1px solid #efefef;">
+                    <span style="padding:0 15px;line-height:30px"><a href="<%=item.video%>"><%=item.video.split('/').pop()
+                        %></a></span>
+                </td>
+                <td style="border:1px solid #efefef;">
+                    <span style="padding:0 15px;line-height:30px"><%=item.end?'Yes':'No' %></span>
+                </td>
+                <td style="border:1px solid #efefef;">
 			  <span style="padding:0 15px;line-height:30px">
 				<% var all = item.stopTime; %>
 				<% var m = Math.floor(all/60); %>
 				<% var s = all-m*60; %>
 				<%= m+ ':' + (s<10?'0'+s:s)%>
 					</span>
-			</td>
-		  </tr>
-		  <% });%>
-		</table>
-		<% } else { %>
-		<h5 >Contact doesn't watched any video</h5>
-		<% } %>
-		<br/>
-		<table><tr><td><img src="http://134.249.164.53:8838/i/message.png" alt="img" style="margin-left:5px;"/></td><td><h3 style="  font-weight:normal;
+                </td>
+            </tr>
+            <% });%>
+        </table>
+        <% } else { %>
+        <h5>Contact doesn't watched any video</h5>
+        <% } %>
+        <br/>
+        <table>
+            <tr>
+                <td><img src="<%=host+'/i/message.png'%>" alt="img" style="margin-left:5px;"/></td>
+                <td><h3 style="  font-weight:normal;
 																																   font-size:17px;
 																																   background-repeat: no-repeat;
 																																   padding-left: 0px;
-																																   background-position: 5px 50%;" class="questionAct">Question activity:</h3></td></tr></table>
-		<% if (analytics.questions.length){ %>
-		<table cellspacing="0" border="0" cellpadding="0" style="margin-left:30px;font-size:13px;">
-		  <tr>
-			<th style="background-color:#fbfbfb;border:1px solid #efefef;text-align:left;">
-			  <span style="padding:0 15px;line-height:30px"><b>Question</b></span>
-			</th>
-			<th style="background-color:#fbfbfb;border:1px solid #efefef;text-align:left;">
-			  <span style="padding:0 15px;line-height:30px"><b>Rate</b></span>
-			</th>
-		  </tr>
-		  <% _.each(analytics.questions, function(item){%>
-		  <tr>
-			<td style="border:1px solid #efefef;">
-			  <span style="padding:0 15px;line-height:30px"><%=item.question %></span>
-			</td>
-			<td style="border:1px solid #efefef;">
-			  <span style="padding:0 15px;line-height:30px"><%= item.item%></span>
+																																   background-position: 5px 50%;"
+                        class="questionAct">Question activity:</h3></td>
+            </tr>
+        </table>
+        <% if (analytics.questions.length){ %>
+        <table cellspacing="0" border="0" cellpadding="0" style="margin-left:30px;font-size:13px;">
+            <tr>
+                <th style="background-color:#fbfbfb;border:1px solid #efefef;text-align:left;">
+                    <span style="padding:0 15px;line-height:30px"><b>Question</b></span>
+                </th>
+                <th style="background-color:#fbfbfb;border:1px solid #efefef;text-align:left;">
+                    <span style="padding:0 15px;line-height:30px"><b>Rate</b></span>
+                </th>
+            </tr>
+            <% _.each(analytics.questions, function(item){%>
+            <tr>
+                <td style="border:1px solid #efefef;">
+                    <span style="padding:0 15px;line-height:30px"><%=item.question %></span>
+                </td>
+                <td style="border:1px solid #efefef;">
+                    <span style="padding:0 15px;line-height:30px"><%= item.item%></span>
 
-			</td>
-		  </tr>
-		  <% });%>
-		</table>
-		<% } else { %>
-		<h5 >Contact hasn't answered any question</h5>
-		<% } %>
-		<br/>
+                </td>
+            </tr>
+            <% });%>
+        </table>
+        <% } else { %>
+        <h5>Contact hasn't answered any question</h5>
+        <% } %>
+        <br/>
 
 
-      <table><tr><td><img src="http://134.249.164.53:8838/i/download.png" alt="img" style="margin-left:5px;"/></td><td><h3  style="  
+        <table>
+            <tr>
+                <td><img src="<%=host + '/i/download.png'%>" alt="img" style="margin-left:5px;"/></td>
+                <td><h3 style="
 																												   font-weight:normal;
 	  font-size:17px;
       background-repeat: no-repeat;
       padding-left: 0px;
       background-position: 5px 50%;" class="downloadAct">Download document: </h3>
-	  </td></tr></table>
-		<% if (analytics.documents.length){ %>
-		<ul style="list-style:none;
+                </td>
+            </tr>
+        </table>
+        <% if (analytics.documents.length){ %>
+        <ul style="list-style:none;
 	  margin:0px;
 	  padding:0px;
 	  margin-left:18px;
 	  font-size:13px;">
-		  <% _.each(analytics.documents, function(item){%>
-		  <li> <a href="<%= process.env.WEB_HOST +'/'+ item.document%>"><%=item.document.split('/').pop() %></a></li>
-		  <% });%>
-		</ul>
-		<% } else { %>
-		<h5>Contact doesn't downloaded any documents</h5>
-		<% } %>
-		<br/>
-		<hr/>
-		<footer>
-			© Copyright DemoRocket 2015
-		</footer>
-	  </div>
+            <% _.each(analytics.documents, function(item){%>
+            <li><a href="<%=item.document%>"><%=item.document.split('/').pop() %></a></li>
+            <% });%>
+        </ul>
+        <% } else { %>
+        <h5>Contact doesn't downloaded any documents</h5>
+        <% } %>
+        <br/>
+        <hr/>
+        <footer>
+            © Copyright DemoRocket 2015
+        </footer>
+    </div>
 
-  </body>
+</body>
 </html>
 

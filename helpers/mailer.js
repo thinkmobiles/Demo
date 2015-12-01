@@ -214,6 +214,7 @@ var MailerModule = function () {
             } else {
 
                 templateOptions = {
+                    host: process.env.WEB_HOST,
                     companyName: options.companyName,
                     companyLogo: options.companyLogo,
                     name: options.name,
@@ -251,6 +252,7 @@ var MailerModule = function () {
             } else {
 
                 templateOptions = {
+                    host: process.env.WEB_HOST,
                     companyName: options.companyName,
                     name: options.name,
                     email: options.email,
