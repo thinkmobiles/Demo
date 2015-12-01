@@ -3882,14 +3882,17 @@ svg {
   .topMenu .inner ul li.userInfo {
     color: #000;
     line-height: 70px;
+    max-width: none;
     img {
-      display: inline-block;
       float: none;
-      margin-top: 10px;
+      margin: 10px auto;
     }
     span{
-      display: inline-block;
-      vertical-align: top;
+      display: block;
+      strong{
+        max-width: 250px;
+        margin: 10px auto;
+      }
     }
 
   }

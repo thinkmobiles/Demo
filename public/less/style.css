@@ -3686,15 +3686,18 @@ svg {
   .topMenu .inner ul li.userInfo {
     color: #000;
     line-height: 70px;
+    max-width: none;
   }
   .topMenu .inner ul li.userInfo img {
-    display: inline-block;
     float: none;
-    margin-top: 10px;
+    margin: 10px auto;
   }
   .topMenu .inner ul li.userInfo span {
-    display: inline-block;
-    vertical-align: top;
+    display: block;
+  }
+  .topMenu .inner ul li.userInfo span strong {
+    max-width: 250px;
+    margin: 10px auto;
   }
 }
 @media (max-width: 480px) {
