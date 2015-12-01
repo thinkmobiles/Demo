@@ -2,8 +2,9 @@ define([
     'text!templates/home/videoModalTemplate.html',
     'text!templates/home/relatedVideo.html',
     'text!templates/home/pdfTemplate.html',
-    'custom'
-], function (modalTemplate, relatedVideo, pdfTemplate, custom) {
+    'custom',
+    'constants'
+], function (modalTemplate, relatedVideo, pdfTemplate, custom, CONSTANTS) {
 
     var View;
 
@@ -110,10 +111,10 @@ define([
             FB.ui(
                 {
                     method: 'feed',
-                    name: 'DemoRocket Video',
+                    name: CONSTANTS.FB_SHARE_NAME,
                     link: window.location.href.replace("chooseImportant", "watchVideo"),
                     picture: window.location.origin + "/" + self.content.toJSON().content.logoUri,
-                    caption: 'Reference Documentation',
+                    caption: CONSTANTS.FB_CAPTION,
                     description: self.content.toJSON().content.mainVideoDescription
                 },
                 function (response) {
@@ -129,7 +130,6 @@ define([
 			var self = this;
 			console.log(window.location.origin + "/" + self.content.toJSON().content.logoUri);
 			var options = {
-				//	"comment": "Check out developer.linkedin.com!",
 				"content": {
 					"title": 'DemoRocket Video',
 					"description": self.content.toJSON().content.mainVideoDescription,
