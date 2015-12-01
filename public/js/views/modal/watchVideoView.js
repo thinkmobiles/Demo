@@ -17,6 +17,7 @@ define([
             "click .ui-dialog-titlebar-close": "clickOnClose",
             "click .contactMe": "contactMe",
             "click .social .fb": "shareOnFacebook",
+			"click .social .in": "shareOnLinkedIn",
             "click .hoverList": "showList",
 
             "mousemove .surveyVideo": "toggleArrow",
@@ -124,6 +125,30 @@ define([
                 }
             );
         },
+		shareOnLinkedIn: function(){
+			var self = this;
+			console.log(window.location.origin + "/" + self.content.toJSON().content.logoUri);
+			var options = {
+				//	"comment": "Check out developer.linkedin.com!",
+				"content": {
+					"title": 'DemoRocket Video',
+					"description": self.content.toJSON().content.mainVideoDescription,
+					"submitted-url": window.location.href.replace("chooseImportant", "watchVideo"),
+					"submitted-image-url": window.location.origin + "/" + self.content.toJSON().content.logoUri
+				},
+				"visibility": {
+					"code": "anyone"
+				}
+			};
+			IN.User.authorize(function() {
+				IN.API.Raw("/people/~/shares?format=json")
+						.method("POST")
+						.body(JSON.stringify(options))
+
+			});
+
+
+		},
 
         contactMe: function () {
             if (!this.videoId && !this.userId) {
