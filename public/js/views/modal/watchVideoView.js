@@ -197,6 +197,7 @@ define([
 
 
         },
+
         showSurvey: function (e) {
             var self = this;
             var message = '';
@@ -205,17 +206,11 @@ define([
             $(".questionSection table tr:not(:first)").each(function () {
                 if (!$(this).find(".checked").length) {
                     $(this).find(".checkbox").addClass("error");
-                    message = message === '' ?  'Please make your choice for each question' : message;
+                    message = message === '' ? 'Please make your choice for each question' : message;
                     hasError = true;
 
                 }
             });
-
-            if (!$(".questionSection .veryImp.checked").length) {
-                $(".questionSection .veryImp").addClass("error");
-                message = message === '' ? 'You must choose at last one "Very important"' : message;
-                hasError = true;
-            }
             if (hasError) {
                 App.notification(message);
                 return;
@@ -223,18 +218,21 @@ define([
             var indexList = [];
             $(".veryImp.checked").each(function () {
                 indexList.push($(this).closest("table").find("tr").index($(this).closest("tr")) - 1);
-                //self.currentSurvay.push(self.content.toJSON().content.survey[index]);
             });
             $(".someImp.checked").each(function () {
                 indexList.push($(this).closest("table").find("tr").index($(this).closest("tr")) - 1);
-                //self.currentSurvay.push(self.content.toJSON().content.survey[index]);
             });
+
             this.trackQuestion();
             var url = "#/relatedVideo/";
             if (this.videoId && this.userId) {
                 url += this.videoId + "/" + this.userId + "/";
             }
             url += indexList.join(",");
+            if (!indexList.length) {
+                url='#/home';
+                App.notification('Thank you for your feedback!')
+            }
             Backbone.history.navigate(url, {trigger: true});
 
         },
@@ -243,6 +241,7 @@ define([
             $(e.target).parents("tr").find(".checked").removeClass("checked");
             $(e.target).addClass("checked");
         },
+
         range: function () {
             var video = document.getElementsByTagName('video')[0];
             var ranges = [];
