@@ -1,9 +1,9 @@
 {
   "name": "Demo",
   "version": "1.0.0",
-  "description": "",
+  "description": "DemoRocket WEB",
   "main": "server.js",
-  "author": "",
+  "author": "Thinkmobiles",
   "dependencies": {
     "async": "0.9.0",
     "aws-sdk": "2.2.12",

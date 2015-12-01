@@ -33,9 +33,9 @@
   <div class="right">
 	<img src="<%= content.logoUri %>" height="80" class="logo"/><br/>
 	<div class="social" >
-		<span class="fb-share-button fb" data-href="<%=host%>share?contentId=<%=videoId%>&page=<%=page%>&prospectId=<%=prospectId%>" data-layout="icon"></span>
-		<a href="https://twitter.com/share?url=<%= encodeURIComponent(host+ 'campaign/'+videoId+'/'+videoId) %>&text=DemoRocket: <%= encodeURIComponent(content.mainVideoDescription) %>" target="_blank"><span class="tw"></span></a>
-		<a href="https://plus.google.com/share?url=<%= encodeURIComponent(host+'share?contentId='+videoId+'&page='+page+'&prospectId='+prospectId) %>" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><span  class="gp"></span></a>
+		<span class="fb-share-button fb" data-href="<%=host%>/share?contentId=<%=videoId%>&page=<%=page%>&prospectId=<%=prospectId%>" data-layout="icon"></span>
+		<a href="https://twitter.com/share?url=<%= encodeURIComponent(host+ '/campaign/'+videoId+'/'+videoId) %>&text=DemoRocket: <%= encodeURIComponent(content.mainVideoDescription) %>" target="_blank"><span class="tw"></span></a>
+		<a href="https://plus.google.com/share?url=<%= encodeURIComponent(host+'/share?contentId='+videoId+'&page='+page+'&prospectId='+prospectId) %>" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><span  class="gp"></span></a>
 		<span class="in"> </span>
 	</div>
 

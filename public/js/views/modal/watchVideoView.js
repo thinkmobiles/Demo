@@ -365,7 +365,7 @@ define([
 
             var formString = _.template(modalTemplate)({
                 content: this.content.toJSON().content,
-                host: "http://134.249.164.53:8838/",
+                host: CONSTANTS.PRODUCTION_HOST,
                 videoId: self.videoId,
                 prospectId: self.userId,
                 page: window.location.hash.split("/")[1].replace("chooseImportant", "watchVideo")
