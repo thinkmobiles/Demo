@@ -131,7 +131,7 @@ define([
 			console.log(window.location.origin + "/" + self.content.toJSON().content.logoUri);
 			var options = {
 				"content": {
-					"title": 'DemoRocket Video',
+					"title": CONSTANTS.IN_SHARE_NAME,
 					"description": self.content.toJSON().content.mainVideoDescription,
 					"submitted-url": window.location.href.replace("chooseImportant", "watchVideo"),
 					"submitted-image-url": window.location.origin + "/" + self.content.toJSON().content.logoUri
