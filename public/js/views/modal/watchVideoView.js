@@ -112,9 +112,9 @@ define([
                 {
                     method: 'feed',
                     name: 'DemoRocket Video',
-                    link: window.location.href.replace("chooseImportant", "watchVideo"),
-                    picture: window.location.origin + "/" + self.content.toJSON().content.logoUri,
-                    caption: 'Reference Documentation',
+                    link: window.location.href.replace("chooseImportant", "home").replace('watchVideo','home').replace('relatedVideo','home'),
+                    picture: self.content.toJSON().content.logoUri,
+                    caption: '',
                     description: self.content.toJSON().content.mainVideoDescription
                 },
                 function (response) {
