@@ -108,9 +108,17 @@ body {
   color: white;
   font-size: 16px;
   transition: all 0.5s linear;
+  max-width: 330px;
 }
 .topMenu .inner ul li.userInfo span {
-  padding: 0 20px 0 10px;
+  padding: 0 10px;
+  line-height: 1;
+}
+.topMenu .inner ul li.userInfo span strong {
+  display: inline-block;
+  max-width: 100px;
+  vertical-align: middle;
+  word-wrap: break-word;
 }
 .topMenu .inner ul li.userInfo img {
   transition: all 0.5s linear;
@@ -210,6 +218,7 @@ body {
 }
 .whatIs {
   margin-top: -30px;
+  overflow: hidden;
 }
 .whatIs .inner h2 {
   margin-top: 0px;
@@ -2062,6 +2071,8 @@ footer .bottom {
 .questionsPie li div {
   text-align: center;
   margin-bottom: 30px;
+  height: 95px;
+  overflow: hidden;
 }
 .questionsPie li div span {
   color: #808080;
@@ -2867,6 +2878,7 @@ svg {
   height: 825px;
   position: relative;
   background: url("../i/contact-bg.png") no-repeat;
+  background-size: 100% 100%;
 }
 .mediaFooter .contactInner {
   position: absolute;
@@ -3329,6 +3341,9 @@ svg {
     border-top: 4px solid #44cbff;
     width: 144px;
   }
+  .topMenu .inner ul li.userInfo span strong {
+    max-width: none;
+  }
   footer,
   .whatSay .inner .line,
   .hoverList {
@@ -3676,15 +3691,14 @@ svg {
   .topMenu .inner ul li.userInfo {
     color: #000;
     line-height: 70px;
+    max-width: none;
+    vertical-align: middle;
   }
   .topMenu .inner ul li.userInfo img {
-    display: inline-block;
     float: none;
-    margin-top: 10px;
-  }
-  .topMenu .inner ul li.userInfo span {
+    margin: 0 10px 0 0;
+    vertical-align: middle;
     display: inline-block;
-    vertical-align: top;
   }
 }
 @media (max-width: 480px) {
@@ -3733,6 +3747,19 @@ svg {
   }
   #wrapper .circles ul {
     margin: 0;
+  }
+  .topMenu .inner ul li.userInfo {
+    line-height: 2;
+    padding-bottom: 20px;
+  }
+  .topMenu .inner ul li.userInfo img {
+    margin: 0 auto;
+    display: block;
+    vertical-align: top;
+    padding-bottom: 15px;
+  }
+  .topMenu .inner ul li.userInfo span {
+    display: inline-block;
   }
 }
 @media (max-width: 360px) {

@@ -45,7 +45,7 @@ define([
 					App.notification("Recover link send to your email");
                 },
                 error: function (err) {
-					App.notification("Some error");
+                    App.error(err);
 				}
             });
 		},

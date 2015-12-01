@@ -6,8 +6,9 @@ define([
     "collections/campaignsCollection",
     "moment",
     "validation",
-    'clipboard'
-], function (CampaignsTemplate, DialogTemplate, CampaignsListTemplate, CampaignsModel, CampaignsCollection, moment, validation, Clipboard) {
+    'clipboard',
+        'constants'
+], function (CampaignsTemplate, DialogTemplate, CampaignsListTemplate, CampaignsModel, CampaignsCollection, moment, validation, Clipboard, CONSTANTS) {
     var View = Backbone.View.extend({
 
         el: "#wrapper",
@@ -161,6 +162,7 @@ define([
                 return this;
             }
             this.$el.find("#campaigns").html(_.template(CampaignsListTemplate)({
+                host: CONSTANTS.PRODUCTION_HOST,
                 campaigns: campaigns,
                 moment: moment,
                 current: this.campaignChoosed

@@ -85,8 +85,8 @@ define([
                     Backbone.history.navigate("#/" + self.page + "/" + self.videoId + "/" + self.userId + (self.indexList.length ? ("/" + self.indexList) : ""), {trigger: true});
 
                 },
-                error: function (err) {
-                    console.log(err);
+                error: function (model, response) {
+                   App.error(response);
                     Backbone.history.navigate("#/" + self.page + "/" + self.videoId + "/" + self.userId + (self.indexList.length ? ("/" + self.indexList) : ""), {trigger: true});
 
                 }

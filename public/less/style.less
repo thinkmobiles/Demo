@@ -71,11 +71,8 @@
 }
 
 #wrapper {
-  //width:100%;
   min-height: 600px;
 }
-
-
 .inner {
   width: 1070px;
   margin: 0 auto;
@@ -144,8 +141,16 @@ html, body {
           color: white;
           font-size: 16px;
           transition: all 0.5s linear;
+          max-width: 330px;
           span {
-            padding: 0 20px 0 10px;
+            padding: 0 10px;
+            line-height: 1;
+            strong{
+              display: inline-block;
+              max-width: 100px;
+              vertical-align: middle;
+              word-wrap: break-word;
+            }
           }
           img {
             transition: all 0.5s linear;
@@ -256,6 +261,7 @@ html, body {
 
 .whatIs {
   margin-top: -30px;
+  overflow: hidden;
   .inner {
     h2 {
       margin-top: 0px;
@@ -2193,6 +2199,8 @@ footer {
     div {
       text-align: center;
       margin-bottom: 30px;
+      height: 95px;
+      overflow: hidden;
       span {
         color: #808080;
       }
@@ -3034,6 +3042,7 @@ svg {
   height: 825px;
   position: relative;
   background: url("../i/contact-bg.png")no-repeat;
+  background-size: 100% 100%;
   .contactInner {
     position: absolute;
     top: 0;
@@ -3517,7 +3526,9 @@ svg {
     border-top: 4px solid rgb(68, 203, 255);
     width: 144px;
   }
-
+  .topMenu .inner ul li.userInfo span strong{
+    max-width: none;
+  }
   footer,
   .whatSay .inner .line,
   .hoverList {
@@ -3872,16 +3883,14 @@ svg {
   .topMenu .inner ul li.userInfo {
     color: #000;
     line-height: 70px;
+    max-width: none;
+    vertical-align: middle;
     img {
-      display: inline-block;
       float: none;
-      margin-top: 10px;
-    }
-    span{
+      margin: 0 10px 0 0;
+      vertical-align: middle;
       display: inline-block;
-      vertical-align: top;
     }
-
   }
 
 }
@@ -3940,6 +3949,19 @@ svg {
       margin: 0;
     }
   }
+  .topMenu .inner ul li.userInfo {
+    line-height: 2;
+    padding-bottom: 20px;
+    img {
+      margin: 0 auto;
+      display: block;
+      vertical-align: top;
+      padding-bottom: 15px;
+    }
+    span {
+      display: inline-block;
+    }
+  }
 
 }
 
@@ -3976,6 +3998,7 @@ svg {
       padding-bottom: 30%;
     }
   }
+
 }
 
 @media (min-width: 737px) {

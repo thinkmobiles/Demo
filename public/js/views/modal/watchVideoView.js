@@ -2,8 +2,9 @@ define([
     'text!templates/home/videoModalTemplate.html',
     'text!templates/home/relatedVideo.html',
     'text!templates/home/pdfTemplate.html',
-    'custom'
-], function (modalTemplate, relatedVideo, pdfTemplate, custom) {
+    'custom',
+    'constants'
+], function (modalTemplate, relatedVideo, pdfTemplate, custom, CONSTANTS) {
 
     var View;
 
@@ -17,6 +18,7 @@ define([
             "click .ui-dialog-titlebar-close": "clickOnClose",
             "click .contactMe": "contactMe",
             "click .social .fb": "shareOnFacebook",
+            "click .social .in": "shareOnLinkedIn",
             "click .hoverList": "showList",
 
             "mousemove .surveyVideo": "toggleArrow",
@@ -109,10 +111,10 @@ define([
             FB.ui(
                 {
                     method: 'feed',
-                    name: 'DemoRocket Video',
-                    link: window.location.href.replace("chooseImportant", "watchVideo"),
-                    picture: window.location.origin + "/" + self.content.toJSON().content.logoUri,
-                    caption: 'Reference Documentation',
+                    name: CONSTANTS.FB_SHARE_NAME,
+                    link: window.location.href.replace("chooseImportant", "home").replace('watchVideo', 'home').replace('relatedVideo', 'home'),
+                    picture: self.content.toJSON().content.logoUri,
+                    caption: '',
                     description: self.content.toJSON().content.mainVideoDescription
                 },
                 function (response) {
@@ -123,6 +125,29 @@ define([
                     }
                 }
             );
+        },
+        shareOnLinkedIn: function () {
+            var self = this;
+            console.log(window.location.origin + "/" + self.content.toJSON().content.logoUri);
+            var options = {
+                "content": {
+                    "title": CONSTANTS.IN_SHARE_NAME,
+                    "description": self.content.toJSON().content.mainVideoDescription,
+                    "submitted-url": window.location.href.replace("chooseImportant", "home").replace('watchVideo', 'home').replace('relatedVideo', 'home') + '\/f157640',
+                    "submitted-image-url": self.content.toJSON().content.logoUri
+                },
+                "visibility": {
+                    "code": "anyone"
+                }
+            };
+            IN.User.authorize(function () {
+                IN.API.Raw("/people/~/shares?format=json")
+                    .method("POST")
+                    .body(JSON.stringify(options))
+                    .error(function (err) {
+                        console.log(err);
+                    });
+            });
         },
 
         contactMe: function () {
@@ -205,7 +230,7 @@ define([
             $(".questionSection table tr:not(:first)").each(function () {
                 if (!$(this).find(".checked").length) {
                     $(this).find(".checkbox").addClass("error");
-                    message = message === '' ?  'Please make your choice for each question' : message;
+                    message = message === '' ? 'Please make your choice for each question' : message;
                     hasError = true;
 
                 }

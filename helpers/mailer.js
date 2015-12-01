@@ -46,6 +46,7 @@ var MailerModule = function () {
             } else {
 
                 templateOptions = {
+                    host: process.env.WEB_HOST,
                     companyName: options.companyName,
                     name: options.name,
                     email: options.email,
@@ -214,6 +215,7 @@ var MailerModule = function () {
             } else {
 
                 templateOptions = {
+                    host: process.env.WEB_HOST,
                     companyName: options.companyName,
                     companyLogo: options.companyLogo,
                     name: options.name,
@@ -251,6 +253,7 @@ var MailerModule = function () {
             } else {
 
                 templateOptions = {
+                    host: process.env.WEB_HOST,
                     companyName: options.companyName,
                     name: options.name,
                     email: options.email,
@@ -288,7 +291,7 @@ var MailerModule = function () {
                     name: options.firstName + ' ' + options.lastName,
                     email: options.email,
                     minderId: (options.minderId) ? options.minderId : null,
-                    url: process.env.HOST + '/#confirmEmail/' + options.confirmToken
+                    url: process.env.WEB_HOST + '/#/confirmEmail/' + options.confirmToken
                 };
 
                 mailOptions = {
@@ -334,34 +337,6 @@ var MailerModule = function () {
         });
     };
 
-    this.onExpired = function (options) {
-        fs.readFile('public/templates/mailer/onExpired.html', 'utf8', function (err, template) {
-            var templateOptions;
-            var mailOptions;
-
-            if (err) {
-                if (process.env.NODE_ENV !== 'production') {
-                    console.error(err);
-                }
-            } else {
-
-                templateOptions = {
-                    name: options.firstName + ' ' + options.lastName,
-                    devices: options.devices
-                };
-
-                mailOptions = {
-                    from: FROM,
-                    to: options.email,
-                    subject: 'Info',
-                    generateTextFromHTML: true,
-                    html: _.template(template, templateOptions)
-                };
-
-                deliver(mailOptions);
-            }
-        });
-    };
 
     function deliver(mailOptions, callback) {
         var user = process.env.mailerUserName;

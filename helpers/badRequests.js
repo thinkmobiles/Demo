@@ -244,11 +244,38 @@ var BadRequestModule = function () {
             errOptions = {};
         }
 
+        if (!errOptions.status) {
+            errOptions.status = 403;
+        }
+
         if (!errOptions.name) {
-            errOptions.name = 'AccessError';
+            errOptions.name = 'Forbidden';
         }
         if (!errOptions.message) {
-            errOptions.message = 'You do not have sufficient rights';
+            errOptions.message = 'You don\'t have permission to perform this action';
+        }
+
+        return new Errors(errOptions);
+    }
+
+    function UnauthorizedError(options) {
+        var errOptions;
+
+        if (options) {
+            errOptions = options;
+        } else {
+            errOptions = {};
+        }
+
+        if (!errOptions.status) {
+            errOptions.status = 401;
+        }
+
+        if (!errOptions.name) {
+            errOptions.name = 'Unauthorized';
+        }
+        if (!errOptions.message) {
+            errOptions.message = 'Your session has expired. Please log in again';
         }
 
         return new Errors(errOptions);
@@ -274,7 +301,7 @@ var BadRequestModule = function () {
         }
 
         return new Errors(errOptions);
-    };
+    }
 
     function BadRequest(options) {
         var errOptions;
@@ -311,6 +338,7 @@ var BadRequestModule = function () {
         UnconfirmedEmail: UnconfirmedEmail,
         SignInError: SignInError,
         AccessError: AccessError,
+        UnauthorizedError: UnauthorizedError,
         CaptchaError:CaptchaError,
         BlockedAccount: BlockedAccount,
         BadRequest: BadRequest

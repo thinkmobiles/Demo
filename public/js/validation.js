@@ -102,5 +102,4 @@ define(
             validURL: validateUrl
         }
     }
-)
-;
+);

@@ -391,7 +391,7 @@ define(["moment"],function (moment) {
 				.attr("transform", function(d) {
 					return "translate(0,-4)";
 				})
-				.style("font-size","20px")
+				.style("font-size","20px");
 			arcs.append("text")
 				.attr("text-anchor","middle")
 				.attr("fill","silver")
@@ -403,8 +403,20 @@ define(["moment"],function (moment) {
 		}
 		
 	};
+	var getReferrer = function () {
+		var referrer;
 
-	
+		if (document.referrer.match(/facebook/g)) {
+			referrer = 'facebook';
+		}
+
+		if (document.URL.match(/\/f157640/g)) {
+			referrer = 'linkedin';
+			Backbone.history.navigate(Backbone.history.getPath().replace('\/f157640',""),{silent:true})
+		}
+		return referrer;
+	};
+
     return {
         runApplication: runApplication,
 		defaultImage: defaultImage,
@@ -413,6 +425,7 @@ define(["moment"],function (moment) {
 		drawQuestionsPie:drawQuestionsPie,
 		routes:routes,
 		toUrl:toUrl,
+		getReferrer:getReferrer,
 		navigateToLastUrl:navigateToLastUrl
     };
 });

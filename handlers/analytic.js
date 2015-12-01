@@ -29,7 +29,7 @@ var routeHandler = function (db) {
             return next(error);
         }
         domain = req.query.domain;
-        contentId = req.query.id;
+        contentId = mongoose.Types.ObjectId(req.query.id);
 
         async.waterfall([
             function (waterfallCb) {
@@ -134,7 +134,7 @@ var routeHandler = function (db) {
                 return next(err);
             }
             var domains = docs ? docs.domains : [];
-            res.status(200).send(domains);
+            res.status(200).send({data:domains});
         });
     };
 
@@ -142,7 +142,7 @@ var routeHandler = function (db) {
         var error = new Error();
         var email, contentId;
 
-        if (!email) {
+        if (!req.query.email || !req.query.id) {
             error.status = 400;
             error.message = 'Bad Request';
             return next(error);

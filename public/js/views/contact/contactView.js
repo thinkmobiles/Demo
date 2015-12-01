@@ -123,8 +123,8 @@ define([
 					App.notification("We have received your message and will get back to you as soon as possible!");
 					$('html, body').animate({scrollTop: 0}, 'medium');
 				},
-				error: function () {
-					App.notification("Some error, please try again");
+				error: function (err) {
+					App.error(err);
 				}
 			});
 		},

@@ -46,8 +46,8 @@ var JumpleadModule = function (db) {
                     'content-type': 'application/json'
                 },
                 form: {
-                    client_id: process.env.CLIENT_ID,
-                    client_secret: process.env.CLIENT_SECRET,
+                    client_id: process.env.JUMPLEAD_CLIENT_ID,
+                    client_secret: process.env.JUMPLEAD_CLIENT_SECRET,
                     refresh_token: refreshToken,
                     grant_type: 'refresh_token'
                 }
@@ -230,7 +230,7 @@ var JumpleadModule = function (db) {
                     e.message = 'Contacts not found';
                     return callback(error)
                 }
-                if (body.status === '401') {
+                if (body.status === 401) {
                     return (function () {
                         self.refToken(userId, function (err) {
                             if (err) {
@@ -280,8 +280,8 @@ var JumpleadModule = function (db) {
             },
             form: {
                 code: code,
-                client_id: process.env.CLIENT_ID,
-                client_secret: process.env.CLIENT_SECRET,
+                client_id: process.env.JUMPLEAD_CLIENT_ID,
+                client_secret: process.env.JUMPLEAD_CLIENT_SECRET,
                 redirect_uri: REDIRECT_URI,
                 grant_type: 'authorization_code'
             }
