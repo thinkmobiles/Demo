@@ -3341,6 +3341,9 @@ svg {
     border-top: 4px solid #44cbff;
     width: 144px;
   }
+  .topMenu .inner ul li.userInfo span strong {
+    max-width: none;
+  }
   footer,
   .whatSay .inner .line,
   .hoverList {
@@ -3689,17 +3692,13 @@ svg {
     color: #000;
     line-height: 70px;
     max-width: none;
+    vertical-align: middle;
   }
   .topMenu .inner ul li.userInfo img {
     float: none;
-    margin: 10px auto;
-  }
-  .topMenu .inner ul li.userInfo span {
-    display: block;
-  }
-  .topMenu .inner ul li.userInfo span strong {
-    max-width: 250px;
-    margin: 10px auto;
+    margin: 0 10px 0 0;
+    vertical-align: middle;
+    display: inline-block;
   }
 }
 @media (max-width: 480px) {
@@ -3748,6 +3747,19 @@ svg {
   }
   #wrapper .circles ul {
     margin: 0;
+  }
+  .topMenu .inner ul li.userInfo {
+    line-height: 2;
+    padding-bottom: 20px;
+  }
+  .topMenu .inner ul li.userInfo img {
+    margin: 0 auto;
+    display: block;
+    vertical-align: top;
+    padding-bottom: 15px;
+  }
+  .topMenu .inner ul li.userInfo span {
+    display: inline-block;
   }
 }
 @media (max-width: 360px) {

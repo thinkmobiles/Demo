@@ -3526,7 +3526,9 @@ svg {
     border-top: 4px solid rgb(68, 203, 255);
     width: 144px;
   }
-
+  .topMenu .inner ul li.userInfo span strong{
+    max-width: none;
+  }
   footer,
   .whatSay .inner .line,
   .hoverList {
@@ -3882,18 +3884,13 @@ svg {
     color: #000;
     line-height: 70px;
     max-width: none;
+    vertical-align: middle;
     img {
       float: none;
-      margin: 10px auto;
+      margin: 0 10px 0 0;
+      vertical-align: middle;
+      display: inline-block;
     }
-    span{
-      display: block;
-      strong{
-        max-width: 250px;
-        margin: 10px auto;
-      }
-    }
-
   }
 
 }
@@ -3952,6 +3949,19 @@ svg {
       margin: 0;
     }
   }
+  .topMenu .inner ul li.userInfo {
+    line-height: 2;
+    padding-bottom: 20px;
+    img {
+      margin: 0 auto;
+      display: block;
+      vertical-align: top;
+      padding-bottom: 15px;
+    }
+    span {
+      display: inline-block;
+    }
+  }
 
 }
 
@@ -3988,6 +3998,7 @@ svg {
       padding-bottom: 30%;
     }
   }
+
 }
 
 @media (min-width: 737px) {
