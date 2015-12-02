@@ -119,16 +119,15 @@ define([
                 },
                 function (response) {
                     if (response && response.post_id) {
-                        console.log('Post was published.');
                     } else {
                         console.log('Post was not published.');
                     }
                 }
             );
         },
+
         shareOnLinkedIn: function () {
             var self = this;
-            console.log(window.location.origin + "/" + self.content.toJSON().content.logoUri);
             var options = {
                 "content": {
                     "title": CONSTANTS.IN_SHARE_NAME,
@@ -147,6 +146,59 @@ define([
                     .error(function (err) {
                         console.log(err);
                     });
+            });
+
+        },
+
+        facebookAuth: function (callback) {
+
+            FB.login(function (response) {
+
+                if (response.authResponse) {
+                    FB.api('/me?fields=id,name,email', function (user) {
+                        if (!response || response.error) {
+                            callback(response.error || 'FB.api /me error', null);
+                        } else {
+                            var userOut = {
+                                firstName: user.name.split(" ")[0],
+                                lastName: user.name.split(" ")[1],
+                                url: 'https://www.facebook.com/' + user.id,
+                                email: user.email
+                            }
+                            callback.dir(null, userOut);
+                        }
+                    }, {scope: 'email'});
+
+                } else {
+                    callback('User cancelled login or did not fully authorize.', null)
+                }
+            }, {scope: 'email,publish_actions'});
+
+
+        },
+
+        linkedInAuth: function (callback) {
+
+            IN.User.authorize(function (res, err) {
+                if (err) {
+                    callback(err, null)
+                } else {
+
+                    IN.API.Raw("/people/~:(id,firstName,lastName,public-profile-url,email-address)")
+                        .result(function (user) {
+                            var userOut;
+                            userOut = {
+                                firstName: user.firstName,
+                                lastName: user.lastName,
+                                url: user.publicProfileUrl,
+                                email: user.emailAddress
+                            }
+                            callback(err, null);
+                        })
+                        .error(function (err) {
+                            callback(err, null)
+                        });
+                }
             });
         },
 
