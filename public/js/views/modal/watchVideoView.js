@@ -18,7 +18,7 @@ define([
             "click .ui-dialog-titlebar-close": "clickOnClose",
             "click .contactMe": "contactMe",
             "click .social .fb": "shareOnFacebook",
-			"click .social .in": "shareOnLinkedIn",
+            "click .social .in": "shareOnLinkedIn",
             "click .hoverList": "showList",
 
             "mousemove .surveyVideo": "toggleArrow",
@@ -107,10 +107,11 @@ define([
 
         shareOnFacebook: function () {
             var self = this;
+            console.log(window.location.origin + "/" + self.content.toJSON().content.logoUri);
             FB.ui(
                 {
                     method: 'feed',
-                    name: 'DemoRocket Video',
+                    name: CONSTANTS.FB_SHARE_NAME,
                     link: window.location.href.replace("chooseImportant", "home").replace('watchVideo', 'home').replace('relatedVideo', 'home'),
                     picture: self.content.toJSON().content.logoUri,
                     caption: '',
@@ -119,6 +120,7 @@ define([
                 function (response) {
                     if (response && response.post_id) {
                     } else {
+                        console.log('Post was not published.');
                     }
                 }
             );
@@ -280,7 +282,7 @@ define([
             $(".questionSection table tr:not(:first)").each(function () {
                 if (!$(this).find(".checked").length) {
                     $(this).find(".checkbox").addClass("error");
-                    message = message === '' ?  'Please make your choice for each question' : message;
+                    message = message === '' ? 'Please make your choice for each question' : message;
                     hasError = true;
 
                 }

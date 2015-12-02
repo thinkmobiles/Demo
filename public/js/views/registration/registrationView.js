@@ -147,7 +147,7 @@ define([
                     email: self.$el.find(".registration .email").val(),
                     firstName: self.$el.find(".registration .firstName").val(),
                     lastName: self.$el.find(".registration .lastName").val(),
-                    userName: self.$el.find(".registration .userName").val(),
+                    userName: self.$el.find(".registration .userName").val().toLowerCase(),
                     organization: self.$el.find(".registration .organization").val(),
                     pass: self.$el.find(".registration .pass").val(),
                     phone: self.$el.find(".registration .phone").val(),
@@ -157,7 +157,7 @@ define([
                     window.location = CONSTANTS.JUMPLEAD_AUTHORIZE_URL;
                 },
                 error: function (err) {
-                   App.error(xhr)
+                   App.error(err)
                 }
             });
         },
