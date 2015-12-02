@@ -116,7 +116,7 @@ var MailerModule = function () {
     this.newUserRegistration = function (options) {
         fs.readFile('public/templates/mailer/newUserRegistration.html', 'utf8', function (err, template) {
             var mailOptions;
-            var TO = options.toEmail;
+            var TO = options.email;
 
             if (err) {
                 if (process.env.NODE_ENV !== 'production') {
@@ -127,7 +127,7 @@ var MailerModule = function () {
                 mailOptions = {
                     from: FROM,
                     to: TO,
-                    subject: 'New User',
+                    subject: 'Demo Rocket',
                     generateTextFromHTML: true,
                     html: _.template(template)(options)
                 };
