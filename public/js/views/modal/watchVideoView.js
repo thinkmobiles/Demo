@@ -283,12 +283,6 @@ define([
 
                 }
             });
-
-            if (!$(".questionSection .veryImp.checked").length) {
-                $(".questionSection .veryImp").addClass("error");
-                message = message === '' ? 'You must choose at last one "Very important"' : message;
-                hasError = true;
-            }
             if (hasError) {
                 App.notification(message);
                 return;
@@ -296,18 +290,21 @@ define([
             var indexList = [];
             $(".veryImp.checked").each(function () {
                 indexList.push($(this).closest("table").find("tr").index($(this).closest("tr")) - 1);
-                //self.currentSurvay.push(self.content.toJSON().content.survey[index]);
             });
             $(".someImp.checked").each(function () {
                 indexList.push($(this).closest("table").find("tr").index($(this).closest("tr")) - 1);
-                //self.currentSurvay.push(self.content.toJSON().content.survey[index]);
             });
+
             this.trackQuestion();
             var url = "#/relatedVideo/";
             if (this.videoId && this.userId) {
                 url += this.videoId + "/" + this.userId + "/";
             }
             url += indexList.join(",");
+            if (!indexList.length) {
+                url='#/home';
+                App.notification('Thank you for your feedback!')
+            }
             Backbone.history.navigate(url, {trigger: true});
 
         },
