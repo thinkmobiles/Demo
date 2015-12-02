@@ -244,26 +244,29 @@ var routeHandler = function (db) {
             if (err) {
                 return console.error(err);
             }
-            async.each(contacts, function (contact, callback) {
-                obj = {
-                    jumpleadId: contact.id,
-                    firstName: contact.first_name,
-                    lastName: contact.last_name,
-                    email: contact.email,
-                    isNewViewer: false
-                };
-                arrToSave.push(obj);
-                callback(null);
-            }, function (err) {
-                if (err) {
-                    return console.error(err);
-                }
-                ProspectModel.create(arrToSave, function (err) {
+            if (!contacts || !contacts.length || !contacts[0].id || !contacts[0].first_name || !contacts[0].last_name || !contacts[0].email){
+                return console.error('Error to save contacts'+ contacts);
+            }
+                async.each(contacts, function (contact, callback) {
+                    obj = {
+                        jumpleadId: contact.id,
+                        firstName: contact.first_name,
+                        lastName: contact.last_name,
+                        email: contact.email,
+                        isNewViewer: false
+                    };
+                    arrToSave.push(obj);
+                    callback(null);
+                }, function (err) {
                     if (err) {
                         return console.error(err);
                     }
+                    ProspectModel.create(arrToSave, function (err) {
+                        if (err) {
+                            return console.error(err);
+                        }
+                    });
                 });
-            });
         });
     }
 
