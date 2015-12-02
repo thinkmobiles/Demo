@@ -107,54 +107,98 @@ define([
 
         shareOnFacebook: function () {
             var self = this;
-            console.log(window.location.origin + "/" + self.content.toJSON().content.logoUri);
             FB.ui(
                 {
                     method: 'feed',
                     name: 'DemoRocket Video',
-                    link: window.location.href.replace("chooseImportant", "home").replace('watchVideo','home').replace('relatedVideo','home'),
+                    link: window.location.href.replace("chooseImportant", "home").replace('watchVideo', 'home').replace('relatedVideo', 'home'),
                     picture: self.content.toJSON().content.logoUri,
                     caption: '',
                     description: self.content.toJSON().content.mainVideoDescription
                 },
                 function (response) {
                     if (response && response.post_id) {
-                        console.log('Post was published.');
                     } else {
-                        console.log('Post was not published.');
                     }
                 }
             );
         },
-		shareOnLinkedIn: function(){
-			var self = this;
-			console.log(window.location.origin + "/" + self.content.toJSON().content.logoUri);
-			var options = {
-				//	"comment": "Check out developer.linkedin.com!",
-				"content": {
-					"title": CONSTANTS.IN_SHARE_NAME,
-					"description": self.content.toJSON().content.mainVideoDescription,
-					"submitted-url": window.location.href.replace("chooseImportant", "home").replace('watchVideo','home').replace('relatedVideo','home') + '\/f157640',
-					"submitted-image-url": self.content.toJSON().content.logoUri
-				},
-				"visibility": {
-					"code": "anyone"
-				}
-			};
-			IN.User.authorize(function() {
-				IN.API.Raw("/people/~/shares?format=json")
-						.method("POST")
-						.body(JSON.stringify(options))
-						.error(function(err){
-							console.log(err);
-						});
+
+        shareOnLinkedIn: function () {
+            var self = this;
+            var options = {
+                "content": {
+                    "title": CONSTANTS.IN_SHARE_NAME,
+                    "description": self.content.toJSON().content.mainVideoDescription,
+                    "submitted-url": window.location.href.replace("chooseImportant", "home").replace('watchVideo', 'home').replace('relatedVideo', 'home') + '\/f157640',
+                    "submitted-image-url": self.content.toJSON().content.logoUri
+                },
+                "visibility": {
+                    "code": "anyone"
+                }
+            };
+            IN.User.authorize(function () {
+                IN.API.Raw("/people/~/shares?format=json")
+                    .method("POST")
+                    .body(JSON.stringify(options))
+                    .error(function (err) {
+                        console.log(err);
+                    });
+            });
+
+        },
+
+        facebookAuth: function (callback) {
+
+            FB.login(function (response) {
+
+                if (response.authResponse) {
+                    FB.api('/me?fields=id,name,email', function (user) {
+                        if (!response || response.error) {
+                            callback(response.error || 'FB.api /me error', null);
+                        } else {
+                            var userOut = {
+                                firstName: user.name.split(" ")[0],
+                                lastName: user.name.split(" ")[1],
+                                url: 'https://www.facebook.com/' + user.id,
+                                email: user.email
+                            }
+                            callback.dir(null, userOut);
+                        }
+                    }, {scope: 'email'});
+
+                } else {
+                    callback('User cancelled login or did not fully authorize.', null)
+                }
+            }, {scope: 'email,publish_actions'});
 
 
+        },
 
-			});
+        linkedInAuth: function (callback) {
 
+            IN.User.authorize(function (res, err) {
+                if (err) {
+                    callback(err, null)
+                } else {
 
-		},
+                    IN.API.Raw("/people/~:(id,firstName,lastName,public-profile-url,email-address)")
+                        .result(function (user) {
+                            var userOut;
+                            userOut = {
+                                firstName: user.firstName,
+                                lastName: user.lastName,
+                                url: user.publicProfileUrl,
+                                email: user.emailAddress
+                            }
+                            callback(err, null);
+                        })
+                        .error(function (err) {
+                            callback(err, null)
+                        });
+                }
+            });
+        },
 
         contactMe: function () {
             if (!this.videoId && !this.userId) {
