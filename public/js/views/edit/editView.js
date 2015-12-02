@@ -239,6 +239,7 @@ define([
             oReq.onload = function (oEvent) {
                 if (oReq.status === 200) {
                     try {
+                        App.clearContent();
                         self.modalProgres.hide();
                         var res = JSON.parse(oReq.response);
                         if (App.sessionData.get('role') == 0) {
