@@ -31,7 +31,7 @@ define([
 			"campaigns"           :  "campaigns",
 			"pricing"              :  "pricing",
 			"aboutUs"              :  "aboutUs",
-			"contact"              : "contact",
+			"contact(/:purchase)"              : "contact",
 			"forgot"              : "forgot",
 			"resetPassword(/:token)"              : "resetPassword",
             "confirm(/:token)"              : "confirmUser",
@@ -187,8 +187,8 @@ define([
 		aboutUs: function () {
             this.loadWrapperView('aboutUs');
         },
-		contact: function () {
-            this.loadWrapperView('contact');
+		contact: function (purchase) {
+            this.loadWrapperView('contact', {purchase: purchase});
         },
 		forgot: function () {
             this.loadWrapperView('forgot');
