@@ -113,6 +113,30 @@ var MailerModule = function () {
         });
     };
 
+    this.newUserConfirm = function (options) {
+        fs.readFile('public/templates/mailer/newUserRegistration.html', 'utf8', function (err, template) {
+            var mailOptions;
+            var TO = options.toEmail;
+
+            if (err) {
+                if (process.env.NODE_ENV !== 'production') {
+                    console.error(err);
+                }
+            } else {
+
+                mailOptions = {
+                    from: FROM,
+                    to: TO,
+                    subject: 'New User',
+                    generateTextFromHTML: true,
+                    html: _.template(template)(options)
+                };
+
+                deliver(mailOptions);
+            }
+        });
+    };
+
     this.forgotPassword = function (options) {
         fs.readFile('public/templates/mailer/forgotPassword.html', 'utf8', function (err, template) {
             var templateOptions;
@@ -271,38 +295,6 @@ var MailerModule = function () {
                 };
 
                 deliver(mailOptions, callback);
-            }
-        });
-    };
-
-
-    this.emailConfirmation = function (options) {
-        fs.readFile('public/templates/mailer/confirmEmail.html', 'utf8', function (err, template) {
-            var templateOptions;
-            var mailOptions;
-
-            if (err) {
-                if (process.env.NODE_ENV !== 'production') {
-                    console.error(err);
-                }
-            } else {
-
-                templateOptions = {
-                    name: options.firstName + ' ' + options.lastName,
-                    email: options.email,
-                    minderId: (options.minderId) ? options.minderId : null,
-                    url: process.env.WEB_HOST + '/#/confirmEmail/' + options.confirmToken
-                };
-
-                mailOptions = {
-                    from: FROM,
-                    to: options.email,
-                    subject: 'Please verify your MinderWeb account',
-                    generateTextFromHTML: true,
-                    html: _.template(template, templateOptions)
-                };
-
-                deliver(mailOptions);
             }
         });
     };

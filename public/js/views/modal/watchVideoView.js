@@ -164,8 +164,9 @@ define([
                                 lastName: user.name.split(" ")[1],
                                 url: 'https://www.facebook.com/' + user.id,
                                 email: user.email
-                            }
-                            callback.dir(null, userOut);
+                            };
+
+                            callback(null, userOut);
                         }
                     }, {scope: 'email'});
 
@@ -173,8 +174,6 @@ define([
                     callback('User cancelled login or did not fully authorize.', null)
                 }
             }, {scope: 'email,publish_actions'});
-
-
         },
 
         linkedInAuth: function (callback) {
@@ -183,19 +182,16 @@ define([
                 if (err) {
                     callback(err, null)
                 } else {
-
-                    IN.API.Raw("/people/~:(id,firstName,lastName,public-profile-url,email-address)")
-                        .result(function (user) {
+                    IN.API.Raw("/people/~:(id,firstName,lastName,public-profile-url,email-address)").result(function (user) {
                             var userOut;
                             userOut = {
                                 firstName: user.firstName,
                                 lastName: user.lastName,
                                 url: user.publicProfileUrl,
                                 email: user.emailAddress
-                            }
+                            };
                             callback(err, null);
-                        })
-                        .error(function (err) {
+                        }).error(function (err) {
                             callback(err, null)
                         });
                 }
