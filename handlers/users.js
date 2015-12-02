@@ -461,7 +461,7 @@ var routeHandler = function (db) {
             return next(error);
         }
         var email = req.body.email;
-        var token = randToken.generate(24);
+        var token = randToken.generate(50);
         var options;
 
         UserModel.findOneAndUpdate({email: email}, {forgotToken: token}, function (err, doc) {

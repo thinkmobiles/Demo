@@ -19,9 +19,8 @@ define([
         },
 
         contact: function () {
-            Backbone.history.navigate("#/contact", {trigger: true});
+            Backbone.history.navigate("#/contact/purchase", {trigger: true});
             $("body").removeClass("withLogin");
-            $('html, body').animate({scrollTop: 0}, 'medium');
         },
 
 

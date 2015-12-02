@@ -74,7 +74,7 @@ module.exports = function (app, db) {
 
         res.type('txt');
         res.send(RESPONSES.PAGE_NOT_FOUND);
-    };
+    }
 
     function errorHandler(err, req, res, next) {
         var status = err.status || 500;
