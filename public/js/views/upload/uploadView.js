@@ -198,6 +198,7 @@ define([
 
                     if (self.percentComplete === 100) {
                         //remove dialog
+                        $(document).find('.ui-dialog-titlebar-close').hide();
                         $(document).find('#bar_container').hide();
                         $(document).find('#rendering').fadeIn();
                         //self.modalProgres.hide();
