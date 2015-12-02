@@ -3,7 +3,7 @@
  */
 define([], function () {
 
-    var production, development;
+    var production, local, development;
 
     production = {
         //thinkmobiles server
@@ -19,6 +19,15 @@ define([], function () {
         //local server
         JUMPLEAD_AUTHORIZE_URL: 'https://account.mooloop.com/oauth/authorize?response_type=code&client_id=FcDOCBsnZ2TtKbHTGULY&redirect_uri=http://demo.com:8838/redirect&scope=jumplead.contacts,jumplead.personal',
         PRODUCTION_HOST: 'http://projects.thinkmobiles.com:8838',
+        FB_SHARE_CAPTION: 'DEMOROCKET.BIZ',
+        FB_SHARE_NAME: 'DemoRocket Video',
+        IN_SHARE_NAME: 'DemoRocket Video'
+    };
+
+    local = {
+        //local server
+        JUMPLEAD_AUTHORIZE_URL: 'https://account.mooloop.com/oauth/authorize?response_type=code&client_id=uemnB2ZAA92gv5CoTCHc&redirect_uri=http://localhost:8838/redirect&scope=jumplead.contacts,jumplead.personal',
+        PRODUCTION_HOST: 'http://localhost:8838',
         FB_SHARE_CAPTION: 'DEMOROCKET.BIZ',
         FB_SHARE_NAME: 'DemoRocket Video',
         IN_SHARE_NAME: 'DemoRocket Video'
