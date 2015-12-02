@@ -22,7 +22,6 @@ define([
             "change .uploadContainer input[type='text']": "changeInput",
             "keyup .uploadContainer input[type='text']": "changeInput",
             "click .uploadContainer.file input[type='file']": "clickOnFile",
-            "click .link-dialog .ui-dialog-titlebar-close": "decline",
             "dragenter .uploadContainer.file input": "dragenter",
             "dragleave .uploadContainer.file input": "dragleave",
             "dragover .uploadContainer.file input": "dragover",
@@ -210,6 +209,7 @@ define([
 
                     if (self.percentComplete === 100) {
                         //remove progress bar & show preloader
+                        $(document).find('.ui-dialog-titlebar-close').hide();
                         $(document).find('#bar_container').hide();
                         $(document).find('#rendering').fadeIn();
                     }
@@ -265,15 +265,6 @@ define([
             };
 
             oReq.send(oData);
-        },
-
-        decline: function (e) {
-            e.preventDefault();
-            if (App.sessionData.get('role') == 0) {
-                Backbone.history.navigate("#/home", {trigger: true});
-                return;
-            }
-            Backbone.history.navigate("#/campaigns", {trigger: true});
         },
 
         changeInput: function (e) {

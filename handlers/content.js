@@ -869,8 +869,10 @@ var routeHandler = function (db) {
                                             var survey = _.find(content.survey, function (elem) {
                                                 return elem._id.toString() == surveyId;
                                             });
+                                            if(!survey){
+                                                return whilstCb(null);
+                                            }
                                             var oldOrder = survey.order;
-
 
                                             async.parallel([
                                                 //update video
