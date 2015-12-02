@@ -113,7 +113,7 @@ var MailerModule = function () {
         });
     };
 
-    this.newUserConfirm = function (options) {
+    this.newUserRegistration = function (options) {
         fs.readFile('public/templates/mailer/newUserRegistration.html', 'utf8', function (err, template) {
             var mailOptions;
             var TO = options.toEmail;
