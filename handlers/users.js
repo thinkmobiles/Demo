@@ -586,6 +586,7 @@ var routeHandler = function (db) {
                     getAdminEmail(function (err, email) {
                         user.toEmail = email;
                         mailer.newUserConfirm(user);
+                        mailer.newUserRegistration(user);
                     });
                     cb(null, user);
                 });
